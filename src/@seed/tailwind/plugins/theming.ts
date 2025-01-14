@@ -80,7 +80,7 @@ export const theming = plugin.withOptions(
           map(themes, (theme, themeName) => [
             themeName,
             {
-              selector: `".theme-${themeName}"`,
+              selector: `'.theme-${themeName}'`,
               ...theme,
             },
           ]),

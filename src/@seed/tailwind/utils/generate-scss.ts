@@ -17,35 +17,28 @@ type ThemeData = {
 }
 
 export const generateSCSS = (data: ThemeData) => {
-  const getSCSS = (chunk: unknown) => {
+  const getSCSS = (chunk: unknown, level = 0) => {
+    const indent = '  '.repeat(level)
     let scss = ''
 
     if (typeof chunk === 'object' && !Array.isArray(chunk)) {
       mapKeys(chunk, (value, key) => {
-        scss += `${key}: `
+        scss += `${indent}${key}: `
 
         if (typeof value === 'object') {
           if (Array.isArray(value)) {
-            scss += '('
+            scss += '(\n'
             for (const val1 of value) {
-              if (Array.isArray(val1)) {
-                for (const val2 of val1) {
-                  scss += `${val2 as string} `
-                }
-                scss = `${scss.slice(0, -1)}, `
-              } else {
-                scss += `${val1 as string}, `
-              }
+              scss += `${indent}${val1 as string},\n`
             }
-            scss = scss.slice(0, -2)
-            scss += ')'
+            scss = `${scss.slice(0, -2)})\n`
           } else {
-            scss += `(${getSCSS(value)})`
+            scss += `(\n${getSCSS(value, level + 1)},\n${indent})`
           }
         } else {
-          scss += getSCSS(value)
+          scss += getSCSS(value, level + 1)
         }
-        scss += ', '
+        scss += ',\n'
       })
       scss = scss.slice(0, -2)
     } else {
@@ -55,5 +48,5 @@ export const generateSCSS = (data: ThemeData) => {
     return scss
   }
 
-  return `$${getSCSS(data)};`
+  return `$${getSCSS(data)};\n`
 }
