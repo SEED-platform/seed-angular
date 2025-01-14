@@ -1,0 +1,67 @@
+import { NgClass, NgTemplateOutlet } from '@angular/common'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
+import { Subject, takeUntil } from 'rxjs'
+import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
+import { SeedNavigationService } from '@seed/components'
+import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
+import { SharedImports } from '../../../../..'
+
+@Component({
+  selector: 'seed-vertical-navigation-basic-item',
+  templateUrl: './basic.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIconModule, MatTooltipModule, NgClass, NgTemplateOutlet, RouterLink, RouterLinkActive, SharedImports],
+})
+export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
+  private _changeDetectorRef = inject(ChangeDetectorRef)
+  private _navigationService = inject(SeedNavigationService)
+  private _router = inject(Router)
+
+  @Input() item: NavigationItem
+  @Input() name: string
+
+  // Default to the equivalent of {exact: false} because `isActiveMatchOptions` must be initialized
+  isActiveMatchOptions = subsetMatchOptions
+
+  currentUrl = this._router.url
+  private _verticalNavigationComponent: VerticalNavigationComponent
+  private readonly _unsubscribeAll$ = new Subject<void>()
+
+  ngOnInit(): void {
+    this._router.events.pipe(takeUntil(this._unsubscribeAll$)).subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.url
+        if (this.item.regexMatch) {
+          // Re-check active status
+          this._changeDetectorRef.markForCheck()
+        }
+      }
+    })
+
+    // Set the "isActiveMatchOptions" either from item's
+    // "isActiveMatchOptions" or the equivalent form of
+    // item's "exactMatch" option
+    this.isActiveMatchOptions = this.item.isActiveMatchOptions ?? (this.item.exactMatch ? exactMatchOptions : subsetMatchOptions)
+
+    // Get the parent navigation component
+    this._verticalNavigationComponent = this._navigationService.getComponent(this.name)
+
+    // Mark for check
+    this._changeDetectorRef.markForCheck()
+
+    // Subscribe to onRefreshed on the navigation component
+    this._verticalNavigationComponent.onRefreshed.pipe(takeUntil(this._unsubscribeAll$)).subscribe(() => {
+      // Mark for check
+      this._changeDetectorRef.markForCheck()
+    })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+}

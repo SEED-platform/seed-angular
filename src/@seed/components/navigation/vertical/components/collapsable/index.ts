@@ -1,0 +1,1 @@
+export * from './collapsable.component'
