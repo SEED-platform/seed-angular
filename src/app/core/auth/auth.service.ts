@@ -14,9 +14,6 @@ export class AuthService {
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
 
-  /**
-   * Setter & getter for access token
-   */
   set accessToken(token: string) {
     localStorage.setItem('accessToken', token)
   }
@@ -25,29 +22,14 @@ export class AuthService {
     return localStorage.getItem('accessToken') ?? ''
   }
 
-  /**
-   * Forgot password
-   *
-   * @param email
-   */
   forgotPassword(email: string): Observable<any> {
     return this._httpClient.post('api/auth/forgot-password', email)
   }
 
-  /**
-   * Reset password
-   *
-   * @param password
-   */
   resetPassword(password: string): Observable<any> {
     return this._httpClient.post('api/auth/reset-password', password)
   }
 
-  /**
-   * Sign in
-   *
-   * @param credentials
-   */
   signIn(credentials: { email: string; password: string }): Observable<any> {
     // Throw error, if the user is already logged in
     if (this._authenticated) {

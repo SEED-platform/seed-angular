@@ -39,11 +39,6 @@
     font-size: 0.875rem;
   }
 
-  /* Stylistic alternates for Inter */
-  body {
-    font-feature-settings: 'salt';
-  }
-
   /* Better spacing and border for horizontal rule */
   hr {
     margin: 32px 0;
@@ -141,3 +136,10 @@
 
 /* This injects Tailwind's component classes and any component classes registered by plugins. */
 @tailwind components;
+
+@layer components {
+  .prose {
+    // Always apply prose-sm to prose
+    @apply prose-sm;
+  }
+}

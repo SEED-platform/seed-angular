@@ -101,6 +101,9 @@ export default tseslint.config(
         ],
         'newlines-between': 'never',
       }],
+      'no-sequences': ['error', {
+        allowInParentheses: false,
+      }],
       'object-shorthand': 'error',
       'prefer-template': 'error',
       'semi-style': ['error', 'first'],

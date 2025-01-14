@@ -9,7 +9,7 @@ export class TermsOfServiceService {
     // TODO move TOS to a shared constant so that it can be used on the sign-in pages
     this._confirmationService.open({
       title: 'DOE Standard Energy Efficiency Data Platform | NREL Data Terms',
-      message: `<div class="prose prose-sm h-160 max-h-[calc(100vh-220px)] overflow-auto sm:-mr-10 sm:pr-10 mt-4 max-w-none">
+      message: `<div class="prose h-160 max-h-[calc(100vh-220px)] overflow-auto sm:-mr-10 sm:pr-10 mt-4 max-w-none">
          <p>You, and your company or organization (the <strong>PROVIDER</strong>) have agreed to upload and provide <strong>PROPRIETARY DATA</strong>, including energy efficiency data, building data, and building energy performance data to the Standard Energy Efficiency Data (SEED™) Platform database that the U.S. Department of Energy (the Government) and Alliance for Sustainable Energy, LLC (“Alliance”) the manager and operator of the National Renewable Energy Laboratory (“NREL”) (the <strong>RECIPIENT</strong>) have created and provide for use for registered users.</p>
          <p><strong>PROPRIETARY DATA</strong> is defined as follows:</p>
          <p>(a) information that embody trade secrets or commercial or financial information that is confidential and privileged; (b) information that is confidential and privileged and developed at private expense (i.e., not with Federal funds); (c) information that is not customarily released to the public; and/or (d) information whose disclosure to the public could result in financial harm to the PROVIDER, to owners of buildings whose information is contained in the PROPRIETARY DATA, or to other stakeholders.</p>
