@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import { MockApiService } from '@seed/mock-api'
 import { user as userData } from 'app/mock-api/common/user/data'
-import type { User } from './user.types'
+import type { User } from '../../../core/user/user.types'
 
 @Injectable({ providedIn: 'root' })
 export class UserMockApi {
