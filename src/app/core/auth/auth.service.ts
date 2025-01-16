@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
@@ -13,6 +13,7 @@ export class AuthService {
   private _authenticated = false
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
+  private apiUrl = 'http://localhost/'
 
   set accessToken(token: string) {
     localStorage.setItem('accessToken', token)
@@ -22,6 +23,22 @@ export class AuthService {
     return localStorage.getItem('accessToken') ?? ''
   }
 
+<<<<<<< HEAD
+=======
+  set refreshToken(token: string) {
+    localStorage.setItem('refreshToken', token)
+  }
+
+  get refreshToken(): string {
+    return localStorage.getItem('refreshToken') ?? ''
+  }
+
+  /**
+   * Forgot password
+   *
+   * @param email
+   */
+>>>>>>> f9ec7f0 (basic auth working - no refresh working yet)
   forgotPassword(email: string): Observable<any> {
     return this._httpClient.post('api/auth/forgot-password', email)
   }
@@ -35,18 +52,21 @@ export class AuthService {
     if (this._authenticated) {
       return throwError(() => new Error('User is already logged in.'))
     }
+    const contentHeaders = new HttpHeaders()
+    contentHeaders.append('Content-Type', 'application/json')
 
-    return this._httpClient.post('api/auth/sign-in', credentials).pipe(
+    return this._httpClient.post(`${this.apiUrl}api/token/`, credentials, { headers: contentHeaders }).pipe(
       switchMap((response: any) => {
         // Store the access token in the local storage
-        this.accessToken = response.accessToken
+        console.log(response)
+        this.accessToken = response.access
+        this.refreshToken = response.refresh
 
         // Set the authenticated flag to true
         this._authenticated = true
 
         // Store the user on the user service
-        this._userService.user = response.user
-
+        this._userService.user = AuthUtils.tokenUser(this.accessToken)
         // Return a new observable with the response
         return of(response)
       }),

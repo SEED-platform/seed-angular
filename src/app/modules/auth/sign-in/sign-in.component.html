@@ -14,14 +14,14 @@
 
 <!-- Sign in form -->
 <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
-  <!-- Email field -->
+  <!-- Username field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput [formControlName]="'email'" />
-    @if (signInForm.get('email').hasError('required')) {
+    <input id="username" matInput [formControlName]="'username'" />
+    @if (signInForm.get('username').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     }
-    @if (signInForm.get('email').hasError('email')) {
+    @if (signInForm.get('username').hasError('email')) {
       <mat-error>Please enter a valid email address</mat-error>
     }
   </mat-form-field>

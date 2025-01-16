@@ -4,8 +4,19 @@
 // Methods are derivations of the Auth0 Angular-JWT helper service methods
 // https://github.com/auth0/angular2-jwt
 // -----------------------------------------------------------------------------------------------------
-
+import type { User } from '../user/user.types'
 export class AuthUtils {
+  static tokenUser(token: string): User {
+    const decodedToken = this._decodeToken(token)
+    console.log(decodedToken)
+    const user = {
+      name: decodedToken?.name as string,
+      id: decodedToken?.user_id as string,
+      username: decodedToken?.username as string,
+      email: decodedToken.email as string,
+    } as User;
+    return user
+  }
   /**
    * Is token expired?
    *
