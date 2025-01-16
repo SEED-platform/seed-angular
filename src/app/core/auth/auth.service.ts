@@ -58,7 +58,6 @@ export class AuthService {
     return this._httpClient.post(`${this.apiUrl}api/token/`, credentials, { headers: contentHeaders }).pipe(
       switchMap((response: any) => {
         // Store the access token in the local storage
-        console.log(response)
         this.accessToken = response.access
         this.refreshToken = response.refresh
 
@@ -70,6 +69,27 @@ export class AuthService {
         // Return a new observable with the response
         return of(response)
       }),
+    )
+  }
+
+  refreshAccessToken(): Observable<any> {
+    const contentHeaders = new HttpHeaders()
+    contentHeaders.append('Content-Type', 'application/json')
+
+    return this._httpClient.post(`${this.apiUrl}/api/token/refresh/`, { refresh: this.refreshToken }, { headers: contentHeaders}).pipe(
+      switchMap((response: any) => {
+        // Store the access token in the local storage
+        this.accessToken = response.access
+        this.refreshToken = response.refresh
+
+        // Set the authenticated flag to true
+        this._authenticated = true
+
+        // Store the user on the user service
+        this._userService.user = AuthUtils.tokenUser(this.accessToken)
+        // Return a new observable with the response
+        return of(response)
+      })
     )
   }
 
@@ -140,7 +160,8 @@ export class AuthService {
    */
   check(): Observable<boolean> {
     // Check if the user is logged in
-    if (this._authenticated) {
+    if (this._authenticated && !AuthUtils.isTokenExpired(this.accessToken)) {
+      console.log("Token is good")
       return of(true)
     }
 
@@ -150,11 +171,13 @@ export class AuthService {
     }
 
     // Check the access token expire date
-    if (AuthUtils.isTokenExpired(this.accessToken)) {
+    if (AuthUtils.isTokenExpired(this.accessToken) && AuthUtils.isTokenExpired(this.refreshToken)) {
       return of(false)
     }
 
-    // If the access token exists, and it didn't expire, sign in using it
-    return this.signInUsingToken()
+    if (AuthUtils.isTokenExpired(this.accessToken)) {
+      console.log("Trying to refresh tokens with refresh token")
+      return this.refreshAccessToken();
+    }
   }
 }
