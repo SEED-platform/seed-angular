@@ -1,0 +1,9 @@
+services:
+  seed-angular:
+    build:
+      context: .
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/app
+    container_name: seed-angular
