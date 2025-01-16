@@ -5,16 +5,25 @@
 // https://github.com/auth0/angular2-jwt
 // -----------------------------------------------------------------------------------------------------
 import type { User } from '../user/user.types'
+type UserToken = {
+  name: string;
+  user_id: string;
+  username: string;
+  email: string;
+  exp: number;
+  iat: number;
+  token_type: string;
+  jti: string;
+}
 export class AuthUtils {
   static tokenUser(token: string): User {
     const decodedToken = this._decodeToken(token)
-    console.log(decodedToken)
     const user = {
-      name: decodedToken?.name as string,
-      id: decodedToken?.user_id as string,
-      username: decodedToken?.username as string,
-      email: decodedToken.email as string,
-    } as User;
+      name: decodedToken.name,
+      id: decodedToken.user_id,
+      username: decodedToken.username,
+      email: decodedToken.email,
+    } as User
     return user
   }
   /**
@@ -127,7 +136,7 @@ export class AuthUtils {
    * @param token
    * @private
    */
-  private static _decodeToken(token: string): any {
+  private static _decodeToken(token: string): UserToken {
     // Return if there is no token
     if (!token) {
       return null
@@ -149,7 +158,7 @@ export class AuthUtils {
       throw new Error('Cannot decode the token.')
     }
 
-    return JSON.parse(decoded)
+    return JSON.parse(decoded) as UserToken
   }
 
   /**

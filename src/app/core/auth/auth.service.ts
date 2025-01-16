@@ -6,6 +6,10 @@ import { catchError, of, switchMap, throwError } from 'rxjs'
 import { AuthUtils } from 'app/core/auth/auth.utils'
 import { UserService } from 'app/core/user/user.service'
 
+type TokenResponse = {
+  access: string;
+  refresh: string;
+}
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private _router = inject(Router)
@@ -57,16 +61,7 @@ export class AuthService {
 
     return this._httpClient.post(`${this.apiUrl}api/token/`, credentials, { headers: contentHeaders }).pipe(
       switchMap((response: any) => {
-        // Store the access token in the local storage
-        this.accessToken = response.access
-        this.refreshToken = response.refresh
-
-        // Set the authenticated flag to true
-        this._authenticated = true
-
-        // Store the user on the user service
-        this._userService.user = AuthUtils.tokenUser(this.accessToken)
-        // Return a new observable with the response
+        this.handleTokenResponse(response as TokenResponse);
         return of(response)
       }),
     )
@@ -78,19 +73,21 @@ export class AuthService {
 
     return this._httpClient.post(`${this.apiUrl}/api/token/refresh/`, { refresh: this.refreshToken }, { headers: contentHeaders}).pipe(
       switchMap((response: any) => {
-        // Store the access token in the local storage
-        this.accessToken = response.access
-        this.refreshToken = response.refresh
-
-        // Set the authenticated flag to true
-        this._authenticated = true
-
-        // Store the user on the user service
-        this._userService.user = AuthUtils.tokenUser(this.accessToken)
-        // Return a new observable with the response
+        this.handleTokenResponse(response as TokenResponse);
         return of(response)
       })
     )
+  }
+
+  handleTokenResponse(response: TokenResponse) {
+    this.accessToken = response.access
+    this.refreshToken = response.refresh
+
+    // Set the authenticated flag to true
+    this._authenticated = true
+
+    // Store the user on the user service
+    this._userService.user = AuthUtils.tokenUser(this.accessToken)
   }
 
   /**
@@ -137,6 +134,7 @@ export class AuthService {
   signOut(): Observable<any> {
     // Remove the access token from the local storage
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
 
     // Set the authenticated flag to false
     this._authenticated = false
@@ -161,7 +159,6 @@ export class AuthService {
   check(): Observable<boolean> {
     // Check if the user is logged in
     if (this._authenticated && !AuthUtils.isTokenExpired(this.accessToken)) {
-      console.log("Token is good")
       return of(true)
     }
 
@@ -176,7 +173,6 @@ export class AuthService {
     }
 
     if (AuthUtils.isTokenExpired(this.accessToken)) {
-      console.log("Trying to refresh tokens with refresh token")
       return this.refreshAccessToken();
     }
   }
