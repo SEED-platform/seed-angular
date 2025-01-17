@@ -17,7 +17,6 @@ export class AuthService {
   private _authenticated = false
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
-  private apiUrl = 'http://localhost/'
 
   set accessToken(token: string) {
     localStorage.setItem('accessToken', token)
@@ -59,7 +58,7 @@ export class AuthService {
     const contentHeaders = new HttpHeaders()
     contentHeaders.append('Content-Type', 'application/json')
 
-    return this._httpClient.post(`${this.apiUrl}api/token/`, credentials, { headers: contentHeaders }).pipe(
+    return this._httpClient.post(`/seedApi/token/`, credentials, { headers: contentHeaders }).pipe(
       switchMap((response: any) => {
         this.handleTokenResponse(response as TokenResponse);
         return of(response)
@@ -71,7 +70,7 @@ export class AuthService {
     const contentHeaders = new HttpHeaders()
     contentHeaders.append('Content-Type', 'application/json')
 
-    return this._httpClient.post(`${this.apiUrl}/api/token/refresh/`, { refresh: this.refreshToken }, { headers: contentHeaders}).pipe(
+    return this._httpClient.post(`/seedApi/token/refresh/`, { refresh: this.refreshToken }, { headers: contentHeaders}).pipe(
       switchMap((response: any) => {
         this.handleTokenResponse(response as TokenResponse);
         return of(response)

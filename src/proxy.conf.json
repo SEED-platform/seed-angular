@@ -1,0 +1,6 @@
+{
+  "/seedApi": {
+    "target": "http://localhost/",
+    "secure": false
+  }
+}
