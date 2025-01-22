@@ -1,12 +1,7 @@
 <button mat-icon-button [matMenuTriggerFor]="userActions">
   <span class="relative flex items-center justify-center">
-<<<<<<< HEAD
     @if (showAvatar && avatarUrl) {
       <img class="h-7 w-7 rounded-full" [src]="avatarUrl" alt="User avatar" />
-=======
-    @if (showAvatar && user?.avatar) {
-      <img class="h-7 w-7 rounded-full" [src]="user.avatar" alt="User avatar" />
->>>>>>> f9ec7f0 (basic auth working - no refresh working yet)
     } @else {
       <mat-icon [svgIcon]="'fa-regular:circle-user'"></mat-icon>
     }

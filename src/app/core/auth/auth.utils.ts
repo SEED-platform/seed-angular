@@ -20,7 +20,7 @@ export class AuthUtils {
     const decodedToken = this._decodeToken(token)
     const user = {
       name: decodedToken.name,
-      id: decodedToken.user_id,
+      id: parseInt(decodedToken.user_id),
       username: decodedToken.username,
       email: decodedToken.email,
     } as User
@@ -97,7 +97,7 @@ export class AuthUtils {
    * @param str
    * @private
    */
-  private static _b64DecodeUnicode(str: any): string {
+  private static _b64DecodeUnicode(str: string): string {
     return decodeURIComponent(
       Array.prototype.map.call(this._b64decode(str), (c: any) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`).join(''),
     )

@@ -26,8 +26,6 @@ export class AuthService {
     return localStorage.getItem('accessToken') ?? ''
   }
 
-<<<<<<< HEAD
-=======
   set refreshToken(token: string) {
     localStorage.setItem('refreshToken', token)
   }
@@ -41,7 +39,6 @@ export class AuthService {
    *
    * @param email
    */
->>>>>>> f9ec7f0 (basic auth working - no refresh working yet)
   forgotPassword(email: string): Observable<any> {
     return this._httpClient.post('api/auth/forgot-password', email)
   }
@@ -55,10 +52,8 @@ export class AuthService {
     if (this._authenticated) {
       return throwError(() => new Error('User is already logged in.'))
     }
-    const contentHeaders = new HttpHeaders()
-    contentHeaders.append('Content-Type', 'application/json')
 
-    return this._httpClient.post(`/seedApi/token/`, credentials, { headers: contentHeaders }).pipe(
+    return this._httpClient.post(`/api/token/`, credentials).pipe(
       switchMap((response: any) => {
         this.handleTokenResponse(response as TokenResponse);
         return of(response)
@@ -67,10 +62,7 @@ export class AuthService {
   }
 
   refreshAccessToken(): Observable<any> {
-    const contentHeaders = new HttpHeaders()
-    contentHeaders.append('Content-Type', 'application/json')
-
-    return this._httpClient.post(`/seedApi/token/refresh/`, { refresh: this.refreshToken }, { headers: contentHeaders}).pipe(
+    return this._httpClient.post(`/api/token/refresh/`, { refresh: this.refreshToken }).pipe(
       switchMap((response: any) => {
         this.handleTokenResponse(response as TokenResponse);
         return of(response)
@@ -87,44 +79,6 @@ export class AuthService {
 
     // Store the user on the user service
     this._userService.user = AuthUtils.tokenUser(this.accessToken)
-  }
-
-  /**
-   * Sign in using the access token
-   */
-  signInUsingToken(): Observable<any> {
-    // Sign in using the token
-    return this._httpClient
-      .post('api/auth/sign-in-with-token', {
-        accessToken: this.accessToken,
-      })
-      .pipe(
-        catchError(() =>
-          // Return false
-          of(false),
-        ),
-        switchMap((response: any) => {
-          // Replace the access token with the new one if it's available on
-          // the response object.
-          //
-          // This is an added optional step for better security. Once you sign
-          // in using the token, you should generate a new one on the server
-          // side and attach it to the response object. Then the following
-          // piece of code can replace the token with the refreshed one.
-          if (response.accessToken) {
-            this.accessToken = response.accessToken
-          }
-
-          // Set the authenticated flag to true
-          this._authenticated = true
-
-          // Store the user on the user service
-          this._userService.user = response.user
-
-          // Return true
-          return of(true)
-        }),
-      )
   }
 
   /**
@@ -164,6 +118,11 @@ export class AuthService {
     // Check the access token availability
     if (!this.accessToken) {
       return of(false)
+    }
+
+    if (!this._authenticated && this.accessToken && !AuthUtils.isTokenExpired(this.accessToken)) {
+      this.handleTokenResponse({ access: this.accessToken, refresh: this.refreshToken } as TokenResponse)
+      return of(true)
     }
 
     // Check the access token expire date

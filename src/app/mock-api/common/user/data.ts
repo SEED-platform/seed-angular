@@ -4,4 +4,5 @@ export const user: User = {
   id: 1,
   name: 'Alex Swindler',
   email: 'alex.swindler@nrel.gov',
+  username: 'alex.swindler@nrel.gov',
 }
