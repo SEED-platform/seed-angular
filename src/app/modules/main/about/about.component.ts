@@ -1,7 +1,7 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { SharedImports } from '@seed/directives'
 import { TermsOfServiceService } from '@seed/services'
 import { SEED_VERSION } from '@seed/version'
-import { SharedImports } from '../../../../@seed'
 
 @Component({
   selector: 'seed-about',

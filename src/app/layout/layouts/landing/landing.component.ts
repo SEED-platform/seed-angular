@@ -1,8 +1,8 @@
 import { CdkScrollable } from '@angular/cdk/scrolling'
 import { Component, ViewEncapsulation } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
-import { SharedImports } from '@seed'
 import { SEEDLoadingBarComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'layout-landing',

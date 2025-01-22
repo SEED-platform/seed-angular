@@ -4,7 +4,7 @@ import { MatRippleModule } from '@angular/material/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTabsModule } from '@angular/material/tabs'
 import { ActivatedRoute, Router } from '@angular/router'
-import { SharedImports } from '../../../@seed'
+import { SharedImports } from '@seed/directives'
 import type { InventoryType } from './inventory.types'
 
 @Component({
