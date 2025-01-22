@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { ConfirmationService } from '../confirmation'
 
 @Injectable({ providedIn: 'root' })
-export class TermsOfServiceService {
+export class TermsService {
   private _confirmationService = inject(ConfirmationService)
 
   showTermsOfService(): void {

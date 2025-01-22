@@ -3,9 +3,9 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, Renderer2, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { combineLatest, filter, map, Subject, takeUntil } from 'rxjs'
+import { VersionService } from '@seed/api/version'
 import type { SEEDConfig } from '@seed/services'
 import { ConfigService, MediaWatcherService, PlatformService } from '@seed/services'
-import { SEED_VERSION } from '@seed/version'
 import { DevSettingsComponent } from './common/dev-settings/dev-settings.component'
 import { EmptyLayoutComponent } from './layouts/empty/empty.component'
 import { LandingLayoutComponent } from './layouts/landing/landing.component'
@@ -26,6 +26,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private _platformService = inject(PlatformService)
   private _renderer = inject(Renderer2)
   private _router = inject(Router)
+  private _versionService = inject(VersionService)
 
   config: SEEDConfig
   layout: string
@@ -66,6 +67,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this._updateTheme()
       })
 
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version }) => {
+      // Set the app version
+      this._renderer.setAttribute(this._document.querySelector('[ng-version]'), 'seed-version', version)
+    })
+
     // Subscribe to config changes
     this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((config: SEEDConfig) => {
       // Store the config
@@ -85,9 +91,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
         // Update the layout
         this._updateLayout()
       })
-
-    // Set the app version
-    this._renderer.setAttribute(this._document.querySelector('[ng-version]'), 'seed-version', SEED_VERSION.full)
 
     // Set the OS name
     this._renderer.addClass(this._document.body, this._platformService.osName)

@@ -11,7 +11,7 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   // cspellESLintPluginRecommended,
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.mts'],
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.strictTypeChecked,
@@ -74,6 +74,9 @@ export default tseslint.config(
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-use-before-define': 'error',
       '@typescript-eslint/prefer-for-of': 'error',
+      '@typescript-eslint/restrict-template-expressions': ['error', {
+        allowNumber: true,
+      }],
       'github/array-foreach': 'error',
       'import/no-cycle': 'error',
       'import/no-deprecated': 'error',

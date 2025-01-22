@@ -17,9 +17,11 @@ try {
     enableCompression: true,
   })
 
-  const {items: [{project_id}]} = await lokaliseApi.projects().list()
+  const {
+    items: [{ project_id }],
+  } = await lokaliseApi.projects().list()
 
-  const {bundle_url} = await lokaliseApi.files().download(`${project_id}:${branch}`, {
+  const { bundle_url } = await lokaliseApi.files().download(`${project_id}:${branch}`, {
     add_newline_eof: true,
     format: 'json',
     indentation: '2sp',

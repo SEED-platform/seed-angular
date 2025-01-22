@@ -12,7 +12,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Animations } from '@seed/animations'
 import type { AlertType } from '@seed/components'
 import { AlertComponent } from '@seed/components'
-import { TermsOfServiceService } from '@seed/services'
+import { TermsService } from '@seed/services'
 import { AuthService } from 'app/core/auth/auth.service'
 
 @Component({
@@ -38,7 +38,7 @@ export class AuthSignInComponent implements OnInit {
   private _authService = inject(AuthService)
   private _formBuilder = inject(UntypedFormBuilder)
   private _router = inject(Router)
-  private _termsOfServiceService = inject(TermsOfServiceService)
+  private _termsOfServiceService = inject(TermsService)
 
   @ViewChild('signInNgForm') signInNgForm: NgForm
 

@@ -71,6 +71,7 @@ Following these guidelines helps keep the codebase clean, maintainable, and scal
 
 4. **Lifecycle Hooks**
    - Always unsubscribe from observables in `ngOnDestroy()` to prevent memory leaks.
+     - The exception to this rule is that you do not need to unsubscribe from Angular HttpClient requests - these requests emit a single value and _complete_ (automatic cleanup), so manually unsubscribing is unnecessary.
 
 5. **Routing & Lazy Loading**
    - Take advantage of Angular's lazy-loading capabilities for modules to optimize performance.

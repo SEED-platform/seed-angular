@@ -1,7 +1,9 @@
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { Subject, takeUntil } from 'rxjs'
+import { VersionService } from '@seed/api/version'
 import { SharedImports } from '@seed/directives'
-import { TermsOfServiceService } from '@seed/services'
-import { SEED_VERSION } from '@seed/version'
+import { TermsService } from '@seed/services'
 
 @Component({
   selector: 'seed-about',
@@ -9,13 +11,27 @@ import { SEED_VERSION } from '@seed/version'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports],
 })
-export class AboutComponent {
-  private _termsOfServiceService = inject(TermsOfServiceService)
+export class AboutComponent implements OnInit, OnDestroy {
+  private _termsService = inject(TermsService)
+  private _versionService = inject(VersionService)
 
-  // TODO get SHA via API, it's currently hardcoded
-  readonly SEED_VERSION = SEED_VERSION
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  version: string
+  sha: string
+
+  ngOnInit(): void {
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
+      this.version = version
+      this.sha = sha
+    })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
 
   showTermsOfService(): void {
-    this._termsOfServiceService.showTermsOfService()
+    this._termsService.showTermsOfService()
   }
 }
