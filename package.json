@@ -41,6 +41,7 @@
     "@fontsource-variable/inter": "^5.1.1",
     "@jsverse/transloco": "^7.5.1",
     "crypto-js": "^4.2.0",
+    "jwt-decode": "^4.0.0",
     "lodash-es": "^4.17.21",
     "luxon": "^3.5.0",
     "perfect-scrollbar": "^1.5.6",
