@@ -4,7 +4,7 @@
 </button>
 
 <!-- Language menu -->
-<mat-menu [xPosition]="'before'" #languages="matMenu">
+<mat-menu xPosition="before" #languages="matMenu">
   @for (lang of availableLangs; track lang.id || $index) {
     <button mat-menu-item (click)="setActiveLang(lang.id)">
       <span class="flex items-center">

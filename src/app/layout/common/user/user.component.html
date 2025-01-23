@@ -3,12 +3,12 @@
     @if (showAvatar && avatarUrl) {
       <img class="h-7 w-7 rounded-full" [src]="avatarUrl" alt="User avatar" />
     } @else {
-      <mat-icon [svgIcon]="'fa-regular:circle-user'"></mat-icon>
+      <mat-icon svgIcon="fa-regular:circle-user"></mat-icon>
     }
   </span>
 </button>
 
-<mat-menu [xPosition]="'before'" #userActions="matMenu">
+<mat-menu xPosition="before" #userActions="matMenu">
   <div class="flex h-12 cursor-default items-center px-4">
     <span class="flex flex-col leading-none">
       <span>Signed in as</span>
@@ -17,16 +17,16 @@
   </div>
   <mat-divider class="my-2"></mat-divider>
   <button mat-menu-item>
-    <mat-icon [svgIcon]="'fa-solid:circle-user'"></mat-icon>
+    <mat-icon svgIcon="fa-solid:circle-user"></mat-icon>
     <span>Profile</span>
   </button>
   <button mat-menu-item>
-    <mat-icon [svgIcon]="'fa-solid:gear'"></mat-icon>
+    <mat-icon svgIcon="fa-solid:gear"></mat-icon>
     <span>Settings</span>
   </button>
   <mat-divider class="my-2"></mat-divider>
   <button mat-menu-item (click)="signOut()">
-    <mat-icon [svgIcon]="'fa-solid:right-from-bracket'"></mat-icon>
+    <mat-icon svgIcon="fa-solid:right-from-bracket"></mat-icon>
     <span>Sign out</span>
   </button>
 </mat-menu>

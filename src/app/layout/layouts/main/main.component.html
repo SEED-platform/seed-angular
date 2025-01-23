@@ -4,7 +4,7 @@
   class="dark bg-gray-900 print:hidden"
   [appearance]="navigationAppearance"
   [mode]="isScreenSmall ? 'over' : 'side'"
-  [name]="'mainNavigation'"
+  name="mainNavigation"
   [navigation]="navigation.default"
   [opened]="!isScreenSmall"
 >
@@ -21,7 +21,7 @@
   <ng-container verticalNavigationFooter>
     <div class="hidden p-5 md:flex">
       <button mat-icon-button (click)="toggleNavigationAppearance()">
-        <mat-icon [svgIcon]="'heroicons-outline:arrows-right-left'"></mat-icon>
+        <mat-icon svgIcon="heroicons-outline:arrows-right-left"></mat-icon>
       </button>
     </div>
   </ng-container>
@@ -36,7 +36,7 @@
     <div class="flex items-center space-x-2 pr-2">
       <!-- Navigation toggle button -->
       <button class="inline-flex md:hidden" mat-icon-button (click)="toggleNavigation('mainNavigation')">
-        <mat-icon [svgIcon]="'heroicons-outline:bars-3'"></mat-icon>
+        <mat-icon svgIcon="heroicons-outline:bars-3"></mat-icon>
       </button>
 
       <div class="hidden text-3xl font-bold uppercase leading-none tracking-tighter md:inline-flex">

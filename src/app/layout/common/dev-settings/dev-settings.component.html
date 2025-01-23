@@ -4,23 +4,23 @@
   style="top: 275px"
   (click)="settingsDrawer.toggle()"
 >
-  <mat-icon class="animate-spin-slow text-white icon-size-5" [svgIcon]="'heroicons-solid:cog-8-tooth'"></mat-icon>
+  <mat-icon class="animate-spin-slow text-white icon-size-5" svgIcon="heroicons-solid:cog-8-tooth"></mat-icon>
 </div>
 
 <seed-drawer
   class="z-999 w-screen min-w-screen sm:w-100 sm:min-w-100"
   fixed
-  [mode]="'over'"
-  [name]="'settingsDrawer'"
-  [position]="'right'"
+  mode="over"
+  name="settingsDrawer"
+  position="right"
   #settingsDrawer
 >
   <div class="bg-card flex w-full flex-col overflow-auto">
     <div class="flex h-20 min-h-20 flex-row items-center bg-primary px-6 text-white">
-      <mat-icon class="text-current icon-size-7" [svgIcon]="'heroicons-solid:cog-8-tooth'"></mat-icon>
+      <mat-icon class="text-current icon-size-7" svgIcon="heroicons-solid:cog-8-tooth"></mat-icon>
       <div class="ml-3 text-2xl font-semibold tracking-tight">Dev Settings</div>
       <button class="ml-auto" mat-icon-button (click)="settingsDrawer.close()">
-        <mat-icon class="text-current" [svgIcon]="'heroicons-outline:x-mark'"></mat-icon>
+        <mat-icon class="text-current" svgIcon="heroicons-outline:x-mark"></mat-icon>
       </button>
     </div>
 
@@ -36,7 +36,7 @@
           (click)="setActiveLang('en_US')"
         >
           <div class="flex items-center overflow-hidden rounded-md">
-            <mat-icon class="icon-size-7" [svgIcon]="'flag:us'"></mat-icon>
+            <mat-icon class="icon-size-7" svgIcon="flag:us"></mat-icon>
           </div>
         </div>
 
@@ -48,7 +48,7 @@
           (click)="setActiveLang('fr_CA')"
         >
           <div class="flex items-center overflow-hidden rounded-md">
-            <mat-icon class="icon-size-7" [svgIcon]="'flag:ca'"></mat-icon>
+            <mat-icon class="icon-size-7" svgIcon="flag:ca"></mat-icon>
           </div>
         </div>
 
@@ -60,7 +60,7 @@
           (click)="setActiveLang('es')"
         >
           <div class="flex items-center overflow-hidden rounded-md">
-            <mat-icon class="icon-size-7" [svgIcon]="'flag:mx'"></mat-icon>
+            <mat-icon class="icon-size-7" svgIcon="flag:mx"></mat-icon>
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@
           (click)="setScheme('auto')"
         >
           <div class="flex items-center overflow-hidden rounded-full">
-            <mat-icon class="icon-size-5" [svgIcon]="'heroicons-solid:bolt'"></mat-icon>
+            <mat-icon class="icon-size-5" svgIcon="heroicons-solid:bolt"></mat-icon>
           </div>
           <div class="ml-2 flex items-center font-medium leading-5" [class.text-secondary]="config.scheme !== 'auto'">Auto</div>
         </div>
@@ -91,7 +91,7 @@
           (click)="setScheme('dark')"
         >
           <div class="flex items-center overflow-hidden rounded-full">
-            <mat-icon class="icon-size-5" [svgIcon]="'heroicons-solid:moon'"></mat-icon>
+            <mat-icon class="icon-size-5" svgIcon="heroicons-solid:moon"></mat-icon>
           </div>
           <div class="ml-2 flex items-center font-medium leading-5" [class.text-secondary]="config.scheme !== 'dark'">Dark</div>
         </div>
@@ -102,7 +102,7 @@
           (click)="setScheme('light')"
         >
           <div class="flex items-center overflow-hidden rounded-full">
-            <mat-icon class="icon-size-5" [svgIcon]="'heroicons-solid:sun'"></mat-icon>
+            <mat-icon class="icon-size-5" svgIcon="heroicons-solid:sun"></mat-icon>
           </div>
           <div class="ml-2 flex items-center font-medium leading-5" [class.text-secondary]="config.scheme !== 'light'">Light</div>
         </div>

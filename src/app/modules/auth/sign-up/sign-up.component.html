@@ -7,7 +7,7 @@
 
 <!-- Alert -->
 @if (showAlert) {
-  <seed-alert class="-mb-4 mt-8" [appearance]="'outline'" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
+  <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
     {{ alert.message }}
   </seed-alert>
 }
@@ -17,7 +17,7 @@
   <!-- Name field -->
   <mat-form-field class="w-full">
     <mat-label>Full name</mat-label>
-    <input id="name" matInput [formControlName]="'name'" />
+    <input id="name" matInput formControlName="name" />
     @if (signUpForm.get('name').hasError('required')) {
       <mat-error>Full name is required</mat-error>
     }
@@ -26,7 +26,7 @@
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput [formControlName]="'email'" />
+    <input id="email" matInput formControlName="email" />
     @if (signUpForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     }
@@ -38,7 +38,7 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" [formControlName]="'password'" #passwordField />
+    <input id="password" matInput type="password" formControlName="password" #passwordField />
     <button
       mat-icon-button
       type="button"
@@ -46,9 +46,9 @@
       matSuffix
     >
       @if (passwordField.type === 'password') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye-slash'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye-slash"></mat-icon>
       } @else if (passwordField.type === 'text') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye"></mat-icon>
       }
     </button>
     <mat-error>Password is required</mat-error>
@@ -56,7 +56,7 @@
 
   <!-- ToS -->
   <div class="mt-1.5 inline-flex w-full flex-col">
-    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" [color]="'primary'" [formControlName]="'terms'">
+    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms">
       <span>I agree with the</span>
       <a
         class="ml-1 cursor-pointer text-primary-500 hover:underline focus:underline"
@@ -70,11 +70,11 @@
   </div>
 
   <!-- Submit button -->
-  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button [color]="'primary'" [disabled]="signUpForm.disabled" (click)="signUp()">
+  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button color="primary" [disabled]="signUpForm.disabled" (click)="signUp()">
     @if (!signUpForm.disabled) {
       <span>Create my account</span>
     } @else {
-      <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
     }
   </button>
 </form>

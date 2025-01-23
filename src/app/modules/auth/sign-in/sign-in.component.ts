@@ -52,7 +52,7 @@ export class AuthSignInComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.signInForm = this._formBuilder.group({
-      username: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
     })
@@ -81,7 +81,8 @@ export class AuthSignInComponent implements OnInit {
     this.showAlert = false
 
     // Sign in
-    this._authService.signIn(this.signInForm.value).subscribe({
+    const { email, password } = this.signInForm.value as { email: string; password: string; terms: boolean }
+    this._authService.signIn({ username: email.toLowerCase(), password }).subscribe({
       next: () => {
         // Set the redirect url.
         // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user

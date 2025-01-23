@@ -3,7 +3,7 @@
   @if (data.dismissible) {
     <div class="absolute right-0 top-0 pr-4 pt-4">
       <button mat-icon-button [matDialogClose]="undefined">
-        <mat-icon class="text-secondary" [svgIcon]="'heroicons-outline:x-mark'"></mat-icon>
+        <mat-icon class="text-secondary" svgIcon="heroicons-outline:x-mark"></mat-icon>
       </button>
     </div>
   }
@@ -49,14 +49,14 @@
     <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
       <!-- Cancel -->
       @if (data.actions.cancel.show) {
-        <button mat-stroked-button [matDialogClose]="'cancelled'">
+        <button mat-stroked-button matDialogClose="canceled">
           {{ data.actions.cancel.label }}
         </button>
       }
 
       <!-- Confirm -->
       @if (data.actions.confirm.show) {
-        <button mat-flat-button [color]="data.actions.confirm.color" [matDialogClose]="'confirmed'">
+        <button mat-flat-button [color]="data.actions.confirm.color" matDialogClose="confirmed">
           {{ data.actions.confirm.label }}
         </button>
       }

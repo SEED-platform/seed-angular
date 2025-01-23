@@ -41,7 +41,7 @@ export class AuthService {
     return this._httpClient.post('api/auth/reset-password', password)
   }
 
-  signIn(credentials: { email: string; password: string }): Observable<TokenResponse> {
+  signIn(credentials: { username: string; password: string }): Observable<TokenResponse> {
     // Throw error if the user is already logged in
     if (this._authenticated) {
       return throwError(() => new Error('User is already logged in.'))
