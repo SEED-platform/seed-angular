@@ -10,8 +10,10 @@ import { HomeComponent } from './modules/main/home/home.component'
 import {
   OrganizationsAccessLevelTreeComponent,
   OrganizationsCyclesComponent,
+  OrganizationsEmailTemplatesComponent,
   OrganizationsLabelsComponent,
   OrganizationsListComponent,
+  OrganizationsMembersComponent,
   OrganizationsNavComponent,
   OrganizationsSettingsComponent,
 } from './modules/organizations'
@@ -79,9 +81,11 @@ export const appRoutes: Route[] = [
         component: OrganizationsNavComponent,
         children: [
           { path: '', component: OrganizationsSettingsComponent },
+          { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
           { path: 'cycles', component: OrganizationsCyclesComponent },
           { path: 'labels', component: OrganizationsLabelsComponent },
-          { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
+          { path: 'email-templates', component: OrganizationsEmailTemplatesComponent },
+          { path: 'members', component: OrganizationsMembersComponent },
         ],
       },
       // 404, redirect to dashboard
