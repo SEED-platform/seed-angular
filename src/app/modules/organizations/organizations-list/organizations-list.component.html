@@ -15,12 +15,20 @@
 
     <ng-contianer matColumnDef="numProperties">
       <th mat-header-cell *matHeaderCellDef>Number of Properties</th>
-      <td mat-cell *matCellDef="let element">{{ element.numProperties }}</td>
+      <td mat-cell *matCellDef="let element">
+        <ul>
+          <li *ngFor="let item  of element.propertiesByCycle">{{item.cycle}}: {{item.count}}</li>
+        </ul>
+      </td>
     </ng-contianer>
 
     <ng-contianer matColumnDef="numTaxLots">
       <th mat-header-cell *matHeaderCellDef>Number of Tax Lot</th>
-      <td mat-cell *matCellDef="let element">{{ element.numTaxLots }}</td>
+      <td mat-cell *matCellDef="let element">
+        <ul>
+          <li *ngFor="let item  of element.taxLotsByCycle">{{item.cycle}}: {{item.count}}</li>
+        </ul>
+      </td>
     </ng-contianer>
 
     <ng-contianer matColumnDef="role">

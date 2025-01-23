@@ -25,7 +25,9 @@ export class OrganizationsNavComponent implements OnInit {
   links = [
     { path: 'access-level-tree', title: 'Access Level Tree', icon: 'fa-solid:sitemap' },
     { path: 'cycles', title: 'Cycles', icon: 'fa-solid:calendar-days' },
+    { path: 'email-templates', title: 'Email Templates', icon: 'fa-solid:envelope' },
     { path: 'labels', title: 'Labels', icon: 'fa-solid:tags' },
+    { path: 'members', title: 'Members', icon: 'fa-solid:user' },
     this._defaultLink,
   ]
 
