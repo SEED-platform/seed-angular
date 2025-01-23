@@ -1,10 +1,14 @@
-import { Injectable } from '@angular/core'
+import { inject, Injectable } from '@angular/core'
+import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { of } from 'rxjs'
 import { delay } from 'rxjs/operators'
+import type { Organization } from './organizations.types'
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationsService {
+  private _router = inject(Router)
+
   // mock data
   private ORGANIZATIONS_DATA = [
     {
@@ -43,8 +47,23 @@ export class OrganizationsService {
     },
   ]
 
+  private _org: Organization
+
   // mock as an observable
   getOrganizations(): Observable<unknown[]> {
-    return of(this.ORGANIZATIONS_DATA).pipe(delay(500))
+    return of(this.ORGANIZATIONS_DATA).pipe(delay(100))
+  }
+
+  setOrg(org: Organization) {
+    this._org = org
+  }
+
+  getOrg() {
+    if (!this._org) {
+      const segments = this._router.url.toLowerCase().split('/')
+      const orgId = segments[segments.indexOf('organizations') + 1]
+      this._org = this.ORGANIZATIONS_DATA.find((org) => org.id === Number(orgId))
+    }
+    return this._org
   }
 }

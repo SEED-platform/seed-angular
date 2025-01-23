@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Router, RouterModule } from '@angular/router'
+import { OrganizationsService } from '../organizations.service'
+import type { Organization } from '../organizations.types'
 
 @Component({
   selector: 'seed-organizations-nav',
@@ -14,9 +16,11 @@ import { Router, RouterModule } from '@angular/router'
   ],
 })
 export class OrganizationsNavComponent implements OnInit {
+  private _organizationsService = inject(OrganizationsService)
   private _router = inject(Router)
   private _defaultLink = { path: './', title: 'Settings', icon: 'fa-solid:gears' }
   activeLink = this._defaultLink
+  organization!: Organization
 
   links = [
     { path: 'access-level-tree', title: 'Access Level Tree', icon: 'fa-solid:sitemap' },
@@ -27,6 +31,7 @@ export class OrganizationsNavComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('organizations nav')
+    this.organization = this._organizationsService.getOrg()
     const currentPath = this._router.url.split('/').pop()
     this.activeLink = this.links.find((link) => link.path === currentPath) || this._defaultLink
   }

@@ -9,7 +9,7 @@
     <ng-contianer matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Organization Name</th>
       <td mat-cell *matCellDef="let element">
-        <a [routerLink]="['/organizations/' + element.id]" class="text-primary">Organization {{ element.id }}</a>
+        <a [routerLink]="['/organizations/' + element.id]" (click)="setOrg(element.id)" class="text-primary">Organization {{ element.id }}</a>
       </td>
     </ng-contianer>
 

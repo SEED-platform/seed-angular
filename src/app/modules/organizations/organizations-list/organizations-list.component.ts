@@ -47,8 +47,7 @@ export class OrganizationsListComponent implements OnInit {
     })
   }
 
-  async goToSettings(orgId: number) {
-    console.log('go to settings', orgId)
-    await this._router.navigate([`/organizations/${orgId.toString()}`])
+  setOrg(orgId: number) {
+    this._organizationsService.setOrg(this.organizations.find((org) => org.id === orgId))
   }
 }
