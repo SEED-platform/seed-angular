@@ -1,9 +1,9 @@
-type Organization = {
+export type Organization = {
   id: number;
   name: string;
   propertiesByCycle: { cycle: string; count: number }[];
   taxLotsByCycle: { cycle: string; count: number }[];
-  role: 'Owner' | 'Member' | 'Viewer';
+  role: string;
   owners: string[];
 }
 
