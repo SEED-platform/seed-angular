@@ -54,10 +54,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
 
+<<<<<<< HEAD
     this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
       this.version = version
       this.sha = sha
     })
+=======
+    this.toggleNavigationAppearance()
+>>>>>>> 79a9ffa (initial organizations pages ui)
   }
 
   ngOnDestroy(): void {

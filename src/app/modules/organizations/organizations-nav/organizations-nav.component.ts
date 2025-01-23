@@ -1,5 +1,6 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Router, RouterModule } from '@angular/router'
 
@@ -9,22 +10,24 @@ import { Router, RouterModule } from '@angular/router'
   imports: [
     MatTabsModule,
     RouterModule,
+    MatIconModule,
   ],
 })
 export class OrganizationsNavComponent implements OnInit {
   private _router = inject(Router)
+  private _defaultLink = { path: './', title: 'Settings', icon: 'fa-solid:gears' }
+  activeLink = this._defaultLink
 
   links = [
-    { path: './', title: 'Settings' },
-    { path: 'cycles', title: 'Cycles' },
-    { path: 'labels', title: 'Labels' },
-    { path: 'access-level-tree', title: 'Access Level Tree' },
+    { path: 'access-level-tree', title: 'Access Level Tree', icon: 'fa-solid:sitemap' },
+    { path: 'cycles', title: 'Cycles', icon: 'fa-solid:calendar-days' },
+    { path: 'labels', title: 'Labels', icon: 'fa-solid:tags' },
+    this._defaultLink,
   ]
-  activeLink = this.links[0]
 
   ngOnInit(): void {
     console.log('organizations nav')
     const currentPath = this._router.url.split('/').pop()
-    this.activeLink = this.links.find((link) => link.path === currentPath) || this.links[0]
+    this.activeLink = this.links.find((link) => link.path === currentPath) || this._defaultLink
   }
 }

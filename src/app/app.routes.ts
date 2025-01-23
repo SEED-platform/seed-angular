@@ -6,6 +6,14 @@ import { AboutComponent } from './modules/main/about/about.component'
 import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
 import { HomeComponent } from './modules/main/home/home.component'
+import {
+  OrganizationsAccessLevelTreeComponent,
+  OrganizationsCyclesComponent,
+  OrganizationsLabelsComponent,
+  OrganizationsListComponent,
+  OrganizationsNavComponent,
+  OrganizationsSettingsComponent,
+} from './modules/organizations'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
   if (segments.length === 1 && ['properties', 'taxlots'].includes(segments[0].path)) {
@@ -75,6 +83,19 @@ export const appRoutes: Route[] = [
       },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'about', title: 'About', component: AboutComponent },
+      { path: 'contact', title: 'Contact', component: ContactComponent },
+      { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
+      { path: 'organizations', component: OrganizationsListComponent },
+      {
+        path: 'organizations/:organizationId',
+        component: OrganizationsNavComponent,
+        children: [
+          { path: '', component: OrganizationsSettingsComponent },
+          { path: 'cycles', component: OrganizationsCyclesComponent },
+          { path: 'labels', component: OrganizationsLabelsComponent },
+          { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
+        ],
+      },
       // 404, redirect to dashboard
       { path: '**', redirectTo: 'dashboard' },
     ],
