@@ -32,11 +32,6 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "allowedCommonJsDependencies": [
-              "crypto-js/enc-utf8",
-              "crypto-js/hmac-sha256",
-              "crypto-js/enc-base64"
-            ],
             "assets": [
               {
                 "glob": "**/*",

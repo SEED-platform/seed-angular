@@ -17,18 +17,13 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
   const authService = inject(AuthService)
   const router = inject(Router)
 
-  let newReq: HttpRequest<unknown>
-
   // If the access token didn't expire, add the Authorization header to api requests.
   // We won't add the Authorization header if the access token expired, which forces a 401 response from Django.
   // The response interceptor will catch and delete the access token from local storage while signing out the user.
-  if (/^\/?api\//.test(req.url) && authService.accessToken && !AuthUtils.isTokenExpired(authService.accessToken)) {
-    newReq = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${authService.accessToken}`),
-    })
-  } else {
-    newReq = req.clone()
-  }
+  const addToken = /^\/?api\//.test(req.url) && authService.accessToken && !AuthUtils.isTokenExpired(authService.accessToken)
+  const newReq = req.clone({
+    headers: addToken ? req.headers.set('Authorization', `Bearer ${authService.accessToken}`) : undefined,
+  })
 
   // Response
   return next(newReq).pipe(

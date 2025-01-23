@@ -75,9 +75,6 @@ export class AuthService {
     this._userService.user = AuthUtils.tokenUser(this.accessToken)
   }
 
-  /**
-   * Sign out
-   */
   signOut(): Observable<boolean> {
     // Remove the access token from the local storage
     localStorage.removeItem('accessToken')
@@ -95,10 +92,7 @@ export class AuthService {
     return this._httpClient.post('api/auth/sign-up', user)
   }
 
-  /**
-   * Check the authentication status
-   */
-  check(): Observable<boolean> {
+  isAuthenticated(): Observable<boolean> {
     // Check if the user is logged in
     if (this._authenticated && !AuthUtils.isTokenExpired(this.accessToken)) {
       return of(true)

@@ -47,9 +47,9 @@ importers:
       '@jsverse/transloco':
         specifier: ^7.5.1
         version: 7.5.1(@angular/core@19.1.2(rxjs@7.8.1)(zone.js@0.15.0))(typescript@5.7.3)
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
+      crypto-es:
+        specifier: ^2.1.0
+        version: 2.1.0
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0
@@ -102,9 +102,6 @@ importers:
       '@types/chroma-js':
         specifier: ^2.4.5
         version: 2.4.5
-      '@types/crypto-js':
-        specifier: ^4.2.2
-        version: 4.2.2
       '@types/decompress':
         specifier: ^4.2.7
         version: 4.2.7
@@ -2209,9 +2206,6 @@ packages:
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
-  '@types/crypto-js@4.2.2':
-    resolution: {integrity: sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==}
-
   '@types/decompress@4.2.7':
     resolution: {integrity: sha512-9z+8yjKr5Wn73Pt17/ldnmQToaFHZxK0N1GHysuk/JIPT8RIdQeoInM01wWPgypRcvb6VH1drjuFpQ4zmY437g==}
 
@@ -2880,8 +2874,8 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
-  crypto-js@4.2.0:
-    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+  crypto-es@2.1.0:
+    resolution: {integrity: sha512-C5Dbuv4QTPGuloy5c5Vv/FZHtmK+lobLAypFfuRaBbwCsk3qbCWWESCH3MUcBsrgXloRNMrzwUAiPg4U6+IaKA==}
 
   cspell-config-lib@8.17.2:
     resolution: {integrity: sha512-g08lRd/smLk2je0j7HlCjdDa0dSTyI2oRP3gScWlsyXjb4NSr9qO0Wzyn5BfPgrqFdS/z4dXbHe+tnLQZCt9iQ==}
@@ -8195,8 +8189,6 @@ snapshots:
     dependencies:
       '@types/node': 22.10.7
 
-  '@types/crypto-js@4.2.2': {}
-
   '@types/decompress@4.2.7':
     dependencies:
       '@types/node': 22.10.7
@@ -9005,7 +8997,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  crypto-js@4.2.0: {}
+  crypto-es@2.1.0: {}
 
   cspell-config-lib@8.17.2:
     dependencies:
