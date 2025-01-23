@@ -51,6 +51,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       // Change the navigation appearance
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
+
+    this.toggleNavigationAppearance()
   }
 
   ngOnDestroy(): void {
