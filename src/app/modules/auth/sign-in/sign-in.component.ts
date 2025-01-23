@@ -52,8 +52,8 @@ export class AuthSignInComponent implements OnInit {
   ngOnInit(): void {
     // Create the form
     this.signInForm = this._formBuilder.group({
-      email: ['alex.swindler@nrel.gov', [Validators.required, Validators.email]],
-      password: ['admin', Validators.required],
+      username: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
     })
   }
@@ -87,6 +87,7 @@ export class AuthSignInComponent implements OnInit {
         // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
         // to the correct page after a successful sign in. This way, that url can be set via
         // routing file and we don't have to touch here.
+
         const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
 
         // Navigate to the redirect url
