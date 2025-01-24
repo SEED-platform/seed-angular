@@ -4,6 +4,7 @@
 }
 
 seed-vertical-navigation {
+  @apply h-svh max-h-svh min-h-svh;
   position: sticky;
   display: flex;
   flex-direction: column;
@@ -12,9 +13,6 @@ seed-vertical-navigation {
   width: var(--seed-vertical-navigation-width);
   min-width: var(--seed-vertical-navigation-width);
   max-width: var(--seed-vertical-navigation-width);
-  height: 100vh;
-  min-height: 100vh;
-  max-height: 100vh;
   z-index: 200;
 
   /* ----------------------------------------------------------------------------------------------------- */
@@ -120,6 +118,7 @@ seed-vertical-navigation {
 
   /* Wrapper */
   .seed-vertical-navigation-wrapper {
+    @apply h-svh max-h-svh min-h-svh;
     position: absolute;
     display: flex;
     flex: 1 1 auto;
@@ -127,7 +126,6 @@ seed-vertical-navigation {
     top: 0;
     bottom: 0;
     width: 100%;
-    height: 100%;
     overflow: hidden;
     z-index: 10;
     background: inherit;

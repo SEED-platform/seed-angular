@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { UntypedFormGroup } from '@angular/forms'
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -35,8 +35,6 @@ import { AuthService } from 'app/core/auth/auth.service'
 export class AuthResetPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
   private _formBuilder = inject(UntypedFormBuilder)
-
-  @ViewChild('resetPasswordNgForm') resetPasswordNgForm: NgForm
 
   alert: { type: AlertType; message: string } = {
     type: 'success',
@@ -81,7 +79,7 @@ export class AuthResetPasswordComponent implements OnInit {
           // Re-enable the form
           this.resetPasswordForm.enable()
 
-          this.resetPasswordNgForm.resetForm()
+          this.resetPasswordForm.reset()
 
           this.showAlert = true
         }),

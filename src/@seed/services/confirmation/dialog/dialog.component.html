@@ -30,7 +30,7 @@
     }
 
     @if (data.title || data.message) {
-      <div class="mt-4 flex flex-col items-center space-y-1 text-center sm:mt-0 sm:items-start sm:pr-8 sm:text-left">
+      <div class="mt-4 flex flex-col items-center space-y-1 text-left sm:mt-0 sm:items-start sm:pr-8">
         <!-- Title -->
         @if (data.title) {
           <div class="text-xl font-medium leading-6" [innerHTML]="data.title"></div>

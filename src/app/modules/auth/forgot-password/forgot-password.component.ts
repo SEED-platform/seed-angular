@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { UntypedFormGroup } from '@angular/forms'
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -32,8 +32,6 @@ import { AuthService } from 'app/core/auth/auth.service'
 export class AuthForgotPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
   private _formBuilder = inject(UntypedFormBuilder)
-
-  @ViewChild('forgotPasswordNgForm') forgotPasswordNgForm: NgForm
 
   alert: { type: AlertType; message: string } = {
     type: 'success',
@@ -72,7 +70,7 @@ export class AuthForgotPasswordComponent implements OnInit {
           // Re-enable the form
           this.forgotPasswordForm.enable()
 
-          this.forgotPasswordNgForm.resetForm()
+          this.forgotPasswordForm.reset()
 
           this.showAlert = true
         }),

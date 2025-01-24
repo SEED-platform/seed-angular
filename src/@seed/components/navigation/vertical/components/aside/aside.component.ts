@@ -21,9 +21,9 @@ import {
   templateUrl: './aside.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
-    MatTooltipModule,
     MatIconModule,
+    MatTooltipModule,
+    NgClass,
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsableItemComponent,
     VerticalNavigationDividerItemComponent,

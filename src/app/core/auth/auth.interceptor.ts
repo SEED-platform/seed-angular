@@ -4,8 +4,8 @@ import { inject } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { catchError, throwError } from 'rxjs'
-import { AuthService } from 'app/core/auth/auth.service'
-import { AuthUtils } from 'app/core/auth/auth.utils'
+import { AuthService } from './auth.service'
+import { AuthUtils } from './auth.utils'
 
 const currentPath = (router: Router) => {
   const urlTree = router.parseUrl(router.url)
@@ -37,7 +37,7 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
         location.reload()
       }
 
-      return throwError(() => new Error('An unexpected error occurred.'))
+      return throwError(() => new Error(`Failed to request ${req.method} ${req.url}`))
     }),
   )
 }

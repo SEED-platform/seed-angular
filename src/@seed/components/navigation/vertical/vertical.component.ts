@@ -94,8 +94,8 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
   private _animationsEnabled = false
   private _asideOverlay: HTMLElement
-  private readonly _handleAsideOverlayClick: () => void
-  private readonly _handleOverlayClick: () => void
+  private readonly _handleAsideOverlayClick = () => { this.closeAside() }
+  private readonly _handleOverlayClick = () => { this.close() }
   private _hovered = false
   private _mutationObserver: MutationObserver
   private _overlay: HTMLElement
@@ -104,15 +104,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   private _scrollbarDirectives!: QueryList<ScrollbarDirective>
   private _scrollbarDirectivesSubscription: Subscription
   private readonly _unsubscribeAll$ = new Subject<void>()
-
-  constructor() {
-    this._handleAsideOverlayClick = (): void => {
-      this.closeAside()
-    }
-    this._handleOverlayClick = (): void => {
-      this.close()
-    }
-  }
 
   /**
    * Host binding for component classes

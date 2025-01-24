@@ -38,6 +38,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   navigationAppearance: 'default' | 'dense' = 'dense'
   private readonly _unsubscribeAll$ = new Subject<void>()
   version: string
+  sha: string
 
   ngOnInit(): void {
     // Subscribe to navigation data
@@ -54,8 +55,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
 
-    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version }) => {
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
       this.version = version
+      this.sha = sha
     })
   }
 

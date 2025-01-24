@@ -17,7 +17,7 @@
   <!-- Name field -->
   <mat-form-field class="w-full">
     <mat-label>Full name</mat-label>
-    <input id="name" matInput formControlName="name" />
+    <input id="name" matInput formControlName="name" class="text-lg sm:text-base" />
     @if (signUpForm.get('name').hasError('required')) {
       <mat-error>Full name is required</mat-error>
     }
@@ -26,7 +26,7 @@
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput formControlName="email" />
+    <input id="email" matInput formControlName="email" class="text-lg sm:text-base" />
     @if (signUpForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     }
@@ -38,7 +38,7 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" formControlName="password" #passwordField />
+    <input id="password" matInput type="password" formControlName="password" #passwordField class="text-lg sm:text-base" />
     <button
       mat-icon-button
       type="button"

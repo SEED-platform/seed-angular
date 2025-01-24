@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { UntypedFormGroup } from '@angular/forms'
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -38,8 +38,6 @@ export class AuthSignUpComponent implements OnInit {
   private _formBuilder = inject(UntypedFormBuilder)
   private _router = inject(Router)
   private _termsOfServiceService = inject(TermsService)
-
-  @ViewChild('signUpNgForm') signUpNgForm: NgForm
 
   alert: { type: AlertType; message: string } = {
     type: 'success',
@@ -90,7 +88,7 @@ export class AuthSignUpComponent implements OnInit {
         // Re-enable the form
         this.signUpForm.enable()
 
-        this.signUpNgForm.resetForm()
+        this.signUpForm.reset()
 
         // Set the alert
         this.alert = {

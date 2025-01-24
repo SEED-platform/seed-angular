@@ -21,11 +21,11 @@
   /* HTML and Body default styles */
   html,
   body {
+    @apply h-svh max-h-svh min-h-svh;
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     width: 100%;
-    min-height: 100%;
     -webkit-font-smoothing: auto;
     -moz-osx-font-smoothing: auto;
   }

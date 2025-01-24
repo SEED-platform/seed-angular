@@ -6,4 +6,6 @@
   <layout-empty></layout-empty>
 }
 
-<seed-dev-settings></seed-dev-settings>
+@if (isDevMode) {
+  <seed-dev-settings></seed-dev-settings>
+}

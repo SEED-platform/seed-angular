@@ -13,11 +13,11 @@
 }
 
 <!-- Sign in form -->
-<form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
+<form class="mt-8" [formGroup]="signInForm">
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput formControlName="email" />
+    <input id="email" matInput formControlName="email" class="text-lg sm:text-base" />
     @if (signInForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     }
@@ -29,7 +29,7 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" formControlName="password" #passwordField />
+    <input id="password" matInput type="password" formControlName="password" #passwordField class="text-lg sm:text-base" />
     <button
       mat-icon-button
       type="button"
