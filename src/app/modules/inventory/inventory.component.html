@@ -15,7 +15,7 @@
         @for (tab of tabs; track tab) {
           <div
             class="bg-default relative flex cursor-pointer self-start overflow-hidden rounded-t-xl border border-b-0 pb-1 pl-5 pr-4 pt-2"
-            [class.z-2]="type === tab"
+            [class]="type === tab ? 'z-2 text-primary': 'bg-gray-200'"
             (click)="toggleInventoryType(tab)"
             matRipple
           >
