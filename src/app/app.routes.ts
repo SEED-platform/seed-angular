@@ -7,14 +7,8 @@ import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
 import { HomeComponent } from './modules/main/home/home.component'
 import {
-  OrganizationsAccessLevelTreeComponent,
-  OrganizationsCyclesComponent,
-  OrganizationsEmailTemplatesComponent,
-  OrganizationsLabelsComponent,
   OrganizationsListComponent,
-  OrganizationsMembersComponent,
   OrganizationsNavComponent,
-  OrganizationsSettingsComponent,
 } from './modules/organizations'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
@@ -91,14 +85,7 @@ export const appRoutes: Route[] = [
       {
         path: 'organizations/:organizationId',
         component: OrganizationsNavComponent,
-        children: [
-          { path: '', component: OrganizationsSettingsComponent },
-          { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
-          { path: 'cycles', component: OrganizationsCyclesComponent },
-          { path: 'labels', component: OrganizationsLabelsComponent },
-          { path: 'email-templates', component: OrganizationsEmailTemplatesComponent },
-          { path: 'members', component: OrganizationsMembersComponent },
-        ],
+        loadChildren: () => import('app/modules/organizations/organizations.routes'),
       },
       // 404, redirect to dashboard
       { path: '**', redirectTo: 'dashboard' },
