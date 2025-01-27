@@ -6,11 +6,11 @@ import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'
-import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
+import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
-import type { Navigation } from 'app/core/navigation/navigation.types'
 import { UserComponent } from 'app/layout/common/user/user.component'
+import { DatasetService } from '../../../../@seed/api/dataset'
 
 @Component({
   selector: 'layout-main',
@@ -28,23 +28,24 @@ import { UserComponent } from 'app/layout/common/user/user.component'
   ],
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
+  private _datasetService = inject(DatasetService)
   private _mediaWatcherService = inject(MediaWatcherService)
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
   private _versionService = inject(VersionService)
 
   isScreenSmall: boolean
-  navigation: Navigation
+  navigation: NavigationItem[]
   navigationAppearance: 'default' | 'dense' = 'dense'
   private readonly _unsubscribeAll$ = new Subject<void>()
   version: string
   sha: string
 
   ngOnInit(): void {
-    // Subscribe to navigation data
-    this._navigationService.navigation$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((navigation: Navigation) => {
-      this.navigation = navigation
-    })
+    // Lazily get initial datasets count
+    this._datasetService.countDatasets().subscribe()
+
+    this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {

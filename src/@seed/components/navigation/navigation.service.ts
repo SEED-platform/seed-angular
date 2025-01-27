@@ -3,13 +3,13 @@ import type { NavigationItem } from '@seed/components'
 
 @Injectable({ providedIn: 'root' })
 export class SeedNavigationService {
-  private _componentRegistry: Map<string, any> = new Map<string, any>()
-  private _navigationStore: Map<string, NavigationItem[]> = new Map<string, any>()
+  private _componentRegistry = new Map<string, unknown>()
+  private _navigationStore = new Map<string, NavigationItem[]>()
 
   /**
    * Register navigation component
    */
-  registerComponent(name: string, component: any): void {
+  registerComponent(name: string, component: unknown): void {
     this._componentRegistry.set(name, component)
   }
 
@@ -24,7 +24,7 @@ export class SeedNavigationService {
    * Get navigation component from the registry
    */
   getComponent<T>(name: string): T {
-    return this._componentRegistry.get(name)
+    return this._componentRegistry.get(name) as T
   }
 
   /**

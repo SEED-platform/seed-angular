@@ -1,29 +1,103 @@
-import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import type { Observable } from 'rxjs'
-import { ReplaySubject, tap } from 'rxjs'
-import type { Navigation } from 'app/core/navigation/navigation.types'
+import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
+import { SeedNavigationService } from '@seed/components'
+import { DatasetService } from '../../../@seed/api/dataset'
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
-  private _httpClient = inject(HttpClient)
-  private _navigation: ReplaySubject<Navigation> = new ReplaySubject<Navigation>(1)
+  private _datasetService = inject(DatasetService)
+  private _seedNavigationService = inject(SeedNavigationService)
 
-  /**
-   * Getter for navigation
-   */
-  get navigation$(): Observable<Navigation> {
-    return this._navigation.asObservable()
+  private _badgeClasses = 'px-2 bg-primary-900 rounded-full'
+
+  readonly navigation: NavigationItem[] = [
+    {
+      id: 'inventory',
+      title: 'Inventory',
+      type: 'basic',
+      icon: 'fa-solid:building',
+      link: '/properties',
+      regexMatch: /^\/(properties|taxlots)/,
+    },
+    {
+      id: 'data',
+      title: 'Data',
+      type: 'basic',
+      icon: 'fa-solid:sitemap',
+      link: '/data',
+    },
+    {
+      id: 'organizations',
+      title: 'Organizations',
+      type: 'basic',
+      icon: 'fa-solid:users',
+      link: '/organizations',
+    },
+    {
+      id: 'insights',
+      title: 'Insights',
+      type: 'basic',
+      icon: 'fa-solid:gauge-high',
+      link: '/insights',
+    },
+    {
+      id: 'analyses',
+      title: 'Analyses',
+      type: 'basic',
+      icon: 'fa-solid:chart-bar',
+      link: '/analyses',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      id: 'documentation',
+      title: 'Documentation',
+      type: 'basic',
+      icon: 'fa-solid:book',
+      link: '/documentation',
+    },
+    {
+      id: 'api',
+      title: 'API Documentation',
+      type: 'basic',
+      icon: 'fa-solid:code',
+      link: '/api',
+    },
+    {
+      id: 'contact',
+      title: 'Contact',
+      type: 'basic',
+      icon: 'fa-solid:circle-question',
+      link: '/contact',
+    },
+    {
+      id: 'about',
+      title: 'About',
+      type: 'basic',
+      icon: 'fa-solid:circle-info',
+      link: '/about',
+    },
+  ]
+
+  constructor() {
+    this._datasetService.datasetCount$.subscribe((count) => {
+      this.updateBadge('data', 'mainNavigation', count)
+    })
   }
 
-  /**
-   * Get all navigation data
-   */
-  get(): Observable<Navigation> {
-    return this._httpClient.get<Navigation>('api/common/navigation').pipe(
-      tap((navigation) => {
-        this._navigation.next(navigation)
-      }),
-    )
+  updateBadge(itemId: string, navigationName: string, title: string | number) {
+    const dataComponent = this._seedNavigationService.getComponent<VerticalNavigationComponent>(navigationName)
+
+    if (dataComponent) {
+      // Get the navigation item, update the badge and refresh the component
+      const navigation = dataComponent.navigation
+      const item = this._seedNavigationService.getItem(itemId, navigation)
+      item.badge = {
+        title: String(title),
+        classes: this._badgeClasses,
+      }
+      dataComponent.refresh()
+    }
   }
 }

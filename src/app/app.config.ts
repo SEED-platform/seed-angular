@@ -95,12 +95,6 @@ export const appConfig: ApplicationConfig = {
       seed: {
         layout: 'main',
         scheme: 'light',
-        screens: {
-          sm: '600px',
-          md: '960px',
-          lg: '1280px',
-          xl: '1440px',
-        },
         theme: 'theme-default',
         themes: [
           {

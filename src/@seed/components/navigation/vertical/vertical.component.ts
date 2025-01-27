@@ -94,8 +94,12 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
   private _animationsEnabled = false
   private _asideOverlay: HTMLElement
-  private readonly _handleAsideOverlayClick = () => { this.closeAside() }
-  private readonly _handleOverlayClick = () => { this.close() }
+  private readonly _handleAsideOverlayClick = () => {
+    this.closeAside()
+  }
+  private readonly _handleOverlayClick = () => {
+    this.close()
+  }
   private _hovered = false
   private _mutationObserver: MutationObserver
   private _overlay: HTMLElement
@@ -134,8 +138,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   /**
    * Setter for seedScrollbarDirectives
    */
-  @ViewChildren(ScrollbarDirective)
-  set seedScrollbarDirectives(seedScrollbarDirectives: QueryList<ScrollbarDirective>) {
+  @ViewChildren(ScrollbarDirective) set seedScrollbarDirectives(seedScrollbarDirectives: QueryList<ScrollbarDirective>) {
     // Store the directives
     this._scrollbarDirectives = seedScrollbarDirectives
 
@@ -159,31 +162,17 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
       })
   }
 
-  /**
-   * On mouseenter
-   *
-   * @private
-   */
-  @HostListener('mouseenter')
-  private _onMouseenter(): void {
-    // Enable the animations
+  @HostListener('mouseenter') private _onMouseenter(): void {
     this._enableAnimations()
 
-    // Set the hovered
+    // Set hovered state
     this._hovered = true
   }
 
-  /**
-   * On mouseleave
-   *
-   * @private
-   */
-  @HostListener('mouseleave')
-  private _onMouseleave(): void {
-    // Enable the animations
+  @HostListener('mouseleave') private _onMouseleave(): void {
     this._enableAnimations()
 
-    // Set the hovered
+    // Set hovered state
     this._hovered = false
   }
 
@@ -304,7 +293,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     // This fixes the problem by reading the 'top' value from the html element and adding it as a
     // 'marginTop' to the navigation itself.
     this._mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
+      for (const mutation of mutations) {
         const mutationTarget = mutation.target as HTMLElement
         if (mutation.attributeName === 'class') {
           if (mutationTarget.classList.contains('cdk-global-scrollblock')) {
@@ -314,7 +303,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
             this._renderer2.setStyle(this._elementRef.nativeElement, 'margin-top', null)
           }
         }
-      })
+      }
     })
     this._mutationObserver.observe(this._document.documentElement, {
       attributes: true,
@@ -339,7 +328,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
         }
       } else {
         // Go through all the scrollbar directives
-        this._scrollbarDirectives.forEach((seedScrollbarDirective) => {
+        for (const seedScrollbarDirective of this._scrollbarDirectives) {
           // Skip if not enabled
           if (!seedScrollbarDirective.isEnabled()) {
             return
@@ -347,7 +336,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
 
           // Scroll to the active element
           seedScrollbarDirective.scrollToElement('.seed-vertical-navigation-item-active', -120, true)
-        })
+        }
       }
     })
   }
@@ -468,33 +457,11 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     }
   }
 
-  /**
-   * Enable the animations
-   *
-   * @private
-   */
   private _enableAnimations(): void {
-    // Return if the animations are already enabled
-    if (this._animationsEnabled) {
-      return
-    }
-
-    // Enable the animations
     this._animationsEnabled = true
   }
 
-  /**
-   * Disable the animations
-   *
-   * @private
-   */
   private _disableAnimations(): void {
-    // Return if the animations are already disabled
-    if (!this._animationsEnabled) {
-      return
-    }
-
-    // Disable the animations
     this._animationsEnabled = false
   }
 
