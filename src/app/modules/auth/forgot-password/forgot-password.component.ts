@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import type { FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -31,17 +31,16 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthForgotPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
 
   alert: { type: AlertType; message: string } = {
     type: 'success',
     message: '',
   }
-  forgotPasswordForm: UntypedFormGroup
+  forgotPasswordForm: FormGroup
   showAlert = false
 
   ngOnInit(): void {
-    // Create the form
     this.forgotPasswordForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
     })

@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import type { FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -34,17 +34,16 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthResetPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
 
   alert: { type: AlertType; message: string } = {
     type: 'success',
     message: '',
   }
-  resetPasswordForm: UntypedFormGroup
+  resetPasswordForm: FormGroup
   showAlert = false
 
   ngOnInit(): void {
-    // Create the form
     this.resetPasswordForm = this._formBuilder.group(
       {
         password: ['', Validators.required],

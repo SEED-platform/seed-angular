@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import type { FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -36,7 +36,7 @@ import { AuthService } from 'app/core/auth/auth.service'
 export class AuthSignInComponent implements OnInit {
   private _activatedRoute = inject(ActivatedRoute)
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
   private _router = inject(Router)
   private _termsOfServiceService = inject(TermsService)
 
@@ -44,11 +44,10 @@ export class AuthSignInComponent implements OnInit {
     type: 'success',
     message: '',
   }
-  signInForm: UntypedFormGroup
+  signInForm: FormGroup
   showAlert = false
 
   ngOnInit(): void {
-    // Create the form
     this.signInForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
