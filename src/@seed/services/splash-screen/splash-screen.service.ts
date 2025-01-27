@@ -9,28 +9,19 @@ export class SplashScreenService {
   private _router = inject(Router)
 
   constructor() {
-    // Hide it on the first NavigationEnd event
+    // Fade out, then remove the splash screen on the first NavigationEnd event
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         take(1),
       )
       .subscribe(() => {
-        this.hide()
+        this._document.body.classList.add('seed-splash-screen-hidden')
+
+        setTimeout(() => {
+          this._document.querySelector('body > seed-splash-screen')?.remove()
+          this._document.body.classList.remove('seed-splash-screen-hidden')
+        }, 400)
       })
-  }
-
-  /**
-   * Show the splash screen
-   */
-  show(): void {
-    this._document.body.classList.remove('seed-splash-screen-hidden')
-  }
-
-  /**
-   * Hide the splash screen
-   */
-  hide(): void {
-    this._document.body.classList.add('seed-splash-screen-hidden')
   }
 }
