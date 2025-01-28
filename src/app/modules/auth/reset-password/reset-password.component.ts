@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { SEEDValidators } from '@seed/validators'
 import { AuthService } from 'app/core/auth/auth.service'
@@ -36,10 +36,7 @@ export class AuthResetPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
   private _formBuilder = inject(FormBuilder)
 
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
+  alert: Alert
   resetPasswordForm: FormGroup
   showAlert = false
 

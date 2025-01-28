@@ -1,9 +1,11 @@
 <!-- Title -->
 <div class="mt-8 text-4xl font-extrabold leading-tight tracking-tight">Sign in</div>
-<div class="mt-0.5 flex items-baseline font-medium">
-  <div>Don't have an account?</div>
-  <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/sign-up']">Sign up</a>
-</div>
+@if (allowSignUp) {
+  <div class="mt-0.5 flex items-baseline font-medium">
+    <div>Don't have an account?</div>
+    <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/sign-up']">Sign up</a>
+  </div>
+}
 
 <!-- Alert -->
 @if (showAlert) {

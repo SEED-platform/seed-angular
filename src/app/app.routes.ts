@@ -1,5 +1,5 @@
 import type { Route, UrlSegment } from '@angular/router'
-import { initialDataResolver } from './app.resolvers'
+import { configResolver, initialDataResolver } from './app.resolvers'
 import { AuthGuard, NoAuthGuard } from './core/auth'
 import { LayoutComponent } from './layout/layout.component'
 import { AboutComponent } from './modules/main/about/about.component'
@@ -31,6 +31,9 @@ export const appRoutes: Route[] = [
     canActivate: [NoAuthGuard],
     canActivateChild: [NoAuthGuard],
     component: LayoutComponent,
+    resolve: {
+      config: configResolver,
+    },
     data: {
       layout: 'landing',
     },

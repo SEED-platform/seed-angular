@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { Router, RouterLink } from '@angular/router'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { TermsService } from '@seed/services'
 import { AuthService } from 'app/core/auth/auth.service'
@@ -39,10 +39,7 @@ export class AuthSignUpComponent implements OnInit {
   private _router = inject(Router)
   private _termsOfServiceService = inject(TermsService)
 
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
+  alert: Alert
   signUpForm: FormGroup
   showAlert = false
 

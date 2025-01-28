@@ -32,12 +32,12 @@ export class AuthService {
   }
 
   // TODO
-  forgotPassword(email: string): Observable<any> {
+  forgotPassword(email: string): Observable<unknown> {
     return this._httpClient.post('api/auth/forgot-password', email)
   }
 
   // TODO
-  resetPassword(password: string): Observable<any> {
+  resetPassword(password: string): Observable<unknown> {
     return this._httpClient.post('api/auth/reset-password', password)
   }
 
@@ -88,7 +88,7 @@ export class AuthService {
   }
 
   // TODO
-  signUp(user: { name: string; email: string; password: string; company: string }): Observable<any> {
+  signUp(user: { name: string; email: string; password: string; company: string }): Observable<unknown> {
     return this._httpClient.post('api/auth/sign-up', user)
   }
 
