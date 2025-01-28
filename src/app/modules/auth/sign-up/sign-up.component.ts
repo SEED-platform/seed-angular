@@ -39,15 +39,17 @@ export class AuthSignUpComponent implements OnInit {
   private _router = inject(Router)
   private _termsOfServiceService = inject(TermsService)
 
+  // At least 8 characters, one uppercase letter, one lowercase letter, and one number
+  private readonly _passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/
+
   alert: Alert
   signUpForm: FormGroup
   showAlert = false
 
   ngOnInit(): void {
     this.signUpForm = this._formBuilder.group({
-      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(this._passwordPattern)]],
       terms: [false, Validators.requiredTrue],
     })
   }
