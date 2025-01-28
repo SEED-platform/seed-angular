@@ -64,6 +64,10 @@ export const appRoutes: Route[] = [
         matcher: inventoryTypeMatcher,
         loadChildren: () => import('app/modules/inventory/inventory.routes'),
       },
+      {
+        path: 'data',
+        loadChildren: () => import('app/modules/data/data.routes'),
+      },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'about', title: 'About', component: AboutComponent },

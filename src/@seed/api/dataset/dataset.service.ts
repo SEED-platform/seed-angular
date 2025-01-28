@@ -15,7 +15,8 @@ export class DatasetService {
   // TODO watch active org, on change request dataset count
 
   listDatasets(): Observable<ListDatasetsResponse> {
-    return this._httpClient.get<ListDatasetsResponse>('/api/v3/datasets/').pipe(tap(({ datasets }) => datasets))
+    // TODO input dynamic org id
+    return this._httpClient.get<ListDatasetsResponse>('/api/v3/datasets/?organization_id=1').pipe(tap(({ datasets }) => datasets))
   }
 
   countDatasets(): Observable<number> {

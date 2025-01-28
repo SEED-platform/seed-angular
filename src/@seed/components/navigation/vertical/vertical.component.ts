@@ -147,7 +147,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
       return
     }
 
-    // Unsubscribe the previous subscriptions
     if (this._scrollbarDirectivesSubscription) {
       this._scrollbarDirectivesSubscription.unsubscribe()
     }
