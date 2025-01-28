@@ -1,4 +1,33 @@
-<div id="developer" class="tab-pane fade">
-  <h3 class="text-xl font-bold mb-2">Developer</h3>
-  <p>Developer content goes here.</p>
+<div class="flex-auto p-6 sm:p-10" *transloco="let t">
+  <div class="max-w-2xl">
+    <h1 class="text-2xl flex items-center mb-6 text-center"><mat-icon class="mr-2" svgIcon="fa-solid:code"></mat-icon>Developer</h1>
+
+    <div class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+      <h2 class="text-xl pb-5">{{ t('Manage Your API Key') }}</h2>
+
+      <div class="gt-xs:flex-row flex flex-col pt-4 text-center">
+        <div>
+          <span class="font-bold">API Key: </span>
+          <span class="bg-slate-200 py-3 px-5">{{ apikey }}</span>
+        </div>
+        <div class="pt-7">
+          <a
+            mat-flat-button
+            color="primary">
+            <span class="ml-2">{{ t('Get a New API Key') }}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="mt-10 mb-5 border-t"></div>
+      <h3 class="text-l mb-5">{{ t('Example Usage') }}</h3>
+      <pre class="border-2 p-5 bg-slate-100">
+        curl -X GET \
+        'URL/api/version/' \
+        -H 'Accept: application/json' \
+        -u  USEREMAIL + ':' + APIKEY
+      </pre>
+    </div>
+  </div>
 </div>

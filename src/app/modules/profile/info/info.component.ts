@@ -1,5 +1,3 @@
-import { TextFieldModule } from '@angular/cdk/text-field'
-import { NgClass } from '@angular/common'
 import { Component, ViewEncapsulation } from '@angular/core'
 import {
   FormControl,
@@ -12,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
+import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-profile-info',
@@ -21,15 +20,13 @@ import { MatInputModule } from '@angular/material/input'
     MatIconModule,
     FormsModule,
     MatFormFieldModule,
-    NgClass,
     MatInputModule,
-    TextFieldModule,
     ReactiveFormsModule,
     MatButtonModule,
+    SharedImports,
   ],
 })
 export class ProfileInfoComponent {
-
   firstName: FormControl = new FormControl('', [
     Validators.required,
   ])

@@ -1,22 +1,47 @@
 import { CommonModule } from '@angular/common'
 import { Component, ViewEncapsulation } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
+import type { NavigationItem } from '@seed/components'
+import { HorizontalNavigationComponent } from '@seed/components/navigation/horizontal/horizontal.component'
 import { SharedImports } from '@seed/directives'
-import { ProfileDeveloperComponent } from './developer/developer.component'
-import { ProfileInfoComponent } from './info/info.component'
-import { ProfileSecurityComponent } from './security/security.component'
 
 @Component({
   selector: 'seed-profile',
   templateUrl: './profile.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, SharedImports, ProfileInfoComponent, ProfileDeveloperComponent, ProfileSecurityComponent, RouterOutlet],
+  imports: [CommonModule, HorizontalNavigationComponent, SharedImports, RouterOutlet],
 })
 export class ProfileComponent {
   tabs = ['Profile Info', 'Security', 'Developer', 'Admin']
-  activeTab = 0
 
-  selectTab(index: number): void {
-    this.activeTab = index
-  }
+  readonly navigation: NavigationItem[] = [
+    {
+      id: 'profile',
+      title: 'Profile',
+      type: 'basic',
+      icon: 'fa-solid:user',
+      link: '/profile/info',
+    },
+    {
+      id: 'security',
+      title: 'Security',
+      type: 'basic',
+      icon: 'fa-solid:lock',
+      link: '/profile/security',
+    },
+    {
+      id: 'developer',
+      title: 'Developer',
+      type: 'basic',
+      icon: 'fa-solid:code',
+      link: '/profile/developer',
+    },
+    {
+      id: 'admin',
+      title: 'Admin',
+      type: 'basic',
+      icon: 'fa-solid:user-gear',
+      link: '/profile/admin',
+    },
+  ]
 }
