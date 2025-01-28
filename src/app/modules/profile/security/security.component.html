@@ -1,4 +1,53 @@
-<div id="security" class="tab-pane fade">
-  <h3 class="text-xl font-bold mb-2">Security</h3>
-  <p>Security content goes here.</p>
+<div class="flex-auto p-6 sm:p-10" *transloco="let t">
+  <div class="max-w-2xl">
+  <h1 class="text-2xl flex items-center mb-6 text-center"><mat-icon class="mr-2" svgIcon="fa-solid:lock"></mat-icon>Security</h1>
+
+  <form class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+    <div class="gt-xs:flex-row flex flex-col">
+        <mat-form-field
+            class="gt-xs:pr-3 flex-auto"
+        >
+            <mat-label>{{ t('Current Password') }}
+            </mat-label>
+            <input matInput />
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'fa-solid:key'"
+            ></mat-icon>
+        </mat-form-field>
+        <mat-form-field
+            class="gt-xs:pl-3 flex-auto"
+        >
+            <mat-label>{{ t('New Password') }}</mat-label>
+            <input matInput />
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'fa-solid:key'"
+            ></mat-icon>
+        </mat-form-field>
+    </div>
+    <div class="flex">
+        <mat-form-field
+            class="flex-auto"
+        >
+            <mat-label>{{ t('Confirm New Password') }}</mat-label>
+            <input matInput/>
+            <mat-icon
+                class="icon-size-5"
+                matPrefix
+                [svgIcon]="'fa-solid:key'"
+            ></mat-icon>
+        </mat-form-field>
+    </div>
+    <div class="flex justify-center">
+      <a
+        mat-flat-button
+        color="primary">
+        <span class="ml-2">{{ t('Update Password') }}</span>
+      </a>
+    </div>
+  </form>
+  </div>
 </div>

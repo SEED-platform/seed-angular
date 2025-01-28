@@ -1,9 +1,12 @@
 import { Component } from '@angular/core'
+import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-admin',
   templateUrl: './admin.component.html',
-  styles: [],
+  imports: [
+    SharedImports,
+  ],
 })
 export class AdminComponent {
 
