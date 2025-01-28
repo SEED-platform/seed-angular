@@ -22,8 +22,7 @@
     <input id="email" matInput type="email" formControlName="email" class="text-lg sm:text-base" />
     @if (signInForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
-    }
-    @if (signInForm.get('email').hasError('email')) {
+    } @else if (signInForm.get('email').hasError('email')) {
       <mat-error>Please enter a valid email address</mat-error>
     }
   </mat-form-field>

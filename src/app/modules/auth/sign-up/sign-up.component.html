@@ -14,23 +14,13 @@
 
 <!-- Sign Up form -->
 <form class="mt-8" [formGroup]="signUpForm">
-  <!-- Name field -->
-  <mat-form-field class="w-full">
-    <mat-label>Full name</mat-label>
-    <input id="name" matInput formControlName="name" class="text-lg sm:text-base" />
-    @if (signUpForm.get('name').hasError('required')) {
-      <mat-error>Full name is required</mat-error>
-    }
-  </mat-form-field>
-
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
     <input id="email" matInput type="email" formControlName="email" class="text-lg sm:text-base" />
     @if (signUpForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
-    }
-    @if (signUpForm.get('email').hasError('email')) {
+    } @else if (signUpForm.get('email').hasError('email')) {
       <mat-error>Please enter a valid email address</mat-error>
     }
   </mat-form-field>
@@ -51,7 +41,13 @@
         <mat-icon class="icon-size-5" svgIcon="fa-solid:eye"></mat-icon>
       }
     </button>
-    <mat-error>Password is required</mat-error>
+    @if (signUpForm.get('password').hasError('required')) {
+      <mat-error>Password is required</mat-error>
+    } @else if (signUpForm.get('password').hasError('minlength')) {
+      <mat-error>Password must be at least 8 characters</mat-error>
+    } @else if (signUpForm.get('password').hasError('pattern')) {
+      <mat-error>Passwords must contain an uppercase letter, a lowercase letter, and a number</mat-error>
+    }
   </mat-form-field>
 
   <!-- ToS -->

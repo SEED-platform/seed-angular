@@ -78,7 +78,6 @@ export default tseslint.config(
         allowNumber: true,
       }],
       'github/array-foreach': 'error',
-      'import/no-cycle': 'error',
       'import/no-deprecated': 'error',
       'import/no-empty-named-blocks': 'error',
       'import/no-extraneous-dependencies': 'error',
@@ -118,8 +117,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       // TODO
-      'camelcase': 'off',
       '@typescript-eslint/unbound-method': 'off',
+      'camelcase': 'off',
+      'import/no-cycle': 'off',
     },
   },
   {

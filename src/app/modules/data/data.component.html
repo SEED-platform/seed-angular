@@ -1,0 +1,22 @@
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+  <div
+    class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
+  >
+    <div class="min-w-0 flex-1">
+      <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Data</h2>
+    </div>
+    <!-- Actions -->
+    <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
+      <a mat-flat-button color="primary">
+        <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+        <span class="ml-2">Create data set</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-auto p-6 sm:p-10">
+    Datasets:
+    <pre>{{ data.datasets | json }}</pre>
+  </div>
+</div>
