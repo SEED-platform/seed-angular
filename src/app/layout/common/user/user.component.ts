@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
+import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { AuthService } from 'app/core/auth/auth.service'
 import { UserService } from 'app/core/user/user.service'
@@ -23,6 +24,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private _authService = inject(AuthService)
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _userService = inject(UserService)
+  private router = inject(Router)
 
   static ngAcceptInputType_showAvatar: BooleanInput
 
@@ -50,5 +52,10 @@ export class UserComponent implements OnInit, OnDestroy {
 
   signOut(): void {
     this._authService.signOut()
+  }
+
+  goToProfile() {
+    console.log('hi!')
+    void this.router.navigate(['/profile'])
   }
 }

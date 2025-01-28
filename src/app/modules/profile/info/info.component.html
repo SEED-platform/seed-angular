@@ -1,0 +1,56 @@
+<!-- src/app/profile/form/form.component.html -->
+<div class="flex-auto p-6 sm:p-10">
+  <div class="max-w-2xl">
+  <h2 class="text-2xl flex items-center mb-6 text-center"><mat-icon class="mr-2" svgIcon="fa-solid:circle-user"></mat-icon>Profile Information</h2>
+
+  <form class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+  <div class="gt-xs:flex-row flex flex-col">
+      <mat-form-field
+          class="gt-xs:pr-3 flex-auto"
+      >
+          <mat-label>First name</mat-label>
+          <input matInput />
+          <mat-icon
+              class="icon-size-5"
+              matSuffix
+              [svgIcon]="'fa-solid:circle-user'"
+          ></mat-icon>
+      </mat-form-field>
+      <mat-form-field
+          class="gt-xs:pl-3 flex-auto"
+      >
+          <mat-label>Last name</mat-label>
+          <input matInput />
+          <mat-icon
+              class="icon-size-5"
+              matSuffix
+              [svgIcon]="'fa-solid:circle-user'"
+          ></mat-icon>
+      </mat-form-field>
+  </div>
+  <div class="flex">
+      <mat-form-field
+          class="flex-auto"
+      >
+          <mat-label>Email</mat-label>
+          <input matInput/>
+          <mat-icon
+              class="icon-size-5"
+              matSuffix
+              [svgIcon]="'fa-solid:envelope'"
+          ></mat-icon>
+      </mat-form-field>
+  </div>
+  <div class="flex justify-center">
+    <a
+    mat-flat-button
+    color="primary"
+  >
+    <span class="ml-2">Update</span>
+  </a>
+  </div>
+</form>
+
+
+</div>
+</div>
