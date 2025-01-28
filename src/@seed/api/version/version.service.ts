@@ -7,7 +7,7 @@ import type { VersionResponse } from './version.types'
 @Injectable({ providedIn: 'root' })
 export class VersionService {
   private _httpClient = inject(HttpClient)
-  private _version: ReplaySubject<VersionResponse> = new ReplaySubject<VersionResponse>(1)
+  private _version = new ReplaySubject<VersionResponse>(1)
   version$ = this._version.asObservable()
 
   get(): Observable<VersionResponse> {

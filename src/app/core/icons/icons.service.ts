@@ -5,11 +5,11 @@ import { LanguagesComponent } from '../../layout/common/languages/languages.comp
 
 @Injectable({ providedIn: 'root' })
 export class IconsService {
-  private readonly domSanitizer = inject(DomSanitizer)
-  private readonly matIconRegistry = inject(MatIconRegistry)
+  private _domSanitizer = inject(DomSanitizer)
+  private _matIconRegistry = inject(MatIconRegistry)
 
   constructor() {
-    this.registerIconSets([
+    this._registerIconSets([
       // material-twotone is the default
       { namespace: null, url: 'icons/material-twotone.svg' },
       { namespace: 'mat-outline', url: 'icons/material-outline.svg' },
@@ -20,26 +20,26 @@ export class IconsService {
       { namespace: 'fa-regular', url: 'icons/fa-regular.svg' },
       { namespace: 'fa-solid', url: 'icons/fa-solid.svg' },
     ])
-    this.registerFlagIcons(Object.values(LanguagesComponent.flagCodes))
+    this._registerFlagIcons(Object.values(LanguagesComponent.flagCodes))
   }
 
-  private registerIconSets(iconSets: { namespace: string | null; url: string }[]): void {
+  private _registerIconSets(iconSets: { namespace: string | null; url: string }[]): void {
     for (const { namespace, url } of iconSets) {
-      const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url)
+      const safeUrl = this._domSanitizer.bypassSecurityTrustResourceUrl(url)
       if (namespace) {
-        this.matIconRegistry.addSvgIconSetInNamespace(namespace, safeUrl)
+        this._matIconRegistry.addSvgIconSetInNamespace(namespace, safeUrl)
       } else {
-        this.matIconRegistry.addSvgIconSet(safeUrl)
+        this._matIconRegistry.addSvgIconSet(safeUrl)
       }
     }
   }
 
-  private registerFlagIcons(flagCodes: string[]): void {
+  private _registerFlagIcons(flagCodes: string[]): void {
     for (const flagCode of flagCodes) {
-      this.matIconRegistry.addSvgIconInNamespace(
+      this._matIconRegistry.addSvgIconInNamespace(
         'flag',
         flagCode,
-        this.domSanitizer.bypassSecurityTrustResourceUrl(`images/flags/${flagCode}.svg`),
+        this._domSanitizer.bypassSecurityTrustResourceUrl(`images/flags/${flagCode}.svg`),
       )
     }
   }

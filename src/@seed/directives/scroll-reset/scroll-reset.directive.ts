@@ -8,7 +8,7 @@ import { filter, Subject, takeUntil } from 'rxjs'
   exportAs: 'scrollReset',
 })
 export class ScrollResetDirective implements OnInit, OnDestroy {
-  private _elementRef = inject(ElementRef)
+  private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _router = inject(Router)
 
   private readonly _unsubscribeAll$ = new Subject<void>()

@@ -6,8 +6,11 @@ export class SEEDValidators {
    *
    * @param value
    */
-  static isEmptyInputValue(value: any): boolean {
-    return value == null || value.length === 0
+  static isEmptyInputValue(value: unknown): boolean {
+    if (typeof value === 'string') {
+      return value.length === 0
+    }
+    return value == null
   }
 
   /**

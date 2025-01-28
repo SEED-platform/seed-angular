@@ -1,13 +1,9 @@
-/* -------------------------------------------------------------------------- */
-/*  @ Overlay
-/* -------------------------------------------------------------------------- */
+// Overlay
 .seed-backdrop-on-mobile {
   @apply bg-black bg-opacity-60 sm:bg-transparent #{'!important'};
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Font smoothing
-/* -------------------------------------------------------------------------- */
+// Font smoothing
 *[class*='mat-'],
 *[class*='mat-mdc-'] {
   -webkit-font-smoothing: auto !important;
@@ -19,14 +15,13 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Accordion
-/* -------------------------------------------------------------------------- */
+// Accordion
 .mat-accordion {
   .mat-expansion-panel {
     margin-bottom: 24px;
     border-radius: 8px !important;
     transition: box-shadow 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
     @apply shadow #{'!important'};
 
     &:last-child {
@@ -67,7 +62,7 @@
         height: 12px;
 
         /* Do not override the border color of the expansion panel indicator */
-        &:after {
+        &::after {
           border-color: currentColor !important;
         }
       }
@@ -79,9 +74,7 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Buttons
-/* -------------------------------------------------------------------------- */
+// Buttons
 .mat-mdc-button,
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button,
@@ -105,6 +98,16 @@
   &[disabled='true'] {
     .mat-icon {
       opacity: 0.38 !important;
+    }
+  }
+
+  /* Adjust the color of mat-progress-spinner when used within buttons */
+  .mat-mdc-progress-spinner {
+    .mdc-circular-progress__indeterminate-container {
+      circle {
+        stroke: currentColor !important;
+        animation-duration: 6000ms;
+      }
     }
   }
 }
@@ -149,34 +152,11 @@
 .mat-mdc-unelevated-button {
   padding: 0 20px !important;
   border-radius: 9999px !important;
-}
 
-/* Fix the alignment of icons when used within buttons */
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button {
+  /* Fix the alignment of icons when used within buttons */
   & > .mat-icon {
     margin-left: 0 !important;
     margin-right: 0 !important;
-  }
-}
-
-/* Adjust the color of mat-progress-spinner when used within buttons */
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-icon-button,
-.mat-mdc-fab,
-.mat-mdc-mini-fab {
-  .mat-mdc-progress-spinner {
-    .mdc-circular-progress__indeterminate-container {
-      circle {
-        stroke: currentColor !important;
-        animation-duration: 6000ms;
-      }
-    }
   }
 }
 
@@ -186,11 +166,11 @@
 .mat-mdc-fab,
 .mat-mdc-mini-fab {
   --mat-mdc-button-persistent-ripple-color: theme('colors.gray[400]') !important;
-  --mat-mdc-button-ripple-color: rgba(0, 0, 0, 0.1) !important;
+  --mat-mdc-button-ripple-color: rgb(0 0 0 / 10%) !important;
 
   .dark & {
     --mat-mdc-button-persistent-ripple-color: theme('colors.black') !important;
-    --mat-mdc-button-ripple-color: rgba(0, 0, 0, 0.1) !important;
+    --mat-mdc-button-ripple-color: rgb(0 0 0 / 10%) !important;
   }
 
   .mat-icon {
@@ -250,11 +230,10 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Button Toggle
-/* -------------------------------------------------------------------------- */
+// Button Toggle
 .mat-button-toggle-group {
   border: none !important;
+
   @apply space-x-1;
 
   &.mat-button-toggle-group-appearance-standard {
@@ -278,14 +257,13 @@
     .mat-button-toggle-label-content {
       padding: 0 20px;
       line-height: 40px !important;
+
       @apply text-secondary;
     }
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Checkbox
-/* -------------------------------------------------------------------------- */
+// Checkbox
 .mat-mdc-checkbox {
   display: inline-flex !important;
 
@@ -298,16 +276,12 @@
   opacity: 0 !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Chip
-/* -------------------------------------------------------------------------- */
+// Chip
 .mat-mdc-chip {
   font-weight: 500 !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Dialog
-/* -------------------------------------------------------------------------- */
+// Dialog
 .mat-mdc-dialog-container {
   .mdc-dialog__surface {
     border-radius: 16px !important;
@@ -315,16 +289,12 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Drawer
-/* -------------------------------------------------------------------------- */
+// Drawer
 .mat-drawer-backdrop.mat-drawer-shown {
-  background-color: rgba(0, 0, 0, 0.6) !important;
+  background-color: rgb(0 0 0 / 60%) !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Form fields
-/* -------------------------------------------------------------------------- */
+// Form fields
 
 /* "fill" appearance */
 .mat-mdc-form-field.mat-form-field-appearance-fill {
@@ -390,7 +360,7 @@
         }
       }
 
-      &:after {
+      &::after {
         display: none;
       }
     }
@@ -402,6 +372,7 @@
     border-radius: 6px;
     border-width: 1px;
     border-style: solid;
+
     @apply border-gray-300 bg-white shadow-sm dark:border-gray-500 dark:bg-black dark:bg-opacity-5 #{'!important'};
 
     /* Adjust the top spacing and overflow when mat-label present */
@@ -473,6 +444,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+
         @apply text-hint #{'!important'};
 
         .mat-mdc-icon-button {
@@ -535,6 +507,7 @@
 
               .mat-mdc-select-arrow {
                 min-height: 0;
+
                 @apply text-gray-500 dark:text-gray-400 #{'!important'};
               }
             }
@@ -560,6 +533,7 @@
           transform: none !important;
           pointer-events: auto;
           font-weight: 500;
+
           @apply text-default #{'!important'};
         }
 
@@ -643,7 +617,7 @@
               margin-right: 4px;
             }
 
-            > *:not(.mat-icon):not(.mat-mdc-icon-button):not(.mat-mdc-select):not(.mat-datepicker-toggle) {
+            > *:not(.mat-icon, .mat-mdc-icon-button, .mat-mdc-select, .mat-datepicker-toggle) {
               margin-right: 12px;
             }
           }
@@ -668,7 +642,7 @@
               margin-left: 4px !important;
             }
 
-            > *:not(.mat-icon):not(.mat-mdc-icon-button):not(.mat-mdc-select):not(.mat-datepicker-toggle) {
+            > *:not(.mat-icon, .mat-mdc-icon-button, .mat-mdc-select, .mat-datepicker-toggle) {
               margin-left: 12px !important;
             }
           }
@@ -788,7 +762,7 @@
             margin-right: 8px;
           }
 
-          > *:not(.mat-icon):not(.mat-mdc-icon-button):not(.mat-mdc-select):not(.mat-datepicker-toggle) {
+          > *:not(.mat-icon, .mat-mdc-icon-button, .mat-mdc-select, .mat-datepicker-toggle) {
             margin-right: 16px;
           }
         }
@@ -818,7 +792,7 @@
             margin-left: 8px;
           }
 
-          > *:not(.mat-icon):not(.mat-mdc-icon-button):not(.mat-mdc-select):not(.mat-datepicker-toggle) {
+          > *:not(.mat-icon, .mat-mdc-icon-button, .mat-mdc-select, .mat-datepicker-toggle) {
             margin-left: 16px;
           }
         }
@@ -887,7 +861,7 @@
     }
   }
 
-  &:not(.mat-focused):not(.mat-form-field-invalid) {
+  &:not(.mat-focused, .mat-form-field-invalid) {
     .mat-mdc-text-field-wrapper {
       .mat-mdc-form-field-flex {
         .mdc-notched-outline {
@@ -902,6 +876,7 @@
   }
 
   /* Remove the extra border on the right side of the notch */
+
   /* Tailwind's global border setter causes this issue */
   .mat-mdc-text-field-wrapper {
     .mat-mdc-form-field-flex {
@@ -914,13 +889,7 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Datepicker
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/*  @ Icon
-/* -------------------------------------------------------------------------- */
+// Icon
 .mat-icon {
   display: inline-flex !important;
   align-items: center;
@@ -931,30 +900,14 @@
   min-height: 24px;
   font-size: 24px;
   line-height: 24px;
-  -webkit-appearance: none !important;
+  appearance: none !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Inputs
-/* -------------------------------------------------------------------------- */
+// Inputs
 .mat-mdc-input-element {
   &::placeholder {
     transition: none !important;
-    @apply text-hint #{'!important'};
-  }
 
-  &::-moz-placeholder {
-    transition: none !important;
-    @apply text-hint #{'!important'};
-  }
-
-  &::-webkit-input-placeholder {
-    transition: none !important;
-    @apply text-hint #{'!important'};
-  }
-
-  &:-ms-input-placeholder {
-    transition: none !important;
     @apply text-hint #{'!important'};
   }
 }
@@ -966,24 +919,10 @@
     &::placeholder {
       @apply text-warn #{'!important'};
     }
-
-    &::-moz-placeholder {
-      @apply text-warn #{'!important'};
-    }
-
-    &::-webkit-input-placeholder {
-      @apply text-warn #{'!important'};
-    }
-
-    &:-ms-input-placeholder {
-      @apply text-warn #{'!important'};
-    }
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Menu
-/* -------------------------------------------------------------------------- */
+// Menu
 .mat-mdc-menu-panel {
   min-width: 144px !important;
 
@@ -997,6 +936,7 @@
 
       .mat-icon-no-color {
         --tw-text-opacity: 1;
+
         color: rgba(var(--seed-mat-icon-rgb), var(--tw-text-opacity));
       }
     }
@@ -1008,9 +948,7 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Paginator
-/* -------------------------------------------------------------------------- */
+// Paginator
 .mat-mdc-paginator {
   .mat-mdc-paginator-container {
     padding: 8px 16px;
@@ -1059,14 +997,13 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Select
-/* -------------------------------------------------------------------------- */
+// Select
 .mat-mdc-select {
   display: inline-flex !important;
 
   .mat-mdc-select-placeholder {
     transition: none !important;
+
     @apply text-hint #{'!important'};
   }
 
@@ -1093,31 +1030,24 @@
 
     .mat-mdc-select-arrow {
       margin: 0 0 0 8px;
+
       @apply text-secondary #{!important};
     }
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Slide Toggle
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/*  @ Snack bar
-/* -------------------------------------------------------------------------- */
+// Snack bar
 .mat-mdc-snack-bar-container {
   .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
-    color: #ffffff !important;
+    color: #fff !important;
 
     .dark & {
-      color: #000000 !important;
+      color: #000 !important;
     }
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Stepper
-/* -------------------------------------------------------------------------- */
+// Stepper
 .mat-step-icon {
   /* Do not override the mat-icon color */
   .mat-icon {
@@ -1130,18 +1060,14 @@
   font-weight: 500 !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Table
-/* -------------------------------------------------------------------------- */
+// Table
 .mat-mdc-table {
   .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
     background: none !important;
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Tabs
-/* -------------------------------------------------------------------------- */
+// Tabs
 .mat-mdc-tab-group {
   /* No header */
   &.seed-mat-no-header {
@@ -1154,7 +1080,7 @@
     }
   }
 
-  &:not(.mat-background-primary):not(.mat-background-accent) {
+  &:not(.mat-background-primary, .mat-background-accent) {
     .mat-mdc-tab-header {
       .mat-mdc-tab-label-container {
         box-shadow: inset 0 -1px var(--seed-border);
@@ -1173,16 +1099,12 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Textarea
-/* -------------------------------------------------------------------------- */
+// Textarea
 textarea.mat-mdc-input-element {
   box-sizing: content-box !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Toolbar
-/* -------------------------------------------------------------------------- */
+// Toolbar
 .mat-toolbar {
   /* Apply primary contrast color */
   &.mat-primary {
@@ -1254,9 +1176,7 @@ textarea.mat-mdc-input-element {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  @ Tooltip
-/* -------------------------------------------------------------------------- */
+// Tooltip
 
 .mat-mdc-tooltip .mdc-tooltip__surface {
   background-color: var(--seed-text-default) !important;

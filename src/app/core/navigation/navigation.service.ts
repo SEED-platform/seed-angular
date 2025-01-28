@@ -62,7 +62,7 @@ export class NavigationService {
       title: 'API Documentation',
       type: 'basic',
       icon: 'fa-solid:code',
-      link: '/api',
+      link: '/api-documentation',
     },
     {
       id: 'contact',

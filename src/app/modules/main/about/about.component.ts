@@ -15,9 +15,9 @@ export class AboutComponent implements OnInit, OnDestroy {
   private _termsService = inject(TermsService)
   private _versionService = inject(VersionService)
 
-  private readonly _unsubscribeAll$ = new Subject<void>()
   version: string
   sha: string
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
     this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {

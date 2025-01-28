@@ -6,11 +6,12 @@ import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'
-import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
+import type { NavigationItem } from '@seed/components'
+import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
+import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
-import { DatasetService } from '../../../../@seed/api/dataset'
 
 @Component({
   selector: 'layout-main',
@@ -20,6 +21,7 @@ import { DatasetService } from '../../../../@seed/api/dataset'
     CdkScrollable,
     MatButtonModule,
     MatIconModule,
+    OrganizationSelectorComponent,
     RouterLink,
     RouterOutlet,
     SEEDLoadingBarComponent,
@@ -28,7 +30,6 @@ import { DatasetService } from '../../../../@seed/api/dataset'
   ],
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
-  private _datasetService = inject(DatasetService)
   private _mediaWatcherService = inject(MediaWatcherService)
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
@@ -42,9 +43,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   sha: string
 
   ngOnInit(): void {
-    // Lazily get initial datasets count
-    this._datasetService.countDatasets().subscribe()
-
     this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes

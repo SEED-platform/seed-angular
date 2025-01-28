@@ -58,7 +58,7 @@ seed-vertical-navigation {
       .seed-vertical-navigation-content {
         seed-vertical-navigation-aside-item,
         seed-vertical-navigation-basic-item,
-        seed-vertical-navigation-collapsable-item,
+        seed-vertical-navigation-collapsible-item,
         seed-vertical-navigation-group-item {
           .seed-vertical-navigation-item-wrapper {
             .seed-vertical-navigation-item {
@@ -70,6 +70,7 @@ seed-vertical-navigation {
               .seed-vertical-navigation-item-title-wrapper {
                 transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
               }
+
               .seed-vertical-navigation-item-badge {
                 // Immediately show/hide badges to prevent jumping
                 transition: opacity 0ms;
@@ -86,7 +87,7 @@ seed-vertical-navigation {
       }
     }
 
-    &:not(.seed-vertical-navigation-hover):not(.seed-vertical-navigation-mode-over) {
+    &:not(.seed-vertical-navigation-hover, .seed-vertical-navigation-mode-over) {
       /* Wrapper */
       .seed-vertical-navigation-wrapper {
         /* Content */
@@ -104,7 +105,7 @@ seed-vertical-navigation {
             }
           }
 
-          seed-vertical-navigation-collapsable-item {
+          seed-vertical-navigation-collapsible-item {
             .seed-vertical-navigation-item-children {
               display: none;
             }
@@ -113,7 +114,7 @@ seed-vertical-navigation {
           seed-vertical-navigation-group-item {
             > .seed-vertical-navigation-item-wrapper {
               .seed-vertical-navigation-item {
-                &:before {
+                &::before {
                   content: '';
                   position: absolute;
                   top: 20px;
@@ -148,7 +149,7 @@ seed-vertical-navigation {
               .seed-vertical-navigation-item-badge,
               .seed-vertical-navigation-item-title-wrapper {
                 white-space: nowrap;
-                animation: removeWhiteSpaceNoWrap 1ms linear 350ms;
+                animation: remove-white-space-no-wrap 1ms linear 350ms;
                 animation-fill-mode: forwards;
               }
             }
@@ -163,13 +164,15 @@ seed-vertical-navigation {
   }
 }
 
-@keyframes removeWhiteSpaceNoWrap {
+@keyframes remove-white-space-no-wrap {
   0% {
     white-space: nowrap;
   }
+
   99% {
     white-space: nowrap;
   }
+
   100% {
     white-space: normal;
   }

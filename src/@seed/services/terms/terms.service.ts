@@ -6,7 +6,6 @@ export class TermsService {
   private _confirmationService = inject(ConfirmationService)
 
   showTermsOfService(): void {
-    // TODO move TOS to a shared constant so that it can be used on the sign-in pages
     this._confirmationService.open({
       title: 'DOE Standard Energy Efficiency Data Platform | NREL Data Terms',
       message: `<div class="prose h-160 max-h-[calc(100svh-280px)] overflow-auto sm:-mr-10 sm:pr-10 mt-4 max-w-none">
