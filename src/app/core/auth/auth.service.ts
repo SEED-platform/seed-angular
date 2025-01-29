@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs'
 import { map, of, tap, throwError } from 'rxjs'
 import { AuthUtils } from 'app/core/auth/auth.utils'
 import { UserService } from 'app/core/user/user.service'
+import type { User } from '../user/user.types'
 import type { TokenResponse } from './auth.types'
 
 @Injectable({ providedIn: 'root' })
@@ -72,7 +73,9 @@ export class AuthService {
     this._authenticated = true
 
     // Store the user on the user service
-    this._userService.user = AuthUtils.tokenUser(this.accessToken)
+    this._userService.get().subscribe((u: User) => {
+      // success
+    })
   }
 
   signOut(): Observable<boolean> {

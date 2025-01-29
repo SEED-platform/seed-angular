@@ -9,6 +9,7 @@ import { VersionService } from '@seed/api/version'
 import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
+import { OrganizationSelectorComponent } from 'app/layout/common/organizations/organization_selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
 import { DatasetService } from '../../../../@seed/api/dataset'
 
@@ -20,6 +21,7 @@ import { DatasetService } from '../../../../@seed/api/dataset'
     CdkScrollable,
     MatButtonModule,
     MatIconModule,
+    OrganizationSelectorComponent,
     RouterLink,
     RouterOutlet,
     SEEDLoadingBarComponent,

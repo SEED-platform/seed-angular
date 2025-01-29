@@ -10,13 +10,11 @@ import type { UserToken } from './auth.types'
 
 export class AuthUtils {
   static tokenUser(token: string): User {
-    const { email, name, user_id, username } = this._decodeToken(token)
-    return {
+    const { user_id } = this._decodeToken(token)
+    const u: User = {
       id: user_id,
-      name,
-      username,
-      email,
     }
+    return u
   }
 
   static isTokenExpired(token: string): boolean {

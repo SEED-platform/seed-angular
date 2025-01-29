@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { map, ReplaySubject, tap } from 'rxjs'
-import type { User } from 'app/core/user/user.types'
+import type { SetDefaultOrganizationResponse, User } from 'app/core/user/user.types'
+
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -25,8 +26,8 @@ export class UserService {
    * Get the current signed-in user data
    */
   get(): Observable<User> {
-    return this._httpClient.get<User>('api/common/user').pipe(
-      tap((user) => {
+    return this._httpClient.get<User>('/api/v3/users/current/').pipe(
+      tap((user: User) => {
         this._user.next(user)
       }),
     )
@@ -39,6 +40,19 @@ export class UserService {
     return this._httpClient.patch<User>('api/common/user', { user }).pipe(
       map((response) => {
         this._user.next(response)
+      }),
+    )
+  }
+
+  /**
+   * Set default org
+   */
+  update_default_organization(user: User, organization_id: number): Observable<SetDefaultOrganizationResponse> {
+    return this._httpClient.put<SetDefaultOrganizationResponse>(`/api/v3/users/${user.id}/default_organization/?organization_id=${organization_id}`, {}).pipe(
+      tap(() => {
+        this.get().subscribe((u: User) => {
+          // success
+        })
       }),
     )
   }
