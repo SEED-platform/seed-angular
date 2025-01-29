@@ -35,7 +35,7 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   }
 
   selectOrganization(o: Organization) {
-    this._userService.update_default_organization(this.user, o.id).pipe(takeUntil(this._unsubscribeAll$)).subscribe((r: SetDefaultOrganizationResponse) => {
+    this._userService.update_default_organization(this.user, o.id).pipe(takeUntil(this._unsubscribeAll$)).subscribe(() => {
       // success
     })
   }
