@@ -49,7 +49,7 @@ export class AuthService {
     }
 
     return this._httpClient.post<TokenResponse>('/api/token/', credentials).pipe(
-      tap((response) => {
+      tap((response: TokenResponse) => {
         this.handleTokenResponse(response)
       }),
     )
@@ -73,7 +73,7 @@ export class AuthService {
     this._authenticated = true
 
     // Store the user on the user service
-    this._userService.get().subscribe((u: User) => {
+    this._userService.get().subscribe(() => {
       // success
     })
   }

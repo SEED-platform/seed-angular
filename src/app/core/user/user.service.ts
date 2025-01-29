@@ -50,7 +50,7 @@ export class UserService {
   update_default_organization(user: User, organization_id: number): Observable<SetDefaultOrganizationResponse> {
     return this._httpClient.put<SetDefaultOrganizationResponse>(`/api/v3/users/${user.id}/default_organization/?organization_id=${organization_id}`, {}).pipe(
       tap(() => {
-        this.get().subscribe((u: User) => {
+        this.get().subscribe(() => {
           // success
         })
       }),
