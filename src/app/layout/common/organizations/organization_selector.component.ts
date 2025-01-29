@@ -4,11 +4,11 @@ import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@
 import { MatButtonModule } from '@angular/material/button'
 import { MatIcon } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
-import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { Subject, takeUntil } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization/organization.service'
 import type { Organization, OrganizationsResponse } from '@seed/api/organization/organization.types'
 import { UserService } from 'app/core/user/user.service'
-import type { SetDefaultOrganizationResponse, User } from 'app/core/user/user.types'
+import type { User } from 'app/core/user/user.types'
 
 @Component({
   selector: 'seed-organization-selector',

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
-import { VersionService } from '@seed/api/version'
+import { type VersionResponse, VersionService } from '@seed/api/version'
 import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
@@ -50,7 +50,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes
-    this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {
+    this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }: { matchingAliases: string[] }) => {
       // Check if the screen is small
       this.isScreenSmall = !matchingAliases.includes('md')
 
@@ -58,9 +58,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
 
-    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
-      this.version = version
-      this.sha = sha
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((vr: VersionResponse) => {
+      this.version = vr.version
+      this.sha = vr.sha
     })
   }
 
