@@ -12,7 +12,7 @@ type ImportFile = {
 }
 
 // Subset type
-type Dataset = {
+export type Dataset = {
   deleted: boolean;
   name: string;
   app: 'seed';

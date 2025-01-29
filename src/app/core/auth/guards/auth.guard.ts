@@ -4,7 +4,7 @@ import { Router } from '@angular/router'
 import { map } from 'rxjs'
 import { AuthService } from 'app/core/auth/auth.service'
 
-export const AuthGuard: CanActivateFn | CanActivateChildFn = (route, state) => {
+export const AuthGuard: CanActivateFn | CanActivateChildFn = (_route, state) => {
   const authService = inject(AuthService)
   const router = inject(Router)
 

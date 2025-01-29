@@ -15,20 +15,20 @@ export class AuthService {
 
   private _authenticated = false
 
-  set accessToken(token: string) {
-    localStorage.setItem('accessToken', token)
-  }
-
   get accessToken(): string {
     return localStorage.getItem('accessToken') ?? ''
   }
 
-  set refreshToken(token: string) {
-    localStorage.setItem('refreshToken', token)
+  set accessToken(token: string) {
+    localStorage.setItem('accessToken', token)
   }
 
   get refreshToken(): string {
     return localStorage.getItem('refreshToken') ?? ''
+  }
+
+  set refreshToken(token: string) {
+    localStorage.setItem('refreshToken', token)
   }
 
   // TODO

@@ -8,19 +8,16 @@ import { SEED_CONFIG } from './config.constants'
 export class ConfigService {
   private _config = new BehaviorSubject(inject(SEED_CONFIG))
 
-  /**
-   * Setter & getter for config
-   */
+  get config$(): Observable<any> {
+    return this._config.asObservable()
+  }
+
   set config(value: any) {
     // Merge the new config over to the current config
     const config = merge({}, this._config.getValue(), value)
 
     // Execute the observable
     this._config.next(config)
-  }
-
-  get config$(): Observable<any> {
-    return this._config.asObservable()
   }
 
   /**

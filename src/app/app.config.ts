@@ -18,7 +18,7 @@ import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader'
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
-  private readonly _title = inject(Title)
+  private _title = inject(Title)
 
   override updateTitle(routerState: RouterStateSnapshot) {
     const title = this.buildTitle(routerState)

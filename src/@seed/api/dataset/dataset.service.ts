@@ -2,8 +2,8 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, tap } from 'rxjs'
-import type { CountDatasetsResponse, ListDatasetsResponse } from './dataset.types'
+import { catchError, map, of, ReplaySubject } from 'rxjs'
+import type { CountDatasetsResponse, Dataset, ListDatasetsResponse } from './dataset.types'
 
 @Injectable({ providedIn: 'root' })
 export class DatasetService {
@@ -14,9 +14,9 @@ export class DatasetService {
 
   // TODO watch active org, on change request dataset count
 
-  listDatasets(): Observable<ListDatasetsResponse> {
+  listDatasets(): Observable<Dataset[]> {
     // TODO input dynamic org id
-    return this._httpClient.get<ListDatasetsResponse>('/api/v3/datasets/?organization_id=1').pipe(tap(({ datasets }) => datasets))
+    return this._httpClient.get<ListDatasetsResponse>('/api/v3/datasets/?organization_id=1').pipe(map(({ datasets }) => datasets))
   }
 
   countDatasets(): Observable<number> {

@@ -46,6 +46,10 @@ export class AuthSignUpComponent implements OnInit {
   signUpForm: FormGroup
   showAlert = false
 
+  get isTermsInvalid() {
+    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
+  }
+
   ngOnInit(): void {
     this.signUpForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -56,10 +60,6 @@ export class AuthSignUpComponent implements OnInit {
 
   showTermsOfService(): void {
     this._termsOfServiceService.showTermsOfService()
-  }
-
-  get isTermsInvalid() {
-    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
   }
 
   signUp(): void {

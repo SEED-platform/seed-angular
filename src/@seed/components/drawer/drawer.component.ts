@@ -27,14 +27,14 @@ import type { DrawerMode, DrawerPosition } from './drawer.types'
   exportAs: 'seedDrawer',
 })
 export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
-  static ngAcceptInputType_fixed: BooleanInput
-  static ngAcceptInputType_opened: BooleanInput
-  static ngAcceptInputType_transparentOverlay: BooleanInput
-
   private _animationBuilder = inject(AnimationBuilder)
   private _elementRef = inject(ElementRef)
   private _renderer2 = inject(Renderer2)
   private _drawerService = inject(DrawerService)
+
+  static ngAcceptInputType_fixed: BooleanInput
+  static ngAcceptInputType_opened: BooleanInput
+  static ngAcceptInputType_transparentOverlay: BooleanInput
 
   @Input() fixed = false
   @Input() mode: DrawerMode = 'side'
@@ -48,16 +48,10 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   @Output() readonly positionChanged: EventEmitter<DrawerPosition> = new EventEmitter<DrawerPosition>()
 
   private _animationsEnabled = false
-  private readonly _handleOverlayClick = (): void => {
-    this.close()
-  }
   private _hovered = false
   private _overlay?: HTMLElement
   private _player: AnimationPlayer
 
-  /**
-   * Host binding for component classes
-   */
   @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'drawer-animations-enabled': this._animationsEnabled,
@@ -69,20 +63,12 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Host binding for component inline styles
-   */
   @HostBinding('style') get styleList(): Record<string, string> {
     return {
       visibility: this.opened ? 'visible' : 'hidden',
     }
   }
 
-  /**
-   * On mouseenter
-   *
-   * @private
-   */
   @HostListener('mouseenter')
   private _onMouseenter(): void {
     // Enable the animations
@@ -92,11 +78,6 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     this._hovered = true
   }
 
-  /**
-   * On mouseleave
-   *
-   * @private
-   */
   @HostListener('mouseleave')
   private _onMouseleave(): void {
     // Enable the animations
@@ -104,6 +85,11 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
 
     // Set the hovered
     this._hovered = false
+  }
+
+  ngOnInit(): void {
+    // Register the drawer
+    this._drawerService.registerComponent(this.name, this)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -173,11 +159,6 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-    // Register the drawer
-    this._drawerService.registerComponent(this.name, this)
-  }
-
   ngOnDestroy(): void {
     // Finish the animation
     if (this._player) {
@@ -225,33 +206,15 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Enable the animations
-   *
-   * @private
-   */
-  private _enableAnimations(): void {
-    // Return if the animations are already enabled
-    if (this._animationsEnabled) {
-      return
-    }
+  private readonly _handleOverlayClick = (): void => {
+    this.close()
+  }
 
-    // Enable the animations
+  private _enableAnimations(): void {
     this._animationsEnabled = true
   }
 
-  /**
-   * Disable the animations
-   *
-   * @private
-   */
   private _disableAnimations(): void {
-    // Return if the animations are already disabled
-    if (!this._animationsEnabled) {
-      return
-    }
-
-    // Disable the animations
     this._animationsEnabled = false
   }
 

@@ -9,7 +9,7 @@ export default [
     title: 'Data',
     component: DataComponent,
     resolve: {
-      data: () => {
+      datasets: () => {
         const datasetService = inject(DatasetService)
         return datasetService.listDatasets()
       },

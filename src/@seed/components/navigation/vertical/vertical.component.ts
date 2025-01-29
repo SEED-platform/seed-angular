@@ -92,14 +92,9 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   onCollapsableItemCollapsed: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
   onCollapsableItemExpanded: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
   onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
+
   private _animationsEnabled = false
   private _asideOverlay: HTMLElement
-  private readonly _handleAsideOverlayClick = () => {
-    this.closeAside()
-  }
-  private readonly _handleOverlayClick = () => {
-    this.close()
-  }
   private _hovered = false
   private _mutationObserver: MutationObserver
   private _overlay: HTMLElement
@@ -109,9 +104,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   private _scrollbarDirectivesSubscription: Subscription
   private readonly _unsubscribeAll$ = new Subject<void>()
 
-  /**
-   * Host binding for component classes
-   */
   @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'seed-vertical-navigation-animations-enabled': this._animationsEnabled,
@@ -126,9 +118,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     }
   }
 
-  /**
-   * Host binding for component inline styles
-   */
   @HostBinding('style') get styleList(): Record<string, string> {
     return {
       visibility: this.opened ? 'visible' : 'hidden',
@@ -163,95 +152,12 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
 
   @HostListener('mouseenter') private _onMouseenter(): void {
     this._enableAnimations()
-
-    // Set hovered state
     this._hovered = true
   }
 
   @HostListener('mouseleave') private _onMouseleave(): void {
     this._enableAnimations()
-
-    // Set hovered state
     this._hovered = false
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // Appearance
-    if ('appearance' in changes) {
-      // Execute the observable
-      this.appearanceChanged.next(changes.appearance.currentValue)
-    }
-
-    // Inner
-    if ('inner' in changes) {
-      // Coerce the value to a boolean
-      this.inner = coerceBooleanProperty(changes.inner.currentValue)
-    }
-
-    // Mode
-    if ('mode' in changes) {
-      // Get the previous and current values
-      const currentMode = changes.mode.currentValue
-      const previousMode = changes.mode.previousValue
-
-      // Disable the animations
-      this._disableAnimations()
-
-      // If the mode changes: 'over -> side'
-      if (previousMode === 'over' && currentMode === 'side') {
-        // Hide the overlay
-        this._hideOverlay()
-      }
-
-      // If the mode changes: 'side -> over'
-      if (previousMode === 'side' && currentMode === 'over') {
-        // Close the aside
-        this.closeAside()
-
-        // If the navigation is opened
-        if (this.opened) {
-          // Show the overlay
-          this._showOverlay()
-        }
-      }
-
-      // Execute the observable
-      this.modeChanged.next(currentMode)
-
-      // Enable the animations after a delay
-      // The delay must be bigger than the current transition-duration
-      // to make sure nothing will be animated while the mode changing
-      setTimeout(() => {
-        this._enableAnimations()
-      }, 500)
-    }
-
-    // Navigation
-    if ('navigation' in changes) {
-      // Mark for check
-      this._changeDetectorRef.markForCheck()
-    }
-
-    // Opened
-    if ('opened' in changes) {
-      // Coerce the value to a boolean
-      this.opened = coerceBooleanProperty(changes.opened.currentValue)
-
-      // Open/close the navigation
-      this._toggleOpened(this.opened)
-    }
-
-    // Position
-    if ('position' in changes) {
-      // Execute the observable
-      this.positionChanged.next(changes.position.currentValue)
-    }
-
-    // Transparent overlay
-    if ('transparentOverlay' in changes) {
-      // Coerce the value to a boolean
-      this.transparentOverlay = coerceBooleanProperty(changes.transparentOverlay.currentValue)
-    }
   }
 
   ngOnInit(): void {
@@ -338,6 +244,85 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
         }
       }
     })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Appearance
+    if ('appearance' in changes) {
+      // Execute the observable
+      this.appearanceChanged.next(changes.appearance.currentValue)
+    }
+
+    // Inner
+    if ('inner' in changes) {
+      // Coerce the value to a boolean
+      this.inner = coerceBooleanProperty(changes.inner.currentValue)
+    }
+
+    // Mode
+    if ('mode' in changes) {
+      // Get the previous and current values
+      const currentMode = changes.mode.currentValue
+      const previousMode = changes.mode.previousValue
+
+      // Disable the animations
+      this._disableAnimations()
+
+      // If the mode changes: 'over -> side'
+      if (previousMode === 'over' && currentMode === 'side') {
+        // Hide the overlay
+        this._hideOverlay()
+      }
+
+      // If the mode changes: 'side -> over'
+      if (previousMode === 'side' && currentMode === 'over') {
+        // Close the aside
+        this.closeAside()
+
+        // If the navigation is opened
+        if (this.opened) {
+          // Show the overlay
+          this._showOverlay()
+        }
+      }
+
+      // Execute the observable
+      this.modeChanged.next(currentMode)
+
+      // Enable the animations after a delay
+      // The delay must be bigger than the current transition-duration
+      // to make sure nothing will be animated while the mode changing
+      setTimeout(() => {
+        this._enableAnimations()
+      }, 500)
+    }
+
+    // Navigation
+    if ('navigation' in changes) {
+      // Mark for check
+      this._changeDetectorRef.markForCheck()
+    }
+
+    // Opened
+    if ('opened' in changes) {
+      // Coerce the value to a boolean
+      this.opened = coerceBooleanProperty(changes.opened.currentValue)
+
+      // Open/close the navigation
+      this._toggleOpened(this.opened)
+    }
+
+    // Position
+    if ('position' in changes) {
+      // Execute the observable
+      this.positionChanged.next(changes.position.currentValue)
+    }
+
+    // Transparent overlay
+    if ('transparentOverlay' in changes) {
+      // Coerce the value to a boolean
+      this.transparentOverlay = coerceBooleanProperty(changes.transparentOverlay.currentValue)
+    }
   }
 
   ngOnDestroy(): void {
@@ -456,6 +441,14 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     }
   }
 
+  private _handleAsideOverlayClick = () => {
+    this.closeAside()
+  }
+
+  private _handleOverlayClick = () => {
+    this.close()
+  }
+
   private _enableAnimations(): void {
     this._animationsEnabled = true
   }
@@ -464,11 +457,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     this._animationsEnabled = false
   }
 
-  /**
-   * Show the overlay
-   *
-   * @private
-   */
   private _showOverlay(): void {
     // Return if there is already an overlay
     if (this._asideOverlay) {
@@ -504,11 +492,6 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     this._overlay.addEventListener('click', this._handleOverlayClick)
   }
 
-  /**
-   * Hide the overlay
-   *
-   * @private
-   */
   private _hideOverlay(): void {
     if (!this._overlay) {
       return
