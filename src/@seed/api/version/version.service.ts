@@ -13,7 +13,7 @@ export class VersionService {
   get(): Observable<VersionResponse> {
     return this._httpClient.get<VersionResponse>('/api/version/').pipe(
       tap((version) => {
-        this._version.next(version as VersionResponse)
+        this._version.next(version)
       }),
     )
   }

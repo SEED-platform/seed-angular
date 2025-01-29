@@ -5,7 +5,6 @@ import type { Observable } from 'rxjs'
 import { map, of, tap, throwError } from 'rxjs'
 import { AuthUtils } from 'app/core/auth/auth.utils'
 import { UserService } from 'app/core/user/user.service'
-import type { User } from '../user/user.types'
 import type { TokenResponse } from './auth.types'
 
 @Injectable({ providedIn: 'root' })

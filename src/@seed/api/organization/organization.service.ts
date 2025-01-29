@@ -22,7 +22,7 @@ export class OrganizationService {
     const url = brief ? '/api/v3/organizations/?brief=true' : '/api/v3/organizations/'
     return this._httpClient.get<OrganizationsResponse>(url).pipe(
       tap((organizations) => {
-        this._organizations.next(organizations as OrganizationsResponse)
+        this._organizations.next(organizations)
       }),
     )
   }
