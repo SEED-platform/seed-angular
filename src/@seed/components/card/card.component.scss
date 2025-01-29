@@ -2,6 +2,7 @@ seed-card {
   position: relative;
   display: flex;
   overflow: hidden;
+
   @apply bg-card rounded-2xl shadow;
 
   /* Flippable */
@@ -12,6 +13,7 @@ seed-card {
     transition: transform 1s;
     perspective: 600px;
     background: transparent;
+
     @apply shadow-none;
 
     &.card-face-back {
@@ -39,6 +41,7 @@ seed-card {
         visibility 0s ease-in 0.2s,
         opacity 0s ease-in 0.2s;
       backface-visibility: hidden;
+
       @apply bg-card rounded-2xl shadow;
     }
 
@@ -52,10 +55,7 @@ seed-card {
 
     .card-back {
       position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      inset: 0;
       opacity: 0;
       visibility: hidden;
       transform: rotateY(180deg);

@@ -225,10 +225,10 @@ export const theming = plugin.withOptions(
           customProps: {
             background: {
               light: {
-                'bg-app-bar': '#ffffff',
-                'bg-card': '#ffffff',
+                'bg-app-bar': '#fff',
+                'bg-card': '#fff',
                 'bg-default': colors.slate[100],
-                'bg-dialog': '#ffffff',
+                'bg-dialog': '#fff',
                 'bg-hover': chroma(colors.slate[400]).alpha(0.12).css(),
                 'bg-status-bar': colors.slate[300],
               },
@@ -253,7 +253,7 @@ export const theming = plugin.withOptions(
                 'mat-icon': colors.slate[500],
               },
               dark: {
-                'text-default': '#ffffff',
+                'text-default': '#fff',
                 'text-secondary': colors.slate[400],
                 'text-hint': colors.slate[500],
                 'text-disabled': colors.slate[600],
