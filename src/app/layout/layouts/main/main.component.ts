@@ -5,11 +5,12 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
-import { type VersionResponse, VersionService } from '@seed/api/version'
-import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
+import { VersionService } from '@seed/api/version'
+import type { NavigationItem } from '@seed/components'
+import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
-import { OrganizationSelectorComponent } from 'app/layout/common/organizations/organization_selector.component'
+import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
 import { DatasetService } from '../../../../@seed/api/dataset'
 
@@ -50,7 +51,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes
-    this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }: { matchingAliases: string[] }) => {
+    this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {
       // Check if the screen is small
       this.isScreenSmall = !matchingAliases.includes('md')
 
@@ -58,9 +59,9 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
 
-    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((vr: VersionResponse) => {
-      this.version = vr.version
-      this.sha = vr.sha
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
+      this.version = version
+      this.sha = sha
     })
   }
 

@@ -6,9 +6,9 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { Subject, takeUntil } from 'rxjs'
+import type { CurrentUser } from '@seed/api/user'
+import { UserService } from '@seed/api/user'
 import { AuthService } from 'app/core/auth/auth.service'
-import { UserService } from 'app/core/user/user.service'
-import type { User } from 'app/core/user/user.types'
 import { sha256 } from '../../../../@seed/utils'
 
 @Component({
@@ -27,14 +27,14 @@ export class UserComponent implements OnInit, OnDestroy {
   static ngAcceptInputType_showAvatar: BooleanInput
 
   @Input() showAvatar = true
-  user: User
+  user: CurrentUser
   avatarUrl: string
 
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
     // Subscribe to user changes
-    this._userService.user$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user: User) => {
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user) => {
       this.user = user
       this.avatarUrl = `https://gravatar.com/avatar/${sha256(this.user.email.toLowerCase())}?size=128&d=mp`
 

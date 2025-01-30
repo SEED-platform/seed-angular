@@ -5,18 +5,9 @@
 // https://github.com/auth0/angular2-jwt
 // -----------------------------------------------------------------------------------------------------
 import { jwtDecode } from 'jwt-decode'
-import type { User } from '../user/user.types'
 import type { UserToken } from './auth.types'
 
 export class AuthUtils {
-  static tokenUser(token: string): User {
-    const { user_id } = this._decodeToken(token)
-    const u: User = {
-      id: user_id,
-    }
-    return u
-  }
-
   static isTokenExpired(token: string): boolean {
     // Return if there is no token
     if (!token) {

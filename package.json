@@ -23,13 +23,13 @@
     "watch": "ng build --watch -c development",
     "test": "ng test",
     "eslint": "ng lint",
-    "eslint:fix": "run-s eslint -- --fix",
+    "eslint:fix": "prettier -w \"src/**/*.ts\" && npm run eslint -- --fix",
     "lint": "run-p -c eslint prettier stylelint",
     "lint:fix": "run-p -c eslint:fix prettier:fix stylelint:fix",
     "prettier": "prettier -c \"src/**/*.html\"",
-    "prettier:fix": "run-s prettier -- -w",
+    "prettier:fix": "npm run prettier -- -w",
     "stylelint": "stylelint \"src/**/*.scss\"",
-    "stylelint:fix": "run-s stylelint -- --fix",
+    "stylelint:fix": "npm run stylelint -- --fix",
     "update-translations": "node --env-file=.env --import=tsx update-translations.mts"
   },
   "dependencies": {

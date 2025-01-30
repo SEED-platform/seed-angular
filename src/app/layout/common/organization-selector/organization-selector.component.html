@@ -1,0 +1,10 @@
+<button mat-button [matMenuTriggerFor]="orgMenu">
+  Current Organization: {{ currentUser.org_name }} Access Level: {{ currentUser.ali_name }}
+  <mat-icon iconPositionEnd svgIcon="heroicons-outline:chevron-down"></mat-icon>
+</button>
+
+<mat-menu xPosition="before" #orgMenu="matMenu">
+  @for (org of organizations; track org.id) {
+    <button mat-menu-item (click)="selectOrganization(org.id)">{{ org.name }}</button>
+  }
+</mat-menu>
