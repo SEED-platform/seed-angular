@@ -10,7 +10,7 @@ import type { NavigationItem, VerticalNavigationComponent } from '@seed/componen
 import {
   SeedNavigationService,
   VerticalNavigationBasicItemComponent,
-  VerticalNavigationCollapsableItemComponent,
+  VerticalNavigationCollapsibleItemComponent,
   VerticalNavigationDividerItemComponent,
   VerticalNavigationGroupItemComponent,
   VerticalNavigationSpacerItemComponent,
@@ -25,7 +25,7 @@ import {
     MatTooltipModule,
     NgClass,
     VerticalNavigationBasicItemComponent,
-    VerticalNavigationCollapsableItemComponent,
+    VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
     VerticalNavigationGroupItemComponent,
     VerticalNavigationSpacerItemComponent,

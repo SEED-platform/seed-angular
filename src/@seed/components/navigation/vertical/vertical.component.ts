@@ -31,7 +31,7 @@ import {
   SeedNavigationService,
   VerticalNavigationAsideItemComponent,
   VerticalNavigationBasicItemComponent,
-  VerticalNavigationCollapsableItemComponent,
+  VerticalNavigationCollapsibleItemComponent,
   VerticalNavigationDividerItemComponent,
   VerticalNavigationGroupItemComponent,
   VerticalNavigationSpacerItemComponent,
@@ -51,7 +51,7 @@ import { randomId } from '@seed/utils'
     ScrollbarDirective,
     VerticalNavigationAsideItemComponent,
     VerticalNavigationBasicItemComponent,
-    VerticalNavigationCollapsableItemComponent,
+    VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
     VerticalNavigationGroupItemComponent,
     VerticalNavigationSpacerItemComponent,
@@ -89,8 +89,8 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   @ViewChild('navigationContent') private _navigationContentEl: ElementRef
 
   activeAsideItemId: string | null = null
-  onCollapsableItemCollapsed: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
-  onCollapsableItemExpanded: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
+  onCollapsibleItemCollapsed: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
+  onCollapsibleItemExpanded: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
   onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
 
   private _animationsEnabled = false
@@ -140,8 +140,8 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
       this._scrollbarDirectivesSubscription.unsubscribe()
     }
 
-    // Update the scrollbars on collapsable items' collapse/expand
-    this._scrollbarDirectivesSubscription = merge(this.onCollapsableItemCollapsed, this.onCollapsableItemExpanded)
+    // Update the scrollbars on collapsible items' collapse/expand
+    this._scrollbarDirectivesSubscription = merge(this.onCollapsibleItemCollapsed, this.onCollapsibleItemExpanded)
       .pipe(takeUntil(this._unsubscribeAll$), delay(250))
       .subscribe(() => {
         for (const seedScrollbarDirective of seedScrollbarDirectives) {

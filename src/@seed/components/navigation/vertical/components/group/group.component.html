@@ -43,12 +43,12 @@
     <!-- Basic -->
     @if (item.type === 'basic') {
       <seed-vertical-navigation-basic-item [item]="item" [name]="name"></seed-vertical-navigation-basic-item>
-    } @else if (item.type === 'collapsable') {
-      <seed-vertical-navigation-collapsable-item
+    } @else if (item.type === 'collapsible') {
+      <seed-vertical-navigation-collapsible-item
         [item]="item"
         [name]="name"
         [autoCollapse]="autoCollapse"
-      ></seed-vertical-navigation-collapsable-item>
+      ></seed-vertical-navigation-collapsible-item>
     } @else if (item.type === 'divider') {
       <seed-vertical-navigation-divider-item [item]="item" [name]="name"></seed-vertical-navigation-divider-item>
     } @else if (item.type === 'group') {

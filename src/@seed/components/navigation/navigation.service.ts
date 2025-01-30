@@ -66,7 +66,7 @@ export class SeedNavigationService {
         continue
       }
 
-      if (item.type === 'aside' || item.type === 'collapsable' || item.type === 'group') {
+      if (item.type === 'aside' || item.type === 'collapsible' || item.type === 'group') {
         if (item.children) {
           this.getFlatNavigation(item.children, flatNavigation)
         }

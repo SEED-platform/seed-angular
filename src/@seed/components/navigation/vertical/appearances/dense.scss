@@ -58,7 +58,7 @@ seed-vertical-navigation {
       .seed-vertical-navigation-content {
         seed-vertical-navigation-aside-item,
         seed-vertical-navigation-basic-item,
-        seed-vertical-navigation-collapsable-item,
+        seed-vertical-navigation-collapsible-item,
         seed-vertical-navigation-group-item {
           .seed-vertical-navigation-item-wrapper {
             .seed-vertical-navigation-item {
@@ -105,7 +105,7 @@ seed-vertical-navigation {
             }
           }
 
-          seed-vertical-navigation-collapsable-item {
+          seed-vertical-navigation-collapsible-item {
             .seed-vertical-navigation-item-children {
               display: none;
             }

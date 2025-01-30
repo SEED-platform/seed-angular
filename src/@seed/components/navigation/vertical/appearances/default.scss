@@ -196,7 +196,7 @@ seed-vertical-navigation {
   // Navigation items common
   seed-vertical-navigation-aside-item,
   seed-vertical-navigation-basic-item,
-  seed-vertical-navigation-collapsable-item,
+  seed-vertical-navigation-collapsible-item,
   seed-vertical-navigation-divider-item,
   seed-vertical-navigation-group-item,
   seed-vertical-navigation-spacer-item {
@@ -252,20 +252,20 @@ seed-vertical-navigation {
     }
   }
 
-  // Aside, Basic, Collapsable, Group
+  // Aside, Basic, Collapsible, Group
   seed-vertical-navigation-aside-item,
   seed-vertical-navigation-basic-item,
-  seed-vertical-navigation-collapsable-item,
+  seed-vertical-navigation-collapsible-item,
   seed-vertical-navigation-group-item {
     > .seed-vertical-navigation-item-wrapper {
       margin: 0 12px;
     }
   }
 
-  // Aside, Basic, Collapsable
+  // Aside, Basic, Collapsible
   seed-vertical-navigation-aside-item,
   seed-vertical-navigation-basic-item,
-  seed-vertical-navigation-collapsable-item {
+  seed-vertical-navigation-collapsible-item {
     margin-bottom: 4px;
 
     .seed-vertical-navigation-item {
@@ -281,8 +281,8 @@ seed-vertical-navigation {
   seed-vertical-navigation-basic-item {
   }
 
-  // Collapsable
-  seed-vertical-navigation-collapsable-item {
+  // Collapsible
+  seed-vertical-navigation-collapsible-item {
     > .seed-vertical-navigation-item-wrapper {
       .seed-vertical-navigation-item {
         .seed-vertical-navigation-item-badge {
@@ -426,7 +426,7 @@ seed-vertical-navigation {
 // Navigation items common
 seed-vertical-navigation-aside-item,
 seed-vertical-navigation-basic-item,
-seed-vertical-navigation-collapsable-item,
+seed-vertical-navigation-collapsible-item,
 seed-vertical-navigation-group-item {
   .seed-vertical-navigation-item-wrapper {
     .seed-vertical-navigation-item {
@@ -449,10 +449,10 @@ seed-vertical-navigation-group-item {
   }
 }
 
-// Aside, Basic, Collapsable
+// Aside, Basic, Collapsible
 seed-vertical-navigation-aside-item,
 seed-vertical-navigation-basic-item,
-seed-vertical-navigation-collapsable-item {
+seed-vertical-navigation-collapsible-item {
   > .seed-vertical-navigation-item-wrapper {
     .seed-vertical-navigation-item {
       // Active state
@@ -498,8 +498,8 @@ seed-vertical-navigation-collapsable-item {
   }
 }
 
-// Collapsable
-seed-vertical-navigation-collapsable-item {
+// Collapsible
+seed-vertical-navigation-collapsible-item {
   // Expanded state
   &.seed-vertical-navigation-item-expanded {
     > .seed-vertical-navigation-item-wrapper {
