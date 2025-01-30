@@ -6,9 +6,11 @@ import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'
-import { type NavigationItem, SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
+import type { NavigationItem } from '@seed/components'
+import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
+import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
 import { DatasetService } from '../../../../@seed/api/dataset'
 
@@ -20,6 +22,7 @@ import { DatasetService } from '../../../../@seed/api/dataset'
     CdkScrollable,
     MatButtonModule,
     MatIconModule,
+    OrganizationSelectorComponent,
     RouterLink,
     RouterOutlet,
     SEEDLoadingBarComponent,

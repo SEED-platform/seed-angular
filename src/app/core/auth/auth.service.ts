@@ -3,8 +3,8 @@ import { inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { map, of, tap, throwError } from 'rxjs'
+import { UserService } from '@seed/api/user'
 import { AuthUtils } from 'app/core/auth/auth.utils'
-import { UserService } from 'app/core/user/user.service'
 import type { TokenResponse } from './auth.types'
 
 @Injectable({ providedIn: 'root' })
@@ -70,9 +70,6 @@ export class AuthService {
 
     // Set the authenticated flag to true
     this._authenticated = true
-
-    // Store the user on the user service
-    this._userService.user = AuthUtils.tokenUser(this.accessToken)
   }
 
   signOut(): Observable<boolean> {

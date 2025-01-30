@@ -153,6 +153,7 @@ export default tseslint.config(
       ...angular.configs.templateAccessibility,
     ],
     rules: {
+      '@angular-eslint/template/prefer-control-flow': 'error',
       // TODO
       '@angular-eslint/template/click-events-have-key-events': 'off',
       '@angular-eslint/template/interactive-supports-focus': 'off',
