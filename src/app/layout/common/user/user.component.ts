@@ -34,8 +34,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to user changes
-    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user) => {
-      this.user = user
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
+      this.user = currentUser
       this.avatarUrl = `https://gravatar.com/avatar/${sha256(this.user.email.toLowerCase())}?size=128&d=mp`
 
       // Mark for check

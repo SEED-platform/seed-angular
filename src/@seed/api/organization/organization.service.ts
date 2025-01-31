@@ -8,7 +8,7 @@ import type { BriefOrganization, Organization, OrganizationsResponse } from './o
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
   private _httpClient = inject(HttpClient)
-  private _organizations: ReplaySubject<BriefOrganization[]> = new ReplaySubject<BriefOrganization[]>(1)
+  private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   organizations$ = this._organizations.asObservable()
 
   get(): Observable<Organization[]> {

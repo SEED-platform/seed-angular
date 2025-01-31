@@ -31,7 +31,6 @@ import { DatasetService } from '../../../../@seed/api/dataset'
   ],
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
-  private _datasetService = inject(DatasetService)
   private _mediaWatcherService = inject(MediaWatcherService)
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
@@ -45,9 +44,6 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   sha: string
 
   ngOnInit(): void {
-    // Lazily get initial datasets count
-    this._datasetService.countDatasets().subscribe()
-
     this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes

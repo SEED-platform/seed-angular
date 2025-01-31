@@ -89,9 +89,9 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   @ViewChild('navigationContent') private _navigationContentEl: ElementRef
 
   activeAsideItemId: string | null = null
-  onCollapsibleItemCollapsed: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
-  onCollapsibleItemExpanded: ReplaySubject<NavigationItem> = new ReplaySubject<NavigationItem>(1)
-  onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
+  onCollapsibleItemCollapsed = new ReplaySubject<NavigationItem>(1)
+  onCollapsibleItemExpanded = new ReplaySubject<NavigationItem>(1)
+  onRefreshed = new ReplaySubject<boolean>(1)
 
   private _animationsEnabled = false
   private _asideOverlay: HTMLElement

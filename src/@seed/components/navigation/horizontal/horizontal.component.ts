@@ -26,7 +26,7 @@ export class HorizontalNavigationComponent implements OnChanges, OnInit, OnDestr
   @Input() name: string = randomId()
   @Input() navigation: NavigationItem[]
 
-  onRefreshed: ReplaySubject<boolean> = new ReplaySubject<boolean>(1)
+  onRefreshed = new ReplaySubject<boolean>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnChanges(changes: SimpleChanges): void {
