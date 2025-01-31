@@ -52,6 +52,7 @@
     "luxon": "^3.5.0",
     "perfect-scrollbar": "^1.5.6",
     "rxjs": "~7.8.1",
+    "swagger-ui": "^5.18.3",
     "tslib": "^2.8.1",
     "zone.js": "~0.15.0"
   },
@@ -71,6 +72,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.6",
+    "@types/swagger-ui": "^3.52.4",
     "angular-eslint": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "chroma-js": "2.4.2",
@@ -97,5 +99,8 @@
     "tsx": "^4.19.2",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.22.0"
+  },
+  "scarfSettings": {
+    "enabled": false
   }
 }

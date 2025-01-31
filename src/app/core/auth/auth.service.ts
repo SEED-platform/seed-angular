@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
-import { map, of, tap, throwError } from 'rxjs'
+import { from, map, of, tap, throwError } from 'rxjs'
 import { UserService } from '@seed/api/user'
 import { AuthUtils } from 'app/core/auth/auth.utils'
 import type { TokenResponse } from './auth.types'
@@ -55,7 +55,6 @@ export class AuthService {
   }
 
   refreshAccessToken(): Observable<boolean> {
-    // TODO check this post data
     return this._httpClient.post<TokenResponse>('/api/token/refresh/', { refresh: this.refreshToken }).pipe(
       map((response) => {
         this.handleTokenResponse(response)
@@ -73,15 +72,13 @@ export class AuthService {
   }
 
   signOut(): Observable<boolean> {
-    // Remove the access token from the local storage
+    // Remove the tokens from the local storage
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
 
     // Set the authenticated flag to false
     this._authenticated = false
-    void this._router.navigate(['sign-in'])
-
-    return of(true)
+    return from(this._router.navigate(['sign-in']))
   }
 
   // TODO

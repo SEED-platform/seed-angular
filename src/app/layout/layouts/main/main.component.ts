@@ -12,7 +12,6 @@ import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
 import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
-import { DatasetService } from '../../../../@seed/api/dataset'
 
 @Component({
   selector: 'layout-main',

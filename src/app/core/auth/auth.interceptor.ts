@@ -3,9 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, switchMap, tap, throwError } from 'rxjs'
+import { catchError, switchMap, throwError } from 'rxjs'
 import { AuthService } from './auth.service'
-import { AuthUtils } from './auth.utils'
 
 const currentPath = (router: Router) => {
   const urlTree = router.parseUrl(router.url)
