@@ -2,7 +2,7 @@ import type { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http
 import { HttpErrorResponse } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
-import type { Observable } from 'rxjs'
+import { map, Observable, of, switchMap, tap } from 'rxjs'
 import { catchError, throwError } from 'rxjs'
 import { AuthService } from './auth.service'
 import { AuthUtils } from './auth.utils'
@@ -17,27 +17,43 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
   const authService = inject(AuthService)
   const router = inject(Router)
 
-  // If the access token didn't expire, add the Authorization header to api requests.
-  // We won't add the Authorization header if the access token expired, which forces a 401 response from Django.
-  // The response interceptor will catch and delete the access token from local storage while signing out the user.
-  const addToken = /^\/?api\//.test(req.url) && authService.accessToken && !AuthUtils.isTokenExpired(authService.accessToken)
-  const newReq = req.clone({
-    headers: addToken ? req.headers.set('Authorization', `Bearer ${authService.accessToken}`) : undefined,
-  })
+  const isApiRequest = /^\/?api\/(?!token\/refresh\/)/.test(req.url)
 
-  // Response
-  return next(newReq).pipe(
-    catchError((error) => {
-      // Handle "401 Unauthorized" responses (except on sign-in page)
-      if (error instanceof HttpErrorResponse && error.status === 401 && currentPath(router) !== 'sign-in') {
-        // Sign out
-        authService.signOut()
+  // Skip auth for non-api requests and token refresh
+  if (!isApiRequest) {
+    return next(req)
+  }
 
-        // Reload the app
-        location.reload()
+  // First refresh the token if necessary
+  return authService.isAuthenticated().pipe(
+    switchMap((isAuthenticated) => {
+      if (isAuthenticated) {
+        const newReq = req.clone({
+          headers: req.headers.set('Authorization', `Bearer ${authService.accessToken}`),
+        })
+
+        return next(newReq).pipe(
+          catchError(() => {
+            return throwError(() => new Error(`Failed request ${req.method} ${req.url}`))
+          }),
+        )
+      } else {
+        // Unauthenticated API request
+        return next(req).pipe(
+          catchError((error) => {
+            // Handle "401 Unauthorized" responses (except on sign-in page)
+            if (error instanceof HttpErrorResponse && error.status === 401 && currentPath(router) !== 'sign-in') {
+              // Sign out
+              authService.signOut()
+
+              // Reload the app
+              location.reload()
+            }
+
+            return throwError(() => new Error(`Failed unauthenticated request ${req.method} ${req.url}`))
+          }),
+        )
       }
-
-      return throwError(() => new Error(`Failed to request ${req.method} ${req.url}`))
     }),
   )
 }
