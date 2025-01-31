@@ -2,8 +2,8 @@ import type { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http
 import { HttpErrorResponse } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { Router } from '@angular/router'
-import { map, Observable, of, switchMap, tap } from 'rxjs'
-import { catchError, throwError } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { catchError, map, of, switchMap, tap, throwError } from 'rxjs'
 import { AuthService } from './auth.service'
 import { AuthUtils } from './auth.utils'
 

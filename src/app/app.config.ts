@@ -6,7 +6,7 @@ import { LuxonDateAdapter } from '@angular/material-luxon-adapter'
 import { Title } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import type { RouterStateSnapshot } from '@angular/router'
-import { provideRouter, TitleStrategy, withInMemoryScrolling } from '@angular/router'
+import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router'
 import { provideTransloco, TranslocoService } from '@jsverse/transloco'
 import { firstValueFrom } from 'rxjs'
 import { provideSEED } from '@seed'
@@ -30,14 +30,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
     provideHttpClient(),
-    provideRouter(appRoutes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+    provideRouter(
+      appRoutes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withRouterConfig({ onSameUrlNavigation: 'reload' }),
+    ),
     { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
-
-    // Material Date Adapter
-    {
-      provide: DateAdapter,
-      useClass: LuxonDateAdapter,
-    },
+    { provide: DateAdapter, useClass: LuxonDateAdapter },
     {
       provide: MAT_DATE_FORMATS,
       useValue: {
@@ -52,8 +51,6 @@ export const appConfig: ApplicationConfig = {
         },
       },
     },
-
-    // Transloco Config
     provideTransloco({
       config: {
         availableLangs: [
@@ -84,7 +81,6 @@ export const appConfig: ApplicationConfig = {
 
       return firstValueFrom(translocoService.load(defaultLang))
     }),
-
     provideAuth(),
     provideIcons(),
     provideSEED({

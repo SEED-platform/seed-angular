@@ -10,6 +10,7 @@ export default [
     path: '',
     title: 'Data',
     component: DataComponent,
+    runGuardsAndResolvers: 'always',
     resolve: {
       datasets: () => {
         const datasetService = inject(DatasetService)
