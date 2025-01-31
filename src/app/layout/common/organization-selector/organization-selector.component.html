@@ -1,6 +1,8 @@
-<button mat-button [matMenuTriggerFor]="orgMenu">
-  Current Organization: {{ currentUser.org_name }} Access Level: {{ currentUser.ali_name }}
-  <mat-icon iconPositionEnd svgIcon="heroicons-outline:chevron-down"></mat-icon>
+<button mat-button [matMenuTriggerFor]="orgMenu" class="font-semibold text-secondary">
+  <mat-icon svgIcon="fa-solid:city" class=""></mat-icon>
+  <span class="ml-2">{{ currentUser.org_name }}</span>
+  <span class="font-extralight mx-1">|</span>
+  <span>{{ currentUser.ali_name }}</span>
 </button>
 
 <mat-menu xPosition="before" #orgMenu="matMenu">
