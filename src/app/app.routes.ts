@@ -6,6 +6,7 @@ import { AboutComponent } from './modules/main/about/about.component'
 import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
 import { HomeComponent } from './modules/main/home/home.component'
+import { ProfileComponent } from './modules/profile/profile.component'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
   if (segments.length === 1 && ['properties', 'taxlots'].includes(segments[0].path)) {
@@ -59,6 +60,11 @@ export const appRoutes: Route[] = [
         path: 'dashboard',
         title: 'Dashboard',
         component: HomeComponent,
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent,
+        loadChildren: () => import('app/modules/profile/profile.routes'),
       },
       {
         matcher: inventoryTypeMatcher,
