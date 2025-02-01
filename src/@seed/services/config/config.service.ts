@@ -11,7 +11,7 @@ export class ConfigService {
     return this._config.asObservable()
   }
 
-  set config(value: SEEDConfig) {
+  set config(value: Partial<SEEDConfig>) {
     // Merge the new config over to the current config
     const config = {
       ...this._config.getValue(),
@@ -20,13 +20,5 @@ export class ConfigService {
 
     // Execute the observable
     this._config.next(config)
-  }
-
-  /**
-   * Resets the config to the default
-   */
-  reset(): void {
-    // Set the config
-    this._config.next(this.config)
   }
 }

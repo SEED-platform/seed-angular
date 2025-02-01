@@ -46,7 +46,7 @@ export class DevSettingsComponent implements OnInit, OnDestroy {
 
   // Set the scheme on the config
   setScheme(scheme: Scheme): void {
-    this._configService.config.scheme = scheme
+    this._configService.config = { scheme }
   }
 
   setActiveLang(lang: string): void {
