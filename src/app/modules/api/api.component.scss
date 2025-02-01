@@ -11,7 +11,7 @@
     }
   }
 
-  .information-container, .scheme-container {
-    display: none;
+  .information-container, .scheme-container, .authorization__btn {
+    @apply hidden;
   }
 }

@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   // TODO
-  signUp(user: { name: string; email: string; password: string; company: string }): Observable<unknown> {
+  signUp(user: { email?: string; password?: string; terms?: boolean }): Observable<unknown> {
     return this._httpClient.post('api/auth/sign-up', user)
   }
 

@@ -16,7 +16,7 @@ import type { ImageOverlayData } from './image-overlay.types'
 export class ImageOverlayDirective implements OnInit, OnDestroy {
   private _mediaWatcherService = inject(MediaWatcherService)
   private _matDialog = inject(MatDialog)
-  private _elementRef = inject(ElementRef<HTMLImageElement>) as ElementRef<HTMLImageElement>
+  private _elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef<HTMLImageElement>)
 
   private _isScreenSmall = true
   private readonly _unsubscribeAll$ = new Subject<void>()

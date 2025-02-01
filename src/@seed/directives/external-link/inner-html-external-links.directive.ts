@@ -7,12 +7,11 @@ import { ExternalLinkDirective } from './external-link.directive'
   selector: '[innerHTMLExternalLinks]',
 })
 export class InnerHTMLExternalLinksDirective implements AfterViewInit {
-  private _elementRef = inject(ElementRef)
+  private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _renderer = inject(Renderer2)
 
   ngAfterViewInit(): void {
-    const nativeElement = this._elementRef.nativeElement as HTMLElement
-    const anchors = nativeElement.querySelectorAll('a')
+    const anchors = this._elementRef.nativeElement.querySelectorAll('a')
     for (const anchor of anchors) {
       const href = anchor.getAttribute('href')
       if (ExternalLinkDirective.isLinkExternal(href)) {

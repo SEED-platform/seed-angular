@@ -18,7 +18,7 @@ import { ScrollbarGeometry, ScrollbarPosition } from './scrollbar.types'
 export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
   static ngAcceptInputType_seedScrollbar: BooleanInput
 
-  private _elementRef = inject(ElementRef)
+  private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _platform = inject(Platform)
 
   @Input() seedScrollbar = true

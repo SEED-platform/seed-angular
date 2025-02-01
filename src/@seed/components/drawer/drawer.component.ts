@@ -28,7 +28,7 @@ import type { DrawerMode, DrawerPosition } from './drawer.types'
 })
 export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   private _animationBuilder = inject(AnimationBuilder)
-  private _elementRef = inject(ElementRef)
+  private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _renderer2 = inject(Renderer2)
   private _drawerService = inject(DrawerService)
 

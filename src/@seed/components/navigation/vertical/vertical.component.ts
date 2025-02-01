@@ -65,7 +65,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   private _animationBuilder = inject(AnimationBuilder)
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _document = inject(DOCUMENT)
-  private _elementRef = inject(ElementRef)
+  private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _renderer2 = inject(Renderer2)
   private _router = inject(Router)
   private _scrollStrategyOptions = inject(ScrollStrategyOptions)
