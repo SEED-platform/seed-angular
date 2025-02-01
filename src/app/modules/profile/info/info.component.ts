@@ -1,11 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core'
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  Validators,
-} from '@angular/forms'
+import type { UntypedFormBuilder } from '@angular/forms'
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -16,28 +11,14 @@ import { SharedImports } from '@seed/directives'
   selector: 'seed-profile-info',
   templateUrl: './info.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    MatIconModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    SharedImports,
-  ],
+  imports: [MatIconModule, FormsModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatButtonModule, SharedImports],
 })
 export class ProfileInfoComponent {
-  firstName: FormControl = new FormControl('', [
-    Validators.required,
-  ])
+  firstName: FormControl = new FormControl('', [Validators.required])
 
-  lastName: FormControl = new FormControl('', [
-    Validators.required,
-  ])
+  lastName: FormControl = new FormControl('', [Validators.required])
 
-  email: FormControl = new FormControl('', [
-    Validators.required,
-  ])
+  email: FormControl = new FormControl('', [Validators.required])
 
   constructor(private _formBuilder: UntypedFormBuilder) {}
 

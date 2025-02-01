@@ -4,10 +4,6 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-admin',
   templateUrl: './admin.component.html',
-  imports: [
-    SharedImports,
-  ],
+  imports: [SharedImports],
 })
-export class AdminComponent {
-
-}
+export class AdminComponent {}

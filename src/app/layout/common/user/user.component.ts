@@ -23,8 +23,8 @@ import { sha256 } from '../../../../@seed/utils'
 export class UserComponent implements OnInit, OnDestroy {
   private _authService = inject(AuthService)
   private _changeDetectorRef = inject(ChangeDetectorRef)
+  private _router = inject(Router)
   private _userService = inject(UserService)
-  private router = inject(Router)
 
   static ngAcceptInputType_showAvatar: BooleanInput
 
@@ -56,6 +56,6 @@ export class UserComponent implements OnInit, OnDestroy {
 
   goToProfile() {
     console.log('hi!')
-    void this.router.navigate(['/profile'])
+    void this._router.navigate(['/profile'])
   }
 }
