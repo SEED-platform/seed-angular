@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core'
 import { Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { from, map, of, tap, throwError } from 'rxjs'
-import { UserService } from '@seed/api/user'
 import { AuthUtils } from 'app/core/auth/auth.utils'
 import type { TokenResponse } from './auth.types'
 
@@ -11,7 +10,6 @@ import type { TokenResponse } from './auth.types'
 export class AuthService {
   private _httpClient = inject(HttpClient)
   private _router = inject(Router)
-  private _userService = inject(UserService)
 
   private _authenticated = false
 

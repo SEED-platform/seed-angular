@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIcon } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
@@ -14,7 +14,6 @@ import { UserService } from '@seed/api/user'
   selector: 'seed-organization-selector',
   templateUrl: './organization-selector.component.html',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'organization-selector',
   imports: [CommonModule, MatMenuModule, MatButtonModule, MatIcon],
 })
