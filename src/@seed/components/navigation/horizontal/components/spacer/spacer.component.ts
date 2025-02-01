@@ -34,7 +34,7 @@ export class HorizontalNavigationSpacerItemComponent implements OnInit, OnDestro
   }
 
   ngOnDestroy(): void {
-    this._unsubscribeAll$.next(null)
+    this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
 }

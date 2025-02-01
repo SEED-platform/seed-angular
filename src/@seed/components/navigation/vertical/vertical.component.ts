@@ -18,7 +18,7 @@ import {
   Input,
   Output,
   Renderer2,
-  ViewChild,
+  viewChild,
   ViewChildren,
   ViewEncapsulation,
 } from '@angular/core'
@@ -86,7 +86,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   @Output() readonly openedChanged: EventEmitter<boolean> = new EventEmitter<boolean>()
   @Output()
   readonly positionChanged: EventEmitter<VerticalNavigationPosition> = new EventEmitter<VerticalNavigationPosition>()
-  @ViewChild('navigationContent') private _navigationContentEl: ElementRef<HTMLElement>
+  private readonly _navigationContentEl = viewChild.required<ElementRef<HTMLElement>>('navigationContent')
 
   activeAsideItemId: string | null = null
   onCollapsibleItemCollapsed = new ReplaySubject<NavigationItem>(1)
@@ -217,15 +217,16 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
 
     setTimeout(() => {
       // Return if 'navigation content' element does not exist
-      if (!this._navigationContentEl) {
+      const _navigationContentEl = this._navigationContentEl()
+      if (!_navigationContentEl) {
         return
       }
 
       // If 'navigation content' element doesn't have
       // perfect scrollbar activated on it...
-      if (!this._navigationContentEl.nativeElement.classList.contains('ps')) {
+      if (!_navigationContentEl.nativeElement.classList.contains('ps')) {
         // Find the active item
-        const activeItem = this._navigationContentEl.nativeElement.querySelector('.seed-vertical-navigation-item-active')
+        const activeItem = _navigationContentEl.nativeElement.querySelector('.seed-vertical-navigation-item-active')
 
         // If the active item exists, scroll it into view
         if (activeItem) {

@@ -34,7 +34,7 @@ export class HorizontalNavigationDividerItemComponent implements OnInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    this._unsubscribeAll$.next(null)
+    this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
 }

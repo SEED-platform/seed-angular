@@ -51,7 +51,7 @@ export class HorizontalNavigationComponent implements OnChanges, OnInit, OnDestr
     // Deregister the navigation component from the registry
     this._navigationService.deregisterComponent(this.name)
 
-    this._unsubscribeAll$.next(null)
+    this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
 

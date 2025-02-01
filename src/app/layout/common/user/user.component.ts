@@ -8,8 +8,8 @@ import { MatMenuModule } from '@angular/material/menu'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
+import { sha256 } from '@seed/utils'
 import { AuthService } from 'app/core/auth/auth.service'
-import { sha256 } from '../../../../@seed/utils'
 
 @Component({
   selector: 'seed-user',
