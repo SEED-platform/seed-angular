@@ -45,7 +45,7 @@ export class MockApiService {
     const handlers = this._handlers[method.toLowerCase()]
 
     // Iterate through the handlers
-    handlers.forEach((handler, handlerUrl) => {
+    for (const [handlerUrl, handler] of handlers.entries()) {
       // Skip if there is already a matching handler
       if (matchingHandler.handler) {
         return
@@ -56,7 +56,7 @@ export class MockApiService {
 
       // Skip if the lengths of the urls we are comparing are not the same
       if (urlParts.length !== handlerUrlParts.length) {
-        return
+        continue
       }
 
       // Compare
@@ -72,9 +72,9 @@ export class MockApiService {
           handlerUrlParts
             .map((handlerUrlPart, index) => (handlerUrlPart.startsWith(':') ? [handlerUrlPart.substring(1), urlParts[index]] : undefined))
             .filter(Boolean),
-        )
+        ) as Record<string, string>
       }
-    })
+    }
 
     return matchingHandler
   }

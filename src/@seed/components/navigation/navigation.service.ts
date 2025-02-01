@@ -23,6 +23,7 @@ export class SeedNavigationService {
   /**
    * Get navigation component from the registry
    */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   getComponent<T>(name: string): T {
     return this._componentRegistry.get(name) as T
   }

@@ -4,7 +4,7 @@ import { Component, inject, isDevMode, Renderer2, ViewEncapsulation } from '@ang
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { combineLatest, filter, map, Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'
-import type { SEEDConfig } from '@seed/services'
+import type { Scheme, SEEDConfig } from '@seed/services'
 import { ConfigService, MediaWatcherService, PlatformService } from '@seed/services'
 import { DevSettingsComponent } from './common/dev-settings/dev-settings.component'
 import { EmptyLayoutComponent } from './layouts/empty/empty.component'
@@ -30,7 +30,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   config: SEEDConfig
   layout: string
-  scheme: 'dark' | 'light'
+  scheme: Scheme
   theme: string
   isDevMode = isDevMode()
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -146,7 +146,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
       // Check if there is a 'layout' data
       if (path.routeConfig?.data?.layout) {
         // Set the layout
-        this.layout = path.routeConfig.data.layout
+        this.layout = path.routeConfig.data.layout as string
       }
     }
   }

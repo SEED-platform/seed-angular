@@ -3,6 +3,12 @@ module.exports = {
   rules: {
     // Fix later
     'no-descending-specificity': null,
+    'scss/at-rule-no-unknown': [
+      true,
+      {
+        ignoreAtRules: ['screen', 'tailwind']
+      }
+    ],
     'scss/dollar-variable-pattern': [
       '^([a-z][a-z0-9]*)(-[a-z0-9]+)*|([a-z][a-z0-9]*)(_[a-z0-9]+)*$',
       {

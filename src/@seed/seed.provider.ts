@@ -14,11 +14,12 @@ import {
   SEED_CONFIG,
   SplashScreenService,
 } from '@seed/services'
+import { MockApiService } from '../app/mock-api'
 
 export type SEEDProviderConfig = {
   mockApi?: {
+    enabled: boolean;
     delay?: number;
-    service?: any;
   };
   seed?: SEEDConfig;
 }
@@ -56,11 +57,11 @@ export const provideSEED = (config: SEEDProviderConfig): (Provider | Environment
   ]
 
   // Mock Api services
-  if (config.mockApi?.service) {
+  if (config.mockApi?.enabled) {
     providers.push(
       provideHttpClient(withInterceptors([mockApiInterceptor])),
       provideAppInitializer(() => {
-        inject(config.mockApi.service)
+        inject(MockApiService)
       }),
     )
   }

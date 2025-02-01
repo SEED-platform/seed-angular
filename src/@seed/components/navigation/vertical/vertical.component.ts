@@ -86,7 +86,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   @Output() readonly openedChanged: EventEmitter<boolean> = new EventEmitter<boolean>()
   @Output()
   readonly positionChanged: EventEmitter<VerticalNavigationPosition> = new EventEmitter<VerticalNavigationPosition>()
-  @ViewChild('navigationContent') private _navigationContentEl: ElementRef
+  @ViewChild('navigationContent') private _navigationContentEl: ElementRef<HTMLElement>
 
   activeAsideItemId: string | null = null
   onCollapsibleItemCollapsed = new ReplaySubject<NavigationItem>(1)
@@ -250,7 +250,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     // Appearance
     if ('appearance' in changes) {
       // Execute the observable
-      this.appearanceChanged.next(changes.appearance.currentValue)
+      this.appearanceChanged.next(changes.appearance.currentValue as VerticalNavigationAppearance)
     }
 
     // Inner
@@ -262,8 +262,8 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     // Mode
     if ('mode' in changes) {
       // Get the previous and current values
-      const currentMode = changes.mode.currentValue
-      const previousMode = changes.mode.previousValue
+      const currentMode = changes.mode.currentValue as VerticalNavigationMode
+      const previousMode = changes.mode.previousValue as VerticalNavigationMode
 
       // Disable the animations
       this._disableAnimations()
@@ -315,7 +315,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     // Position
     if ('position' in changes) {
       // Execute the observable
-      this.positionChanged.next(changes.position.currentValue)
+      this.positionChanged.next(changes.position.currentValue as VerticalNavigationPosition)
     }
 
     // Transparent overlay
@@ -464,7 +464,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     }
 
     // Create the overlay element
-    this._overlay = this._renderer2.createElement('div')
+    this._overlay = this._renderer2.createElement('div') as HTMLDivElement
 
     // Add a class to the overlay element
     this._overlay.classList.add('seed-vertical-navigation-overlay')
@@ -534,7 +534,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
     }
 
     // Create the aside overlay element
-    this._asideOverlay = this._renderer2.createElement('div')
+    this._asideOverlay = this._renderer2.createElement('div') as HTMLDivElement
 
     // Add a class to the aside overlay element
     this._asideOverlay.classList.add('seed-vertical-navigation-aside-overlay')

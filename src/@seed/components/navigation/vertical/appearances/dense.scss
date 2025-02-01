@@ -149,7 +149,7 @@ seed-vertical-navigation {
               .seed-vertical-navigation-item-badge,
               .seed-vertical-navigation-item-title-wrapper {
                 white-space: nowrap;
-                animation: removeWhiteSpaceNoWrap 1ms linear 350ms;
+                animation: remove-white-space-no-wrap 1ms linear 350ms;
                 animation-fill-mode: forwards;
               }
             }
@@ -164,7 +164,7 @@ seed-vertical-navigation {
   }
 }
 
-@keyframes removeWhiteSpaceNoWrap {
+@keyframes remove-white-space-no-wrap {
   0% {
     white-space: nowrap;
   }

@@ -13,7 +13,6 @@ import { provideSEED } from '@seed'
 import { appRoutes } from 'app/app.routes'
 import { provideAuth } from 'app/core/auth/auth.provider'
 import { provideIcons } from 'app/core/icons/icons.provider'
-import { MockApiService } from 'app/mock-api'
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader'
 
 @Injectable({ providedIn: 'root' })
@@ -84,10 +83,14 @@ export const appConfig: ApplicationConfig = {
     provideAuth(),
     provideIcons(),
     provideSEED({
-      mockApi: {
-        delay: 0,
-        service: MockApiService,
-      },
+      ...(isDevMode()
+        ? {
+            mockApi: {
+              enabled: false,
+              delay: 200,
+            },
+          }
+        : {}),
       seed: {
         layout: 'main',
         scheme: 'light',

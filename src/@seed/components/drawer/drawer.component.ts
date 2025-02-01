@@ -105,8 +105,8 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     // Mode
     if ('mode' in changes) {
       // Get the previous and current values
-      const previousMode = changes.mode.previousValue
-      const currentMode = changes.mode.currentValue
+      const previousMode = changes.mode.previousValue as DrawerMode
+      const currentMode = changes.mode.currentValue as DrawerMode
 
       // Disable the animations
       this._disableAnimations()

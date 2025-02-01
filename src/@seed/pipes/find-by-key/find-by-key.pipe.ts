@@ -16,7 +16,7 @@ export class FindByKeyPipe implements PipeTransform {
    * @param key Key of the object property to look for
    * @param source Array of objects to find from
    */
-  transform(value: string | string[], key: string, source: any[]): any {
+  transform<T>(value: string | string[], key: string, source: T[]) {
     // If the given value is an array of strings...
     if (Array.isArray(value)) {
       return value.map((item) => source.find((sourceItem) => sourceItem[key] === item))

@@ -100,6 +100,16 @@
       opacity: 0.38 !important;
     }
   }
+
+  /* Adjust the color of mat-progress-spinner when used within buttons */
+  .mat-mdc-progress-spinner {
+    .mdc-circular-progress__indeterminate-container {
+      circle {
+        stroke: currentColor !important;
+        animation-duration: 6000ms;
+      }
+    }
+  }
 }
 
 /* Icon buttons */
@@ -142,34 +152,11 @@
 .mat-mdc-unelevated-button {
   padding: 0 20px !important;
   border-radius: 9999px !important;
-}
 
-/* Fix the alignment of icons when used within buttons */
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button {
+  /* Fix the alignment of icons when used within buttons */
   & > .mat-icon {
     margin-left: 0 !important;
     margin-right: 0 !important;
-  }
-}
-
-/* Adjust the color of mat-progress-spinner when used within buttons */
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-outlined-button,
-.mat-mdc-unelevated-button,
-.mat-mdc-icon-button,
-.mat-mdc-fab,
-.mat-mdc-mini-fab {
-  .mat-mdc-progress-spinner {
-    .mdc-circular-progress__indeterminate-container {
-      circle {
-        stroke: currentColor !important;
-        animation-duration: 6000ms;
-      }
-    }
   }
 }
 

@@ -3,7 +3,6 @@ import { coerceBooleanProperty } from '@angular/cdk/coercion'
 import { Platform } from '@angular/cdk/platform'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Directive, ElementRef, inject, Input } from '@angular/core'
-import { merge } from 'lodash-es'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs'
 import { ScrollbarGeometry, ScrollbarPosition } from './scrollbar.types'
@@ -60,7 +59,10 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
     // Scrollbar options
     if ('seedScrollbarOptions' in changes) {
       // Merge the options
-      this._options = merge({}, this._options, changes.seedScrollbarOptions.currentValue)
+      this._options = {
+        ...this._options,
+        ...(changes.seedScrollbarOptions.currentValue as PerfectScrollbar.Options),
+      }
 
       // Return if not initialized
       if (!this._ps) {
@@ -129,10 +131,10 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
    */
   geometry(prefix = 'scroll'): ScrollbarGeometry {
     return new ScrollbarGeometry(
-      this._elementRef.nativeElement[`${prefix}Left`],
-      this._elementRef.nativeElement[`${prefix}Top`],
-      this._elementRef.nativeElement[`${prefix}Width`],
-      this._elementRef.nativeElement[`${prefix}Height`],
+      Number(this._elementRef.nativeElement[`${prefix}Left`]),
+      Number(this._elementRef.nativeElement[`${prefix}Top`]),
+      Number(this._elementRef.nativeElement[`${prefix}Width`]),
+      Number(this._elementRef.nativeElement[`${prefix}Height`]),
     )
   }
 
@@ -142,15 +144,11 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
    * @param absolute
    */
   position(absolute = false): ScrollbarPosition {
-    let scrollbarPosition
-
     if (!absolute && this._ps) {
-      scrollbarPosition = new ScrollbarPosition(this._ps.reach.x || 0, this._ps.reach.y || 0)
+      return new ScrollbarPosition(this._ps.reach.x || 0, this._ps.reach.y || 0)
     } else {
-      scrollbarPosition = new ScrollbarPosition(this._elementRef.nativeElement.scrollLeft, this._elementRef.nativeElement.scrollTop)
+      return new ScrollbarPosition(this._elementRef.nativeElement.scrollLeft, this._elementRef.nativeElement.scrollTop)
     }
-
-    return scrollbarPosition
   }
 
   /**
@@ -284,7 +282,7 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
    * @param value
    * @param speed
    */
-  animateScrolling(target: string, value: number, speed?: number): void {
+  animateScrolling(target: 'scrollTop' | 'scrollLeft', value: number, speed?: number): void {
     if (this._animation) {
       window.cancelAnimationFrame(this._animation)
       this._animation = null
@@ -325,11 +323,6 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Initialize
-   *
-   * @private
-   */
   private _init(): void {
     // Return if already initialized
     if (this._ps) {
@@ -348,11 +341,6 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
     })
   }
 
-  /**
-   * Destroy
-   *
-   * @private
-   */
   private _destroy(): void {
     // Return if not initialized
     if (!this._ps) {

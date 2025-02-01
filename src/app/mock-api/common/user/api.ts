@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core'
 import type { CurrentUser } from '@seed/api/user'
 import { MockApiService } from '@seed/mock-api'
-import { user as userData } from 'app/mock-api/common/user/data'
+import { user as userData } from './data'
 
 @Injectable({ providedIn: 'root' })
 export class UserMockApi {
@@ -18,7 +18,7 @@ export class UserMockApi {
    * Register Mock API handlers
    */
   registerHandlers(): void {
-    this._mockApiService.onGet('api/common/user').reply(() => [200, structuredClone(this._user)])
+    this._mockApiService.onGet('/api/v3/users/current/').reply(() => [200, structuredClone(this._user)])
 
     this._mockApiService.onPatch('api/common/user').reply(({ request }) => {
       // Get the user mock-api
