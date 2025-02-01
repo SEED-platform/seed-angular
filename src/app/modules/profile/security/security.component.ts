@@ -1,5 +1,4 @@
 import { Component, ViewEncapsulation } from '@angular/core'
-import type { UntypedFormBuilder } from '@angular/forms'
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -18,8 +17,6 @@ export class ProfileSecurityComponent {
   newPassword: FormControl = new FormControl('', [Validators.required])
 
   confirmNewPassword: FormControl = new FormControl('', [Validators.required])
-
-  constructor(private _formBuilder: UntypedFormBuilder) {}
 
   onSubmit() {
     // Handle form submission (e.g., send the form data to an API)
