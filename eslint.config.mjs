@@ -1,5 +1,5 @@
 // @ts-check
-// import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended'
+import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended'
 import eslint from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import angular from 'angular-eslint'
@@ -9,7 +9,7 @@ import importPlugin from 'eslint-plugin-import'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  // cspellESLintPluginRecommended,
+  cspellESLintPluginRecommended,
   {
     files: ['**/*.ts', '**/*.mts'],
     extends: [

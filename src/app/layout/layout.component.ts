@@ -129,7 +129,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
     // a config for it.
     //
     // The reason we do this is that there might be empty grouping
-    // paths or componentless routes along the path. Because of that,
+    // paths or component-less routes along the path. Because of that,
     // we cannot just assume that the layout configuration will be
     // in the last path's config or in the first path's config.
     //
