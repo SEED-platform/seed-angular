@@ -40,7 +40,7 @@ const organizationsDerivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
 }
 
 export default [
-  { path: '', component: OrganizationsSettingsComponent },
+  { path: 'settings', component: OrganizationsSettingsComponent },
   { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
   { matcher: OrganizationsColumnMappingTypeMatcher, component: OrganizationsColumnMappingsComponent },
   { matcher: organizationsColumnSettingsTypeMatcher, component: OrganizationsColumnSettingsComponent },

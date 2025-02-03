@@ -26,8 +26,7 @@ export class OrganizationsDataQualityComponent implements OnInit {
 
   async toggleInventoryType(type: OrganizationTab) {
     if (type !== this.type) {
-      const orgId = this._route.snapshot.parent.params.organizationId as string
-      const newRoute = `/organizations/${orgId}/data-quality/${type}`
+      const newRoute = `/organizations/data-quality/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
       this.type = type
     }
