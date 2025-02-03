@@ -1,12 +1,12 @@
-@if (!dismissible || (dismissible && !dismissed)) {
-  <div class="seed-alert-container" [@fadeIn]="!dismissed" [@fadeOut]="!dismissed">
+@if (!dismissible() || (dismissible() && !dismissed())) {
+  <div class="seed-alert-container" [@fadeIn]="!dismissed()" [@fadeOut]="!dismissed()">
     <!-- Border -->
-    @if (appearance === 'border') {
+    @if (appearance() === 'border') {
       <div class="seed-alert-border"></div>
     }
 
     <!-- Icon -->
-    @if (showIcon) {
+    @if (showIcon()) {
       <div class="seed-alert-icon">
         <!-- Custom icon -->
         <div class="seed-alert-custom-icon">
@@ -15,7 +15,7 @@
 
         <!-- Default icons -->
         <div class="seed-alert-default-icon">
-          @switch (type) {
+          @switch (type()) {
             @case ('primary') {
               <mat-icon svgIcon="heroicons-solid:check-circle"></mat-icon>
             }

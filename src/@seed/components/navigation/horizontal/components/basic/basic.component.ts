@@ -1,6 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { MatTooltipModule } from '@angular/material/tooltip'
@@ -22,8 +22,8 @@ export class HorizontalNavigationBasicItemComponent implements OnInit, OnDestroy
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _navigationService = inject(SeedNavigationService)
 
-  @Input() item: NavigationItem
-  @Input() name: string
+  item = input<NavigationItem>()
+  name = input<string>()
 
   // Set the equivalent of {exact: false} as default for active match options.
   // We are not assigning the item.isActiveMatchOptions directly to the
@@ -38,10 +38,10 @@ export class HorizontalNavigationBasicItemComponent implements OnInit, OnDestroy
     // Set the "isActiveMatchOptions" either from item's
     // "isActiveMatchOptions" or the equivalent form of
     // item's "exactMatch" option
-    this.isActiveMatchOptions = this.item.isActiveMatchOptions ?? (this.item.exactMatch ? exactMatchOptions : subsetMatchOptions)
+    this.isActiveMatchOptions = this.item().isActiveMatchOptions ?? (this.item().exactMatch ? exactMatchOptions : subsetMatchOptions)
 
     // Get the parent navigation component
-    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name)
+    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name())
 
     // Mark for check
     this._changeDetectorRef.markForCheck()

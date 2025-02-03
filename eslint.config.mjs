@@ -6,6 +6,7 @@ import angular from 'angular-eslint'
 import github from 'eslint-plugin-github'
 import importPlugin from 'eslint-plugin-import'
 // import perfectionist from 'eslint-plugin-perfectionist'
+import unusedImports from 'eslint-plugin-unused-imports'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
@@ -37,6 +38,7 @@ export default tseslint.config(
     },
     plugins: {
       github,
+      'unused-imports': unusedImports,
     },
     settings: {
       'import/resolver': {
@@ -96,6 +98,7 @@ export default tseslint.config(
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-for-in-array': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-use-before-define': 'error',
       '@typescript-eslint/prefer-for-of': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', {
@@ -137,6 +140,7 @@ export default tseslint.config(
         ignoreCase: true,
         ignoreDeclarationSort: true,
       }],
+      'unused-imports/no-unused-imports': 'error',
       // TODO after enable strict
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',

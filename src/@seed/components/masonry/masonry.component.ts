@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common'
 import type { AfterViewInit, OnChanges, SimpleChanges, TemplateRef } from '@angular/core'
-import { Component, Input, ViewEncapsulation } from '@angular/core'
+import { Component, input, ViewEncapsulation } from '@angular/core'
 import { Animations } from '@seed/animations'
 
 @Component({
@@ -12,17 +12,13 @@ import { Animations } from '@seed/animations'
   imports: [NgTemplateOutlet],
 })
 export class MasonryComponent implements OnChanges, AfterViewInit {
-  @Input() columnsTemplate: TemplateRef<unknown>
-  @Input() columns: number
-  @Input() items: unknown[] = []
+  columnsTemplate = input.required<TemplateRef<unknown>>()
+  columns = input.required<number>()
+  items = input.required<unknown[]>()
   distributedColumns: { items: unknown[] }[] = []
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ('columns' in changes) {
-      this._distributeItems()
-    }
-
-    if ('items' in changes) {
+    if ('columns' in changes || 'items' in changes) {
       this._distributeItems()
     }
   }
@@ -37,19 +33,19 @@ export class MasonryComponent implements OnChanges, AfterViewInit {
    */
   private _distributeItems(): void {
     // Return an empty array if there are no items
-    if (this.items.length === 0) {
+    if (this.items().length === 0) {
       this.distributedColumns = []
       return
     }
 
     // Prepare the distributed columns array
-    this.distributedColumns = Array.from(Array(this.columns), () => ({
+    this.distributedColumns = Array.from(Array(this.columns()), () => ({
       items: [],
     }))
 
     // Distribute the items to columns
-    for (let i = 0; i < this.items.length; ++i) {
-      this.distributedColumns[i % this.columns].items.push(this.items[i])
+    for (let i = 0; i < this.items().length; ++i) {
+      this.distributedColumns[i % this.columns()].items.push(this.items()[i])
     }
   }
 }

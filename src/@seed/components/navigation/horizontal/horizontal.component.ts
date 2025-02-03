@@ -1,5 +1,5 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, model, ViewEncapsulation } from '@angular/core'
 import { ReplaySubject, Subject } from 'rxjs'
 import { Animations } from '@seed/animations'
 import { SeedNavigationService } from '@seed/components/navigation/navigation.service'
@@ -23,8 +23,8 @@ export class HorizontalNavigationComponent implements OnChanges, OnInit, OnDestr
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _navigationService = inject(SeedNavigationService)
 
-  @Input() name: string = randomId()
-  @Input() navigation: NavigationItem[]
+  name = model(randomId())
+  navigation = input<NavigationItem[]>()
 
   onRefreshed = new ReplaySubject<boolean>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -39,17 +39,17 @@ export class HorizontalNavigationComponent implements OnChanges, OnInit, OnDestr
 
   ngOnInit(): void {
     // Make sure the name input is not an empty string
-    if (this.name === '') {
-      this.name = randomId()
+    if (this.name() === '') {
+      this.name.set(randomId())
     }
 
     // Register the navigation component
-    this._navigationService.registerComponent(this.name, this)
+    this._navigationService.registerComponent(this.name(), this)
   }
 
   ngOnDestroy(): void {
     // Deregister the navigation component from the registry
-    this._navigationService.deregisterComponent(this.name)
+    this._navigationService.deregisterComponent(this.name())
 
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()

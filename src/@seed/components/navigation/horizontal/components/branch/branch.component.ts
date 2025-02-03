@@ -1,7 +1,6 @@
-import type { BooleanInput } from '@angular/cdk/coercion'
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, viewChild } from '@angular/core'
+import { booleanAttribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, viewChild } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import type { MatMenu } from '@angular/material/menu'
 import { MatMenuModule } from '@angular/material/menu'
@@ -18,24 +17,22 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
   templateUrl: './branch.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
-    MatMenuModule,
-    NgTemplateOutlet,
     HorizontalNavigationBasicItemComponent,
     HorizontalNavigationDividerItemComponent,
-    MatTooltipModule,
     MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
+    NgClass,
+    NgTemplateOutlet,
   ],
 })
 export class HorizontalNavigationBranchItemComponent implements OnInit, OnDestroy {
-  static ngAcceptInputType_child: BooleanInput
-
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _navigationService = inject(SeedNavigationService)
 
-  @Input() child = false
-  @Input() item: NavigationItem
-  @Input() name: string
+  child = input(false, { transform: booleanAttribute })
+  item = input<NavigationItem>()
+  name = input<string>()
   readonly matMenu = viewChild.required<MatMenu>('matMenu')
 
   private _horizontalNavigationComponent: HorizontalNavigationComponent
@@ -43,7 +40,7 @@ export class HorizontalNavigationBranchItemComponent implements OnInit, OnDestro
 
   ngOnInit(): void {
     // Get the parent navigation component
-    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name)
+    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name())
 
     // Subscribe to onRefreshed on the navigation component
     this._horizontalNavigationComponent.onRefreshed.pipe(takeUntil(this._unsubscribeAll$)).subscribe(() => {

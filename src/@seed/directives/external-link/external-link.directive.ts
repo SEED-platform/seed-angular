@@ -1,5 +1,5 @@
 import type { OnChanges } from '@angular/core'
-import { Directive, HostBinding, Input } from '@angular/core'
+import { Directive, HostBinding, input } from '@angular/core'
 
 @Directive({
   selector: 'a[href]',
@@ -8,7 +8,7 @@ export class ExternalLinkDirective implements OnChanges {
   @HostBinding('attr.href') hrefAttr: string | null = null
   @HostBinding('attr.rel') relAttr: string | null = null
   @HostBinding('attr.target') targetAttr: string | null = null
-  @Input() href: string | undefined
+  href = input<string>()
 
   static isLinkExternal(href: string | null) {
     if (!href || href.startsWith('mailto:')) return false
@@ -16,10 +16,10 @@ export class ExternalLinkDirective implements OnChanges {
   }
 
   ngOnChanges() {
-    if (this.href) {
-      this.hrefAttr = this.href
+    if (this.href()) {
+      this.hrefAttr = this.href()
 
-      if (ExternalLinkDirective.isLinkExternal(this.href)) {
+      if (ExternalLinkDirective.isLinkExternal(this.href())) {
         this.relAttr = 'noopener noreferrer'
         this.targetAttr = '_blank'
       } else {

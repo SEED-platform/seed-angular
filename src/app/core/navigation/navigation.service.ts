@@ -94,7 +94,7 @@ export class NavigationService {
 
     if (dataComponent) {
       // Get the navigation item, update the badge and refresh the component
-      const navigation = dataComponent.navigation
+      const navigation = dataComponent.navigation()
       const item = this._seedNavigationService.getItem(itemId, navigation)
       item.badge = {
         title: String(title),

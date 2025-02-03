@@ -1,5 +1,5 @@
 <div class="seed-horizontal-navigation-wrapper">
-  @for (item of navigation; track item.id || $index) {
+  @for (item of navigation(); track item.id || $index) {
     <!-- Skip the hidden items -->
     @if ((item.hidden && !item.hidden(item)) || !item.hidden) {
       <!-- Basic -->
@@ -7,7 +7,7 @@
         <seed-horizontal-navigation-basic-item
           class="seed-horizontal-navigation-menu-item"
           [item]="item"
-          [name]="name"
+          [name]="name()"
         ></seed-horizontal-navigation-basic-item>
       }
 
@@ -16,7 +16,7 @@
         <seed-horizontal-navigation-branch-item
           class="seed-horizontal-navigation-menu-item"
           [item]="item"
-          [name]="name"
+          [name]="name()"
         ></seed-horizontal-navigation-branch-item>
       }
 
@@ -25,7 +25,7 @@
         <seed-horizontal-navigation-spacer-item
           class="seed-horizontal-navigation-menu-item"
           [item]="item"
-          [name]="name"
+          [name]="name()"
         ></seed-horizontal-navigation-spacer-item>
       }
     }

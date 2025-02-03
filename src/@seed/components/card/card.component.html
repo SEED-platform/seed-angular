@@ -1,4 +1,4 @@
-@if (flippable) {
+@if (flippable()) {
   <!-- Flippable card -->
   <!-- Front -->
   <div class="card-front">
@@ -15,7 +15,7 @@
   <ng-content></ng-content>
 
   <!-- Expansion -->
-  @if (expanded) {
+  @if (expanded()) {
     <div class="card-expansion" [@expandCollapse]>
       <ng-content select="[cardExpansion]"></ng-content>
     </div>
