@@ -1,7 +1,9 @@
 import { inject, Injectable } from '@angular/core'
-import Base64 from 'crypto-js/enc-base64'
-import Utf8 from 'crypto-js/enc-utf8'
-import HmacSHA256 from 'crypto-js/hmac-sha256'
+import type { WordArray } from 'crypto-es/lib/core'
+import { Utf8 } from 'crypto-es/lib/core'
+import { Base64 } from 'crypto-es/lib/enc-base64'
+import { HmacSHA256 } from 'crypto-es/lib/sha256'
+import type { CurrentUser } from '@seed/api/user'
 import { MockApiService } from '@seed/mock-api'
 import { user as userData } from 'app/mock-api/common/user/data'
 
@@ -9,8 +11,8 @@ import { user as userData } from 'app/mock-api/common/user/data'
 export class AuthMockApi {
   private _mockApiService = inject(MockApiService)
 
-  private readonly _secret: any
-  private _user: any = userData
+  private readonly _secret: string
+  private _user: CurrentUser = userData
 
   constructor() {
     // Set the mock-api
@@ -39,7 +41,8 @@ export class AuthMockApi {
     // -----------------------------------------------------------------------------------------------------
     this._mockApiService.onPost('api/auth/sign-in', 1500).reply(({ request }) => {
       // Sign in successful
-      if (request.body.email === 'alex.swindler@nrel.gov' && request.body.password === 'admin') {
+      const body = request.body as Record<string, string>
+      if (body.email === 'alex.swindler@nrel.gov' && body.password === 'password') {
         return [
           200,
           {
@@ -59,7 +62,7 @@ export class AuthMockApi {
     // -----------------------------------------------------------------------------------------------------
     this._mockApiService.onPost('api/auth/sign-in-with-token').reply(({ request }) => {
       // Get the access token
-      const accessToken = request.body.accessToken
+      const { accessToken } = request.body as Record<string, string>
 
       // Verify the token
       if (this._verifyJWTToken(accessToken)) {
@@ -97,7 +100,7 @@ export class AuthMockApi {
    * @param source
    * @private
    */
-  private _base64url(source: any): string {
+  private _base64url(source: WordArray): string {
     // Encode in classical base64
     let encodedSource = Base64.stringify(source)
 
@@ -148,7 +151,7 @@ export class AuthMockApi {
     const encodedPayload = this._base64url(stringifiedPayload)
 
     // Sign the encoded header and mock-api
-    let signature: any = `${encodedHeader}.${encodedPayload}`
+    let signature: WordArray | string = `${encodedHeader}.${encodedPayload}`
     signature = HmacSHA256(signature, this._secret)
     signature = this._base64url(signature)
 

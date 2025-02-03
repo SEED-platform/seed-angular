@@ -7,12 +7,12 @@ import type { Palette } from '../plugins'
  * default Tailwind color palettes.
  */
 export const generateContrasts = (palette: Palette) => {
-  const lightColor = '#ffffff'
-  let darkColor = '#ffffff'
+  const lightColor = '#fff'
+  let darkColor = '#fff'
 
   // Iterate through the palette to find the darkest color
   for (const color of Object.values(palette)) {
-    darkColor = chroma.contrast(color, '#ffffff') > chroma.contrast(darkColor, '#ffffff') ? color : darkColor
+    darkColor = chroma.contrast(color, '#fff') > chroma.contrast(darkColor, '#fff') ? color : darkColor
   }
 
   // Generate the contrasting colors

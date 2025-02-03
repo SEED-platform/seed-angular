@@ -7,30 +7,20 @@
 
 <!-- Alert -->
 @if (showAlert) {
-  <seed-alert class="-mb-4 mt-8" [appearance]="'outline'" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
+  <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
     {{ alert.message }}
   </seed-alert>
 }
 
 <!-- Sign Up form -->
 <form class="mt-8" [formGroup]="signUpForm">
-  <!-- Name field -->
-  <mat-form-field class="w-full">
-    <mat-label>Full name</mat-label>
-    <input id="name" matInput [formControlName]="'name'" />
-    @if (signUpForm.get('name').hasError('required')) {
-      <mat-error>Full name is required</mat-error>
-    }
-  </mat-form-field>
-
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput [formControlName]="'email'" />
+    <input id="email" matInput type="email" formControlName="email" class="text-lg sm:text-base" />
     @if (signUpForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
-    }
-    @if (signUpForm.get('email').hasError('email')) {
+    } @else if (signUpForm.get('email').hasError('email')) {
       <mat-error>Please enter a valid email address</mat-error>
     }
   </mat-form-field>
@@ -38,7 +28,7 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" [formControlName]="'password'" #passwordField />
+    <input id="password" matInput type="password" formControlName="password" #passwordField class="text-lg sm:text-base" />
     <button
       mat-icon-button
       type="button"
@@ -46,17 +36,23 @@
       matSuffix
     >
       @if (passwordField.type === 'password') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye-slash'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye-slash"></mat-icon>
       } @else if (passwordField.type === 'text') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye"></mat-icon>
       }
     </button>
-    <mat-error>Password is required</mat-error>
+    @if (signUpForm.get('password').hasError('required')) {
+      <mat-error>Password is required</mat-error>
+    } @else if (signUpForm.get('password').hasError('minlength')) {
+      <mat-error>Password must be at least 8 characters</mat-error>
+    } @else if (signUpForm.get('password').hasError('pattern')) {
+      <mat-error>Passwords must contain an uppercase letter, a lowercase letter, and a number</mat-error>
+    }
   </mat-form-field>
 
   <!-- ToS -->
   <div class="mt-1.5 inline-flex w-full flex-col">
-    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" [color]="'primary'" [formControlName]="'terms'">
+    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms">
       <span>I agree with the</span>
       <a
         class="ml-1 cursor-pointer text-primary-500 hover:underline focus:underline"
@@ -70,11 +66,11 @@
   </div>
 
   <!-- Submit button -->
-  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button [color]="'primary'" [disabled]="signUpForm.disabled" (click)="signUp()">
+  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button color="primary" [disabled]="signUpForm.disabled" (click)="signUp()">
     @if (!signUpForm.disabled) {
       <span>Create my account</span>
     } @else {
-      <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
     }
   </button>
 </form>

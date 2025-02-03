@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { AuthService } from 'app/core/auth/auth.service'
 
@@ -31,19 +31,16 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthForgotPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
 
-  @ViewChild('forgotPasswordNgForm') forgotPasswordNgForm: NgForm
+  alert: Alert
+  forgotPasswordForm: FormGroup<{
+    email: FormControl<string>;
+  }>
 
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
-  forgotPasswordForm: UntypedFormGroup
   showAlert = false
 
   ngOnInit(): void {
-    // Create the form
     this.forgotPasswordForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
     })
@@ -72,7 +69,7 @@ export class AuthForgotPasswordComponent implements OnInit {
           // Re-enable the form
           this.forgotPasswordForm.enable()
 
-          this.forgotPasswordNgForm.resetForm()
+          this.forgotPasswordForm.reset()
 
           this.showAlert = true
         }),

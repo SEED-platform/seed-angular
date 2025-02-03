@@ -5,11 +5,12 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { RouterLink, RouterOutlet } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
+import { VersionService } from '@seed/api/version'
+import type { NavigationItem } from '@seed/components'
 import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MediaWatcherService } from '@seed/services'
-import { SEED_VERSION } from '@seed/version'
 import { NavigationService } from 'app/core/navigation/navigation.service'
-import type { Navigation } from 'app/core/navigation/navigation.types'
+import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
 
 @Component({
@@ -20,6 +21,7 @@ import { UserComponent } from 'app/layout/common/user/user.component'
     CdkScrollable,
     MatButtonModule,
     MatIconModule,
+    OrganizationSelectorComponent,
     RouterLink,
     RouterOutlet,
     SEEDLoadingBarComponent,
@@ -31,17 +33,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private _mediaWatcherService = inject(MediaWatcherService)
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
+  private _versionService = inject(VersionService)
 
   isScreenSmall: boolean
-  navigation: Navigation
+  navigation: NavigationItem[]
   navigationAppearance: 'default' | 'dense' = 'dense'
   private readonly _unsubscribeAll$ = new Subject<void>()
+  version: string
+  sha: string
 
   ngOnInit(): void {
-    // Subscribe to navigation data
-    this._navigationService.navigation$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((navigation: Navigation) => {
-      this.navigation = navigation
-    })
+    this.navigation = this._navigationService.navigation
 
     // Subscribe to media changes
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {
@@ -52,7 +54,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
     })
 
-    this.toggleNavigationAppearance()
+    this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {
+      this.version = version
+      this.sha = sha
+    })
   }
 
   ngOnDestroy(): void {
@@ -81,6 +86,4 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   toggleNavigationAppearance(): void {
     this.navigationAppearance = this.navigationAppearance === 'default' ? 'dense' : 'default'
   }
-
-  readonly SEED_VERSION = SEED_VERSION
 }

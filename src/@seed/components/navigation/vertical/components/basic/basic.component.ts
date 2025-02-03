@@ -7,8 +7,8 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
+import { SharedImports } from '@seed/directives'
 import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
-import { SharedImports } from '../../../../..'
 
 @Component({
   selector: 'seed-vertical-navigation-basic-item',

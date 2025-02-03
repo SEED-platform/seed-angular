@@ -1,33 +1,24 @@
 import { inject, Injectable } from '@angular/core'
-import { merge } from 'lodash-es'
-import type { Observable } from 'rxjs'
 import { BehaviorSubject } from 'rxjs'
 import { SEED_CONFIG } from './config.constants'
+import type { SEEDConfig } from './config.types'
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
   private _config = new BehaviorSubject(inject(SEED_CONFIG))
 
-  /**
-   * Setter & getter for config
-   */
-  set config(value: any) {
-    // Merge the new config over to the current config
-    const config = merge({}, this._config.getValue(), value)
-
-    // Execute the observable
-    this._config.next(config)
-  }
-
-  get config$(): Observable<any> {
+  get config$() {
     return this._config.asObservable()
   }
 
-  /**
-   * Resets the config to the default
-   */
-  reset(): void {
-    // Set the config
-    this._config.next(this.config)
+  set config(value: Partial<SEEDConfig>) {
+    // Merge the new config over to the current config
+    const config = {
+      ...this._config.getValue(),
+      ...value,
+    }
+
+    // Execute the observable
+    this._config.next(config)
   }
 }

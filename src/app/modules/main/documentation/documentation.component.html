@@ -9,7 +9,7 @@
         <mat-accordion class="mt-8 max-w-4xl">
           @for (faq of faqCategory.faqs; track $index) {
             <mat-expansion-panel>
-              <mat-expansion-panel-header [collapsedHeight]="'56px'">
+              <mat-expansion-panel-header collapsedHeight="56px">
                 <mat-panel-title class="select-none font-medium leading-tight">{{ faq.question }}</mat-panel-title>
               </mat-expansion-panel-header>
               <div class="prose max-w-none" [innerHTML]="faq.answer" innerHTMLExternalLinks innerHTMLImageOverlay></div>

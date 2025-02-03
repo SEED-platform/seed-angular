@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core'
-import { SharedImports } from '../../../../@seed'
+import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-home',

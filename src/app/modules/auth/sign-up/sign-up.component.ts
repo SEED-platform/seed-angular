@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -10,9 +10,9 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { Router, RouterLink } from '@angular/router'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
-import { TermsOfServiceService } from '@seed/services'
+import { TermsService } from '@seed/services'
 import { AuthService } from 'app/core/auth/auth.service'
 
 @Component({
@@ -35,35 +35,35 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthSignUpComponent implements OnInit {
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
   private _router = inject(Router)
-  private _termsOfServiceService = inject(TermsOfServiceService)
+  private _termsOfServiceService = inject(TermsService)
 
-  @ViewChild('signUpNgForm') signUpNgForm: NgForm
+  // At least 8 characters, one uppercase letter, one lowercase letter, and one number
+  private readonly _passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/
 
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
-  signUpForm: UntypedFormGroup
+  alert: Alert
+  signUpForm: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+    terms: FormControl<boolean>;
+  }>
   showAlert = false
 
+  get isTermsInvalid() {
+    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
+  }
+
   ngOnInit(): void {
-    // Create the form
     this.signUpForm = this._formBuilder.group({
-      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(this._passwordPattern)]],
       terms: [false, Validators.requiredTrue],
     })
   }
 
   showTermsOfService(): void {
     this._termsOfServiceService.showTermsOfService()
-  }
-
-  get isTermsInvalid() {
-    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
   }
 
   signUp(): void {
@@ -90,7 +90,7 @@ export class AuthSignUpComponent implements OnInit {
         // Re-enable the form
         this.signUpForm.enable()
 
-        this.signUpNgForm.resetForm()
+        this.signUpForm.reset()
 
         // Set the alert
         this.alert = {

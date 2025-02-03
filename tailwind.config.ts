@@ -1,6 +1,7 @@
 import typography from '@tailwindcss/typography'
 import colors from 'tailwindcss/colors'
 import defaultTheme from 'tailwindcss/defaultTheme'
+import { screens } from './src/@seed/services/config/config.screens'
 import type { Palette, Themes } from './src/@seed/tailwind/plugins'
 import { iconSize, theming, utilities } from './src/@seed/tailwind/plugins'
 
@@ -59,12 +60,7 @@ export default {
       '9xl': '6rem',
       '10xl': '8rem',
     },
-    screens: {
-      sm: '600px',
-      md: '960px',
-      lg: '1280px',
-      xl: '1440px',
-    },
+    screens,
     extend: {
       animation: {
         'spin-slow': 'spin 3s linear infinite',

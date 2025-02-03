@@ -31,7 +31,7 @@
         [preserveFragment]="item.preserveFragment ?? false"
         [queryParams]="item.queryParams ?? null"
         [queryParamsHandling]="item.queryParamsHandling ?? null"
-        [routerLinkActive]="'seed-vertical-navigation-item-active'"
+        routerLinkActive="seed-vertical-navigation-item-active"
         [routerLinkActiveOptions]="isActiveMatchOptions"
         [matTooltip]="item.tooltip || ''"
       >
@@ -87,7 +87,7 @@
         [preserveFragment]="item.preserveFragment ?? false"
         [queryParams]="item.queryParams ?? null"
         [queryParamsHandling]="item.queryParamsHandling ?? null"
-        [routerLinkActive]="'seed-vertical-navigation-item-active'"
+        routerLinkActive="seed-vertical-navigation-item-active"
         [routerLinkActiveOptions]="isActiveMatchOptions"
         [matTooltip]="item.tooltip || ''"
         (click)="item.fn(item)"

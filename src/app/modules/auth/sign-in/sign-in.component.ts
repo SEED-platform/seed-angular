@@ -1,7 +1,7 @@
-import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -9,10 +9,12 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import { ConfigService } from '@seed/api/config'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
-import { TermsOfServiceService } from '@seed/services'
+import { TermsService } from '@seed/services'
 import { AuthService } from 'app/core/auth/auth.service'
 
 @Component({
@@ -33,29 +35,40 @@ import { AuthService } from 'app/core/auth/auth.service'
     RouterLink,
   ],
 })
-export class AuthSignInComponent implements OnInit {
+export class AuthSignInComponent implements OnInit, OnDestroy {
   private _activatedRoute = inject(ActivatedRoute)
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _configService = inject(ConfigService)
+  private _formBuilder = inject(FormBuilder)
   private _router = inject(Router)
-  private _termsOfServiceService = inject(TermsOfServiceService)
+  private _termsOfServiceService = inject(TermsService)
 
-  @ViewChild('signInNgForm') signInNgForm: NgForm
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
-  signInForm: UntypedFormGroup
+  alert: Alert
+  allowSignUp = false
   showAlert = false
+  signInForm: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+    terms: FormControl<boolean>;
+  }>
 
   ngOnInit(): void {
-    // Create the form
+    this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ allow_signup: allowSignUp }) => {
+      this.allowSignUp = allowSignUp
+    })
+
     this.signInForm = this._formBuilder.group({
-      email: ['alex.swindler@nrel.gov', [Validators.required, Validators.email]],
-      password: ['admin', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
     })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 
   showTermsOfService(): void {
@@ -81,12 +94,14 @@ export class AuthSignInComponent implements OnInit {
     this.showAlert = false
 
     // Sign in
-    this._authService.signIn(this.signInForm.value).subscribe({
+    const { email, password } = this.signInForm.value as { email: string; password: string; terms: boolean }
+    this._authService.signIn({ username: email.toLowerCase(), password }).subscribe({
       next: () => {
         // Set the redirect url.
         // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
         // to the correct page after a successful sign in. This way, that url can be set via
         // routing file and we don't have to touch here.
+
         const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
 
         // Navigate to the redirect url
@@ -96,7 +111,7 @@ export class AuthSignInComponent implements OnInit {
         // Re-enable the form
         this.signInForm.enable()
 
-        this.signInNgForm.resetForm()
+        this.signInForm.reset()
 
         // Set the alert
         this.alert = {

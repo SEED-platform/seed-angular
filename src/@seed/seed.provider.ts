@@ -1,7 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import type { EnvironmentProviders, Provider } from '@angular/core'
 import { importProvidersFrom, inject, provideAppInitializer, provideEnvironmentInitializer } from '@angular/core'
-import { MATERIAL_SANITY_CHECKS } from '@angular/material/core'
 import { MatDialogModule } from '@angular/material/dialog'
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field'
 import { MOCK_API_DEFAULT_DELAY, mockApiInterceptor } from '@seed/mock-api'
@@ -15,11 +14,12 @@ import {
   SEED_CONFIG,
   SplashScreenService,
 } from '@seed/services'
+import { MockApiService } from '../app/mock-api'
 
 export type SEEDProviderConfig = {
   mockApi?: {
+    enabled: boolean;
     delay?: number;
-    service?: any;
   };
   seed?: SEEDConfig;
 }
@@ -30,15 +30,6 @@ export type SEEDProviderConfig = {
 export const provideSEED = (config: SEEDProviderConfig): (Provider | EnvironmentProviders)[] => {
   // Base providers
   const providers: (Provider | EnvironmentProviders)[] = [
-    {
-      // Disable 'theme' sanity check
-      provide: MATERIAL_SANITY_CHECKS,
-      useValue: {
-        doctype: true,
-        theme: false,
-        version: true,
-      },
-    },
     {
       // Use the 'fill' appearance on Angular Material form fields by default
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
@@ -66,11 +57,11 @@ export const provideSEED = (config: SEEDProviderConfig): (Provider | Environment
   ]
 
   // Mock Api services
-  if (config.mockApi?.service) {
+  if (config.mockApi?.enabled) {
     providers.push(
       provideHttpClient(withInterceptors([mockApiInterceptor])),
       provideAppInitializer(() => {
-        inject(config.mockApi.service)
+        inject(MockApiService)
       }),
     )
   }

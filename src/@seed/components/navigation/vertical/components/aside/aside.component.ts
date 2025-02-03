@@ -10,22 +10,23 @@ import type { NavigationItem, VerticalNavigationComponent } from '@seed/componen
 import {
   SeedNavigationService,
   VerticalNavigationBasicItemComponent,
-  VerticalNavigationCollapsableItemComponent,
+  VerticalNavigationCollapsibleItemComponent,
   VerticalNavigationDividerItemComponent,
   VerticalNavigationGroupItemComponent,
   VerticalNavigationSpacerItemComponent,
 } from '@seed/components'
+import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 
 @Component({
   selector: 'seed-vertical-navigation-aside-item',
   templateUrl: './aside.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
-    MatTooltipModule,
     MatIconModule,
+    MatTooltipModule,
+    NgClass,
     VerticalNavigationBasicItemComponent,
-    VerticalNavigationCollapsableItemComponent,
+    VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
     VerticalNavigationGroupItemComponent,
     VerticalNavigationSpacerItemComponent,
@@ -115,7 +116,7 @@ export class VerticalNavigationAsideItemComponent implements OnChanges, OnInit, 
       }
 
       // Check if the child has a link and is active
-      if (child.link && this._router.isActive(child.link, child.exactMatch || false)) {
+      if (child.link && this._router.isActive(child.link, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
         return true
       }
     }

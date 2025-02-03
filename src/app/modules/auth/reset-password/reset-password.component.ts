@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import type { NgForm, UntypedFormGroup } from '@angular/forms'
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import type { FormControl, FormGroup } from '@angular/forms'
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
 import { Animations } from '@seed/animations'
-import type { AlertType } from '@seed/components'
+import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { SEEDValidators } from '@seed/validators'
 import { AuthService } from 'app/core/auth/auth.service'
@@ -34,19 +34,16 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthResetPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
-  private _formBuilder = inject(UntypedFormBuilder)
+  private _formBuilder = inject(FormBuilder)
 
-  @ViewChild('resetPasswordNgForm') resetPasswordNgForm: NgForm
-
-  alert: { type: AlertType; message: string } = {
-    type: 'success',
-    message: '',
-  }
-  resetPasswordForm: UntypedFormGroup
+  alert: Alert
+  resetPasswordForm: FormGroup<{
+    password: FormControl<string>;
+    passwordConfirm: FormControl<string>;
+  }>
   showAlert = false
 
   ngOnInit(): void {
-    // Create the form
     this.resetPasswordForm = this._formBuilder.group(
       {
         password: ['', Validators.required],
@@ -81,7 +78,7 @@ export class AuthResetPasswordComponent implements OnInit {
           // Re-enable the form
           this.resetPasswordForm.enable()
 
-          this.resetPasswordNgForm.resetForm()
+          this.resetPasswordForm.reset()
 
           this.showAlert = true
         }),

@@ -1,5 +1,5 @@
 // @ts-check
-// import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended'
+import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended'
 import eslint from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import angular from 'angular-eslint'
@@ -9,9 +9,9 @@ import importPlugin from 'eslint-plugin-import'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  // cspellESLintPluginRecommended,
+  cspellESLintPluginRecommended,
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.mts'],
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.strictTypeChecked,
@@ -69,13 +69,39 @@ export default tseslint.config(
       '@stylistic/type-annotation-spacing': 'error',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/member-ordering': ['error', {
+        default: [
+          'signature',
+          'field',
+          'constructor',
+          'accessor',
+          'static-method',
+          'decorated-method',
+          'public-method',
+          'private-method',
+          'method'
+        ]
+      }],
+      '@typescript-eslint/naming-convention': ['error', {
+        selector: 'variableLike',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require'
+      }, {
+        selector: 'memberLike',
+        modifiers: ['private'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require'
+      }],
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-for-in-array': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-use-before-define': 'error',
       '@typescript-eslint/prefer-for-of': 'error',
+      '@typescript-eslint/restrict-template-expressions': ['error', {
+        allowNumber: true,
+      }],
       'github/array-foreach': 'error',
-      'import/no-cycle': 'error',
       'import/no-deprecated': 'error',
       'import/no-empty-named-blocks': 'error',
       'import/no-extraneous-dependencies': 'error',
@@ -115,8 +141,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       // TODO
-      'camelcase': 'off',
       '@typescript-eslint/unbound-method': 'off',
+      'camelcase': 'off',
+      'import/no-cycle': 'off',
     },
   },
   {
@@ -126,6 +153,7 @@ export default tseslint.config(
       ...angular.configs.templateAccessibility,
     ],
     rules: {
+      '@angular-eslint/template/prefer-control-flow': 'error',
       // TODO
       '@angular-eslint/template/click-events-have-key-events': 'off',
       '@angular-eslint/template/interactive-supports-focus': 'off',

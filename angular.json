@@ -32,11 +32,6 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "allowedCommonJsDependencies": [
-              "crypto-js/enc-utf8",
-              "crypto-js/hmac-sha256",
-              "crypto-js/enc-base64"
-            ],
             "assets": [
               {
                 "glob": "**/*",
@@ -69,8 +64,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "75kb",
-                  "maximumError": "90kb"
+                  "maximumWarning": "200kb",
+                  "maximumError": "200kb"
                 }
               ],
               "outputHashing": "all",
@@ -95,7 +90,12 @@
               "host": "0.0.0.0"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "disableHostCheck": true,
+            "host": "0.0.0.0",
+            "proxyConfig": "proxy.conf.mjs"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"

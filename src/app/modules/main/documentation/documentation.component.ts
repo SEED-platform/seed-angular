@@ -2,8 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatIconModule } from '@angular/material/icon'
-import { SharedImports } from '@seed'
-import { InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective } from '@seed/directives'
+import { InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-documentation',

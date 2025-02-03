@@ -1,8 +1,7 @@
 import type { Route, UrlSegment } from '@angular/router'
-import { initialDataResolver } from 'app/app.resolvers'
-import { AuthGuard } from 'app/core/auth/guards/auth.guard'
-import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard'
-import { LayoutComponent } from 'app/layout/layout.component'
+import { configResolver, initialDataResolver } from './app.resolvers'
+import { AuthGuard, NoAuthGuard } from './core/auth'
+import { LayoutComponent } from './layout/layout.component'
 import { AboutComponent } from './modules/main/about/about.component'
 import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
@@ -36,6 +35,9 @@ export const appRoutes: Route[] = [
     canActivate: [NoAuthGuard],
     canActivateChild: [NoAuthGuard],
     component: LayoutComponent,
+    resolve: {
+      config: configResolver,
+    },
     data: {
       layout: 'landing',
     },
@@ -66,6 +68,16 @@ export const appRoutes: Route[] = [
         matcher: inventoryTypeMatcher,
         loadChildren: () => import('app/modules/inventory/inventory.routes'),
       },
+      {
+        path: 'data',
+        loadChildren: () => import('app/modules/data/data.routes'),
+      },
+      { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
+      {
+        path: 'api-documentation',
+        loadChildren: () => import('app/modules/api/api.routes'),
+      },
+      { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'about', title: 'About', component: AboutComponent },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },

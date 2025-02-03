@@ -1,27 +1,28 @@
 <!-- Title -->
 <div class="mt-8 text-4xl font-extrabold leading-tight tracking-tight">Sign in</div>
-<div class="mt-0.5 flex items-baseline font-medium">
-  <div>Don't have an account?</div>
-  <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/sign-up']">Sign up</a>
-</div>
+@if (allowSignUp) {
+  <div class="mt-0.5 flex items-baseline font-medium">
+    <div>Don't have an account?</div>
+    <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/sign-up']">Sign up</a>
+  </div>
+}
 
 <!-- Alert -->
 @if (showAlert) {
-  <seed-alert class="-mb-4 mt-8" [appearance]="'outline'" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
+  <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
     {{ alert.message }}
   </seed-alert>
 }
 
 <!-- Sign in form -->
-<form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
+<form class="mt-8" [formGroup]="signInForm">
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput [formControlName]="'email'" />
+    <input id="email" matInput type="email" formControlName="email" class="text-lg sm:text-base" />
     @if (signInForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
-    }
-    @if (signInForm.get('email').hasError('email')) {
+    } @else if (signInForm.get('email').hasError('email')) {
       <mat-error>Please enter a valid email address</mat-error>
     }
   </mat-form-field>
@@ -29,7 +30,7 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" [formControlName]="'password'" #passwordField />
+    <input id="password" matInput type="password" formControlName="password" #passwordField class="text-lg sm:text-base" />
     <button
       mat-icon-button
       type="button"
@@ -37,9 +38,9 @@
       matSuffix
     >
       @if (passwordField.type === 'password') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye-slash'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye-slash"></mat-icon>
       } @else if (passwordField.type === 'text') {
-        <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:eye'"></mat-icon>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:eye"></mat-icon>
       }
     </button>
     <mat-error>Password is required</mat-error>
@@ -51,7 +52,7 @@
   </div>
 
   <div class="mt-1.5 flex w-full flex-col">
-    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" [color]="'primary'" [formControlName]="'terms'">
+    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms">
       <span>I agree with the</span>
       <a
         class="ml-1 cursor-pointer text-primary-500 hover:underline focus:underline"
@@ -65,11 +66,11 @@
   </div>
 
   <!-- Submit button -->
-  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button [color]="'primary'" [disabled]="signInForm.disabled" (click)="signIn()">
+  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button color="primary" [disabled]="signInForm.disabled" (click)="signIn()">
     @if (!signInForm.disabled) {
       <span>Sign in</span>
     } @else {
-      <mat-progress-spinner [diameter]="24" [mode]="'indeterminate'"></mat-progress-spinner>
+      <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
     }
   </button>
 </form>

@@ -7,15 +7,15 @@ Following these guidelines helps keep the codebase clean, maintainable, and scal
 ---
 
 ## Table of Contents
-1. [References](#references)
-2. [Project Philosophy](#project-philosophy)
-3. [Angular Conventions](#angular-conventions)
-4. [TypeScript Conventions](#typescript-conventions)
-5. [RxJS Best Practices](#rxjs-best-practices)
-6. [CSS & Tailwind Conventions](#css--tailwind-conventions)
-7. [Code Organization & Structure](#code-organization--structure)
-8. [General Best Practices](#general-best-practices)
-9. [ESLint & Code Quality](#eslint--code-quality)
+1. [References](#1-references)
+2. [Project Philosophy](#2-project-philosophy)
+3. [Angular Conventions](#3-angular-conventions)
+4. [TypeScript Conventions](#4-typescript-conventions)
+5. [RxJS Best Practices](#5-rxjs-best-practices)
+6. [CSS & Tailwind Conventions](#6-css--tailwind-conventions)
+7. [Code Organization & Structure](#7-code-organization--structure)
+8. [General Best Practices](#8-general-best-practices)
+9. [ESLint & Code Quality](#9-eslint--code-quality)
 
 ---
 
@@ -71,6 +71,7 @@ Following these guidelines helps keep the codebase clean, maintainable, and scal
 
 4. **Lifecycle Hooks**
    - Always unsubscribe from observables in `ngOnDestroy()` to prevent memory leaks.
+     - The exception to this rule is that you do not need to unsubscribe from Angular HttpClient requests - these requests emit a single value and _complete_ (automatic cleanup), so manually unsubscribing is unnecessary.
 
 5. **Routing & Lazy Loading**
    - Take advantage of Angular's lazy-loading capabilities for modules to optimize performance.

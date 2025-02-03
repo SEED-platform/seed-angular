@@ -1,5 +1,6 @@
 import type { Routes } from '@angular/router'
 import { AuthSignUpComponent } from 'app/modules/auth/sign-up/sign-up.component'
+import { SignUpGuard } from '../../core/auth'
 import { AuthConfirmationRequiredComponent } from './confirmation-required/confirmation-required.component'
 import { AuthForgotPasswordComponent } from './forgot-password/forgot-password.component'
 import { AuthResetPasswordComponent } from './reset-password/reset-password.component'
@@ -28,6 +29,7 @@ export default [
   },
   {
     path: 'sign-up',
+    canActivate: [SignUpGuard],
     title: 'Sign Up',
     component: AuthSignUpComponent,
   },
