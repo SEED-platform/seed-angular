@@ -1,7 +1,7 @@
 import type { BooleanInput } from '@angular/cdk/coercion'
 import { NgClass } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router } from '@angular/router'
@@ -27,7 +27,6 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
     MatTooltipModule,
     MatIconModule,
     VerticalNavigationBasicItemComponent,
-    forwardRef(() => VerticalNavigationCollapsibleItemComponent),
     VerticalNavigationDividerItemComponent,
     VerticalNavigationGroupItemComponent,
     VerticalNavigationSpacerItemComponent,

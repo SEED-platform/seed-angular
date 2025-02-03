@@ -1,7 +1,7 @@
 import type { BooleanInput } from '@angular/cdk/coercion'
 import { NgClass } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
@@ -23,7 +23,6 @@ import {
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
-    forwardRef(() => VerticalNavigationGroupItemComponent),
     VerticalNavigationSpacerItemComponent,
   ],
 })

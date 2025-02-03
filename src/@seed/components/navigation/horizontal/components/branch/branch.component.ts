@@ -1,7 +1,7 @@
 import type { BooleanInput } from '@angular/cdk/coercion'
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, Input, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, viewChild } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import type { MatMenu } from '@angular/material/menu'
 import { MatMenuModule } from '@angular/material/menu'
@@ -22,7 +22,6 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
     MatMenuModule,
     NgTemplateOutlet,
     HorizontalNavigationBasicItemComponent,
-    forwardRef(() => HorizontalNavigationBranchItemComponent),
     HorizontalNavigationDividerItemComponent,
     MatTooltipModule,
     MatIconModule,
