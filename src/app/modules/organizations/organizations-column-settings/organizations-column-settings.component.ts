@@ -24,8 +24,7 @@ export class OrganizationsColumnSettingsComponent implements OnInit {
 
   async toggleInventoryType(type: InventoryType) {
     if (type !== this.type) {
-      const orgId = this._route.snapshot.parent.params.organizationId as string
-      const newRoute = `/organizations/${orgId}/column-settings/${type}`
+      const newRoute = `/organizations/column-settings/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
       this.type = type
     }

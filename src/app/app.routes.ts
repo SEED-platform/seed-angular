@@ -81,10 +81,8 @@ export const appRoutes: Route[] = [
       { path: 'about', title: 'About', component: AboutComponent },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
-      { path: 'organizations', component: OrganizationsListComponent },
       {
-        path: 'organizations/:organizationId',
-        component: OrganizationsNavComponent,
+        path: 'organizations',
         loadChildren: () => import('app/modules/organizations/organizations.routes'),
       },
       // 404, redirect to dashboard
