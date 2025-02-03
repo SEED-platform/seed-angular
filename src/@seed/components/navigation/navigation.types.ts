@@ -4,7 +4,7 @@ export type NavigationItem = {
   id?: string;
   title?: string;
   subtitle?: string;
-  type: 'aside' | 'basic' | 'collapsable' | 'divider' | 'group' | 'spacer';
+  type: 'aside' | 'basic' | 'collapsible' | 'divider' | 'group' | 'spacer';
   hidden?: (item: NavigationItem) => boolean;
   active?: boolean;
   disabled?: boolean;

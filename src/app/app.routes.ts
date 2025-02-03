@@ -75,6 +75,10 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('app/modules/data/data.routes'),
       },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
+      {
+        path: 'api-documentation',
+        loadChildren: () => import('app/modules/api/api.routes'),
+      },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'about', title: 'About', component: AboutComponent },
       // 404, redirect to dashboard

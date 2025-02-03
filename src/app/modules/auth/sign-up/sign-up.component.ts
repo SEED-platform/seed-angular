@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { FormGroup } from '@angular/forms'
+import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -43,8 +43,16 @@ export class AuthSignUpComponent implements OnInit {
   private readonly _passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/
 
   alert: Alert
-  signUpForm: FormGroup
+  signUpForm: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+    terms: FormControl<boolean>;
+  }>
   showAlert = false
+
+  get isTermsInvalid() {
+    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
+  }
 
   ngOnInit(): void {
     this.signUpForm = this._formBuilder.group({
@@ -56,10 +64,6 @@ export class AuthSignUpComponent implements OnInit {
 
   showTermsOfService(): void {
     this._termsOfServiceService.showTermsOfService()
-  }
-
-  get isTermsInvalid() {
-    return this.signUpForm.get('terms')?.invalid && this.signUpForm.get('terms')?.touched
   }
 
   signUp(): void {

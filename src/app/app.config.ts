@@ -6,19 +6,18 @@ import { LuxonDateAdapter } from '@angular/material-luxon-adapter'
 import { Title } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import type { RouterStateSnapshot } from '@angular/router'
-import { provideRouter, TitleStrategy, withInMemoryScrolling } from '@angular/router'
+import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router'
 import { provideTransloco, TranslocoService } from '@jsverse/transloco'
 import { firstValueFrom } from 'rxjs'
 import { provideSEED } from '@seed'
 import { appRoutes } from 'app/app.routes'
 import { provideAuth } from 'app/core/auth/auth.provider'
 import { provideIcons } from 'app/core/icons/icons.provider'
-import { MockApiService } from 'app/mock-api'
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader'
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
-  private readonly _title = inject(Title)
+  private _title = inject(Title)
 
   override updateTitle(routerState: RouterStateSnapshot) {
     const title = this.buildTitle(routerState)
@@ -30,14 +29,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
     provideHttpClient(),
-    provideRouter(appRoutes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+    provideRouter(
+      appRoutes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withRouterConfig({ onSameUrlNavigation: 'reload' }),
+    ),
     { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
-
-    // Material Date Adapter
-    {
-      provide: DateAdapter,
-      useClass: LuxonDateAdapter,
-    },
+    { provide: DateAdapter, useClass: LuxonDateAdapter },
     {
       provide: MAT_DATE_FORMATS,
       useValue: {
@@ -52,8 +50,6 @@ export const appConfig: ApplicationConfig = {
         },
       },
     },
-
-    // Transloco Config
     provideTransloco({
       config: {
         availableLangs: [
@@ -84,14 +80,17 @@ export const appConfig: ApplicationConfig = {
 
       return firstValueFrom(translocoService.load(defaultLang))
     }),
-
     provideAuth(),
     provideIcons(),
     provideSEED({
-      mockApi: {
-        delay: 0,
-        service: MockApiService,
-      },
+      ...(isDevMode()
+        ? {
+            mockApi: {
+              enabled: false,
+              delay: 200,
+            },
+          }
+        : {}),
       seed: {
         layout: 'main',
         scheme: 'light',

@@ -9,7 +9,4 @@ export type UserToken = {
   iat: number;
   jti: string;
   user_id: number;
-  name: string;
-  username: string;
-  email: string;
 }

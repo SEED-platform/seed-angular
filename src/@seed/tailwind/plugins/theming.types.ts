@@ -11,6 +11,6 @@ export type Theme = {
 }
 
 export type Themes = {
-  default: Theme;
   [key: string]: Theme;
+  default: Theme;
 }

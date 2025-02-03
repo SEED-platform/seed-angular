@@ -27,17 +27,18 @@ export const mockApiInterceptor = (request: HttpRequest<unknown>, next: HttpHand
   // Subscribe to the response function observable
   return handler.response.pipe(
     delay(handler.delay ?? defaultDelay ?? 0),
-    switchMap((response) => {
+    switchMap((response: [number, unknown]) => {
       // If there is no response data,
       // throw an error response
       if (!response) {
-        response = new HttpErrorResponse({
-          error: 'NOT FOUND',
-          status: 404,
-          statusText: 'NOT FOUND',
-        })
-
-        return throwError(response)
+        return throwError(
+          () =>
+            new HttpErrorResponse({
+              error: 'NOT FOUND',
+              status: 404,
+              statusText: 'NOT FOUND',
+            }),
+        )
       }
 
       // Parse the response data
@@ -49,24 +50,25 @@ export const mockApiInterceptor = (request: HttpRequest<unknown>, next: HttpHand
       // If the status code is in between 200 and 300,
       // return a success response
       if (data.status >= 200 && data.status < 300) {
-        response = new HttpResponse({
-          body: data.body,
-          status: data.status,
-          statusText: 'OK',
-        })
-
-        return of(response)
+        return of(
+          new HttpResponse({
+            body: data.body,
+            status: data.status,
+            statusText: 'OK',
+          }),
+        )
       }
 
       // For other status codes,
       // throw an error response
-      response = new HttpErrorResponse({
-        error: data.body.error,
-        status: data.status,
-        statusText: 'ERROR',
-      })
-
-      return throwError(response)
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            error: (data.body as { error: string }).error,
+            status: data.status,
+            statusText: 'ERROR',
+          }),
+      )
     }),
   )
 }

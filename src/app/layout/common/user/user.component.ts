@@ -7,9 +7,9 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
+import type { CurrentUser } from '@seed/api/user'
+import { UserService } from '@seed/api/user'
 import { AuthService } from 'app/core/auth/auth.service'
-import { UserService } from 'app/core/user/user.service'
-import type { User } from 'app/core/user/user.types'
 import { sha256 } from '../../../../@seed/utils'
 
 @Component({
@@ -23,21 +23,21 @@ import { sha256 } from '../../../../@seed/utils'
 export class UserComponent implements OnInit, OnDestroy {
   private _authService = inject(AuthService)
   private _changeDetectorRef = inject(ChangeDetectorRef)
+  private _router = inject(Router)
   private _userService = inject(UserService)
-  private router = inject(Router)
 
   static ngAcceptInputType_showAvatar: BooleanInput
 
   @Input() showAvatar = true
-  user: User
+  user: CurrentUser
   avatarUrl: string
 
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
     // Subscribe to user changes
-    this._userService.user$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user: User) => {
-      this.user = user
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
+      this.user = currentUser
       this.avatarUrl = `https://gravatar.com/avatar/${sha256(this.user.email.toLowerCase())}?size=128&d=mp`
 
       // Mark for check
@@ -56,6 +56,6 @@ export class UserComponent implements OnInit, OnDestroy {
 
   goToProfile() {
     console.log('hi!')
-    void this.router.navigate(['/profile'])
+    void this._router.navigate(['/profile'])
   }
 }

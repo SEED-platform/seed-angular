@@ -12,10 +12,10 @@ import { Animations } from '@seed/animations'
   imports: [NgTemplateOutlet],
 })
 export class MasonryComponent implements OnChanges, AfterViewInit {
-  @Input() columnsTemplate: TemplateRef<any>
+  @Input() columnsTemplate: TemplateRef<unknown>
   @Input() columns: number
-  @Input() items: any[] = []
-  distributedColumns: any[] = []
+  @Input() items: unknown[] = []
+  distributedColumns: { items: unknown[] }[] = []
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('columns' in changes) {
@@ -43,7 +43,7 @@ export class MasonryComponent implements OnChanges, AfterViewInit {
     }
 
     // Prepare the distributed columns array
-    this.distributedColumns = Array.from(Array(this.columns), (/* item */) => ({
+    this.distributedColumns = Array.from(Array(this.columns), () => ({
       items: [],
     }))
 

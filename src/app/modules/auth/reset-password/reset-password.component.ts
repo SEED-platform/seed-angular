@@ -1,6 +1,6 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { FormGroup } from '@angular/forms'
+import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -37,7 +37,10 @@ export class AuthResetPasswordComponent implements OnInit {
   private _formBuilder = inject(FormBuilder)
 
   alert: Alert
-  resetPasswordForm: FormGroup
+  resetPasswordForm: FormGroup<{
+    password: FormControl<string>;
+    passwordConfirm: FormControl<string>;
+  }>
   showAlert = false
 
   ngOnInit(): void {

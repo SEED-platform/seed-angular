@@ -1,6 +1,6 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { FormGroup } from '@angular/forms'
+import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -48,7 +48,11 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
   alert: Alert
   allowSignUp = false
   showAlert = false
-  signInForm: FormGroup
+  signInForm: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+    terms: FormControl<boolean>;
+  }>
 
   ngOnInit(): void {
     this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ allow_signup: allowSignUp }) => {

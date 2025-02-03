@@ -16,7 +16,7 @@ import type { ImageOverlayData } from './image-overlay.types'
 export class ImageOverlayDirective implements OnInit, OnDestroy {
   private _mediaWatcherService = inject(MediaWatcherService)
   private _matDialog = inject(MatDialog)
-  private _elementRef = inject(ElementRef<HTMLImageElement>) as ElementRef<HTMLImageElement>
+  private _elementRef = inject<ElementRef<HTMLImageElement>>(ElementRef<HTMLImageElement>)
 
   private _isScreenSmall = true
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -24,6 +24,18 @@ export class ImageOverlayDirective implements OnInit, OnDestroy {
   // TODO test this, with and without `alt` on the element
   // Optional: To allow passing a custom "src" via `[imageOverlay]="..."`
   @Input() imageOverlay: string
+
+  private get _url(): string {
+    return this.imageOverlay || this._elementRef.nativeElement.src
+  }
+
+  @HostListener('click') onClick() {
+    if (this._isScreenSmall) {
+      openInNewTab(this._url)
+    } else {
+      this.showOverlay()
+    }
+  }
 
   ngOnInit(): void {
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {
@@ -36,14 +48,6 @@ export class ImageOverlayDirective implements OnInit, OnDestroy {
     this._unsubscribeAll$.complete()
   }
 
-  @HostListener('click') onClick() {
-    if (this._isScreenSmall) {
-      openInNewTab(this._url)
-    } else {
-      this.showOverlay()
-    }
-  }
-
   // TODO make private
   showOverlay(): void {
     this._matDialog.open(OverlayImageComponent, {
@@ -53,9 +57,5 @@ export class ImageOverlayDirective implements OnInit, OnDestroy {
         altText: this._elementRef.nativeElement.alt || 'Image preview',
       } satisfies ImageOverlayData,
     })
-  }
-
-  private get _url(): string {
-    return this.imageOverlay || this._elementRef.nativeElement.src
   }
 }

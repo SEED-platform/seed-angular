@@ -3,7 +3,7 @@ import { Observable, of, take, throwError } from 'rxjs'
 import type { MockApiReplyCallback } from '@seed/mock-api/mock-api.types'
 
 export class MockApiHandler {
-  request!: HttpRequest<any>
+  request!: HttpRequest<unknown>
   urlParams!: Record<string, string>
 
   // Private
@@ -19,7 +19,7 @@ export class MockApiHandler {
   /**
    * Getter for response callback
    */
-  get response(): Observable<any> {
+  get response(): Observable<unknown> {
     // If the execution limit has been reached, throw an error
     if (this._replyCount > 0 && this._replyCount <= this._replied) {
       return throwError(() => new Error('Execution limit has been reached!'))

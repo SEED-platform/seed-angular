@@ -23,6 +23,7 @@ export class SeedNavigationService {
   /**
    * Get navigation component from the registry
    */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   getComponent<T>(name: string): T {
     return this._componentRegistry.get(name) as T
   }
@@ -66,7 +67,7 @@ export class SeedNavigationService {
         continue
       }
 
-      if (item.type === 'aside' || item.type === 'collapsable' || item.type === 'group') {
+      if (item.type === 'aside' || item.type === 'collapsible' || item.type === 'group') {
         if (item.children) {
           this.getFlatNavigation(item.children, flatNavigation)
         }

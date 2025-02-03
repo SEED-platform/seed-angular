@@ -76,6 +76,7 @@ export const theming = plugin.withOptions(
 
       // Generate the SASS map by attaching the appropriate class selectors to encapsulate each theme
       const sassMap = generateSCSS({
+        // @ts-expect-error: TODO fix types
         'user-themes': Object.fromEntries(
           map(themes, (theme, themeName) => [
             themeName,
@@ -117,7 +118,9 @@ export const theming = plugin.withOptions(
             themeName === 'default' ? 'body, .theme-default' : `.theme-${e(themeName)}`,
             Object.fromEntries(
               flatten(
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 map(
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                   flattenColorPalette(
                     Object.fromEntries(
                       flatten(
@@ -133,9 +136,9 @@ export const theming = plugin.withOptions(
                       ),
                     ),
                   ),
-                  (value, key) => [
-                    [`--seed-${e(key)}`, value],
-                    [`--seed-${e(key)}-rgb`, chroma(value).rgb().join(',')],
+                  (color: string, key: string) => [
+                    [`--seed-${e(key)}`, color],
+                    [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
                   ],
                 ),
               ),
@@ -183,17 +186,17 @@ export const theming = plugin.withOptions(
             /* Generate custom properties from customProps */
             ...Object.fromEntries(
               flatten(
-                map(background, (value, key) => [
-                  [`--seed-${e(key)}`, value],
-                  [`--seed-${e(key)}-rgb`, chroma(value).rgb().join(',')],
+                map(background, (color: string, key) => [
+                  [`--seed-${e(key)}`, color],
+                  [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
                 ]),
               ),
             ),
             ...Object.fromEntries(
               flatten(
-                map(foreground, (value, key) => [
-                  [`--seed-${e(key)}`, value],
-                  [`--seed-${e(key)}-rgb`, chroma(value).rgb().join(',')],
+                map(foreground, (color: string, key) => [
+                  [`--seed-${e(key)}`, color],
+                  [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
                 ]),
               ),
             ),
@@ -214,6 +217,7 @@ export const theming = plugin.withOptions(
            */
           colors: Object.fromEntries(
             flatten(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               map(keys(flattenColorPalette(normalizeTheme(options.themes.default))), (name) => [
                 [name, `rgba(var(--seed-${name}-rgb), <alpha-value>)`],
                 [`on-${name}`, `rgba(var(--seed-on-${name}-rgb), <alpha-value>)`],
@@ -225,10 +229,10 @@ export const theming = plugin.withOptions(
           customProps: {
             background: {
               light: {
-                'bg-app-bar': '#ffffff',
-                'bg-card': '#ffffff',
+                'bg-app-bar': '#fff',
+                'bg-card': '#fff',
                 'bg-default': colors.slate[100],
-                'bg-dialog': '#ffffff',
+                'bg-dialog': '#fff',
                 'bg-hover': chroma(colors.slate[400]).alpha(0.12).css(),
                 'bg-status-bar': colors.slate[300],
               },
@@ -253,7 +257,7 @@ export const theming = plugin.withOptions(
                 'mat-icon': colors.slate[500],
               },
               dark: {
-                'text-default': '#ffffff',
+                'text-default': '#fff',
                 'text-secondary': colors.slate[400],
                 'text-hint': colors.slate[500],
                 'text-disabled': colors.slate[600],

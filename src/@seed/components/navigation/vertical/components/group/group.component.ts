@@ -8,7 +8,7 @@ import type { NavigationItem, VerticalNavigationComponent } from '@seed/componen
 import {
   SeedNavigationService,
   VerticalNavigationBasicItemComponent,
-  VerticalNavigationCollapsableItemComponent,
+  VerticalNavigationCollapsibleItemComponent,
   VerticalNavigationDividerItemComponent,
   VerticalNavigationSpacerItemComponent,
 } from '@seed/components'
@@ -21,7 +21,7 @@ import {
     NgClass,
     MatIconModule,
     VerticalNavigationBasicItemComponent,
-    VerticalNavigationCollapsableItemComponent,
+    VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
     forwardRef(() => VerticalNavigationGroupItemComponent),
     VerticalNavigationSpacerItemComponent,

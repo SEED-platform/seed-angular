@@ -69,6 +69,30 @@ export default tseslint.config(
       '@stylistic/type-annotation-spacing': 'error',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/member-ordering': ['error', {
+        default: [
+          'signature',
+          'field',
+          'constructor',
+          'accessor',
+          'static-method',
+          'decorated-method',
+          'public-method',
+          'private-method',
+          'method'
+        ]
+      }],
+      '@typescript-eslint/naming-convention': ['error', {
+        selector: 'variableLike',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require'
+      }, {
+        selector: 'memberLike',
+        modifiers: ['private'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require'
+      }],
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-for-in-array': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
@@ -129,6 +153,7 @@ export default tseslint.config(
       ...angular.configs.templateAccessibility,
     ],
     rules: {
+      '@angular-eslint/template/prefer-control-flow': 'error',
       // TODO
       '@angular-eslint/template/click-events-have-key-events': 'off',
       '@angular-eslint/template/interactive-supports-focus': 'off',

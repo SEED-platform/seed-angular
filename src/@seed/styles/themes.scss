@@ -5,13 +5,13 @@
 /* Set the base colors for light themes */
 $light-base: (
   foreground: (
-    base: #000000,
+    base: #000,
     divider: #e2e8f0,
     /* slate.200 */ dividers: #e2e8f0,
     /* slate.200 */ disabled: #94a3b8,
     /* slate.400 */ disabled-button: #94a3b8,
     /* slate.400 */ disabled-text: #94a3b8,
-    /* slate.400 */ elevation: #000000,
+    /* slate.400 */ elevation: #000,
     hint-text: #94a3b8,
     /* slate.400 */ secondary-text: #64748b,
     /* slate.500 */ icon: #64748b,
@@ -24,13 +24,13 @@ $light-base: (
   ),
   background: (
     status-bar: #cbd5e1,
-    /* slate.300 */ app-bar: #ffffff,
+    /* slate.300 */ app-bar: #fff,
     background: #f1f5f9,
-    /* slate.100 */ hover: rgba(148, 163, 184, 0.12),
-    /* slate.400 + opacity */ card: #ffffff,
-    dialog: #ffffff,
-    disabled-button: rgba(148, 163, 184, 0.38),
-    /* slate.400 + opacity */ raised-button: #ffffff,
+    /* slate.100 */ hover: rgb(148 163 184 / 12%),
+    /* slate.400 + opacity */ card: #fff,
+    dialog: #fff,
+    disabled-button: rgb(148 163 184 / 38%),
+    /* slate.400 + opacity */ raised-button: #fff,
     focused-button: #64748b,
     /* slate.500 */ selected-button: #e2e8f0,
     /* slate.200 */ selected-disabled-button: #e2e8f0,
@@ -44,20 +44,20 @@ $light-base: (
 /* Set the base colors for dark themes */
 $dark-base: (
   foreground: (
-    base: #ffffff,
-    divider: rgba(241, 245, 249, 0.12),
-    /* slate.100 + opacity */ dividers: rgba(241, 245, 249, 0.12),
+    base: #fff,
+    divider: rgb(241 245 249 / 12%),
+    /* slate.100 + opacity */ dividers: rgb(241 245 249 / 12%),
     /* slate.100 + opacity */ disabled: #475569,
     /* slate.600 */ disabled-button: #1e293b,
     /* slate.800 */ disabled-text: #475569,
-    /* slate.600 */ elevation: #000000,
+    /* slate.600 */ elevation: #000,
     hint-text: #64748b,
     /* slate.500 */ secondary-text: #94a3b8,
     /* slate.400 */ icon: #f1f5f9,
     /* slate.100 */ icons: #f1f5f9,
     /* slate.100 */ mat-icon: #94a3b8,
-    /* slate.400 */ text: #ffffff,
-    slider-min: #ffffff,
+    /* slate.400 */ text: #fff,
+    slider-min: #fff,
     slider-off: #64748b,
     /* slate.500 */ slider-off-active: #94a3b8 /* slate.400 */,
   ),
@@ -65,13 +65,13 @@ $dark-base: (
     status-bar: #0f172a,
     /* slate.900 */ app-bar: #0f172a,
     /* slate.900 */ background: #0f172a,
-    /* slate.900 */ hover: rgba(255, 255, 255, 0.05),
+    /* slate.900 */ hover: rgb(255 255 255 / 5%),
     card: #1e293b,
     /* slate.800 */ dialog: #1e293b,
-    /* slate.800 */ disabled-button: rgba(15, 23, 42, 0.38),
+    /* slate.800 */ disabled-button: rgb(15 23 42 / 38%),
     /* slate.900 + opacity */ raised-button: #0f172a,
     /* slate.900 */ focused-button: #e2e8f0,
-    /* slate.200 */ selected-button: rgba(255, 255, 255, 0.05),
+    /* slate.200 */ selected-button: rgb(255 255 255 / 5%),
     selected-disabled-button: #1e293b,
     /* slate.800 */ disabled-button-toggle: #0f172a,
     /* slate.900 */ unselected-chip: #475569,
@@ -81,8 +81,8 @@ $dark-base: (
 );
 
 /* Include the core Angular Material styles */
-@include mat.elevation-classes();
-@include mat.app-background();
+@include mat.elevation-classes;
+@include mat.app-background;
 
 /* Create a base theme without any color to set the density and typography */
 @include mat.all-component-themes(
@@ -112,6 +112,7 @@ $dark-base: (
 @each $name, $theme in userThemes.$user-themes {
   /* Generate the palettes */
   $palettes: ();
+
   @each $name in (primary, accent, warn) {
     /* Define the Angular Material theme */
     $palette: mat.m2-define-palette(map.get($theme, $name));
@@ -129,7 +130,6 @@ $dark-base: (
         darker-contrast: map.get(map.get(map.get($theme, $name), contrast), 700),
       )
     );
-
     $palettes: map.merge($palettes, (#{$name}: $palette));
   }
 
@@ -139,7 +139,6 @@ $dark-base: (
       color: $palettes,
     )
   );
-
   $dark-theme: mat.m2-define-dark-theme(
     (
       color: $palettes,
@@ -154,7 +153,6 @@ $dark-base: (
     ),
     $light-theme-colors
   );
-
   $dark-theme-colors: map.merge(map.get($dark-theme, color), $dark-base);
   $dark-theme: map.merge(
     (

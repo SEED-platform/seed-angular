@@ -4,8 +4,8 @@ import { ReplaySubject } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
-  private readonly _onDismiss: ReplaySubject<string> = new ReplaySubject<string>(1)
-  private readonly _onShow: ReplaySubject<string> = new ReplaySubject<string>(1)
+  private readonly _onDismiss = new ReplaySubject<string>(1)
+  private readonly _onShow = new ReplaySubject<string>(1)
 
   /**
    * Getter for onDismiss

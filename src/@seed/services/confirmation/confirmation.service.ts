@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { merge } from 'lodash-es'
 import type { ConfirmationConfig } from '@seed/services'
 import { ConfirmationDialogComponent } from './dialog'
 
@@ -32,8 +31,25 @@ export class ConfirmationService {
   }
 
   open(config: ConfirmationConfig = {}): MatDialogRef<ConfirmationDialogComponent> {
-    // Merge the user config with the default config
-    const userConfig = merge({}, this._defaultConfig, config)
+    // Deep merge the user config with the default config
+    const userConfig = {
+      ...this._defaultConfig,
+      ...config,
+      icon: {
+        ...this._defaultConfig.icon,
+        ...config.icon,
+      },
+      actions: {
+        confirm: {
+          ...this._defaultConfig.actions.confirm,
+          ...config.actions?.confirm,
+        },
+        cancel: {
+          ...this._defaultConfig.actions.cancel,
+          ...config.actions?.cancel,
+        },
+      },
+    }
 
     // Open the dialog
     return this._matDialog.open(ConfirmationDialogComponent, {

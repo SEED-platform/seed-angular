@@ -1,0 +1,12 @@
+<button mat-button [matMenuTriggerFor]="orgMenu" class="text-secondary font-semibold">
+  <mat-icon svgIcon="fa-solid:city" class=""></mat-icon>
+  <span class="ml-2">{{ currentUser.org_name }}</span>
+  <span class="mx-1 font-extralight">|</span>
+  <span>{{ currentUser.ali_name }}</span>
+</button>
+
+<mat-menu xPosition="before" #orgMenu="matMenu">
+  @for (org of organizations; track org.id) {
+    <button mat-menu-item (click)="selectOrganization(org.id)">{{ org.name }}</button>
+  }
+</mat-menu>

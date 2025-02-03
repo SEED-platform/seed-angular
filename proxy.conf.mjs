@@ -5,6 +5,8 @@ config({ quiet: true })
 export default [{
   context: [
     '/api/config/',
+    '/api/health_check/',
+    '/api/swagger/',
     '/api/token/',
     '/api/v3/',
     '/api/version/'

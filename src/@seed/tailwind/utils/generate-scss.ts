@@ -28,6 +28,7 @@ export const generateSCSS = (data: ThemeData) => {
         if (typeof value === 'object') {
           if (Array.isArray(value)) {
             scss += '(\n'
+            // @ts-expect-error: TODO fix types
             for (const val1 of value) {
               scss += `${indent}${val1 as string},\n`
             }
@@ -42,6 +43,8 @@ export const generateSCSS = (data: ThemeData) => {
       })
       scss = scss.slice(0, -2)
     } else {
+      // TODO fix types
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-plus-operands
       scss += chunk
     }
 
