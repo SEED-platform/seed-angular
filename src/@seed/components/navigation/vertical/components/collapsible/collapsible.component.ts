@@ -222,7 +222,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
       }
 
       // Check if the child has a link and is active
-      if (child.link && this._router.isActive(child.link, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
+      if (child.link && this._router.isActive(child.id, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
         return true
       }
     }
