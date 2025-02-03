@@ -29,7 +29,7 @@ const organizationsDataQualityTypeMatcher = (segments: UrlSegment[]) => {
   return genericTypeMatcher(args)(segments)
 }
 
-const organiationsColumnSettingsTypeMatcher = (segments: UrlSegment[]) => {
+const organizationsColumnSettingsTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'column-settings' }
   return genericTypeMatcher(args)(segments)
 }
@@ -43,7 +43,7 @@ export default [
   { path: '', component: OrganizationsSettingsComponent },
   { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
   { matcher: OrganizationsColumnMappingTypeMatcher, component: OrganizationsColumnMappingsComponent },
-  { matcher: organiationsColumnSettingsTypeMatcher, component: OrganizationsColumnSettingsComponent },
+  { matcher: organizationsColumnSettingsTypeMatcher, component: OrganizationsColumnSettingsComponent },
   { matcher: organizationsDataQualityTypeMatcher, component: OrganizationsDataQualityComponent },
   { matcher: organizationsDerivedColumnsTypeMatcher, component: OrganizationsDerivedColumnsComponent },
   { path: 'cycles', component: OrganizationsCyclesComponent },

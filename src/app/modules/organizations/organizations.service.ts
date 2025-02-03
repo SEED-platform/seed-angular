@@ -10,7 +10,7 @@ export class OrganizationsService {
   private _router = inject(Router)
 
   // mock data
-  private ORGANIZATIONS_DATA = [
+  private _mockOrganizationData = [
     {
       id: 1,
       name: 'Organization 1',
@@ -51,7 +51,7 @@ export class OrganizationsService {
 
   // mock as an observable
   getOrganizations(): Observable<unknown[]> {
-    return of(this.ORGANIZATIONS_DATA).pipe(delay(100))
+    return of(this._mockOrganizationData).pipe(delay(100))
   }
 
   setOrg(org: Organization) {
@@ -62,7 +62,7 @@ export class OrganizationsService {
     if (!this._org) {
       const segments = this._router.url.toLowerCase().split('/')
       const orgId = segments[segments.indexOf('organizations') + 1]
-      this._org = this.ORGANIZATIONS_DATA.find((org) => org.id === Number(orgId))
+      this._org = this._mockOrganizationData.find((org) => org.id === Number(orgId))
     }
     return this._org
   }

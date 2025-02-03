@@ -1,16 +1,15 @@
+import { NgClass } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { SharedImports } from '../../../../@seed'
+import { SharedImports } from '@seed/directives'
 import type { OrganizationTab } from '../organizations.types'
 
 @Component({
   selector: 'seed-organizations-column-mappings',
   templateUrl: './organizations-column-mappings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    SharedImports,
-  ],
+  imports: [NgClass, SharedImports],
 })
 export class OrganizationsColumnMappingsComponent implements OnInit {
   private _route = inject(ActivatedRoute)

@@ -4,7 +4,7 @@
     @for (tab of tabs; track tab) {
     <div
       class="bg-default relative flex cursor-pointer self-start overflow-hidden rounded-t-xl border border-b-0 pb-1 pl-5 pr-4 pt-2"
-      [class]="type === tab ? 'z-2 text-primary': ''"
+      [ngClass]="type === tab ? 'z-2' : ['bg-slate-50', 'dark:bg-slate-700']"
       (click)="toggleInventoryType(tab)" matRipple>
       <div class="overflow-hidden">
         <div class="truncate font-medium leading-6">{{ t(tab) }}</div>
