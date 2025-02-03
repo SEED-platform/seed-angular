@@ -17,7 +17,9 @@
       <th mat-header-cell *matHeaderCellDef>Number of Properties</th>
       <td mat-cell *matCellDef="let element">
         <ul>
-          <li *ngFor="let item  of element.propertiesByCycle">{{item.cycle}}: {{item.count}}</li>
+          @for (item of element.propertiesByCycle; track item) {
+            <li>{{item.cycle}}: {{item.count}}</li>
+          }
         </ul>
       </td>
     </ng-contianer>
@@ -26,7 +28,9 @@
       <th mat-header-cell *matHeaderCellDef>Number of Tax Lot</th>
       <td mat-cell *matCellDef="let element">
         <ul>
-          <li *ngFor="let item  of element.taxLotsByCycle">{{item.cycle}}: {{item.count}}</li>
+          @for (item of element.propertiesByCycle; track item) {
+            <li>{{item.cycle}}: {{item.count}}</li>
+          }
         </ul>
       </td>
     </ng-contianer>
@@ -40,7 +44,9 @@
       <th mat-header-cell *matHeaderCellDef>Organization Owners</th>
       <td mat-cell *matCellDef="let element">
         <ul>
-          <li *ngFor="let owner of element.owners">{{ owner }}</li>
+          @for (owner of element.owners; track owner) {
+            <li>{{ owner }}</li>
+          }
         </ul>
       </td>
     </ng-contianer>

@@ -42,7 +42,7 @@ export class OrganizationsNavComponent implements OnInit {
   ngOnInit(): void {
     console.log('type', this.type)
     this.organization = this._organizationsService.getOrg()
-    // split url segments will follow this pattern ['', 'organizations', 'oganiationId', 'base']
+    // split url segments will follow this pattern ['', 'organizations', 'organizationId', 'base']
     const base = this._router.url.split('/')[3]
     this.activeLink = this.links.find((link) => link.base === base) || this._defaultLink
   }
