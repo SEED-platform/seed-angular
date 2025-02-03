@@ -18,6 +18,12 @@ export type CurrentUser = {
   api_key: string;
 }
 
+export type UserUpdateRequest = {
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 export type SetDefaultOrganizationResponse = {
   status: string;
   user: {

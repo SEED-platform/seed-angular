@@ -4,32 +4,20 @@
       <mat-icon class="mr-2" svgIcon="fa-solid:circle-user"></mat-icon>Profile Information
     </h2>
 
-    <form class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
       <div class="gt-xs:flex-row flex flex-col">
         <mat-form-field class="gt-xs:pr-3 flex-auto">
           <mat-label>{{ t('First Name') }}</mat-label>
-          <input matInput />
+          <input matInput [formControlName]="'firstName'" />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
         </mat-form-field>
         <mat-form-field class="gt-xs:pl-3 flex-auto">
           <mat-label>{{ t('Last Name') }}</mat-label>
-          <input matInput />
+          <input matInput [formControlName]="'lastName'" />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
         </mat-form-field>
       </div>
       <div class="flex">
-        <!-- <mat-form-field
-            class="flex-auto"
-        >
-            <mat-label>{{ t('Email') }}</mat-label>
-            <input matInput/>
-            <mat-icon
-                class="icon-size-5"
-                matSuffix
-                [svgIcon]="'fa-solid:envelope'"
-            ></mat-icon>
-        </mat-form-field> -->
-
         <mat-form-field class="w-full">
           <mat-label>Email</mat-label>
           <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:envelope'" matPrefix></mat-icon>
@@ -37,10 +25,18 @@
         </mat-form-field>
       </div>
       <div class="flex justify-center">
-        <a mat-flat-button color="primary">
+        <button mat-flat-button color="primary">
           <span class="ml-2">{{ t('Update') }}</span>
-        </a>
+        </button>
       </div>
+      <!-- Alert -->
+      @if (showAlert) {
+        <div class="mb-4 mt-0">
+          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type">
+            {{ alert.message }}
+          </seed-alert>
+        </div>
+      }
     </form>
   </div>
 </div>
