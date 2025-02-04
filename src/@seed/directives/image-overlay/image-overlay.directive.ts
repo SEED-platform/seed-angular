@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Directive, ElementRef, HostListener, inject, Input } from '@angular/core'
+import { Directive, ElementRef, HostListener, inject, input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
 import { MediaWatcherService } from '@seed/services'
@@ -23,10 +23,10 @@ export class ImageOverlayDirective implements OnInit, OnDestroy {
 
   // TODO test this, with and without `alt` on the element
   // Optional: To allow passing a custom "src" via `[imageOverlay]="..."`
-  @Input() imageOverlay: string
+  imageOverlay = input<string>()
 
   private get _url(): string {
-    return this.imageOverlay || this._elementRef.nativeElement.src
+    return this.imageOverlay() || this._elementRef.nativeElement.src
   }
 
   @HostListener('click') onClick() {

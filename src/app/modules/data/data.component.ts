@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common'
 import type { AfterViewInit, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, viewChild, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSort, MatSortModule } from '@angular/material/sort'
@@ -8,8 +8,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
 import { from, skip } from 'rxjs'
 import type { Dataset } from '@seed/api/dataset'
+import { UserService } from '@seed/api/user'
 import { SharedImports } from '@seed/directives'
-import { UserService } from '../../../@seed/api/user'
 
 @Component({
   selector: 'seed-data',
@@ -23,14 +23,14 @@ export class DataComponent implements OnInit, AfterViewInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
 
-  @ViewChild(MatSort) sort: MatSort
+  readonly sort = viewChild.required(MatSort)
   datasetsDataSource = new MatTableDataSource<Dataset>()
   datasetsColumns = ['name', 'importfiles', 'updated_at', 'last_modified_by', 'actions']
 
   ngOnInit(): void {
     this._init()
 
-    // Rerun resolver on org change
+    // Rerun resolver and initializer on org change
     this._userService.currentOrganizationId$.pipe(skip(1)).subscribe(() => {
       from(this._router.navigate([this._router.url])).subscribe(() => {
         this._init()
@@ -39,7 +39,7 @@ export class DataComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.datasetsDataSource.sort = this.sort
+    this.datasetsDataSource.sort = this.sort()
   }
 
   trackByFn(_index: number, { id }: Dataset) {

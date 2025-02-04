@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
 import type { HorizontalNavigationComponent } from '@seed/components/navigation/horizontal/horizontal.component'
 import { SeedNavigationService } from '@seed/components/navigation/navigation.service'
@@ -16,15 +16,15 @@ export class HorizontalNavigationDividerItemComponent implements OnInit, OnDestr
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _navigationService = inject(SeedNavigationService)
 
-  @Input() item: NavigationItem
-  @Input() name: string
+  item = input<NavigationItem>()
+  name = input<string>()
 
   private _horizontalNavigationComponent: HorizontalNavigationComponent
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
     // Get the parent navigation component
-    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name)
+    this._horizontalNavigationComponent = this._navigationService.getComponent(this.name())
 
     // Subscribe to onRefreshed on the navigation component
     this._horizontalNavigationComponent.onRefreshed.pipe(takeUntil(this._unsubscribeAll$)).subscribe(() => {
@@ -34,7 +34,7 @@ export class HorizontalNavigationDividerItemComponent implements OnInit, OnDestr
   }
 
   ngOnDestroy(): void {
-    this._unsubscribeAll$.next(null)
+    this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
 }

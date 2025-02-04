@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core'
+import { DatasetService } from '@seed/api/dataset'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
-import { DatasetService } from '../../../@seed/api/dataset'
 
 @Injectable({ providedIn: 'root' })
 export class NavigationService {
@@ -158,16 +158,19 @@ export class NavigationService {
 
   constructor() {
     this._datasetService.datasetCount$.subscribe((count) => {
-      this.updateBadge('data', 'mainNavigation', count)
+      // Use a timeout to avoid the race condition where mainNavigation hasn't been registered yet
+      setTimeout(() => {
+        this.updateBadge('data', 'mainNavigation', count)
+      })
     })
   }
 
   updateBadge(itemId: string, navigationName: string, title: string | number) {
-    const dataComponent = this._seedNavigationService.getComponent<VerticalNavigationComponent>(navigationName)
+    const dataComponent: VerticalNavigationComponent | undefined = this._seedNavigationService.getComponent(navigationName)
 
     if (dataComponent) {
       // Get the navigation item, update the badge and refresh the component
-      const navigation = dataComponent.navigation
+      const navigation = dataComponent.navigation()
       const item = this._seedNavigationService.getItem(itemId, navigation)
       item.badge = {
         title: String(title),

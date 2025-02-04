@@ -1,17 +1,16 @@
 import type { AnimationPlayer } from '@angular/animations'
 import { animate, AnimationBuilder, style } from '@angular/animations'
-import type { BooleanInput } from '@angular/cdk/coercion'
-import { coerceBooleanProperty } from '@angular/cdk/coercion'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import {
+  booleanAttribute,
   Component,
   ElementRef,
-  EventEmitter,
   HostBinding,
   HostListener,
   inject,
-  Input,
-  Output,
+  input,
+  model,
+  output,
   Renderer2,
   ViewEncapsulation,
 } from '@angular/core'
@@ -28,24 +27,20 @@ import type { DrawerMode, DrawerPosition } from './drawer.types'
 })
 export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   private _animationBuilder = inject(AnimationBuilder)
+  private _drawerService = inject(DrawerService)
   private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _renderer2 = inject(Renderer2)
-  private _drawerService = inject(DrawerService)
 
-  static ngAcceptInputType_fixed: BooleanInput
-  static ngAcceptInputType_opened: BooleanInput
-  static ngAcceptInputType_transparentOverlay: BooleanInput
-
-  @Input() fixed = false
-  @Input() mode: DrawerMode = 'side'
-  @Input() name: string = randomId()
-  @Input() opened = false
-  @Input() position: DrawerPosition = 'left'
-  @Input() transparentOverlay = false
-  @Output() readonly fixedChanged: EventEmitter<boolean> = new EventEmitter<boolean>()
-  @Output() readonly modeChanged: EventEmitter<DrawerMode> = new EventEmitter<DrawerMode>()
-  @Output() readonly openedChanged: EventEmitter<boolean> = new EventEmitter<boolean>()
-  @Output() readonly positionChanged: EventEmitter<DrawerPosition> = new EventEmitter<DrawerPosition>()
+  fixed = input(false, { transform: booleanAttribute })
+  mode = input<DrawerMode>('side')
+  name = input(randomId())
+  opened = model(false)
+  position = input<DrawerPosition>('left')
+  transparentOverlay = input(false, { transform: booleanAttribute })
+  fixedChanged = output<boolean>()
+  modeChanged = output<DrawerMode>()
+  openedChanged = output<boolean>()
+  positionChanged = output<DrawerPosition>()
 
   private _animationsEnabled = false
   private _hovered = false
@@ -55,17 +50,17 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'drawer-animations-enabled': this._animationsEnabled,
-      'drawer-fixed': this.fixed,
+      'drawer-fixed': this.fixed(),
       'drawer-hover': this._hovered,
-      [`drawer-mode-${this.mode}`]: true,
-      'drawer-opened': this.opened,
-      [`drawer-position-${this.position}`]: true,
+      [`drawer-mode-${this.mode()}`]: true,
+      'drawer-opened': this.opened(),
+      [`drawer-position-${this.position()}`]: true,
     }
   }
 
   @HostBinding('style') get styleList(): Record<string, string> {
     return {
-      visibility: this.opened ? 'visible' : 'hidden',
+      visibility: this.opened() ? 'visible' : 'hidden',
     }
   }
 
@@ -89,17 +84,14 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Register the drawer
-    this._drawerService.registerComponent(this.name, this)
+    this._drawerService.registerComponent(this.name(), this)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     // Fixed
     if ('fixed' in changes) {
-      // Coerce the value to a boolean
-      this.fixed = coerceBooleanProperty(changes.fixed.currentValue)
-
-      // Execute the observable
-      this.fixedChanged.next(this.fixed)
+      // Emit the event
+      this.fixedChanged.emit(this.fixed())
     }
 
     // Mode
@@ -120,14 +112,14 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
       // If the mode changes: 'side -> over'
       if (previousMode === 'side' && currentMode === 'over') {
         // If the drawer is opened
-        if (this.opened) {
+        if (this.opened()) {
           // Show the overlay
           this._showOverlay()
         }
       }
 
-      // Execute the observable
-      this.modeChanged.next(currentMode)
+      // Emit the event
+      this.modeChanged.emit(currentMode)
 
       // Enable the animations after a delay
       // The delay must be bigger than the current transition-duration
@@ -139,23 +131,14 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
 
     // Opened
     if ('opened' in changes) {
-      // Coerce the value to a boolean
-      const open = coerceBooleanProperty(changes.opened.currentValue)
-
       // Open/close the drawer
-      this._toggleOpened(open)
+      this._toggleOpened(this.opened())
     }
 
     // Position
     if ('position' in changes) {
-      // Execute the observable
-      this.positionChanged.next(this.position)
-    }
-
-    // Transparent overlay
-    if ('transparentOverlay' in changes) {
-      // Coerce the value to a boolean
-      this.transparentOverlay = coerceBooleanProperty(changes.transparentOverlay.currentValue)
+      // Emit the event
+      this.positionChanged.emit(this.position())
     }
   }
 
@@ -166,7 +149,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     // Deregister the drawer from the registry
-    this._drawerService.deregisterComponent(this.name)
+    this._drawerService.deregisterComponent(this.name())
   }
 
   /**
@@ -174,7 +157,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
    */
   open(): void {
     // Return if the drawer has already opened
-    if (this.opened) {
+    if (this.opened()) {
       return
     }
 
@@ -187,7 +170,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
    */
   close(): void {
     // Return if the drawer has already closed
-    if (!this.opened) {
+    if (!this.opened()) {
       return
     }
 
@@ -199,7 +182,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
    * Toggle the drawer
    */
   toggle(): void {
-    if (this.opened) {
+    if (this.opened()) {
       this.close()
     } else {
       this.open()
@@ -231,12 +214,12 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
     this._overlay.classList.add('drawer-overlay')
 
     // Add a class depending on the fixed option
-    if (this.fixed) {
+    if (this.fixed()) {
       this._overlay.classList.add('drawer-overlay-fixed')
     }
 
     // Add a class depending on the transparentOverlay option
-    if (this.transparentOverlay) {
+    if (this.transparentOverlay()) {
       this._overlay.classList.add('drawer-overlay-transparent')
     }
 
@@ -294,11 +277,11 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
    * @private
    */
   private _toggleOpened(open: boolean): void {
-    this.opened = open
+    this.opened.set(open)
 
     this._enableAnimations()
 
-    if (this.mode === 'over') {
+    if (this.mode() === 'over') {
       if (open) {
         this._showOverlay()
       } else {
@@ -306,7 +289,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
       }
     }
 
-    // Execute the observable
-    this.openedChanged.next(open)
+    // Emit the event
+    this.openedChanged.emit(open)
   }
 }

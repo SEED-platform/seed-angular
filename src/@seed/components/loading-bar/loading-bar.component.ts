@@ -1,6 +1,5 @@
-import { coerceBooleanProperty } from '@angular/cdk/coercion'
-import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, inject, Input, ViewEncapsulation } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { booleanAttribute, Component, inject, input, ViewEncapsulation } from '@angular/core'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { Subject, takeUntil } from 'rxjs'
 import { LoadingService } from '@seed/services'
@@ -13,22 +12,14 @@ import { LoadingService } from '@seed/services'
   exportAs: 'seedLoadingBar',
   imports: [MatProgressBarModule],
 })
-export class SEEDLoadingBarComponent implements OnChanges, OnInit, OnDestroy {
+export class SEEDLoadingBarComponent implements OnInit, OnDestroy {
   private _loadingService = inject(LoadingService)
 
-  @Input() autoMode = true
+  autoMode = input(true, { transform: booleanAttribute })
   mode: 'determinate' | 'indeterminate'
   progress = 0
   show = false
   private readonly _unsubscribeAll$ = new Subject<void>()
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // Auto mode
-    if ('autoMode' in changes) {
-      // Set the auto mode in the service
-      this._loadingService.setAutoMode(coerceBooleanProperty(changes.autoMode.currentValue))
-    }
-  }
 
   ngOnInit(): void {
     // Subscribe to the service

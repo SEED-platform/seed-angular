@@ -1,6 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
@@ -21,8 +21,8 @@ export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
   private _navigationService = inject(SeedNavigationService)
   private _router = inject(Router)
 
-  @Input() item: NavigationItem
-  @Input() name: string
+  item = input<NavigationItem>()
+  name = input<string>()
 
   // Default to the equivalent of {exact: false} because `isActiveMatchOptions` must be initialized
   isActiveMatchOptions = subsetMatchOptions
@@ -35,7 +35,7 @@ export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
     this._router.events.pipe(takeUntil(this._unsubscribeAll$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentUrl = event.url
-        if (this.item.regexMatch) {
+        if (this.item().regexMatch) {
           // Re-check active status
           this._changeDetectorRef.markForCheck()
         }
@@ -45,10 +45,10 @@ export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
     // Set the "isActiveMatchOptions" either from item's
     // "isActiveMatchOptions" or the equivalent form of
     // item's "exactMatch" option
-    this.isActiveMatchOptions = this.item.isActiveMatchOptions ?? (this.item.exactMatch ? exactMatchOptions : subsetMatchOptions)
+    this.isActiveMatchOptions = this.item().isActiveMatchOptions ?? (this.item().exactMatch ? exactMatchOptions : subsetMatchOptions)
 
     // Get the parent navigation component
-    this._verticalNavigationComponent = this._navigationService.getComponent(this.name)
+    this._verticalNavigationComponent = this._navigationService.getComponent(this.name())
 
     // Mark for check
     this._changeDetectorRef.markForCheck()
