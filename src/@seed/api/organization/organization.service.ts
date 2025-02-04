@@ -1,11 +1,11 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
 import type { BriefOrganization, Organization, OrganizationResponse, OrganizationsResponse } from './organization.types'
-
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {

@@ -6,10 +6,6 @@ import { AboutComponent } from './modules/main/about/about.component'
 import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
 import { HomeComponent } from './modules/main/home/home.component'
-import {
-  OrganizationsListComponent,
-  OrganizationsNavComponent,
-} from './modules/organizations'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
   if (segments.length === 1 && ['properties', 'taxlots'].includes(segments[0].path)) {

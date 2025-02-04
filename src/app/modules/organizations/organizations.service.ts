@@ -18,18 +18,14 @@ export class OrganizationsService {
         { cycle: '2000 Calendar', count: 10 },
         { cycle: '2001 Calendar', count: 20 },
       ],
-      taxLotsByCycle: [
-        { cycle: '2000 Calendar', count: 11 },
-      ],
+      taxLotsByCycle: [{ cycle: '2000 Calendar', count: 11 }],
       role: 'Owner',
       owners: ['Owner 1', 'Owner 2', 'Owner 3', 'Owner 4'],
     },
     {
       id: 2,
       name: 'Organization 2',
-      propertiesByCycle: [
-        { cycle: '2020 Calendar', count: 10 },
-      ],
+      propertiesByCycle: [{ cycle: '2020 Calendar', count: 10 }],
       taxLotsByCycle: [],
       role: 'Member',
       owners: ['Owner 3'],

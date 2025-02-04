@@ -5,9 +5,7 @@ import { MatIconModule } from '@angular/material/icon'
 @Component({
   selector: 'seed-organizations-access-level-tree',
   templateUrl: './organizations-access-level-tree.component.html',
-  imports: [
-    MatIconModule,
-  ],
+  imports: [MatIconModule],
 })
 export class OrganizationsAccessLevelTreeComponent implements OnInit {
   ngOnInit(): void {

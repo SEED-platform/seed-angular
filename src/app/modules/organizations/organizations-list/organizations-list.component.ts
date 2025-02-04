@@ -11,12 +11,7 @@ import type { OrganizationsList } from '../organizations.types'
   selector: 'seed-organizations-list',
   templateUrl: './organizations-list.component.html',
   styleUrl: './organizations-list.component.scss',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatTableModule,
-    RouterLink,
-  ],
+  imports: [CommonModule, MatButtonModule, MatTableModule, RouterLink],
 })
 export class OrganizationsListComponent implements OnInit {
   private _router = inject(Router)
