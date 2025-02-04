@@ -14,9 +14,7 @@ describe('OrganizationsNavComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [],
       imports: [OrganizationsNavComponent, MatTabsModule, MatIconModule],
-      providers: [
-        provideRouter([], withComponentInputBinding()),
-      ],
+      providers: [provideRouter([], withComponentInputBinding())],
     }).compileComponents()
 
     fixture = TestBed.createComponent(OrganizationsNavComponent)
@@ -41,7 +39,7 @@ describe('OrganizationsNavComponent', () => {
     expect(component.activeLink).toEqual(expected)
   })
 
-  it ('should be true', () => {
+  it('should be true', () => {
     expect(true).toBeTruthy()
   })
 })

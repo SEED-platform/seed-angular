@@ -5,9 +5,7 @@ import { MatIconModule } from '@angular/material/icon'
 @Component({
   selector: 'seed-organizations-labels',
   templateUrl: './organizations-labels.component.html',
-  imports: [
-    MatIconModule,
-  ],
+  imports: [MatIconModule],
 })
 export class OrganizationsLabelsComponent implements OnInit {
   ngOnInit(): void {

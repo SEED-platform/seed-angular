@@ -10,11 +10,7 @@ import type { Organization } from '../organizations.types'
 @Component({
   selector: 'seed-organizations-nav',
   templateUrl: './organizations-nav.component.html',
-  imports: [
-    MatTabsModule,
-    RouterModule,
-    MatIconModule,
-  ],
+  imports: [MatTabsModule, RouterModule, MatIconModule],
 })
 export class OrganizationsNavComponent implements OnInit {
   private _organizationsService = inject(OrganizationsService)
