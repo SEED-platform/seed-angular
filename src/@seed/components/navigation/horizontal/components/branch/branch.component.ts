@@ -1,6 +1,6 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { booleanAttribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, viewChild } from '@angular/core'
+import { booleanAttribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input, viewChild } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import type { MatMenu } from '@angular/material/menu'
 import { MatMenuModule } from '@angular/material/menu'
@@ -18,6 +18,7 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HorizontalNavigationBasicItemComponent,
+    forwardRef(() => HorizontalNavigationBranchItemComponent),
     HorizontalNavigationDividerItemComponent,
     MatIconModule,
     MatMenuModule,
