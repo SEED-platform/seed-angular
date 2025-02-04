@@ -1,6 +1,6 @@
 
-<div class="prose">
-  @if (organization) {
-    Organization: {{organization.name}}
-  }
+<div class="prose" *ngIf="organization$ | async; let o">
+  
+    Organization: {{o.name}}
+  
 </div>
