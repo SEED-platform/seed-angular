@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap } from 'rxjs'
-import type { CurrentUser, SetDefaultOrganizationResponse, UserUpdateRequest } from '@seed/api/user'
+import type { CurrentUser, GenerateApiKeyResponse, SetDefaultOrganizationResponse, UserUpdateRequest } from '@seed/api/user'
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -55,6 +55,24 @@ export class UserService {
       catchError((error: HttpErrorResponse) => {
         console.error('Error occurred while updating user:', error.error)
         return this._currentUser
+      }),
+    )
+  }
+
+  /**
+   * Generate API Key
+   */
+  generateApiKey(): Observable<GenerateApiKeyResponse> {
+    return this.currentUser$.pipe(
+      take(1),
+      switchMap(({ id: userId }) => {
+        return this._httpClient.post<GenerateApiKeyResponse>(`api/v3/users/${userId}/generate_api_key/`,
+          {},
+        )
+      }),
+      tap(() => {
+        // Refresh user info after changing the API key
+        this.getCurrentUser().subscribe()
       }),
     )
   }

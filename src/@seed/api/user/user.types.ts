@@ -34,3 +34,8 @@ export type SetDefaultOrganizationResponse = {
     };
   };
 }
+
+export type GenerateApiKeyResponse = {
+  status: string;
+  api_key: string;
+}

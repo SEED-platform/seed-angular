@@ -8,14 +8,23 @@
       <div class="gt-xs:flex-row flex flex-col pt-4 text-center">
         <div>
           <span class="font-bold">API Key: </span>
-          <span class="bg-slate-200 px-5 py-3">{{ apikey }}</span>
+          <span class="bg-slate-200 px-5 py-3">{{ user.api_key }}</span>
         </div>
         <div class="pt-7">
-          <a mat-flat-button color="primary">
+          <button mat-flat-button color="primary" (click)="generateKey()">
             <span class="ml-2">{{ t('Get a New API Key') }}</span>
-          </a>
+          </button>
         </div>
       </div>
+
+      <!-- Alert -->
+      @if (showAlert) {
+        <div class="mb-4 mt-0">
+          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type">
+            {{ alert.message }}
+          </seed-alert>
+        </div>
+      }
 
       <!-- Divider -->
       <div class="mb-5 mt-10 border-t"></div>
