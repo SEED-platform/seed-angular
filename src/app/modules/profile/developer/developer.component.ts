@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -13,8 +13,6 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-profile-developer',
   templateUrl: './developer.component.html',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AlertComponent, FormsModule, MatButtonModule, MatFormFieldModule, MatIconModule, ReactiveFormsModule, SharedImports],
 })
 export class ProfileDeveloperComponent implements OnInit, OnDestroy {
