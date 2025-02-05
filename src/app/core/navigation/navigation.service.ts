@@ -51,7 +51,7 @@ export class NavigationService {
           id: 'organizations/column-mappings',
           link: '/organizations/column-mappings/properties',
           title: 'Column mappings',
-          icon: 'fa-solid:sitemap',
+          icon: 'fa-solid:right-left',
           type: 'basic',
           regexMatch: /^\/organizations\/column-mappings\/(properties|taxlots)/,
         },

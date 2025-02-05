@@ -24,7 +24,7 @@ export class OrganizationsNavComponent implements OnInit {
 
   links = [
     { base: 'access-level-tree', path: 'access-level-tree', title: 'Access Level Tree', icon: 'fa-solid:sitemap' },
-    { base: 'column-mappings', path: 'column-mappings/properties', title: 'Column mappings', icon: 'fa-solid:sitemap' },
+    { base: 'column-mappings', path: 'column-mappings/properties', title: 'Column mappings', icon: 'fa-solid:right-left' },
     { base: 'column-settings', path: 'column-settings/properties', title: 'Column Settings', icon: 'fa-solid:sliders' },
     { base: 'cycles', path: 'cycles', title: 'Cycles', icon: 'fa-solid:calendar-days' },
     { base: 'data-quality', path: 'data-quality/properties', title: 'Data Quality', icon: 'fa-solid:flag' },
