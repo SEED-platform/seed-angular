@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal, ViewEncapsulation } from '@angular/core'
 import type { AbstractControl, ValidationErrors } from '@angular/forms'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -47,6 +47,8 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
     },
     { validators: this.passwordsMatchValidator },
   )
+
+  hide = signal(true)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
 
@@ -104,15 +106,20 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
 
     if (!newPasswordControl || !confirmNewPasswordControl) {
       return null
-    } else {
-      const newPassword = newPasswordControl.value
-      const confirmNewPassword = confirmNewPasswordControl.value
-
-      if (newPassword !== confirmNewPassword) {
-        return { passwordMismatch: true }
-      } else {
-        return null
-      }
     }
+
+    const newPassword = newPasswordControl.value as [string, null]
+    const confirmNewPassword = confirmNewPasswordControl.value as [string, null]
+
+    if (newPassword !== confirmNewPassword) {
+      return { passwordMismatch: true }
+    } else {
+      return null
+    }
+  }
+
+  clickEvent(event: MouseEvent) {
+    this.hide.set(!this.hide())
+    event.stopPropagation()
   }
 }
