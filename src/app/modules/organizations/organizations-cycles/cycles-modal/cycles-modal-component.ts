@@ -1,18 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core'
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
-import { CommonModule } from '@angular/common'
+import { CommonModule, DatePipe } from '@angular/common'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialogModule } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
-import { FormsModule } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input'
 import { MatDatepickerModule } from '@angular/material/datepicker'
-import { provideNativeDateAdapter } from '@angular/material/core'
+import { Cycle } from '@seed/api/cycle'
+import { MatNativeDateModule } from '@angular/material/core'
+import { CycleService } from '@seed/api/cycle/cycle.service'
 
 @Component({
   selector: 'cycles-modal',
   templateUrl: './cycles-modal-component.html',
-  providers: [provideNativeDateAdapter()],
+  providers: [DatePipe],
   imports: [
     CommonModule,
     MatButtonModule,
@@ -20,15 +22,40 @@ import { provideNativeDateAdapter } from '@angular/material/core'
     MatFormFieldModule,
     FormsModule,
     MatInputModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
   ],
 })
 export class CyclesModalComponent implements OnInit {
-  data = inject(MAT_DIALOG_DATA) as { message: string }
+  private _cycleService = inject(CycleService)
+  private datePipe = inject(DatePipe);
   private dialogRef = inject(MatDialogRef<CyclesModalComponent>)
 
+  create = true
+  form = new FormGroup({
+    name: new FormControl<string | null>('', Validators.required),
+    start: new FormControl<string | null>(null, Validators.required),
+    end: new FormControl<string | null>(null, Validators.required),
+  })
+  data = inject(MAT_DIALOG_DATA) as { cycle: Cycle | null, org_id: number }
+  
   ngOnInit(): void {
+    if (this.data.cycle) this.create = false
     console.log('data', this.data)
+  }
+  private _formatDates() {
+    this.form.value.start = this.datePipe.transform(this.form.value.start, 'yyyy-MM-dd')
+    this.form.value.end = this.datePipe.transform(this.form.value.end, 'yyyy-MM-dd')
+  }
+
+  onSubmit() {
+    if (this.create) {
+      this._formatDates()
+      this._cycleService.post(this.form.value as Cycle, this.data.org_id)
+    }
+
+    this.dialogRef.close('submitted')
   }
 
   close() {

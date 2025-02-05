@@ -1,28 +1,37 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">{{ data.message }}</h2>
-<mat-dialog-content>content?</mat-dialog-content>
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">{{ create ? 'Create' : 'Edit'}} a Cycle</h2>
+<!-- <mat-dialog-content>content?</mat-dialog-content> -->
+<form [formGroup]="form" class="flex flex-col gap-4">
 
-<mat-form-field>
-  <mat-label>Cycle Name</mat-label>
-  <input matInput placeholder="Cycle Name">
-</mat-form-field>
+  <mat-form-field>
+    <mat-label>Cycle Name</mat-label>
+    <input matInput formControlName="name" placeholder="Cycle Name">
+  </mat-form-field>
 
-<mat-form-field class="mb-6">
-  <mat-label>From Date</mat-label>
-  <input matInput [matDatepicker]="startDate">
-  <mat-hint class="m-b-4">MM/DD/YYYY</mat-hint>
-  <mat-datepicker-toggle matIconSuffix [for]="startDate"></mat-datepicker-toggle>
-  <mat-datepicker #startDate></mat-datepicker>
-</mat-form-field>
+  <mat-form-field>
+    <mat-label>From Date</mat-label>
+    <input matInput formControlName="start" [matDatepicker]="start">
+    <mat-hint class="m-b-4">MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="start"></mat-datepicker-toggle>
+    <mat-datepicker #start></mat-datepicker>
+  </mat-form-field>
 
-<mat-form-field>
-  <mat-label>To Date</mat-label>
-  <input matInput [matDatepicker]="endDate">
-  <mat-hint>MM/DD/YYYY</mat-hint>
-  <mat-datepicker-toggle matIconSuffix [for]="endDate"></mat-datepicker-toggle>
-  <mat-datepicker #endDate></mat-datepicker>
-</mat-form-field>
+  <mat-form-field>
+    <mat-label>To Date</mat-label>
+    <input matInput formControlName="end" [matDatepicker]="end">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="end"></mat-datepicker-toggle>
+    <mat-datepicker #end></mat-datepicker>
+  </mat-form-field>
+  
+</form>
+    
+<div class="flex justify-end">
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+  <mat-dialog-actions>
+    <button mat-button (click)="close()">Close</button>
+  </mat-dialog-actions>
+</div>
 
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Close</button>
-</mat-dialog-actions>
+
+  

@@ -1,10 +1,11 @@
+// organization, user, and id omitted during cycle create/edit
 export type Cycle = {
   name: string;
   start: string;
   end: string;
-  organization: number;
-  user: number | null;
-  id: number;
+  organization?: number;
+  user?: number | null;
+  id?: number;
 }
 
 export type ListCyclesResponse = {

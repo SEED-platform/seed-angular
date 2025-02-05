@@ -19,6 +19,7 @@ import { DialogRef } from '@angular/cdk/dialog'
 export class OrganizationsCyclesComponent implements OnInit {
   private _cycleService = inject(CycleService)
   private dialog = inject(MatDialog)
+  private org_id: number
 
 
   cyclesDataSource = new MatTableDataSource<Cycle>([])
@@ -29,14 +30,15 @@ export class OrganizationsCyclesComponent implements OnInit {
 
     this._cycleService.cycles$.subscribe((cycles) => {
       this.cyclesDataSource.data = cycles
+      this.org_id = cycles[0]?.organization
     })
   }
 
   createCycle(): void {
     console.log('create cycle')
     const dialogRef = this.dialog.open(CyclesModalComponent, {
-      width: '50vw',
-      data: { message: 'Create a cycle' }
+      width: '40rem',
+      data: { cycle: null, org_id: this.org_id}
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log('Dialog closed', result);
