@@ -24,6 +24,12 @@ export type UserUpdateRequest = {
   email: string;
 }
 
+export type PasswordUpdateRequest = {
+  current_password: string;
+  password_1: string;
+  password_2: string;
+}
+
 export type SetDefaultOrganizationResponse = {
   status: string;
   user: {
@@ -38,4 +44,8 @@ export type SetDefaultOrganizationResponse = {
 export type GenerateApiKeyResponse = {
   status: string;
   api_key: string;
+}
+
+export type PasswordUpdateResponse = {
+  status: string;
 }
