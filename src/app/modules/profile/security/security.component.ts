@@ -15,7 +15,6 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
-  standalone: true,
   imports: [
     AlertComponent,
     MatIconModule,
