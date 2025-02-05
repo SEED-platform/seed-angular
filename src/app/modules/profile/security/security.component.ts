@@ -16,7 +16,7 @@ import { SharedImports } from '@seed/directives'
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
   imports: [
     AlertComponent,
     MatIconModule,
@@ -70,7 +70,6 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
   onSubmit() {
     // Handle form submission
     if (this.passwordForm.valid) {
-      console.log('VALID')
       const passwordData = {
         current_password: this.passwordForm.value.currentPassword,
         password_1: this.passwordForm.value.newPassword,
@@ -78,11 +77,11 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
       } as PasswordUpdateRequest
 
       this._userService.updatePassword(passwordData).subscribe({
-        error: (error) => {
-          console.error('Error:', error)
+        error: (error: { error?: { message?: string } }) => {
+          const error_msg = error.error?.message || 'An unknown error occurred.'
           this.alert = {
             type: 'error',
-            message: 'Update User Unsuccessful...',
+            message: `Error Updating Password: ${error_msg}`,
           }
           this.showAlert = true
         },
@@ -94,9 +93,6 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
           this.showAlert = true
         },
       })
-    } else {
-      console.log('NOT VALID')
-      // TODO: handle
     }
   }
 

@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap } from 'rxjs'
+import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap, throwError } from 'rxjs'
 import type {
   CurrentUser,
   GenerateApiKeyResponse,
@@ -78,7 +78,9 @@ export class UserService {
       tap(() => {
         this.getCurrentUser().subscribe()
       }),
-      // todo: how do I catch errors?
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error)
+      }),
     )
   }
 
