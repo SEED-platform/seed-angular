@@ -17,12 +17,17 @@ export class CycleService {
     this._organizationService.currentOrganization$.subscribe(({ org_id }) => {
       const url = `/api/v3/cycles/?organization_id=${org_id}`
       // fetch cycles
-      this._httpClient.get<ListCyclesResponse>(url).pipe(
-        map((response) => response.cycles),
-      ).subscribe({
-        next: (cycles) => { this._cycles.next(cycles) },
-        error: (error) => { console.error('Error fetching cycles:', error) },
-      })
+      this._httpClient
+        .get<ListCyclesResponse>(url)
+        .pipe(map((response) => response.cycles))
+        .subscribe({
+          next: (cycles) => {
+            this._cycles.next(cycles)
+          },
+          error: (error) => {
+            console.error('Error fetching cycles:', error)
+          },
+        })
     })
   }
 }
