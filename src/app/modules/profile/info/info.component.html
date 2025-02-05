@@ -27,7 +27,7 @@
         <mat-form-field class="w-full">
           <mat-label>Email</mat-label>
           <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:envelope'" matPrefix></mat-icon>
-          <input [formControlName]="'email'" matInput /> q
+          <input [formControlName]="'email'" matInput />
           @if (profileForm.controls['email']?.invalid) {
             <mat-error>{{ t('Invalid email address') }}</mat-error>
           }

@@ -13,9 +13,13 @@
           <mat-label>{{ t('New Password') }}</mat-label>
           <input [formControlName]="'newPassword'" type="password" matInput />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:key'"></mat-icon>
-          <mat-hint>{{ t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters') }}</mat-hint>
+          <mat-hint>{{
+            t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters')
+          }}</mat-hint>
           @if (passwordForm.controls['newPassword']?.invalid) {
-            <mat-error>{{ t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters') }}</mat-error>
+            <mat-error>{{
+              t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters')
+            }}</mat-error>
           }
         </mat-form-field>
       </div>
@@ -25,7 +29,10 @@
           <input [formControlName]="'confirmNewPassword'" type="password" matInput />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:key'"></mat-icon>
           <!-- this isn't working reliably -->
-          @if (passwordForm.hasError('passwordMismatch') && (passwordForm.controls['confirmNewPassword'].touched || passwordForm.controls['newPassword'].touched)) {
+          @if (
+            passwordForm.hasError('passwordMismatch') &&
+            (passwordForm.controls['confirmNewPassword'].touched || passwordForm.controls['newPassword'].touched)
+          ) {
             <mat-error>passwords do not match</mat-error>
           }
         </mat-form-field>

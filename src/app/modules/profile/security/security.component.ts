@@ -1,6 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, ViewEncapsulation } from '@angular/core'
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms'
+import type { AbstractControl, ValidationErrors } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
@@ -38,11 +39,14 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
   // password rules:  8 characters, 1 Uppercase, 1 Lowercase, 1 Number
   pwdPattern = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}$'
 
-  passwordForm = new FormGroup({
-    currentPassword: new FormControl('', [Validators.required]),
-    newPassword: new FormControl('', [Validators.required, Validators.pattern(this.pwdPattern)]),
-    confirmNewPassword: new FormControl('', [Validators.required]),
-  }, { validators: this.passwordsMatchValidator })
+  passwordForm = new FormGroup(
+    {
+      currentPassword: new FormControl('', [Validators.required]),
+      newPassword: new FormControl('', [Validators.required, Validators.pattern(this.pwdPattern)]),
+      confirmNewPassword: new FormControl('', [Validators.required]),
+    },
+    { validators: this.passwordsMatchValidator },
+  )
 
   private readonly _unsubscribeAll$ = new Subject<void>()
 
@@ -95,13 +99,20 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
   }
 
   passwordsMatchValidator(form: AbstractControl): ValidationErrors | null {
-    const newPassword = form.get('newPassword').value;
-    const confirmNewPassword = form.get('confirmNewPassword').value;
+    const newPasswordControl = form.get('newPassword')
+    const confirmNewPasswordControl = form.get('confirmNewPassword')
 
-    if (newPassword !== confirmNewPassword) {
-      return { passwordMismatch: true }
-    } else {
+    if (!newPasswordControl || !confirmNewPasswordControl) {
       return null
+    } else {
+      const newPassword = newPasswordControl.value
+      const confirmNewPassword = confirmNewPasswordControl.value
+
+      if (newPassword !== confirmNewPassword) {
+        return { passwordMismatch: true }
+      } else {
+        return null
+      }
     }
   }
 }
