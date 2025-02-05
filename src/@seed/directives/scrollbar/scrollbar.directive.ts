@@ -1,8 +1,6 @@
-import type { BooleanInput } from '@angular/cdk/coercion'
-import { coerceBooleanProperty } from '@angular/cdk/coercion'
 import { Platform } from '@angular/cdk/platform'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Directive, ElementRef, inject, Input } from '@angular/core'
+import { Directive, ElementRef, inject, input, model } from '@angular/core'
 import PerfectScrollbar from 'perfect-scrollbar'
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs'
 import { ScrollbarGeometry, ScrollbarPosition } from './scrollbar.types'
@@ -15,13 +13,11 @@ import { ScrollbarGeometry, ScrollbarPosition } from './scrollbar.types'
   exportAs: 'seedScrollbar',
 })
 export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
-  static ngAcceptInputType_seedScrollbar: BooleanInput
-
   private _elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
   private _platform = inject(Platform)
 
-  @Input() seedScrollbar = true
-  @Input() seedScrollbarOptions: PerfectScrollbar.Options
+  seedScrollbar = model(true)
+  seedScrollbarOptions = input<PerfectScrollbar.Options>()
 
   private _animation: number
   private _options: PerfectScrollbar.Options
@@ -45,11 +41,8 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     // Enabled
     if ('seedScrollbar' in changes) {
-      // Interpret empty string as 'true'
-      this.seedScrollbar = coerceBooleanProperty(changes.seedScrollbar.currentValue)
-
       // If enabled, init the directive
-      if (this.seedScrollbar) {
+      if (this.seedScrollbar()) {
         this._init()
       } else {
         this._destroy()
@@ -101,7 +94,7 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
    * Is enabled
    */
   isEnabled(): boolean {
-    return this.seedScrollbar
+    return this.seedScrollbar()
   }
 
   /**
@@ -331,7 +324,7 @@ export class ScrollbarDirective implements OnChanges, OnInit, OnDestroy {
 
     // Return if on mobile or not on browser
     if (this._platform.ANDROID || this._platform.IOS || !this._platform.isBrowser) {
-      this.seedScrollbar = false
+      this.seedScrollbar.set(false)
       return
     }
 

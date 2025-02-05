@@ -1,6 +1,5 @@
-import type { BooleanInput } from '@angular/cdk/coercion'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, ViewEncapsulation } from '@angular/core'
+import { booleanAttribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
@@ -9,8 +8,8 @@ import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
+import { sha256 } from '@seed/utils'
 import { AuthService } from 'app/core/auth/auth.service'
-import { sha256 } from '../../../../@seed/utils'
 
 @Component({
   selector: 'seed-user',
@@ -26,9 +25,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private _router = inject(Router)
   private _userService = inject(UserService)
 
-  static ngAcceptInputType_showAvatar: BooleanInput
-
-  @Input() showAvatar = true
+  showAvatar = input(true, { transform: booleanAttribute })
   user: CurrentUser
   avatarUrl: string
 

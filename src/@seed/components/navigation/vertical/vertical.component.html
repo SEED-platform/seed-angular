@@ -7,9 +7,9 @@
   <!-- Content -->
   <div
     class="seed-vertical-navigation-content"
-    seedScrollbar
+    [seedScrollbar]="true"
     [seedScrollbarOptions]="{
-      wheelPropagation: inner,
+      wheelPropagation: inner(),
       suppressScrollX: true,
     }"
     #navigationContent
@@ -20,36 +20,36 @@
     </div>
 
     <!-- Items -->
-    @for (item of navigation; track item.id || $index) {
+    @for (item of navigation(); track item.id || $index) {
       <!-- Skip hidden items -->
       @if ((item.hidden && !item.hidden(item)) || !item.hidden) {
         @if (item.type === 'aside') {
           <seed-vertical-navigation-aside-item
             [item]="item"
-            [name]="name"
+            [name]="name()"
             [activeItemId]="activeAsideItemId"
-            [autoCollapse]="autoCollapse"
+            [autoCollapse]="autoCollapse()"
             [skipChildren]="true"
             (click)="toggleAside(item)"
           ></seed-vertical-navigation-aside-item>
         } @else if (item.type === 'basic') {
-          <seed-vertical-navigation-basic-item [item]="item" [name]="name"></seed-vertical-navigation-basic-item>
+          <seed-vertical-navigation-basic-item [item]="item" [name]="name()"></seed-vertical-navigation-basic-item>
         } @else if (item.type === 'collapsible') {
           <seed-vertical-navigation-collapsible-item
             [item]="item"
-            [name]="name"
-            [autoCollapse]="autoCollapse"
+            [name]="name()"
+            [autoCollapse]="autoCollapse()"
           ></seed-vertical-navigation-collapsible-item>
         } @else if (item.type === 'divider') {
-          <seed-vertical-navigation-divider-item [item]="item" [name]="name"></seed-vertical-navigation-divider-item>
+          <seed-vertical-navigation-divider-item [item]="item" [name]="name()"></seed-vertical-navigation-divider-item>
         } @else if (item.type === 'group') {
           <seed-vertical-navigation-group-item
             [item]="item"
-            [name]="name"
-            [autoCollapse]="autoCollapse"
+            [name]="name()"
+            [autoCollapse]="autoCollapse()"
           ></seed-vertical-navigation-group-item>
         } @else if (item.type === 'spacer') {
-          <seed-vertical-navigation-spacer-item [item]="item" [name]="name"></seed-vertical-navigation-spacer-item>
+          <seed-vertical-navigation-spacer-item [item]="item" [name]="name()"></seed-vertical-navigation-spacer-item>
         }
       }
     }
@@ -70,26 +70,26 @@
 @if (activeAsideItemId) {
   <div
     class="seed-vertical-navigation-aside-wrapper"
-    seedScrollbar
+    [seedScrollbar]="true"
     [seedScrollbarOptions]="{
       wheelPropagation: false,
       suppressScrollX: true,
     }"
-    [@fadeInLeft]="position === 'left'"
-    [@fadeInRight]="position === 'right'"
-    [@fadeOutLeft]="position === 'left'"
-    [@fadeOutRight]="position === 'right'"
+    [@fadeInLeft]="position() === 'left'"
+    [@fadeInRight]="position() === 'right'"
+    [@fadeOutLeft]="position() === 'left'"
+    [@fadeOutRight]="position() === 'right'"
   >
     <!-- Items -->
-    @for (item of navigation; track item.id || $index) {
+    @for (item of navigation(); track item.id || $index) {
       <!-- Skip hidden items -->
       @if ((item.hidden && !item.hidden(item)) || !item.hidden) {
         <!-- Aside -->
         @if (item.type === 'aside' && item.id === activeAsideItemId) {
           <seed-vertical-navigation-aside-item
             [item]="item"
-            [name]="name"
-            [autoCollapse]="autoCollapse"
+            [name]="name()"
+            [autoCollapse]="autoCollapse()"
           ></seed-vertical-navigation-aside-item>
         }
       }

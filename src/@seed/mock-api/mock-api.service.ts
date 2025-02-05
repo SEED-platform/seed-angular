@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
-import type { MockApiMethods } from '@seed/mock-api/index'
 import { MockApiHandler } from '@seed/mock-api/index'
+import type { MockApiMethods } from './mock-api.types'
 
 @Injectable({ providedIn: 'root' })
 export class MockApiService {

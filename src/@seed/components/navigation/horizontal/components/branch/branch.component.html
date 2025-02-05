@@ -1,37 +1,37 @@
-@if (!child) {
+@if (!child()) {
   <div
     [ngClass]="{
       'seed-horizontal-navigation-menu-active': trigger.menuOpen,
-      'seed-horizontal-navigation-menu-active-forced': item.active,
+      'seed-horizontal-navigation-menu-active-forced': item().active,
     }"
     [matMenuTriggerFor]="matMenu"
     (menuOpened)="triggerChangeDetection()"
     (menuClosed)="triggerChangeDetection()"
     #trigger="matMenuTrigger"
   >
-    <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+    <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item() }"></ng-container>
   </div>
 }
 
 <mat-menu class="seed-horizontal-navigation-menu-panel" [overlapTrigger]="false" #matMenu="matMenu">
-  @for (item of item.children; track item.id || $index) {
+  @for (item of item().children; track item.id || $index) {
     <!-- Skip the hidden items -->
     @if ((item.hidden && !item.hidden(item)) || !item.hidden) {
       <!-- Basic -->
       @if (item.type === 'basic') {
         <div class="seed-horizontal-navigation-menu-item" [disabled]="item.disabled" mat-menu-item>
-          <seed-horizontal-navigation-basic-item [item]="item" [name]="name"></seed-horizontal-navigation-basic-item>
+          <seed-horizontal-navigation-basic-item [item]="item" [name]="name()"></seed-horizontal-navigation-basic-item>
         </div>
       }
 
       <!-- Branch: aside, collapsible, group -->
       @if (item.type === 'aside' || item.type === 'collapsible' || item.type === 'group') {
-        <div class="seed-horizontal-navigation-menu-item" [disabled]="item.disabled" [matMenuTriggerFor]="branch.matMenu" mat-menu-item>
+        <div class="seed-horizontal-navigation-menu-item" [disabled]="item.disabled" [matMenuTriggerFor]="branch.matMenu()" mat-menu-item>
           <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
           <seed-horizontal-navigation-branch-item
             [child]="true"
             [item]="item"
-            [name]="name"
+            [name]="name()"
             #branch
           ></seed-horizontal-navigation-branch-item>
         </div>
@@ -40,7 +40,7 @@
       <!-- Divider -->
       @if (item.type === 'divider') {
         <div class="seed-horizontal-navigation-menu-item" mat-menu-item>
-          <seed-horizontal-navigation-divider-item [item]="item" [name]="name"></seed-horizontal-navigation-divider-item>
+          <seed-horizontal-navigation-divider-item [item]="item" [name]="name()"></seed-horizontal-navigation-divider-item>
         </div>
       }
     }

@@ -51,7 +51,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
       this.isScreenSmall = !matchingAliases.includes('md')
 
       // Change the navigation appearance
-      this.navigationAppearance = this.isScreenSmall ? 'default' : 'dense'
+      this.navigationAppearance = this.isScreenSmall ? 'dense' : 'default'
     })
 
     this._versionService.version$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ version, sha }) => {

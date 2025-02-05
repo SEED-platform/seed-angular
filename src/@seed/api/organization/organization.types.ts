@@ -73,6 +73,10 @@ export type Organization = BriefOrganization & {
   default_reports_y_axis_options: Column[];
   require_2fa: boolean;
 }
+export type OrganizationResponse = {
+  status: string;
+  organization: Organization;
+}
 export type OrganizationsResponse = {
   organizations: (BriefOrganization | Organization)[];
 }
