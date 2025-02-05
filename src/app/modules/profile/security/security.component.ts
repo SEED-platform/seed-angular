@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, signal} from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import type { AbstractControl, ValidationErrors } from '@angular/forms'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -36,13 +36,11 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
   // password rules:  8 characters, 1 Uppercase, 1 Lowercase, 1 Number
   pwdPattern = '^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}$'
 
-  passwordForm = new FormGroup(
-    {
-      currentPassword: new FormControl('', [Validators.required]),
-      newPassword: new FormControl('', [Validators.required, Validators.pattern(this.pwdPattern)]),
-      confirmNewPassword: new FormControl('', [Validators.required, this.validateSamePassword]),
-    },
-  )
+  passwordForm = new FormGroup({
+    currentPassword: new FormControl('', [Validators.required]),
+    newPassword: new FormControl('', [Validators.required, Validators.pattern(this.pwdPattern)]),
+    confirmNewPassword: new FormControl('', [Validators.required, this.validateSamePassword]),
+  })
 
   hide = signal(true)
 
@@ -53,8 +51,6 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
     const confirmPassword = control.parent?.get('confirmNewPassword')
     return password?.value == confirmPassword?.value ? null : { notSame: true }
   }
-
-
 
   ngOnInit(): void {
     // Subscribe to user changes

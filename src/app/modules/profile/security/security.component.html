@@ -36,8 +36,7 @@
             <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
           </button>
           <!-- this isn't working reliably -->
-          @if (
-            passwordForm.get('confirmNewPassword')?.hasError('notSame')) {
+          @if (passwordForm.get('confirmNewPassword')?.hasError('notSame')) {
             <mat-error>passwords do not match</mat-error>
           }
         </mat-form-field>
