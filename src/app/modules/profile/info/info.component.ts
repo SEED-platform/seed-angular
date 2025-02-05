@@ -38,7 +38,7 @@ export class ProfileInfoComponent implements OnInit, OnDestroy {
   profileForm = new FormGroup({
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
   })
 
   private readonly _unsubscribeAll$ = new Subject<void>()

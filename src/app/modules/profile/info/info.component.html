@@ -10,22 +10,31 @@
           <mat-label>{{ t('First Name') }}</mat-label>
           <input matInput [formControlName]="'firstName'" />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
+          @if (profileForm.controls['firstName']?.invalid) {
+            <mat-error>{{ t('Last Name required') }}</mat-error>
+          }
         </mat-form-field>
         <mat-form-field class="gt-xs:pl-3 flex-auto">
           <mat-label>{{ t('Last Name') }}</mat-label>
           <input matInput [formControlName]="'lastName'" />
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
+          @if (profileForm.controls['lastName']?.invalid) {
+            <mat-error>{{ t('Last Name required') }}</mat-error>
+          }
         </mat-form-field>
       </div>
       <div class="flex">
         <mat-form-field class="w-full">
           <mat-label>Email</mat-label>
           <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:envelope'" matPrefix></mat-icon>
-          <input [formControlName]="'email'" matInput />
+          <input [formControlName]="'email'" matInput /> q
+          @if (profileForm.controls['email']?.invalid) {
+            <mat-error>{{ t('Invalid email address') }}</mat-error>
+          }
         </mat-form-field>
       </div>
       <div class="flex justify-center">
-        <button mat-flat-button color="primary">
+        <button mat-flat-button color="primary" [disabled]="profileForm.invalid">
           <span class="ml-2">{{ t('Update') }}</span>
         </button>
       </div>
