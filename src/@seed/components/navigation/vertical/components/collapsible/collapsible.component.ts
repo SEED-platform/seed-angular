@@ -1,6 +1,7 @@
+import type { BooleanInput } from '@angular/cdk/coercion'
 import { NgClass } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router } from '@angular/router'
@@ -26,12 +27,15 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
     MatTooltipModule,
     MatIconModule,
     VerticalNavigationBasicItemComponent,
+    forwardRef(() => VerticalNavigationCollapsibleItemComponent),
     VerticalNavigationDividerItemComponent,
     VerticalNavigationGroupItemComponent,
     VerticalNavigationSpacerItemComponent,
   ],
 })
 export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDestroy {
+  static ngAcceptInputType_autoCollapse: BooleanInput
+
   private _changeDetectorRef = inject(ChangeDetectorRef)
   private _router = inject(Router)
   private _navigationService = inject(SeedNavigationService)
@@ -45,6 +49,9 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
   private _verticalNavigationComponent: VerticalNavigationComponent
   private readonly _unsubscribeAll$ = new Subject<void>()
 
+  /**
+   * Host binding for component classes
+   */
   @HostBinding('class') get classList(): Record<string, boolean> {
     return {
       'seed-vertical-navigation-item-collapsed': this.isCollapsed,
@@ -61,7 +68,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
       this.expand()
     } else {
       // If the autoCollapse is on, collapse...
-      if (this.autoCollapse()) {
+      if (this.autoCollapse) {
         this.collapse()
       }
     }
@@ -80,7 +87,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
     })
 
     // Listen for the onCollapsibleItemExpanded from the service if the autoCollapse is on
-    if (this.autoCollapse()) {
+    if (this.autoCollapse) {
       this._verticalNavigationComponent.onCollapsibleItemExpanded.pipe(takeUntil(this._unsubscribeAll$)).subscribe((expandedItem) => {
         // Check if the expanded item is null
         if (expandedItem === null) {
@@ -119,7 +126,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
           this.expand()
         } else {
           // If the autoCollapse is on, collapse...
-          if (this.autoCollapse()) {
+          if (this.autoCollapse) {
             this.collapse()
           }
         }
@@ -222,7 +229,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
       }
 
       // Check if the child has a link and is active
-      if (child.link && this._router.isActive(child.link, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
+      if (child.link && this._router.isActive(child.id, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
         return true
       }
     }

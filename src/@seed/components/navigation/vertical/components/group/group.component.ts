@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
@@ -22,6 +22,7 @@ import {
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,
+    forwardRef(() => VerticalNavigationGroupItemComponent),
     VerticalNavigationSpacerItemComponent,
   ],
 })
