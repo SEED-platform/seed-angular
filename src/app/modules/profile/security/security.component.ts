@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal, ViewEncapsulation } from '@angular/core'
+import { Component, inject, signal} from '@angular/core'
 import type { AbstractControl, ValidationErrors } from '@angular/forms'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -15,8 +15,7 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Default,
+  standalone: true,
   imports: [
     AlertComponent,
     MatIconModule,
@@ -30,7 +29,6 @@ import { SharedImports } from '@seed/directives'
 })
 export class ProfileSecurityComponent implements OnInit, OnDestroy {
   private _userService = inject(UserService)
-  private _changeDetectorRef = inject(ChangeDetectorRef)
 
   alert: Alert
   showAlert = false
@@ -43,22 +41,26 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
     {
       currentPassword: new FormControl('', [Validators.required]),
       newPassword: new FormControl('', [Validators.required, Validators.pattern(this.pwdPattern)]),
-      confirmNewPassword: new FormControl('', [Validators.required]),
+      confirmNewPassword: new FormControl('', [Validators.required, this.validateSamePassword]),
     },
-    { validators: this.passwordsMatchValidator },
   )
 
   hide = signal(true)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
 
+  validateSamePassword(control: AbstractControl): ValidationErrors | null {
+    const password = control.parent?.get('newPassword')
+    const confirmPassword = control.parent?.get('confirmNewPassword')
+    return password?.value == confirmPassword?.value ? null : { notSame: true }
+  }
+
+
+
   ngOnInit(): void {
     // Subscribe to user changes
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
       this.user = currentUser
-
-      // Mark for check
-      this._changeDetectorRef.markForCheck()
     })
   }
 
@@ -93,24 +95,6 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
           this.showAlert = true
         },
       })
-    }
-  }
-
-  passwordsMatchValidator(form: AbstractControl): ValidationErrors | null {
-    const newPasswordControl = form.get('newPassword')
-    const confirmNewPasswordControl = form.get('confirmNewPassword')
-
-    if (!newPasswordControl || !confirmNewPasswordControl) {
-      return null
-    }
-
-    const newPassword = newPasswordControl.value as [string, null]
-    const confirmNewPassword = confirmNewPasswordControl.value as [string, null]
-
-    if (newPassword !== confirmNewPassword) {
-      return { passwordMismatch: true }
-    } else {
-      return null
     }
   }
 

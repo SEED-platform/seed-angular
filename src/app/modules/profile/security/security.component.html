@@ -37,9 +37,7 @@
           </button>
           <!-- this isn't working reliably -->
           @if (
-            passwordForm.hasError('passwordMismatch') &&
-            (passwordForm.controls['confirmNewPassword'].touched || passwordForm.controls['newPassword'].touched)
-          ) {
+            passwordForm.get('confirmNewPassword')?.hasError('notSame')) {
             <mat-error>passwords do not match</mat-error>
           }
         </mat-form-field>
