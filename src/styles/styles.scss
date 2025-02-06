@@ -1,1 +1,10 @@
 // Styles from this file will override 'vendors.scss' and SEED's base styles.
+.mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked:not(.mat-disabled) .mdc-switch__shadow {
+  background-color: rgb(50, 170, 118);
+  /*replace with your color*/
+}
+
+.mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked:not(.mat-disabled) .mdc-switch__track::after {
+  background-color: rgb(113, 226, 147) !important;
+  /*replace with your color*/
+}
