@@ -1,1 +1,13 @@
-<div class="prose">Email Templates Content</div>
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+  <div
+    class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
+  >
+    <div class="min-w-0 flex-1">
+      <h2 class="truncate text-2xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-2xl">
+        <mat-icon class="icon-size-4" svgIcon="fa-solid:envelope"></mat-icon>
+        {{ t('Email Templates') }}
+      </h2>
+    </div>
+  </div>
+  <div class="flex-auto pt-4 sm:pt-6"></div>
+</div>
