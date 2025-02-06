@@ -1,1 +1,24 @@
 // Styles from this file will override 'vendors.scss' and SEED's base styles.
+.success-snackbar  {
+  --mat-snack-bar-button-color: #fff;
+  --mdc-snackbar-container-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+.info-snackbar {
+  --mat-snack-bar-button-color: #fff;
+  --mdc-snackbar-container-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+.alert-snackbar {
+  --mat-snack-bar-button-color: #fff;
+  --mdc-snackbar-container-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+.warning-snackbar {
+  --mat-snack-bar-button-color: #fff;
+  --mdc-snackbar-container-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
+  --mdc-snackbar-supporting-text-color: #fff;
+}
