@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
+import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
@@ -21,6 +22,7 @@ import { AuthService } from 'app/core/auth/auth.service'
 export class UserComponent implements OnInit, OnDestroy {
   private _authService = inject(AuthService)
   private _changeDetectorRef = inject(ChangeDetectorRef)
+  private _router = inject(Router)
   private _userService = inject(UserService)
 
   showAvatar = input(true, { transform: booleanAttribute })
@@ -47,5 +49,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
   signOut(): void {
     this._authService.signOut()
+  }
+
+  goToProfile() {
+    void this._router.navigate(['/profile'])
   }
 }

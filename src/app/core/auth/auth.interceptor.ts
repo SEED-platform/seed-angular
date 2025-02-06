@@ -32,8 +32,8 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
         })
 
         return next(newReq).pipe(
-          catchError(() => {
-            return throwError(() => new Error(`Failed request ${req.method} ${req.url}`))
+          catchError((error: HttpErrorResponse) => {
+            return throwError(() => error)
           }),
         )
       } else {
