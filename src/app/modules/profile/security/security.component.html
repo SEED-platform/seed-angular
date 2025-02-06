@@ -1,0 +1,59 @@
+<div class="flex-auto p-6 sm:p-10" *transloco="let t">
+  <div class="max-w-2xl">
+    <h1 class="mb-6 flex items-center text-center text-2xl"><mat-icon class="mr-2" svgIcon="fa-solid:lock"></mat-icon>Security</h1>
+
+    <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+      <div class="gt-xs:flex-row flex flex-col">
+        <mat-form-field class="gt-xs:pr-3 flex-auto">
+          <mat-label>{{ t('Current Password') }} </mat-label>
+          <input [formControlName]="'currentPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
+            <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field class="gt-xs:pl-3 mb-6 flex-auto">
+          <mat-label>{{ t('New Password') }}</mat-label>
+          <input [formControlName]="'newPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
+            <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+          </button>
+          <mat-hint>{{
+            t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters')
+          }}</mat-hint>
+          @if (passwordForm.controls['newPassword']?.invalid) {
+            <mat-error>{{
+              t('Passwords must be a combination of lower-case, upper-case, numbers, and must contain at least 8 characters')
+            }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="flex">
+        <mat-form-field class="flex-auto">
+          <mat-label>{{ t('Confirm New Password') }}</mat-label>
+          <input [formControlName]="'confirmNewPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
+            <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+          </button>
+          <!-- this isn't working reliably -->
+          @if (passwordForm.get('confirmNewPassword')?.hasError('notSame')) {
+            <mat-error>passwords do not match</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="flex justify-center">
+        <button mat-flat-button color="primary" [disabled]="passwordForm.invalid">
+          <span class="ml-2">{{ t('Update Password') }}</span>
+        </button>
+      </div>
+      <!-- Alert -->
+      @if (showAlert) {
+        <div class="mb-4 mt-0">
+          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type">
+            {{ alert.message }}
+          </seed-alert>
+        </div>
+      }
+    </form>
+  </div>
+</div>

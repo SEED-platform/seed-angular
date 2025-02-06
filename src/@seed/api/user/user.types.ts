@@ -19,6 +19,18 @@ export type CurrentUser = {
   is_ali_leaf: boolean;
 }
 
+export type UserUpdateRequest = {
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+export type PasswordUpdateRequest = {
+  current_password: string;
+  password_1: string;
+  password_2: string;
+}
+
 export type SetDefaultOrganizationResponse = {
   status: string;
   user: {
@@ -28,4 +40,13 @@ export type SetDefaultOrganizationResponse = {
       name: string;
     };
   };
+}
+
+export type GenerateApiKeyResponse = {
+  status: string;
+  api_key: string;
+}
+
+export type PasswordUpdateResponse = {
+  status: string;
 }
