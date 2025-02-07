@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, delay, EMPTY, expand, of, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressBarObj, UploaderResponse } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
@@ -12,12 +12,7 @@ export class UploaderService {
   * Checks a progress key for updates until it completes
   */
   checkProgressLoop({
-    progressKey,
-    offset,
-    multiplier,
-    successFn,
-    failureFn,
-    progressBarObj,
+    progressKey, offset, multiplier, successFn, failureFn, progressBarObj,
   }: {
     progressKey: string;
     offset: number;
@@ -26,21 +21,11 @@ export class UploaderService {
     failureFn: () => void;
     progressBarObj: ProgressBarObj;
   }): Observable<UploaderResponse> {
-    return this.checkProgress(progressKey).pipe(
-      tap((response) => {
-        this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
-      }),
-      // recursive call to checkProgressLoop after a short delay
-      expand((response) => {
-        if (response.progress < 100) {
-          return this.checkProgressLoop({ progressKey, offset, multiplier, successFn, failureFn, progressBarObj })
-            .pipe(delay(750))
-        }
-        successFn()
-        return EMPTY
-      }),
-      // end stream if complete
-      takeWhile((response) => response.progress < 100),
+    return interval(750).pipe( // poll every 750ms
+      switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
+      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })}),
+      takeWhile((response) => response.progress < 100, true), // end stream
+      finalize(() => { successFn() }),
       catchError(() => {
         failureFn()
         return throwError(() => new Error('Progress check failed'))

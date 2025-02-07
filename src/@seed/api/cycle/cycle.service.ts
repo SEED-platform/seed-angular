@@ -63,7 +63,6 @@ export class CycleService {
   }
 
   delete(id: number, orgId: number) {
-    console.log('cycle service delete')
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
     return this._httpClient
       .delete(url)

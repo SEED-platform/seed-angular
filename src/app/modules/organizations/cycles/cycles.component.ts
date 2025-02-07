@@ -69,8 +69,7 @@ export class OrganizationsCyclesComponent implements OnInit {
       data: { cycle, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed().subscribe((response) => {
-      console.log('delete', response)
+    dialogRef.afterClosed().subscribe(() => {
       this.refreshCycles()
     })
   }

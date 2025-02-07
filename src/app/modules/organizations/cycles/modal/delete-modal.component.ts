@@ -51,20 +51,20 @@ export class DeleteModalComponent {
 
   onSubmit() {
     this.inProgress = true
+    const successFn = () => {
+      setTimeout(() => {
+        this.close('success')
+      }, 300)
+    }
+    const failureFn = () => {
+      this.close('Failure')
+    }
+
     // initiate delete cycle task
     this._cycleService.delete(this.data.cycle.id, this.data.orgId)
       .subscribe({
         next: (response: { progress_key: string; value: number }) => {
           this.progressBarObj.progress = response.value
-          const successFn = () => {
-            setTimeout(() => {
-              this.close('success')
-            }, 300)
-          }
-          const failureFn = () => {
-            this.close('Failure')
-          }
-
           // monitor delete cycle task
           this._uploaderService.checkProgressLoop({
             progressKey: response.progress_key,
@@ -93,8 +93,7 @@ export class DeleteModalComponent {
   }
 
   dismiss() {
-    this.openSnackBar('Dismissed')
-    this._dialogRef.close('dismiss')
+    this._dialogRef.close()
   }
 
   openSnackBar(message: string) {
