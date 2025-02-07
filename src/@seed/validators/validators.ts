@@ -52,4 +52,25 @@ export class SEEDValidators {
       return errors
     }
   }
+
+  static uniqueValue(existingValues: string[]): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null
+      const value = (control.value as string).trim().toLowerCase()
+      const valueExists = existingValues.some((v) => v.toLowerCase() === value)
+
+      return valueExists ? { valueExists: true } : null
+    }
+  }
+
+  static afterDate(startKey: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null
+      const start = control.parent?.get(startKey)
+      if (!start?.value) return null
+      const _endDate = new Date(control.value as string)
+      const _startDate = new Date(start.value as string)
+      return _endDate < _startDate ? { dateBefore: true } : null
+    }
+  }
 }

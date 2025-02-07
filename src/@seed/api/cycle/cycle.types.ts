@@ -2,17 +2,17 @@ export type Cycle = {
   name: string;
   start: string;
   end: string;
-  organization: number;
-  user: number | null;
-  id: number;
+  organization?: number;
+  user?: number | null;
+  id?: number;
 }
 
-export type ListCyclesResponse = {
+export type CyclesResponse = {
   status: string;
   cycles: Cycle[];
 }
 
-export type GetCycleResponse = {
+export type CycleResponse = {
   status: string;
   cycles: Cycle;
 }
