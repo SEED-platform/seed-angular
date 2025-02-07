@@ -9,5 +9,50 @@
       </h2>
     </div>
   </div>
-  <div class="flex-auto pt-4 sm:pt-6"></div>
+  <!-- Cycles Table -->
+  <div class="flex-auto pt-4 sm:pt-6">
+    <div class="mx-auto w-full max-w-screen-xl">
+      <div class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
+        <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow sm:col-span-2 md:col-span-4">
+          <div class="mx-6 overflow-x-auto">
+            <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="emailsDataSource" [trackBy]="trackByFn">
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let cycle">{{ cycle.id }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let cycle">{{ cycle.name }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="start">
+                <th mat-header-cell *matHeaderCellDef>From Date</th>
+                <td mat-cell *matCellDef="let cycle">{{ cycle.start }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="end">
+                <th mat-header-cell *matHeaderCellDef>To Date</th>
+                <td mat-cell *matCellDef="let cycle">{{ cycle.end }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="select-none">Actions</th>
+                <td mat-cell *matCellDef="let transaction">
+                  <span class="whitespace-nowrap pr-6 font-medium">Actions here</span>
+                </td>
+              </ng-container>
+
+              <thead>
+                <tr mat-header-row *matHeaderRowDef="cyclesColumns"></tr>
+              </thead>
+              <tbody>
+                <tr mat-row *matRowDef="let row; columns: cyclesColumns"></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
