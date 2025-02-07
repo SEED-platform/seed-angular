@@ -23,7 +23,7 @@ export class UploaderService {
   }): Observable<UploaderResponse> {
     return interval(750).pipe( // poll every 750ms
       switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
-      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })}),
+      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj }) }),
       takeWhile((response) => response.progress < 100, true), // end stream
       finalize(() => { successFn() }),
       catchError(() => {
