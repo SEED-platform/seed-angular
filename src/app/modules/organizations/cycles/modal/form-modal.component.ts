@@ -98,6 +98,7 @@ export class FormModalComponent implements OnInit {
     this._snackBar.open(message, null, {
       verticalPosition: 'top',
       duration: 2000,
+      panelClass: 'soft-success-snackbar',
     })
   }
 
