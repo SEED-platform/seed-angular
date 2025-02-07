@@ -1,7 +1,8 @@
+import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, of } from 'rxjs'
+import { BehaviorSubject, catchError, map, of, throwError } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 
@@ -42,9 +43,9 @@ export class CycleService {
       .post<CycleResponse>(url, data)
       .pipe(
         map((response) => response),
-        catchError((error) => {
+        catchError(({ error }: { error: HttpErrorResponse }) => {
           console.error('Error creating cycle:', error)
-          return of(null)
+          return throwError(() => new Error(error?.message || 'Error creating cycle'))
         }),
       )
   }
@@ -54,9 +55,9 @@ export class CycleService {
     return this._httpClient
       .put<CycleResponse>(url, data)
       .pipe(
-        catchError((error) => {
+        catchError(({ error }: { error: HttpErrorResponse }) => {
           console.error('Error updating cycle:', error)
-          return of(null)
+          return throwError(() => new Error(error?.message || 'Error updating cycle'))
         }),
       )
   }
@@ -67,9 +68,9 @@ export class CycleService {
     return this._httpClient
       .delete(url)
       .pipe(
-        catchError((error) => {
+        catchError(({ error }: { error: HttpErrorResponse }) => {
           console.error('Error deleting cycle:', error)
-          return of(null)
+          return throwError(() => new Error(error?.message || 'Error deleting cycle'))
         }),
       )
   }

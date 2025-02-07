@@ -1,4 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common'
+import type { HttpErrorResponse } from '@angular/common/http'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatNativeDateModule } from '@angular/material/core'
@@ -8,8 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { catchError, throwError } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
+import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 
 @Component({
@@ -17,6 +20,7 @@ import { UploaderService } from '@seed/services/uploader/uploader.service'
   templateUrl: './delete-modal.component.html',
   providers: [DatePipe],
   imports: [
+    AlertComponent,
     CommonModule,
     MatButtonModule,
     MatDialogModule,
@@ -32,50 +36,60 @@ export class DeleteModalComponent {
   private _uploaderService = inject(UploaderService)
   private _snackBar = inject(MatSnackBar)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
-  inProgress = true
+  errorMessage: string
+  inProgress = false
   progressBarObj = {
-    in_progress: false,
     message: '',
     progress: 0,
     complete: false,
-    status_message: '',
-    progress_last_updated: null,
-    progress_last_checked: null,
+    statusMessage: '',
+    progressLastUpdated: null,
+    progressLastChecked: null,
   }
 
   data = inject(MAT_DIALOG_DATA) as { cycle: Cycle; orgId: number }
 
   onSubmit() {
     this.inProgress = true
+    // initiate delete cycle task
     this._cycleService.delete(this.data.cycle.id, this.data.orgId)
       .subscribe({
-        next: (response: { progress_key: string; value: number; total: number }) => {
+        next: (response: { progress_key: string; value: number }) => {
           this.progressBarObj.progress = response.value
           const successFn = () => {
-            console.log('success')
+            setTimeout(() => {
+              this.close('success')
+            }, 300)
           }
-          const errorFn = () => {
-            console.log('error')
+          const failureFn = () => {
+            this.close('Failure')
           }
+
+          // monitor delete cycle task
           this._uploaderService.checkProgressLoop({
             progressKey: response.progress_key,
             offset: 0,
             multiplier: 1,
             successFn,
-            errorFn,
+            failureFn,
             progressBarObj: this.progressBarObj,
-          })
-          this.close(response)
+          }).pipe(
+            catchError(({ error }: { error: HttpErrorResponse }) => {
+              return throwError(() => new Error(error?.message || 'Error checking progress'))
+            }),
+          )
+            .subscribe()
         },
-        error: (error) => {
-          console.log(error)
+        error: (error: string) => {
+          this.inProgress = false
+          this.errorMessage = error
         },
       })
   }
 
-  close(response: unknown) {
+  close(message: string) {
     this.openSnackBar(`Deleted Cycle ${this.data.cycle.name}`)
-    this._dialogRef.close(response)
+    this._dialogRef.close(message)
   }
 
   dismiss() {

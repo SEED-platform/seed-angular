@@ -1,13 +1,13 @@
 <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-  {{ create ? 'Create' : 'Edit'}} a Cycle
+  {{ create ? 'Create' : 'Edit' }} a Cycle
 </h2>
 <!-- <mat-dialog-content>content?</mat-dialog-content> -->
 <form [formGroup]="form" class="flex flex-col gap-4">
   <mat-form-field>
     <mat-label>Cycle Name</mat-label>
     <input matInput formControlName="name" placeholder="Cycle Name" />
-    @if(form.controls.name?.hasError('valueExists')) {
-    <mat-error>This name already exists.</mat-error>
+    @if (form.controls.name?.hasError('valueExists')) {
+      <mat-error>This name already exists.</mat-error>
     }
   </mat-form-field>
 
@@ -25,8 +25,8 @@
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="end"></mat-datepicker-toggle>
     <mat-datepicker #end></mat-datepicker>
-    @if(form.controls.end?.hasError('dateBefore')) {
-    <mat-error>End date must be after end date.</mat-error>
+    @if (form.controls.end?.hasError('dateBefore')) {
+      <mat-error>End date must be after end date.</mat-error>
     }
   </mat-form-field>
 </form>
