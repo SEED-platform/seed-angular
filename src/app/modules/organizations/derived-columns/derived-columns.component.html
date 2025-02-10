@@ -1,4 +1,4 @@
-<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+<seed-page [config]="{ title: 'Derived Columns' }" *transloco="let t">
   <div class="flex space-x-1">
     @for (tab of tabs; track tab) {
       <div
@@ -17,4 +17,4 @@
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
     <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} derived columns table</div>
   </div>
-</div>
+</seed-page>
