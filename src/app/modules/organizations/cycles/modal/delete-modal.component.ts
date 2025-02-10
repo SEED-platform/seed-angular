@@ -14,6 +14,7 @@ import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
+import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
@@ -38,7 +39,7 @@ export class DeleteModalComponent {
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
   errorMessage: string
   inProgress = false
-  progressBarObj = {
+  progressBarObj: ProgressBarObj = {
     message: '',
     progress: 0,
     complete: false,

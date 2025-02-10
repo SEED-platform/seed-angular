@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
-import type { ProgressBarObj, UploaderResponse } from './uploader.types'
+import type { CheckProgressLoopParams, UpdateProgressBarObjParams, UploaderResponse } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
@@ -13,14 +13,7 @@ export class UploaderService {
   */
   checkProgressLoop({
     progressKey, offset, multiplier, successFn, failureFn, progressBarObj,
-  }: {
-    progressKey: string;
-    offset: number;
-    multiplier: number;
-    successFn: () => void;
-    failureFn: () => void;
-    progressBarObj: ProgressBarObj;
-  }): Observable<UploaderResponse> {
+  }: CheckProgressLoopParams): Observable<UploaderResponse> {
     return interval(750).pipe( // poll every 750ms
       switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
       tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj }) }),
@@ -51,11 +44,7 @@ export class UploaderService {
   /*
   * Updates the progress bar object with incoming progress data.
   */
-  _updateProgressBarObj({ data, offset, multiplier, progressBarObj }: {
-    data: UploaderResponse;
-    offset: number; multiplier: number;
-    progressBarObj: ProgressBarObj;
-  }): void {
+  _updateProgressBarObj({ data, offset, multiplier, progressBarObj }: UpdateProgressBarObjParams): void {
     const rightNow = Date.now()
     progressBarObj.progressLastChecked = rightNow
 
