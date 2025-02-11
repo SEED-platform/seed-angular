@@ -62,5 +62,3 @@ export type OrganizationUser = {
   role: UserRole;
   user_id: number;
 }
-
-export type OrganizationUsers = 
