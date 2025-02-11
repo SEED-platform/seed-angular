@@ -5,16 +5,26 @@
       <!-- Alert -->
       @if (showAlert) {
         <div class="mb-4 mt-0">
-          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type" [dismissed]="false" [dismissible]="true">
+          <seed-alert
+            class="-mb-4 mt-8"
+            appearance="outline"
+            [showIcon]="false"
+            [type]="alert.type"
+            [dismissed]="false"
+            [dismissible]="true"
+          >
             {{ alert.message }}
           </seed-alert>
         </div>
       }
-      <form class="bg-card mt-8 flex flex-col gap-y-6 overflow-hidden rounded-2xl p-8 pb-4 shadow" 
-        [formGroup]="optionsForm" (ngSubmit)="submit()">
+      <form
+        class="bg-card mt-8 flex flex-col gap-y-6 overflow-hidden rounded-2xl p-8 pb-4 shadow"
+        [formGroup]="optionsForm"
+        (ngSubmit)="submit()"
+      >
         <mat-form-field appearance="outline">
           <mat-label>Organization Name</mat-label>
-          <input matInput [formControlName]="'name'">
+          <input matInput [formControlName]="'name'" />
         </mat-form-field>
         <div class="flex">
           <mat-slide-toggle formControlName="geocoding_enabled">{{ t('Enable Geocoding') }}</mat-slide-toggle>
@@ -24,11 +34,11 @@
         </div>
         <div class="flex flex-col">
           <mat-slide-toggle formControlName="public_feed_enabled">{{ t('Enable Public Endpoints') }}</mat-slide-toggle>
-          <div class="prose flex ml-10 mt-4">
-            Data fields can be individually enabled for the Public Feed from Organization Sharing.
-            For more information about the /v3/public endpoints see the API Documentation
+          <div class="prose ml-10 mt-4 flex">
+            Data fields can be individually enabled for the Public Feed from Organization Sharing. For more information about the /v3/public
+            endpoints see the API Documentation
           </div>
-        </div>  
+        </div>
         <div class="flex justify-center">
           <button mat-flat-button color="primary">
             <span class="ml-2">{{ t('Save Changes') }}</span>
@@ -38,4 +48,3 @@
     </div>
   </div>
 }
-
