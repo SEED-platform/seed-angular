@@ -5,11 +5,11 @@ import { OrganizationService } from '@seed/api/organization'
 import { SharedImports } from '@seed/directives'
 
 @Component({
-  selector: 'seed-organizations-settings-audit-template',
-  templateUrl: './audit_template.component.html',
+  selector: 'seed-organizations-settings-api-key',
+  templateUrl: './api-key.component.html',
   imports: [CommonModule, SharedImports, MatIconModule],
 })
-export class AuditTemplateComponent {
+export class APIKeyComponent {
   private _organizationService = inject(OrganizationService)
   organization$ = this._organizationService.currentOrganization$
 }

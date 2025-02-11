@@ -1,12 +1,12 @@
 import type { Routes } from '@angular/router'
-import { APIKeyComponent } from './api_key/api_key.component'
-import { AuditTemplateComponent } from './audit_template/audit_template.component'
-import { DefaultDisplayFieldComponent } from './default_display_fields/default_display_fields.component'
+import { APIKeyComponent } from './api-key/api-key.component'
+import { AuditTemplateComponent } from './audit-template/audit-template.component'
+import { DefaultDisplayFieldComponent } from './default-display-fields/default-display-fields.component'
 import { EmailComponent } from './email/email.component'
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
 import { SalesforceComponent } from './salesforce/salesforce.component'
-import { TwoFactorComponent } from './two_factor/two_factor.component'
+import { TwoFactorComponent } from './two-factor/two-factor.component'
 import { UBIDComponent } from './ubid/ubid.component'
 import { UnitsComponent } from './units/units.component'
 
@@ -17,17 +17,17 @@ export default [
     component: OptionsComponent,
   },
   {
-    path: 'api_key',
+    path: 'api-key',
     title: 'Organizations API Keys',
     component: APIKeyComponent,
   },
   {
-    path: 'audit_template',
+    path: 'audit-template',
     title: 'Organization Audit Template Settings',
     component: AuditTemplateComponent,
   },
   {
-    path: 'default_display_fields',
+    path: 'default-display-fields',
     title: 'Default Display Field Settings',
     component: DefaultDisplayFieldComponent,
   },
@@ -47,7 +47,7 @@ export default [
     component: SalesforceComponent,
   },
   {
-    path: 'two_factor',
+    path: 'two-factor',
     title: 'Two Factor Authentication Settings',
     component: TwoFactorComponent,
   },
