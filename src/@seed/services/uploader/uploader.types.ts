@@ -37,6 +37,7 @@ export type CheckProgressLoopParams = {
 
 export type UpdateProgressBarObjParams = {
   data: UploaderResponse;
-  offset: number; multiplier: number;
+  offset: number;
+  multiplier: number;
   progressBarObj: ProgressBarObj;
 }

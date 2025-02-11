@@ -1,0 +1,10 @@
+<h3 class="text-2xl font-bold">Audit Template Settings</h3>
+<div class="prose">
+  If your organization has configured a customized report form in Audit Template, fill out the settings below to enable importing Audit
+  Template submissions into your SEED organization.
+</div>
+<div class="prose">
+  @if (organization$ | async; as o) {
+    Organization API Key: {{ o.name }}
+  }
+</div>
