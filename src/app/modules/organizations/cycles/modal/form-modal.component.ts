@@ -51,14 +51,12 @@ export class FormModalComponent implements OnInit {
   create = true
   data = inject(MAT_DIALOG_DATA) as { cycle: Cycle | null; orgId: number; existingNames: string[] }
   form = new FormGroup({
-    name: new FormControl<string | null>(
-      '',
-      [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames.filter((name) => name !== this.data.cycle?.name))]),
+    name: new FormControl<string | null>('', [
+      Validators.required,
+      SEEDValidators.uniqueValue(this.data.existingNames.filter((name) => name !== this.data.cycle?.name)),
+    ]),
     start: new FormControl<string | null>(null, Validators.required),
-    end: new FormControl<string | null>(
-      null,
-      [Validators.required, SEEDValidators.afterDate('start')],
-    ),
+    end: new FormControl<string | null>(null, [Validators.required, SEEDValidators.afterDate('start')]),
   })
 
   ngOnInit(): void {

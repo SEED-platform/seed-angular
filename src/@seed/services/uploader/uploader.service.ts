@@ -9,16 +9,26 @@ export class UploaderService {
   private _httpClient = inject(HttpClient)
 
   /*
-  * Checks a progress key for updates until it completes
-  */
+   * Checks a progress key for updates until it completes
+   */
   checkProgressLoop({
-    progressKey, offset, multiplier, successFn, failureFn, progressBarObj,
+    progressKey,
+    offset,
+    multiplier,
+    successFn,
+    failureFn,
+    progressBarObj,
   }: CheckProgressLoopParams): Observable<UploaderResponse> {
-    return interval(750).pipe( // poll every 750ms
+    return interval(750).pipe(
+      // poll every 750ms
       switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
-      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj }) }),
+      tap((response) => {
+        this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
+      }),
       takeWhile((response) => response.progress < 100, true), // end stream
-      finalize(() => { successFn() }),
+      finalize(() => {
+        successFn()
+      }),
       catchError(() => {
         failureFn()
         return throwError(() => new Error('Progress check failed'))
@@ -31,19 +41,17 @@ export class UploaderService {
   */
   checkProgress(progressKey: string): Observable<UploaderResponse> {
     const url = `/api/v3/progress/${progressKey}/`
-    return this._httpClient
-      .get<UploaderResponse>(url)
-      .pipe(
-        catchError((error) => {
-          console.error('Error fetching progress:', error)
-          return of(null)
-        }),
-      )
+    return this._httpClient.get<UploaderResponse>(url).pipe(
+      catchError((error) => {
+        console.error('Error fetching progress:', error)
+        return of(null)
+      }),
+    )
   }
 
   /*
-  * Updates the progress bar object with incoming progress data.
-  */
+   * Updates the progress bar object with incoming progress data.
+   */
   _updateProgressBarObj({ data, offset, multiplier, progressBarObj }: UpdateProgressBarObjParams): void {
     const rightNow = Date.now()
     progressBarObj.progressLastChecked = rightNow
