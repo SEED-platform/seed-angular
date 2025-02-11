@@ -73,6 +73,12 @@ export type Organization = BriefOrganization & {
   default_reports_y_axis_options: Column[];
   require_2fa: boolean;
 }
+
+export type OrganizationSettings = Omit<Organization, 'default_reports_x_axis_options' | 'default_reports_y_axis_options'> & {
+  default_reports_x_axis_options: number[];
+  default_reports_y_axis_options: number[];
+}
+
 export type OrganizationResponse = {
   status: string;
   organization: Organization;

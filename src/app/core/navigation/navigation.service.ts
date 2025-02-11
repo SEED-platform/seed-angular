@@ -34,8 +34,7 @@ export class NavigationService {
       link: '/organizations',
       children: [
         {
-          id: 'organizations/settings',
-          link: 'organizations/settings',
+          link: 'organizations/settings/options',
           title: 'Settings',
           icon: 'fa-solid:gears',
           type: 'basic',

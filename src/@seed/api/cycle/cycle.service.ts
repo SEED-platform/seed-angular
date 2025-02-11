@@ -39,38 +39,32 @@ export class CycleService {
   post({ data, orgId }): Observable<CycleResponse | null> {
     // create a cycle
     const url = `/api/v3/cycles/?organization_id=${orgId}`
-    return this._httpClient
-      .post<CycleResponse>(url, data)
-      .pipe(
-        map((response) => response),
-        catchError(({ error }: { error: HttpErrorResponse }) => {
-          console.error('Error creating cycle:', error)
-          return throwError(() => new Error(error?.message || 'Error creating cycle'))
-        }),
-      )
+    return this._httpClient.post<CycleResponse>(url, data).pipe(
+      map((response) => response),
+      catchError(({ error }: { error: HttpErrorResponse }) => {
+        console.error('Error creating cycle:', error)
+        return throwError(() => new Error(error?.message || 'Error creating cycle'))
+      }),
+    )
   }
 
   put({ data, id, orgId }): Observable<CycleResponse | null> {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
-    return this._httpClient
-      .put<CycleResponse>(url, data)
-      .pipe(
-        catchError(({ error }: { error: HttpErrorResponse }) => {
-          console.error('Error updating cycle:', error)
-          return throwError(() => new Error(error?.message || 'Error updating cycle'))
-        }),
-      )
+    return this._httpClient.put<CycleResponse>(url, data).pipe(
+      catchError(({ error }: { error: HttpErrorResponse }) => {
+        console.error('Error updating cycle:', error)
+        return throwError(() => new Error(error?.message || 'Error updating cycle'))
+      }),
+    )
   }
 
   delete(id: number, orgId: number) {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
-    return this._httpClient
-      .delete(url)
-      .pipe(
-        catchError(({ error }: { error: HttpErrorResponse }) => {
-          console.error('Error deleting cycle:', error)
-          return throwError(() => new Error(error?.message || 'Error deleting cycle'))
-        }),
-      )
+    return this._httpClient.delete(url).pipe(
+      catchError(({ error }: { error: HttpErrorResponse }) => {
+        console.error('Error deleting cycle:', error)
+        return throwError(() => new Error(error?.message || 'Error deleting cycle'))
+      }),
+    )
   }
 }

@@ -62,30 +62,31 @@ export class DeleteModalComponent {
     }
 
     // initiate delete cycle task
-    this._cycleService.delete(this.data.cycle.id, this.data.orgId)
-      .subscribe({
-        next: (response: { progress_key: string; value: number }) => {
-          this.progressBarObj.progress = response.value
-          // monitor delete cycle task
-          this._uploaderService.checkProgressLoop({
+    this._cycleService.delete(this.data.cycle.id, this.data.orgId).subscribe({
+      next: (response: { progress_key: string; value: number }) => {
+        this.progressBarObj.progress = response.value
+        // monitor delete cycle task
+        this._uploaderService
+          .checkProgressLoop({
             progressKey: response.progress_key,
             offset: 0,
             multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,
-          }).pipe(
+          })
+          .pipe(
             catchError(({ error }: { error: HttpErrorResponse }) => {
               return throwError(() => new Error(error?.message || 'Error checking progress'))
             }),
           )
-            .subscribe()
-        },
-        error: (error: string) => {
-          this.inProgress = false
-          this.errorMessage = error
-        },
-      })
+          .subscribe()
+      },
+      error: (error: string) => {
+        this.inProgress = false
+        this.errorMessage = error
+      },
+    })
   }
 
   close(message: string) {
