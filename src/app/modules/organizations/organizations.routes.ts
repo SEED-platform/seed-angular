@@ -1,15 +1,15 @@
 import type { UrlSegment } from '@angular/router'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
-  OrganizationsAccessLevelTreeComponent,
-  OrganizationsColumnMappingsComponent,
-  OrganizationsColumnSettingsComponent,
-  OrganizationsCyclesComponent,
-  OrganizationsDataQualityComponent,
-  OrganizationsDerivedColumnsComponent,
-  OrganizationsEmailTemplatesComponent,
-  OrganizationsLabelsComponent,
-  OrganizationsMembersComponent,
+  AccessLevelTreeComponent,
+  ColumnMappingsComponent,
+  ColumnSettingsComponent,
+  CyclesComponent,
+  DataQualityComponent,
+  DerivedColumnsComponent,
+  EmailTemplatesComponent,
+  LabelsComponent,
+  MembersComponent,
   SettingsComponent,
 } from '.'
 
@@ -19,35 +19,35 @@ const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: 
   }
 }
 
-const OrganizationsColumnMappingTypeMatcher = (segments: UrlSegment[]) => {
+const columnMappingTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'column-mappings' }
   return genericTypeMatcher(args)(segments)
 }
 
-const organizationsDataQualityTypeMatcher = (segments: UrlSegment[]) => {
+const dataQualityTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'data-quality' }
   return genericTypeMatcher(args)(segments)
 }
 
-const organizationsColumnSettingsTypeMatcher = (segments: UrlSegment[]) => {
+const columnSettingsTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'column-settings' }
   return genericTypeMatcher(args)(segments)
 }
 
-const organizationsDerivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
+const derivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'derived-columns' }
   return genericTypeMatcher(args)(segments)
 }
 
 export default [
   { path: 'settings', component: SettingsComponent, loadChildren: () => import('app/modules/organizations/settings/settings.routes') },
-  { path: 'access-level-tree', component: OrganizationsAccessLevelTreeComponent },
-  { matcher: OrganizationsColumnMappingTypeMatcher, component: OrganizationsColumnMappingsComponent },
-  { matcher: organizationsColumnSettingsTypeMatcher, component: OrganizationsColumnSettingsComponent },
-  { matcher: organizationsDataQualityTypeMatcher, component: OrganizationsDataQualityComponent },
-  { matcher: organizationsDerivedColumnsTypeMatcher, component: OrganizationsDerivedColumnsComponent },
-  { path: 'cycles', component: OrganizationsCyclesComponent },
-  { path: 'email-templates', component: OrganizationsEmailTemplatesComponent },
-  { path: 'labels', component: OrganizationsLabelsComponent },
-  { path: 'members', component: OrganizationsMembersComponent },
+  { path: 'access-level-tree', component: AccessLevelTreeComponent },
+  { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
+  { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },
+  { matcher: dataQualityTypeMatcher, component: DataQualityComponent },
+  { matcher: derivedColumnsTypeMatcher, component: DerivedColumnsComponent },
+  { path: 'cycles', component: CyclesComponent },
+  { path: 'email-templates', component: EmailTemplatesComponent },
+  { path: 'labels', component: LabelsComponent },
+  { path: 'members', component: MembersComponent },
 ]

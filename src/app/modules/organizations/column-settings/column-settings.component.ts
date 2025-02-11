@@ -2,16 +2,17 @@ import { NgClass } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from '../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-organizations-column-settings',
-  templateUrl: './organizations-column-settings.component.html',
+  templateUrl: './column-settings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [NgClass, SharedImports],
+  imports: [NgClass, PageComponent, SharedImports],
 })
-export class OrganizationsColumnSettingsComponent implements OnInit {
+export class ColumnSettingsComponent implements OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
 

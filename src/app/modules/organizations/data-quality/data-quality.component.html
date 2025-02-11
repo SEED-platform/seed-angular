@@ -1,4 +1,4 @@
-<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+<seed-page [config]="{ title: 'Data Quality' }" *transloco="let t">
   <div class="flex space-x-1">
     @for (tab of tabs; track tab) {
       <div
@@ -15,6 +15,6 @@
   </div>
 
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
-    <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} column mappings table</div>
+    <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} table</div>
   </div>
-</div>
+</seed-page>

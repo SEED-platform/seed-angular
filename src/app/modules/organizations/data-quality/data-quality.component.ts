@@ -2,16 +2,17 @@ import { NgClass } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { OrganizationTab } from '../organizations.types'
 
 @Component({
   selector: 'seed-organizations-data-quality',
-  templateUrl: './organizations-data-quality.component.html',
+  templateUrl: './data-quality.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [NgClass, SharedImports],
+  imports: [NgClass, PageComponent, SharedImports],
 })
-export class OrganizationsDataQualityComponent implements OnInit {
+export class DataQualityComponent implements OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
 

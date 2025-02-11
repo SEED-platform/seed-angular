@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import type { Cycle, CyclesResponse } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -14,14 +15,23 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-cycles',
   templateUrl: './cycles.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, CommonModule, SharedImports],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatTableModule,
+    PageComponent,
+    SharedImports,
+  ],
 })
-export class OrganizationsCyclesComponent implements OnInit {
+export class CyclesComponent implements OnInit {
   private _cycleService = inject(CycleService)
   private _dialog = inject(MatDialog)
   private _orgId: number
   private _existingNames: string[]
 
+  // actionConfig: { action: () => void; icon: string; text: string }
   cyclesDataSource = new MatTableDataSource<Cycle>([])
   cyclesColumns = ['id', 'name', 'start', 'end', 'actions']
 
@@ -39,7 +49,8 @@ export class OrganizationsCyclesComponent implements OnInit {
     })
   }
 
-  createCycle(): void {
+  createCycle = () => {
+  // createCycle(): void {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },

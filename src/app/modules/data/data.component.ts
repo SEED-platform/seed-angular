@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { from, skip } from 'rxjs'
 import type { Dataset } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
 @Component({
@@ -16,7 +17,7 @@ import { SharedImports } from '@seed/directives'
   templateUrl: './data.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, SharedImports],
+  imports: [DatePipe, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, PageComponent, SharedImports],
 })
 export class DataComponent implements OnInit, AfterViewInit {
   private _activatedRoute = inject(ActivatedRoute)
@@ -36,6 +37,10 @@ export class DataComponent implements OnInit, AfterViewInit {
         this._init()
       })
     })
+  }
+
+  createDataset(): void {
+    console.log('create dataset')
   }
 
   ngAfterViewInit(): void {
