@@ -3,9 +3,16 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
+import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
-import type { BriefOrganization, Organization, OrganizationResponse, OrganizationsResponse } from './organization.types'
+import type {
+  BriefOrganization,
+  Organization,
+  OrganizationResponse,
+  OrganizationSettings,
+  OrganizationsResponse,
+} from './organization.types'
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
@@ -14,6 +21,7 @@ export class OrganizationService {
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _snackBar = inject(SnackbarService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
@@ -48,6 +56,34 @@ export class OrganizationService {
         // TODO need to figure out error handling
         console.error('Error occurred fetching organization: ', error.error)
         return of({} as Organization)
+      }),
+    )
+  }
+
+  copyOrgForUpdate(org: Organization): OrganizationSettings {
+    const o = JSON.parse(JSON.stringify(org)) as OrganizationSettings
+    o.default_reports_x_axis_options = org.default_reports_x_axis_options.map((option) => option.id)
+    o.default_reports_y_axis_options = org.default_reports_y_axis_options.map((option) => option.id)
+    return o
+  }
+
+  updateSettings(org: Organization): Observable<void> {
+    const url = `/api/v3/organizations/${org.id}/save_settings/`
+    return this._httpClient.put<OrganizationResponse>(url, { organization: this.copyOrgForUpdate(org) }).pipe(
+      tap(() => {
+        this._get(true).subscribe()
+        this._userService.getCurrentUser().subscribe()
+      }),
+      map(() => {
+        this._snackBar.success('Organization Settings Updated', 'OK', true, 3000)
+        this.getById(org.id).subscribe((o) => {
+          return of(o)
+        })
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error occurred fetching organization: ', error.error)
+        this._snackBar.alert(`An error occurred updating the organization: ${error.error}`)
+        return of(null)
       }),
     )
   }
