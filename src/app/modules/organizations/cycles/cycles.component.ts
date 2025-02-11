@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import type { Cycle, CyclesResponse } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
-import { PageComponent } from '@seed/components'
+import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -22,6 +22,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatIconModule,
     MatTableModule,
     PageComponent,
+    TableContainerComponent,
     SharedImports,
   ],
 })

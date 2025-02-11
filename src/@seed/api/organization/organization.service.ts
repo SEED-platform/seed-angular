@@ -52,6 +52,16 @@ export class OrganizationService {
     )
   }
 
+  getOrganizationUsers(): void {
+    this.currentOrganization$.subscribe(({ org_id }) => {
+      console.log(org_id)
+      const url = `/api/v3/organizations/${org_id}/users/`
+      console.log(url)
+      // return this._httpClient.get<(url).pipe()
+    })
+    console.log('getOrganizationUsers')
+  }
+
   private _get(brief = false): Observable<(BriefOrganization | Organization)[]> {
     const url = brief ? '/api/v3/organizations/?brief=true' : '/api/v3/organizations/'
     return this._httpClient.get<OrganizationsResponse>(url).pipe(
