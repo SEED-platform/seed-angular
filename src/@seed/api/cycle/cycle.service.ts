@@ -40,7 +40,6 @@ export class CycleService {
     // create a cycle
     const url = `/api/v3/cycles/?organization_id=${orgId}`
     return this._httpClient.post<CycleResponse>(url, data).pipe(
-      map((response) => response),
       catchError(({ error }: { error: HttpErrorResponse }) => {
         console.error('Error creating cycle:', error)
         return throwError(() => new Error(error?.message || 'Error creating cycle'))

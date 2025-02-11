@@ -86,3 +86,20 @@ export type OrganizationResponse = {
 export type OrganizationsResponse = {
   organizations: (BriefOrganization | Organization)[];
 }
+
+export type OrganizationUser = {
+  access_level: string;
+  access_level_instance_id: number;
+  access_level_instance_name: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  number_of_orgs: number;
+  role: UserRole;
+  user_id: number;
+}
+
+export type OrganizationUsersResponse = {
+  users: OrganizationUser[];
+  status: string;
+}

@@ -22,8 +22,8 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatIconModule,
     MatTableModule,
     PageComponent,
-    TableContainerComponent,
     SharedImports,
+    TableContainerComponent,
   ],
 })
 export class CyclesComponent implements OnInit {
@@ -32,7 +32,6 @@ export class CyclesComponent implements OnInit {
   private _orgId: number
   private _existingNames: string[]
 
-  // actionConfig: { action: () => void; icon: string; text: string }
   cyclesDataSource = new MatTableDataSource<Cycle>([])
   cyclesColumns = ['id', 'name', 'start', 'end', 'actions']
 

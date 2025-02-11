@@ -12,6 +12,8 @@ import type {
   OrganizationResponse,
   OrganizationSettings,
   OrganizationsResponse,
+  OrganizationUser,
+  OrganizationUsersResponse,
 } from './organization.types'
 
 @Injectable({ providedIn: 'root' })
@@ -20,11 +22,13 @@ export class OrganizationService {
   private _userService = inject(UserService)
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
+  private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _snackBar = inject(SnackbarService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
+  organizationUsers$ = this._organizationUsers.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
@@ -60,14 +64,18 @@ export class OrganizationService {
     )
   }
 
-  getOrganizationUsers(): void {
-    this.currentOrganization$.subscribe(({ org_id }) => {
-      console.log(org_id)
-      const url = `/api/v3/organizations/${org_id}/users/`
-      console.log(url)
-      // return this._httpClient.get<(url).pipe()
-    })
-    console.log('getOrganizationUsers')
+  getOrganizationUsers(orgId: number): void {
+    const url = `/api/v3/organizations/${orgId}/users/`
+    this._httpClient.get<OrganizationUsersResponse>(url)
+      .pipe(
+        map((response) => response.users),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching organization users:', error)
+          return of([])
+        }),
+      ).subscribe((users) => {
+        this._organizationUsers.next(users)
+      })
   }
 
   copyOrgForUpdate(org: Organization): OrganizationSettings {
