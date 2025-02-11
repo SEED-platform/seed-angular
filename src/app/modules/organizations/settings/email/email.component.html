@@ -1,0 +1,10 @@
+<h3 class="text-2xl font-bold">New User Email Settings</h3>
+<div class="prose">
+  Customizes the email sent when a new user is invited to SEED. The body can accept placeholders {{"{{first_name}}"}} and
+  {{"{{sign_up_link}}"}}, including the braces.
+</div>
+<div class="prose">
+  @if (organization$ | async; as o) {
+    Organization API Key: {{ o.name }}
+  }
+</div>

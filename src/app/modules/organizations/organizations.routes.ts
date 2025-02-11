@@ -10,7 +10,7 @@ import {
   EmailTemplatesComponent,
   LabelsComponent,
   MembersComponent,
-  OrganizationsSettingsComponent,
+  SettingsComponent,
 } from '.'
 
 const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: UrlSegment[]) => {
@@ -40,7 +40,7 @@ const derivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
 }
 
 export default [
-  { path: 'settings', component: OrganizationsSettingsComponent },
+  { path: 'settings', component: SettingsComponent, loadChildren: () => import('app/modules/organizations/settings/settings.routes') },
   { path: 'access-level-tree', component: AccessLevelTreeComponent },
   { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
   { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },

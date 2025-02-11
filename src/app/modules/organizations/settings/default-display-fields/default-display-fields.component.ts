@@ -5,11 +5,11 @@ import { OrganizationService } from '@seed/api/organization'
 import { SharedImports } from '@seed/directives'
 
 @Component({
-  selector: 'seed-organizations-settings',
-  templateUrl: './organizations-settings.component.html',
+  selector: 'seed-organizations-settings-default-display-fields',
+  templateUrl: './default-display-fields.component.html',
   imports: [CommonModule, SharedImports, MatIconModule],
 })
-export class OrganizationsSettingsComponent {
+export class DefaultDisplayFieldComponent {
   private _organizationService = inject(OrganizationService)
   organization$ = this._organizationService.currentOrganization$
 }
