@@ -46,8 +46,7 @@ export class OrganizationsCyclesComponent implements OnInit {
     })
 
     dialogRef.afterClosed().subscribe((response: CyclesResponse) => {
-      if (response && response.status === 'success') {
-        // is this necessary?
+      if (response && response.status === 'success') { // is this necessary?
         this.refreshCycles()
       }
     })
