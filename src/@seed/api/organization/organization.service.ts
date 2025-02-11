@@ -21,7 +21,7 @@ export class OrganizationService {
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _snackbar = inject(SnackbarService)
+  private _snackBar = inject(SnackbarService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
@@ -75,13 +75,14 @@ export class OrganizationService {
         this._userService.getCurrentUser().subscribe()
       }),
       map(() => {
+        this._snackBar.success('Organization Settings Updated', 'OK', true, 3000)
         this.getById(org.id).subscribe((o) => {
           return of(o)
         })
       }),
       catchError((error: HttpErrorResponse) => {
         console.error('Error occurred fetching organization: ', error.error)
-        this._snackbar.alert(`An error occurred updating the organization: ${error.error}`)
+        this._snackBar.alert(`An error occurred updating the organization: ${error.error}`)
         return of(null)
       }),
     )

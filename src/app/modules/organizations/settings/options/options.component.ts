@@ -64,9 +64,7 @@ export class OptionsComponent implements OnInit, OnDestroy {
       this.organization.geocoding_enabled = this.optionsForm.get('geocoding_enabled').value
       this.organization.comstock_enabled = this.optionsForm.get('comstock_enabled').value
       this.organization.public_feed_enabled = this.optionsForm.get('public_feed_enabled').value
-      this._organizationService.updateSettings(this.organization).subscribe(() => {
-        this._snackBar.success('Organization Settings Updated', 'OK', true)
-      })
+      this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
 }
