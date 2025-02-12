@@ -7,7 +7,7 @@ import { type BetterTokenVerificationResponse } from './better.types'
 @Injectable({ providedIn: 'root' })
 export class BetterService {
   private _httpClient = inject(HttpClient)
-  better_host = 'https://better-lbnl-development.herokuapp.com'
+  better_host = 'https://better-lbnl-development.herokuapp.com' // TODO - need to figure out how to configure this.
   better_url = `${this.better_host}/api/v1`
 
   verifyBetterToken(token: string): Observable<boolean> {
