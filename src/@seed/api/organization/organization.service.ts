@@ -7,6 +7,10 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
 import type {
+  AccessLevelNode,
+  AccessLevelsByDepth,
+  AccessLevelTree,
+  AccessLevelTreeResponse,
   BriefOrganization,
   Organization,
   OrganizationResponse,
@@ -23,12 +27,15 @@ export class OrganizationService {
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
+  private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
+  private _accessLevelInstancesByDepth: AccessLevelsByDepth = {}
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _snackBar = inject(SnackbarService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
   organizationUsers$ = this._organizationUsers.asObservable()
+  accessLevelTree$ = this._accessLevelTree.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
@@ -78,6 +85,27 @@ export class OrganizationService {
       })
   }
 
+  getOrganizationAccessLevelTree(orgId: number): void {
+    const url = `/api/v3/organizations/${orgId}/access_levels/tree`
+    this._httpClient.get(url)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error fetching organization access level tree:', error)
+          return of({})
+        }),
+      )
+      .subscribe((response: AccessLevelTreeResponse) => {
+        this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
+        //  = accessLevelInstancesByDepth
+        // update accessLevelTree to include Access Level Instances by Depth instead of less usable Tree
+        const accessLevelTree = {
+          accessLevelNames: response.access_level_names,
+          accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
+        }
+        this._accessLevelTree.next(accessLevelTree)
+      })
+  }
+
   copyOrgForUpdate(org: Organization): OrganizationSettings {
     const o = JSON.parse(JSON.stringify(org)) as OrganizationSettings
     o.default_reports_x_axis_options = org.default_reports_x_axis_options.map((option) => option.id)
@@ -104,6 +132,16 @@ export class OrganizationService {
         return of(null)
       }),
     )
+  }
+
+  private _calculateAccessLevelInstancesByDepth(tree: AccessLevelNode[], depth: number, result: AccessLevelsByDepth = {}): AccessLevelsByDepth {
+    if (!tree) return result
+    if (!result[depth]) result[depth] = []
+    for (const ali of tree) {
+      result[depth].push({ id: ali.id, name: ali.name })
+      this._calculateAccessLevelInstancesByDepth(ali.children, depth + 1, result)
+    }
+    return result
   }
 
   private _get(brief = false): Observable<(BriefOrganization | Organization)[]> {

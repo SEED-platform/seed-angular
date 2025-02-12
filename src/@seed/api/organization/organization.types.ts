@@ -103,3 +103,23 @@ export type OrganizationUsersResponse = {
   users: OrganizationUser[];
   status: string;
 }
+
+export type AccessLevelTreeResponse = {
+  access_level_names: string[];
+  access_level_tree: AccessLevelNode[];
+}
+
+export type AccessLevelTree = {
+  accessLevelNames: string[];
+  accessLevelInstancesByDepth: AccessLevelsByDepth;
+}
+
+export type AccessLevelNode = {
+  id: number;
+  name: string;
+  organization: number;
+  path: Record<string, string>;
+  children: AccessLevelNode[];
+}
+
+export type AccessLevelsByDepth = Record<string, { id: number; name: string }[]>
