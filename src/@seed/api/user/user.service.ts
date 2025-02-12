@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap, throwError } from 'rxjs'
+import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap } from 'rxjs'
 import type {
   CurrentUser,
   GenerateApiKeyResponse,
@@ -11,14 +11,14 @@ import type {
   SetDefaultOrganizationResponse,
   UserUpdateRequest,
 } from '@seed/api/user'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { ErrorService } from '@seed/services/error/error.service'
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private _httpClient = inject(HttpClient)
   private _currentOrganizationId = new ReplaySubject<number>(1)
   private _currentUser = new ReplaySubject<CurrentUser>(1)
-  private _snackBar = inject(SnackbarService)
+  private _errorService = inject(ErrorService)
   currentOrganizationId$ = this._currentOrganizationId.asObservable().pipe(distinctUntilChanged())
   currentUser$ = this._currentUser.asObservable()
 
@@ -63,9 +63,7 @@ export class UserService {
           this._currentUser.next(user)
         }),
         catchError((error: HttpErrorResponse) => {
-          console.error('Error occurred while updating user:', error.error)
-          this._snackBar.alert(error?.message || 'Error updating user', 'OK', true)
-          return throwError(() => new Error(error?.message || 'Error updating user'))
+          return this._errorService.handleError(error, 'Error updating user')
         }),
       )
   }
@@ -78,9 +76,7 @@ export class UserService {
     return this._httpClient.put<{ status: string }>(url, { role })
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          console.error('Error occurred while updating user:', error.error)
-          this._snackBar.alert(error?.message || 'Error updating user', 'OK', true)
-          return throwError(() => new Error(error?.message || 'Error fetching cycles'))
+          return this._errorService.handleError(error, 'Error updating user role')
         }),
       )
   }
@@ -91,9 +87,7 @@ export class UserService {
     return this._httpClient.put<{ status: string }>(url, { access_level_instance_id: accessLevelInstanceId })
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          console.error('Error occurred while updating user:', error.error)
-          this._snackBar.alert(error?.message || 'Error updating user', 'OK', true)
-          return throwError(() => new Error(error?.message || 'Error fetching cycles'))
+          return this._errorService.handleError(error, 'Error updating user access level instance')
         }),
       )
   }
@@ -111,7 +105,7 @@ export class UserService {
         this.getCurrentUser().subscribe()
       }),
       catchError((error: HttpErrorResponse) => {
-        return throwError(() => error)
+        return this._errorService.handleError(error, 'Error updating password')
       }),
     )
   }

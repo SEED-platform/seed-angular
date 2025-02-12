@@ -2,7 +2,8 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
+import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
@@ -29,6 +30,7 @@ export class OrganizationService {
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth: AccessLevelsByDepth = {}
+  private _errorService = inject(ErrorService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _snackBar = inject(SnackbarService)
 
@@ -65,8 +67,7 @@ export class OrganizationService {
       }),
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
-        console.error('Error occurred fetching organization: ', error.error)
-        return of({} as Organization)
+        return this._errorService.handleError(error, 'Error fetching organization')
       }),
     )
   }
@@ -78,8 +79,7 @@ export class OrganizationService {
         map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
         tap((users) => { this._organizationUsers.next(users) }),
         catchError((error: HttpErrorResponse) => {
-          console.error('Error fetching organization users:', error)
-          return of([])
+          return this._errorService.handleError(error, 'Error fetching organization users')
         }),
       ).subscribe()
   }
@@ -100,8 +100,7 @@ export class OrganizationService {
           this._accessLevelTree.next(accessLevelTree)
         }),
         catchError((error: HttpErrorResponse) => {
-          console.error('Error fetching organization access level tree:', error)
-          return of({})
+          return this._errorService.handleError(error, 'Error fetching organization access level tree')
         }),
       )
       .subscribe()
@@ -114,8 +113,7 @@ export class OrganizationService {
         this._snackBar.success('Member removed from organization', 'OK', true, 3000)
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error deleting organization user:', error)
-        return throwError(() => new Error(error?.message || 'Error deleting organization user'))
+        return this._errorService.handleError(error, 'Error removing member from organization')
       }),
     )
   }
@@ -141,9 +139,7 @@ export class OrganizationService {
         })
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Error occurred fetching organization: ', error.error)
-        this._snackBar.alert(`An error occurred updating the organization: ${error.error}`)
-        return of(null)
+        return this._errorService.handleError(error, 'Error updating organization settings')
       }),
     )
   }

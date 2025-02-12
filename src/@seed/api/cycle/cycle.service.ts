@@ -2,8 +2,9 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
+import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 
@@ -12,6 +13,7 @@ export class CycleService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackbarService)
+  private _errorService = inject(ErrorService)
   private _cycles = new BehaviorSubject<Cycle[]>([])
   orgId: number
 
@@ -31,8 +33,7 @@ export class CycleService {
             this._cycles.next(cycles)
           }),
           catchError((error: HttpErrorResponse) => {
-            this._snackBar.alert('Error fetching cycles', 'OK', true)
-            return throwError(() => new Error(error?.message || 'Error fetching cycles'))
+            return this._errorService.handleError(error, 'Error fetching cycles')
           }),
         )
         .subscribe()
@@ -46,8 +47,7 @@ export class CycleService {
         this._snackBar.success(`Created Cycle ${response.cycles.name}`)
       }),
       catchError((error: HttpErrorResponse) => {
-        this._snackBar.alert('Error creating cycle', 'OK', true)
-        return throwError(() => new Error(error?.message || 'Error creating cycle'))
+        return this._errorService.handleError(error, 'Error creating cycle')
       }),
     )
   }
@@ -59,8 +59,7 @@ export class CycleService {
         this._snackBar.success(`Updated Cycle ${response.cycles.name}`, 'OK', true)
       }),
       catchError((error: HttpErrorResponse) => {
-        this._snackBar.alert('Error updating cycle', 'OK', true)
-        return throwError(() => new Error(error?.message || 'Error updating cycle'))
+        return this._errorService.handleError(error, 'Error updating cycle')
       }),
     )
   }
@@ -72,8 +71,7 @@ export class CycleService {
         this._snackBar.success('Cycle deleted', 'OK', true)
       }),
       catchError((error: HttpErrorResponse) => {
-        this._snackBar.alert('Cycle deleted successfully', 'OK', true)
-        return throwError(() => new Error(error?.message || 'Error deleting cycle'))
+        return this._errorService.handleError(error, 'Error deleting cycle')
       }),
     )
   }
