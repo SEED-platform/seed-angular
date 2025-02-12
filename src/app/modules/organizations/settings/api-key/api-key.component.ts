@@ -14,18 +14,8 @@ import { BetterApiKeyValidator } from './better_api_key_validator'
 @Component({
   selector: 'seed-organizations-settings-api-key',
   templateUrl: './api-key.component.html',
-  imports: [
-    CommonModule,
-    SharedImports,
-    MatButton,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    PageComponent,
-  ],
+  imports: [CommonModule, SharedImports, MatButton, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, PageComponent],
 })
-
 export class APIKeyComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _betterApiKeyValidator = inject(BetterApiKeyValidator)
@@ -36,7 +26,9 @@ export class APIKeyComponent implements OnDestroy, OnInit {
   tokenValid: boolean
   apiKeyForm = new FormGroup({
     mapquest_api_key: new FormControl(''),
-    better_analysis_api_key: new FormControl('', { asyncValidators: [this._betterApiKeyValidator.validate.bind(this._betterApiKeyValidator)] }),
+    better_analysis_api_key: new FormControl('', {
+      asyncValidators: [this._betterApiKeyValidator.validate.bind(this._betterApiKeyValidator)],
+    }),
   })
 
   ngOnInit(): void {

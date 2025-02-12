@@ -1,37 +1,36 @@
 <seed-page [config]="{ title: 'Organization Settings: Options' }" title="Organization Settings: Options">
-
-@if (organization) {
-  <div class="flex-auto p-6 sm:p-10" *transloco="let t">
-    <div class="max-w-2xl">
-
-      <form
-        class="bg-card flex flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow"
-        [formGroup]="optionsForm"
-        (ngSubmit)="submit()"
-      >
-        <mat-form-field appearance="outline">
-          <mat-label>Organization Name</mat-label>
-          <input matInput [formControlName]="'name'" />
-        </mat-form-field>
-        <div class="flex">
-          <mat-slide-toggle formControlName="geocoding_enabled">{{ t('Enable Geocoding') }}</mat-slide-toggle>
-        </div>
-        <div class="flex">
-          <mat-slide-toggle formControlName="comstock_enabled">{{ t('Enable ComStock Functionality') }}</mat-slide-toggle>
-        </div>
-        <div class="flex flex-col">
-          <mat-slide-toggle formControlName="public_feed_enabled">{{ t('Enable Public Endpoints') }}</mat-slide-toggle>
-          <div class="prose ml-10 mt-4 flex">
-            Data fields can be individually enabled for the Public Feed from Organization Sharing. For more information about the /v3/public
-            endpoints see the API Documentation
+  @if (organization) {
+    <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+      <div class="max-w-2xl">
+        <form
+          class="bg-card flex flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow"
+          [formGroup]="optionsForm"
+          (ngSubmit)="submit()"
+        >
+          <mat-form-field appearance="outline">
+            <mat-label>Organization Name</mat-label>
+            <input matInput [formControlName]="'name'" />
+          </mat-form-field>
+          <div class="flex">
+            <mat-slide-toggle formControlName="geocoding_enabled">{{ t('Enable Geocoding') }}</mat-slide-toggle>
           </div>
-        </div>
-        <div class="flex justify-center">
-          <button mat-flat-button color="primary">
-            <span class="ml-2">{{ t('Save Changes') }}</span>
-          </button>
-        </div>
-      </form>
+          <div class="flex">
+            <mat-slide-toggle formControlName="comstock_enabled">{{ t('Enable ComStock Functionality') }}</mat-slide-toggle>
+          </div>
+          <div class="flex flex-col">
+            <mat-slide-toggle formControlName="public_feed_enabled">{{ t('Enable Public Endpoints') }}</mat-slide-toggle>
+            <div class="prose ml-10 mt-4 flex">
+              Data fields can be individually enabled for the Public Feed from Organization Sharing. For more information about the
+              /v3/public endpoints see the API Documentation
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <button mat-flat-button color="primary">
+              <span class="ml-2">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
-}
+  }
+</seed-page>
