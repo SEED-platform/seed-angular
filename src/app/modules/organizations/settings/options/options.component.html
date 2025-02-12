@@ -1,24 +1,11 @@
+<seed-page [config]="{ title: 'Organization Settings: Options' }" title="Organization Settings: Options">
+
 @if (organization) {
   <div class="flex-auto p-6 sm:p-10" *transloco="let t">
     <div class="max-w-2xl">
-      <h2 class="text-2xl font-bold">Organization Settings</h2>
-      <!-- Alert -->
-      @if (showAlert) {
-        <div class="mb-4 mt-0">
-          <seed-alert
-            class="-mb-4 mt-8"
-            appearance="outline"
-            [showIcon]="false"
-            [type]="alert.type"
-            [dismissed]="false"
-            [dismissible]="true"
-          >
-            {{ alert.message }}
-          </seed-alert>
-        </div>
-      }
+
       <form
-        class="bg-card mt-8 flex flex-col gap-y-6 overflow-hidden rounded-2xl p-8 pb-4 shadow"
+        class="bg-card flex flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow"
         [formGroup]="optionsForm"
         (ngSubmit)="submit()"
       >
