@@ -1,12 +1,8 @@
-import { CommonModule, DatePipe } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { HttpErrorResponse } from '@angular/common/http'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
-import { MatNativeDateModule } from '@angular/material/core'
-import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSnackBar } from '@angular/material/snack-bar'
 import { catchError, throwError } from 'rxjs'
@@ -19,16 +15,11 @@ import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  providers: [DatePipe],
   imports: [
     AlertComponent,
     CommonModule,
     MatButtonModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatProgressBarModule,
   ],
 })
@@ -90,19 +81,10 @@ export class DeleteModalComponent {
   }
 
   close(message: string) {
-    this.openSnackBar(`Deleted Cycle ${this.data.cycle.name}`)
     this._dialogRef.close(message)
   }
 
   dismiss() {
     this._dialogRef.close()
-  }
-
-  openSnackBar(message: string) {
-    this._snackBar.open(message, null, {
-      verticalPosition: 'top',
-      duration: 2000,
-      panelClass: 'soft-success-snackbar',
-    })
   }
 }

@@ -4,10 +4,12 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { type AccessLevelNode, OrganizationService, type OrganizationUser } from '@seed/api/organization'
+import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
 import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
+
 @Component({
   selector: 'seed-organizations-members',
   templateUrl: './members.component.html',
@@ -53,12 +55,19 @@ export class MembersComponent implements OnInit {
     })
 
     dialogRef.afterClosed().subscribe(() => {
-      console.log('closed')
+      this.getMembers(this._orgId)
     })
   }
 
   deleteMember(member: OrganizationUser): void {
-    console.log('delete members', member)
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { member, orgId: this._orgId },
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.getMembers(this._orgId)
+    })
   }
 
   trackByFn(_index: number, { email }: OrganizationUser) {

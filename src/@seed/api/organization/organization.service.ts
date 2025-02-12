@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
+import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
@@ -75,35 +75,49 @@ export class OrganizationService {
     const url = `/api/v3/organizations/${orgId}/users/`
     this._httpClient.get<OrganizationUsersResponse>(url)
       .pipe(
-        map((response) => response.users),
+        map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
+        tap((users) => { this._organizationUsers.next(users) }),
         catchError((error: HttpErrorResponse) => {
           console.error('Error fetching organization users:', error)
           return of([])
         }),
-      ).subscribe((users) => {
-        this._organizationUsers.next(users)
-      })
+      ).subscribe()
   }
 
   getOrganizationAccessLevelTree(orgId: number): void {
     const url = `/api/v3/organizations/${orgId}/access_levels/tree`
-    this._httpClient.get(url)
+    this._httpClient.get<AccessLevelTreeResponse>(url)
       .pipe(
+        map((response) => {
+          // update response to include more usable accessLevelInstancesByDepth
+          this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
+          return {
+            accessLevelNames: response.access_level_names,
+            accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
+          }
+        }),
+        tap((accessLevelTree) => {
+          this._accessLevelTree.next(accessLevelTree)
+        }),
         catchError((error: HttpErrorResponse) => {
           console.error('Error fetching organization access level tree:', error)
           return of({})
         }),
       )
-      .subscribe((response: AccessLevelTreeResponse) => {
-        this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
-        //  = accessLevelInstancesByDepth
-        // update accessLevelTree to include Access Level Instances by Depth instead of less usable Tree
-        const accessLevelTree = {
-          accessLevelNames: response.access_level_names,
-          accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
-        }
-        this._accessLevelTree.next(accessLevelTree)
-      })
+      .subscribe()
+  }
+
+  deleteOrganizationUser(userId: number, orgId: number) {
+    const url = `/api/v3/organizations/${orgId}/users/${userId}/remove/`
+    return this._httpClient.delete(url).pipe(
+      tap(() => {
+        this._snackBar.success('Member removed from organization', 'OK', true, 3000)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error deleting organization user:', error)
+        return throwError(() => new Error(error?.message || 'Error deleting organization user'))
+      }),
+    )
   }
 
   copyOrgForUpdate(org: Organization): OrganizationSettings {
@@ -134,6 +148,9 @@ export class OrganizationService {
     )
   }
 
+  /*
+  * Transform access level tree into a more usable format
+  */
   private _calculateAccessLevelInstancesByDepth(tree: AccessLevelNode[], depth: number, result: AccessLevelsByDepth = {}): AccessLevelsByDepth {
     if (!tree) return result
     if (!result[depth]) result[depth] = []

@@ -1,33 +1,30 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-  Edit Member
-</h2>
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Member</h2>
 <form [formGroup]="form" class="flex flex-col gap-4">
-
   <!-- Display only -->
   <div class="flex flex-col">
     <div>Email</div>
-    <div class="p-2 bg-gray-100 rounded">{{ form.value.email }}</div>
+    <div class="rounded bg-gray-100 p-2">{{ form.value.email }}</div>
   </div>
 
   <div class="flex flex-col">
     <div>Name</div>
-    <div class="p-2 bg-gray-100 rounded h-9">{{ form.value.first_name }} {{ form.value.last_name }}</div>
+    <div class="h-9 rounded bg-gray-100 p-2">{{ form.value.first_name }} {{ form.value.last_name }}</div>
   </div>
 
   <mat-form-field>
     <mat-label>Access Level</mat-label>
     <mat-select formControlName="access_level">
       @for (level of accessLevelNames; track level) {
-      <mat-option [value]="level">{{ level }}</mat-option>
+        <mat-option [value]="level">{{ level }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Access Level Instance</mat-label>
-    <mat-select formControlName="access_level_instance_name">
+    <mat-select formControlName="access_level_instance_id">
       @for (ali of accessLevelInstances; track ali) {
-      <mat-option [value]="ali">{{ ali }}</mat-option>
+        <mat-option [value]="ali.id">{{ ali.name }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -36,11 +33,10 @@
     <mat-label>Role</mat-label>
     <mat-select formControlName="role">
       @for (role of roles; track role) {
-      <mat-option [value]="role">{{ role }}</mat-option>
+        <mat-option [value]="role">{{ role }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
-
 </form>
 
 <!-- Actions -->
