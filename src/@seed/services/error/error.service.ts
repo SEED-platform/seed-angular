@@ -9,7 +9,7 @@ export class ErrorService {
 
   handleError(error: HttpErrorResponse, defaultMessage: string) {
     const errorMessage = (error.error as { message: string })?.message || defaultMessage
-    this._snackBar.alert(errorMessage, 'OK', true)
+    this._snackBar.alert(errorMessage)
     return throwError(() => new Error(error?.message || defaultMessage))
   }
 }

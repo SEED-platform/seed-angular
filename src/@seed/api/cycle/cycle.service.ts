@@ -56,7 +56,7 @@ export class CycleService {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
     return this._httpClient.put<CycleResponse>(url, data).pipe(
       tap((response) => {
-        this._snackBar.success(`Updated Cycle ${response.cycles.name}`, 'OK', true)
+        this._snackBar.success(`Updated Cycle ${response.cycles.name}`)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating cycle')
@@ -67,9 +67,6 @@ export class CycleService {
   delete(id: number, orgId: number) {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
-      tap(() => {
-        this._snackBar.success('Cycle deleted', 'OK', true)
-      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting cycle')
       }),

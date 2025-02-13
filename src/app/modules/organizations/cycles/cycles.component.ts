@@ -50,16 +50,13 @@ export class CyclesComponent implements OnInit {
   }
 
   createCycle = () => {
-  // createCycle(): void {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe((response: CyclesResponse) => {
-      if (response && response.status === 'success') { // is this necessary?
-        this.refreshCycles()
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      this.refreshCycles()
     })
   }
 

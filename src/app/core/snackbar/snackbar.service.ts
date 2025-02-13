@@ -5,19 +5,19 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 export class SnackbarService {
   private _snackBar = inject(MatSnackBar)
 
-  alert(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
+  alert(message: string, timeout = false, button = 'OK', timeoutLength = 3000) {
     this._displaySnackBar(message, button, 'alert', timeout, timeoutLength)
   }
 
-  warning(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
+  warning(message: string, timeout = true, button = 'OK', timeoutLength = 3000) {
     this._displaySnackBar(message, button, 'warning', timeout, timeoutLength)
   }
 
-  success(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
+  success(message: string, timeout = true, button = 'OK', timeoutLength = 3000) {
     this._displaySnackBar(message, button, 'success', timeout, timeoutLength)
   }
 
-  info(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
+  info(message: string, timeout = true, button = 'OK', timeoutLength = 3000) {
     this._displaySnackBar(message, button, 'info', timeout, timeoutLength)
   }
 
@@ -25,6 +25,10 @@ export class SnackbarService {
     if (timeout) {
       this._snackBar.open(message, button,
         { panelClass: `soft-${css_class}-snackbar`, duration: timeoutLength, horizontalPosition: 'center', verticalPosition: 'top' },
+      )
+    } else {
+      this._snackBar.open(message, button,
+        { panelClass: `soft-${css_class}-snackbar`, horizontalPosition: 'center', verticalPosition: 'top' },
       )
     }
   }

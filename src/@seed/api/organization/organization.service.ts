@@ -110,7 +110,7 @@ export class OrganizationService {
     const url = `/api/v3/organizations/${orgId}/users/${userId}/remove/`
     return this._httpClient.delete(url).pipe(
       tap(() => {
-        this._snackBar.success('Member removed from organization', 'OK', true, 3000)
+        this._snackBar.success('Member removed from organization')
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error removing member from organization')
@@ -133,7 +133,7 @@ export class OrganizationService {
         this._userService.getCurrentUser().subscribe()
       }),
       map(() => {
-        this._snackBar.success('Organization Settings Updated', 'OK', true, 3000)
+        this._snackBar.success('Organization Settings Updated')
         this.getById(org.id).subscribe((o) => {
           return of(o)
         })

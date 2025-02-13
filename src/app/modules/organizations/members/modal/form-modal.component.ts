@@ -94,7 +94,7 @@ export class FormModalComponent implements OnInit {
     // wait for both to finish
     if (requests.length) {
       forkJoin(requests).subscribe(() => {
-        this._snackBar.success('User updated', 'OK', true, 3000)
+        this._snackBar.success('User updated')
         this._dialogRef.close()
       })
     }

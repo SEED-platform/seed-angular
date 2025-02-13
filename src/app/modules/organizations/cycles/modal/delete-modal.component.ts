@@ -4,13 +4,13 @@ import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSnackBar } from '@angular/material/snack-bar'
 import { catchError, throwError } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
@@ -26,8 +26,8 @@ import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 export class DeleteModalComponent {
   private _cycleService = inject(CycleService)
   private _uploaderService = inject(UploaderService)
-  private _snackBar = inject(MatSnackBar)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
+  private _snackBar = inject(SnackbarService)
   errorMessage: string
   inProgress = false
   progressBarObj: ProgressBarObj = {
@@ -45,11 +45,13 @@ export class DeleteModalComponent {
     this.inProgress = true
     const successFn = () => {
       setTimeout(() => {
-        this.close('success')
+        this._snackBar.success('Cycle deleted')
+        this.close()
       }, 300)
     }
     const failureFn = () => {
-      this.close('Failure')
+      this._snackBar.alert('Failed to delete cycle')
+      this.close()
     }
 
     // initiate delete cycle task
@@ -80,8 +82,8 @@ export class DeleteModalComponent {
     })
   }
 
-  close(message: string) {
-    this._dialogRef.close(message)
+  close() {
+    this._dialogRef.close()
   }
 
   dismiss() {
