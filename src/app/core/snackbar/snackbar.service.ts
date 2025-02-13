@@ -5,8 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 export class SnackbarService {
   private _snackBar = inject(MatSnackBar)
 
-  alert(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
-    this._displaySnackBar(message, button, 'alert', timeout, timeoutLength)
+  alert(message: string, button = 'OK', _timeout = false, timeoutLength = 3000) {
+    this._displaySnackBar(message, button, 'alert', false, timeoutLength)
   }
 
   warning(message: string, button = 'OK', timeout = false, timeoutLength = 3000) {
@@ -25,6 +25,10 @@ export class SnackbarService {
     if (timeout) {
       this._snackBar.open(message, button,
         { panelClass: `soft-${css_class}-snackbar`, duration: timeoutLength, horizontalPosition: 'center', verticalPosition: 'top' },
+      )
+    } else {
+      this._snackBar.open(message, button,
+        { panelClass: `soft-${css_class}-snackbar`, horizontalPosition: 'center', verticalPosition: 'top' },
       )
     }
   }
