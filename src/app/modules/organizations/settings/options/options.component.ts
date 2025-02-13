@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject, takeUntil } from 'rxjs'
 import { type Organization, OrganizationService } from '@seed/api/organization'
-import { type Alert, AlertComponent } from '@seed/components'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
 @Component({
@@ -23,16 +23,14 @@ import { SharedImports } from '@seed/directives'
     MatInputModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
-    AlertComponent,
+    PageComponent,
   ],
 })
 export class OptionsComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   organization: Organization
-  alert: Alert
   fields: string[] = ['name', 'geocoding_enabled', 'comstock_enabled', 'public_feed_enabled']
-  showAlert = false
   optionsForm = new FormGroup({
     name: new FormControl('', [Validators.required]),
     geocoding_enabled: new FormControl(false, []),
@@ -47,7 +45,6 @@ export class OptionsComponent implements OnInit, OnDestroy {
       for (const field of this.fields) {
         this.optionsForm.get(field).setValue(this.organization[field])
       }
-      this.optionsForm.get('name').setValue(this.organization.name)
     })
   }
 
