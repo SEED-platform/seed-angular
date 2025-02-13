@@ -8,13 +8,13 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSnackBar } from '@angular/material/snack-bar'
 import { catchError, throwError } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
@@ -35,7 +35,7 @@ import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 export class DeleteModalComponent {
   private _cycleService = inject(CycleService)
   private _uploaderService = inject(UploaderService)
-  private _snackBar = inject(MatSnackBar)
+  private _snackBar = inject(SnackbarService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
   errorMessage: string
   inProgress = false
@@ -90,19 +90,11 @@ export class DeleteModalComponent {
   }
 
   close(message: string) {
-    this.openSnackBar(`Deleted Cycle ${this.data.cycle.name}`)
+    this._snackBar.success(`Deleted Cycle ${this.data.cycle.name}`)
     this._dialogRef.close(message)
   }
 
   dismiss() {
     this._dialogRef.close()
-  }
-
-  openSnackBar(message: string) {
-    this._snackBar.open(message, null, {
-      verticalPosition: 'top',
-      duration: 2000,
-      panelClass: 'soft-success-snackbar',
-    })
   }
 }
