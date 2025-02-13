@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
 import type { HttpErrorResponse } from '@angular/common/http'
+import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { catchError, throwError } from 'rxjs'
+import { catchError, Subject, throwError } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { AlertComponent } from '@seed/components'
@@ -23,11 +24,12 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
     MatProgressBarModule,
   ],
 })
-export class DeleteModalComponent {
+export class DeleteModalComponent implements OnDestroy {
   private _cycleService = inject(CycleService)
   private _uploaderService = inject(UploaderService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
   private _snackBar = inject(SnackbarService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
   inProgress = false
   progressBarObj: ProgressBarObj = {
@@ -88,5 +90,10 @@ export class DeleteModalComponent {
 
   dismiss() {
     this._dialogRef.close()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

@@ -1,9 +1,10 @@
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { Subject } from 'rxjs'
 import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
 import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -23,10 +24,11 @@ import { FormModalComponent } from './modal/form-modal.component'
     TableContainerComponent,
   ],
 })
-export class MembersComponent implements OnInit {
+export class MembersComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _dialog = inject(MatDialog)
   private _orgId: number
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
   membersDataSource = new MatTableDataSource<OrganizationUser>([])
   membersColumns = ['name', 'email', 'access level', 'access level instance', 'role', 'actions']
@@ -72,5 +74,10 @@ export class MembersComponent implements OnInit {
 
   trackByFn(_index: number, { email }: OrganizationUser) {
     return email
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }
