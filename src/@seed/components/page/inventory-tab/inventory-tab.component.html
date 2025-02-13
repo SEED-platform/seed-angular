@@ -1,0 +1,14 @@
+<div class="flex space-x-1" *transloco="let t">
+  @for (tab of config.tabs; track tab) {
+    <div
+      class="bg-default relative flex cursor-pointer self-start overflow-hidden rounded-t border border-b-0 pb-1 pl-5 pr-4 pt-2"
+      [ngClass]="type === tab ? ['z-2', 'text-primary'] : ['bg-slate-50', 'dark:bg-slate-700']"
+      (click)="config.action(tab)"
+      matRipple
+    >
+      <div class="overflow-hidden">
+        <div class="truncate font-medium leading-6">{{ t(tab) }}</div>
+      </div>
+    </div>
+  }
+</div>

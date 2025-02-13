@@ -12,5 +12,3 @@ export type Organization = {
 export type OrganizationsList = Organization[]
 
 export type OrganizationGenericTypeMatcher = { segments: UrlSegment[]; validTypes: string[]; validPage: string }
-
-export type OrganizationTab = 'goal' | 'properties' | 'taxlots'
