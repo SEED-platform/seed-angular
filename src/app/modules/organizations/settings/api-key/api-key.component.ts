@@ -9,7 +9,7 @@ import { Subject, takeUntil } from 'rxjs'
 import { type Organization, OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { BetterApiKeyValidator } from './better_api_key_validator'
+import { BetterApiKeyValidator } from './better-api-key.validator'
 
 @Component({
   selector: 'seed-organizations-settings-api-key',
