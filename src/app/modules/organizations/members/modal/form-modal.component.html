@@ -23,7 +23,7 @@
   <mat-form-field>
     <mat-label>Access Level Instance</mat-label>
     <mat-select formControlName="access_level_instance_id">
-      @for (ali of accessLevelInstances; track ali) {
+      @for (ali of accessLevelInstances; track ali.id) {
         <mat-option [value]="ali.id">{{ ali.name }}</mat-option>
       }
     </mat-select>
