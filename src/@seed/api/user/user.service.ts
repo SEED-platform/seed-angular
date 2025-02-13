@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap, throwError } from 'rxjs'
+import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap } from 'rxjs'
 import type {
   CurrentUser,
   GenerateApiKeyResponse,
@@ -11,12 +11,14 @@ import type {
   SetDefaultOrganizationResponse,
   UserUpdateRequest,
 } from '@seed/api/user'
+import { ErrorService } from '@seed/services/error/error.service'
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private _httpClient = inject(HttpClient)
   private _currentOrganizationId = new ReplaySubject<number>(1)
   private _currentUser = new ReplaySubject<CurrentUser>(1)
+  private _errorService = inject(ErrorService)
   currentOrganizationId$ = this._currentOrganizationId.asObservable().pipe(distinctUntilChanged())
   currentUser$ = this._currentUser.asObservable()
 
@@ -55,15 +57,39 @@ export class UserService {
    * Update user
    */
   updateUser(userId: number, params: UserUpdateRequest): Observable<CurrentUser> {
-    return this._httpClient.put<CurrentUser>(`api/v3/users/${userId}/`, params).pipe(
-      tap((user) => {
-        this._currentUser.next(user)
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error occurred while updating user:', error.error)
-        return this._currentUser
-      }),
-    )
+    return this._httpClient.put<CurrentUser>(`api/v3/users/${userId}/`, params)
+      .pipe(
+        tap((user) => {
+          this._currentUser.next(user)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error updating user')
+        }),
+      )
+  }
+
+  /**
+   * Update user role
+   */
+  updateUserRole(userId: number, orgId: number, role: string): Observable<{ status: string }> {
+    const url = `api/v3/users/${userId}/role/?organization_id=${orgId}`
+    return this._httpClient.put<{ status: string }>(url, { role })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error updating user role')
+        }),
+      )
+  }
+
+  updateUserAccessLevelInstance(userId: number, orgId: number, accessLevelInstanceId: number): Observable<{ status: string }> {
+    console.log('update access level instance', userId, orgId, accessLevelInstanceId)
+    const url = `/api/v3/users/${userId}/access_level_instance/?organization_id=${orgId}`
+    return this._httpClient.put<{ status: string }>(url, { access_level_instance_id: accessLevelInstanceId })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error updating user access level instance')
+        }),
+      )
   }
 
   /**
@@ -79,7 +105,7 @@ export class UserService {
         this.getCurrentUser().subscribe()
       }),
       catchError((error: HttpErrorResponse) => {
-        return throwError(() => error)
+        return this._errorService.handleError(error, 'Error updating password')
       }),
     )
   }

@@ -5,9 +5,9 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import type { Cycle, CyclesResponse } from '@seed/api/cycle'
+import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
-import { PageComponent } from '@seed/components'
+import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -23,6 +23,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatTableModule,
     PageComponent,
     SharedImports,
+    TableContainerComponent,
   ],
 })
 export class CyclesComponent implements OnInit {
@@ -31,7 +32,6 @@ export class CyclesComponent implements OnInit {
   private _orgId: number
   private _existingNames: string[]
 
-  // actionConfig: { action: () => void; icon: string; text: string }
   cyclesDataSource = new MatTableDataSource<Cycle>([])
   cyclesColumns = ['id', 'name', 'start', 'end', 'actions']
 
@@ -50,16 +50,13 @@ export class CyclesComponent implements OnInit {
   }
 
   createCycle = () => {
-  // createCycle(): void {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe((response: CyclesResponse) => {
-      if (response && response.status === 'success') { // is this necessary?
-        this.refreshCycles()
-      }
+    dialogRef.afterClosed().subscribe(() => {
+      this.refreshCycles()
     })
   }
 

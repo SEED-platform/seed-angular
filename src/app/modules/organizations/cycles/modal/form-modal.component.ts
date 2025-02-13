@@ -8,10 +8,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
-import type { Cycle, CycleResponse } from '@seed/api/cycle'
+import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { SEEDValidators } from '@seed/validators'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 
 // configure the datepicker to display 01/01/2000 instead of January 1, 2000
 export const MY_DATE_FORMATS = {
@@ -44,7 +43,6 @@ export const MY_DATE_FORMATS = {
 })
 export class FormModalComponent implements OnInit {
   private _cycleService = inject(CycleService)
-  private _snackBar = inject(SnackbarService)
   private _datePipe = inject(DatePipe)
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
 
@@ -75,21 +73,17 @@ export class FormModalComponent implements OnInit {
       ? this._cycleService.post({ data: this.form.value as Cycle, orgId: this.data.orgId })
       : this._cycleService.put({ data: this.form.value as Cycle, id: this.data.cycle.id, orgId: this.data.orgId })
 
-    fn.subscribe((response) => {
-      this.close(response)
+    fn.subscribe(() => {
+      this.close()
     })
   }
 
-  close(response: CycleResponse) {
-    const message = this.create ? `Created Cycle ${response.cycles.name}` : `Updated Cycle ${response.cycles.name}`
-    if (response.status === 'success') {
-      this._snackBar.success(message)
-    }
-    this._dialogRef.close(response)
+  close() {
+    this._dialogRef.close()
   }
 
   dismiss() {
-    this._dialogRef.close('dismiss')
+    this._dialogRef.close()
   }
 
   private _formatDates() {

@@ -1,3 +1,50 @@
 <seed-page [config]="{ title: 'Members' }">
-  <div>Members Content</div>
+  <!-- Members table -->
+  <seed-page-table-container>
+    <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="membersDataSource" [trackBy]="trackByFn">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Member Name</th>
+        <td mat-cell *matCellDef="let member">{{ member.first_name }} {{ member.last_name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let member">{{ member.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="access level">
+        <th mat-header-cell *matHeaderCellDef>Access Level</th>
+        <td mat-cell *matCellDef="let member">{{ member.access_level }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="access level instance">
+        <th mat-header-cell *matHeaderCellDef>Access Level Instance</th>
+        <td mat-cell *matCellDef="let member">{{ member.access_level_instance_name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef>Role</th>
+        <td mat-cell *matCellDef="let member">{{ member.role }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="select-none">Actions</th>
+        <td mat-cell *matCellDef="let member" class="w-[180px]">
+          <a mat-stroked-button (click)="editMember(member)" class="mr-2">
+            <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
+          </a>
+          <a mat-stroked-button color="warn" (click)="deleteMember(member)">
+            <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+          </a>
+        </td>
+      </ng-container>
+
+      <thead>
+        <tr mat-header-row *matHeaderRowDef="membersColumns"></tr>
+      </thead>
+      <tbody>
+        <tr mat-row *matRowDef="let row; columns: membersColumns"></tr>
+      </tbody>
+    </table>
+  </seed-page-table-container>
 </seed-page>
