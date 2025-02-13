@@ -75,7 +75,7 @@ export class OrganizationService {
         this._userService.getCurrentUser().subscribe()
       }),
       map(() => {
-        this._snackBar.success('Organization Settings Updated', 'OK', true, 3000)
+        this._snackBar.success('Organization Settings Updated')
         this.getById(org.id).subscribe((o) => {
           return of(o)
         })

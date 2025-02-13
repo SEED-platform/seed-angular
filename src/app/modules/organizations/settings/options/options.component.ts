@@ -10,7 +10,6 @@ import { Subject, takeUntil } from 'rxjs'
 import { type Organization, OrganizationService } from '@seed/api/organization'
 import { type Alert, AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 
 @Component({
   selector: 'seed-organizations-settings-options',
@@ -30,7 +29,6 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class OptionsComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _snackBar = inject(SnackbarService)
   organization: Organization
   alert: Alert
   fields: string[] = ['name', 'geocoding_enabled', 'comstock_enabled', 'public_feed_enabled']
