@@ -9,14 +9,14 @@ export class AuditTemplateService {
 
   constructor() {
     this._reportTypes.next([
-      { name: 'ASHRAE Level 2 Report' },
+      { name: 'ASHRAE Level 2 Report' }, // cspell:disable-line
       { name: 'Atlanta Report' },
       { name: 'Baltimore Energy Audit Report' },
       { name: 'Berkeley Report' },
       { name: 'BRICR Phase 0/1' },
       { name: 'Brisbane Energy Audit Report' },
-      { name: 'DC BEPS Energy Audit Report' },
-      { name: 'DC BEPS RCx Report' },
+      { name: 'DC BEPS Energy Audit Report' }, // cspell:disable-line
+      { name: 'DC BEPS RCx Report' }, // cspell:disable-line
       { name: 'Demo City Report' },
       { name: 'Denver Energy Audit Report' },
       { name: 'EE-RLF Template' },
