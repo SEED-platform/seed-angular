@@ -32,7 +32,8 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
     MatSelectModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
-    PageComponent],
+    PageComponent,
+  ],
 })
 export class AuditTemplateComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -106,7 +107,10 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
       this.organization.audit_template_report_type = this.auditTemplateForm.get('audit_template_report_type').value
       this.organization.audit_template_conditional_import = this.auditTemplateForm.get('audit_template_conditional_import').value
 
-      this.organization.audit_template_status_types = this.status_fields.filter((f) => this.auditTemplateForm.get(f.field).value === true).map((f) => f.key).join(',')
+      this.organization.audit_template_status_types = this.status_fields
+        .filter((f) => this.auditTemplateForm.get(f.field).value === true)
+        .map((f) => f.key)
+        .join(',')
       this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
