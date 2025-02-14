@@ -1,4 +1,6 @@
-<seed-page [config]="{ title: 'Derived Columns' }" *transloco="let t">
+<seed-page [config]="{ title: 'Derived Columns', action: createDerivedColumn, actionIcon: 'fa-solid:plus', actionText: 'Create a Derived Column' }" *transloco="let t">
+
+
   <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
 
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">

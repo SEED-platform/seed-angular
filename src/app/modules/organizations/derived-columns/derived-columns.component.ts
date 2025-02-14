@@ -20,6 +20,11 @@ export class DerivedColumnsComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('organizations derived columns')
+    this.getDerivedColumns()
+  }
+
+  getDerivedColumns() {
+    console.log('get derived columns')
   }
 
   async toggleInventoryType(type: InventoryType) {
@@ -28,5 +33,9 @@ export class DerivedColumnsComponent implements OnInit {
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
       this.type = type
     }
+  }
+
+  createDerivedColumn() {
+    console.log('create derived column')
   }
 }
