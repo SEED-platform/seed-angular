@@ -103,13 +103,14 @@
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Schedule Weekly Update') }}</div>
 
-            <div class="flex flex-row">
-              <mat-slide-toggle formControlName="audit_template_sync_enabled" (click)="updateScheduleInputs()">{{ t('Enable Audit Template Auto Sync') }}</mat-slide-toggle>
+            <div class="mt-6 flex flex-row">
+              <mat-slide-toggle formControlName="audit_template_sync_enabled" (click)="updateScheduleInputs()">{{
+                t('Enable Audit Template Auto Sync')
+              }}</mat-slide-toggle>
             </div>
-            <div class="text-secondary prose mb-6">
-              If you would like to automatically update your SEED organization with
-              Audit Template submission data for the selected Audit Template City ID, 
-              configure the fields below to schedule your weekly update.
+            <div class="text-secondary prose my-6">
+              If you would like to automatically update your SEED organization with Audit Template submission data for the selected Audit
+              Template City ID, configure the fields below to schedule your weekly update.
             </div>
             <div class="flex flex-row">
               <mat-form-field class="flex">
@@ -121,7 +122,7 @@
                 </mat-select>
               </mat-form-field>
               <mat-form-field class="flex">
-                <mat-label>{{ t('Hour') }}</mat-label>
+                <mat-label>{{ t('Hour') }} (24)</mat-label>
                 <mat-select formControlName="audit_template_config_hour">
                   @for (h of hours; track h) {
                     <mat-option [value]="h">{{ h }}</mat-option>
@@ -136,7 +137,6 @@
                   }
                 </mat-select>
               </mat-form-field>
-              
             </div>
           </div>
           <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>

@@ -172,7 +172,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
             this.auditTemplateConfig = atc
           })
         } else {
-          this._auditTemplateService.update(this.auditTemplateConfig).subscribe((atc) => this.auditTemplateConfig = atc)
+          this._auditTemplateService.update(this.auditTemplateConfig).subscribe((atc) => (this.auditTemplateConfig = atc))
         }
       }
     }

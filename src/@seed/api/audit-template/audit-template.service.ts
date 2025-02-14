@@ -3,7 +3,12 @@ import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
-import type { AuditTemplateConfig, AuditTemplateConfigCreateResponse, AuditTemplateConfigResponse, AuditTemplateReportType } from './audit-template.types'
+import type {
+  AuditTemplateConfig,
+  AuditTemplateConfigCreateResponse,
+  AuditTemplateConfigResponse,
+  AuditTemplateReportType,
+} from './audit-template.types'
 
 @Injectable({ providedIn: 'root' })
 export class AuditTemplateService {
