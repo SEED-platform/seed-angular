@@ -1,11 +1,20 @@
-import { Injectable } from '@angular/core'
-import { ReplaySubject } from 'rxjs'
-import type { AuditTemplateReportType } from './audit-template.types'
+import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
+import { inject, Injectable } from '@angular/core'
+import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { ErrorService } from '@seed/services/error/error.service'
+import { UserService } from '../user'
+import type { AuditTemplateConfig, AuditTemplateConfigCreateResponse, AuditTemplateConfigResponse, AuditTemplateReportType } from './audit-template.types'
 
 @Injectable({ providedIn: 'root' })
 export class AuditTemplateService {
+  private _httpClient = inject(HttpClient)
+  private _userService = inject(UserService)
+  private _errorService = inject(ErrorService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   private _reportTypes = new ReplaySubject<AuditTemplateReportType[]>(1)
+  private _auditTemplateConfig = new ReplaySubject<AuditTemplateConfig>(1)
   reportTypes$ = this._reportTypes.asObservable()
+  auditTemplateConfig$ = this._auditTemplateConfig.asObservable()
 
   constructor() {
     this._reportTypes.next([
@@ -32,5 +41,48 @@ export class AuditTemplateService {
       { name: 'WA Commerce Clean Buildings - Form D Report' },
       { name: 'WA Commerce Grants Report' },
     ])
+    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
+      this.getConfigs(organizationId).subscribe()
+    })
+  }
+
+  getConfigs(org_id: number): Observable<AuditTemplateConfig> {
+    const url = `/api/v3/audit_template_configs/?organization_id=${org_id}`
+    return this._httpClient.get<AuditTemplateConfigResponse>(url).pipe(
+      map((response) => {
+        this._auditTemplateConfig.next(response.data[0])
+        return response.data[0]
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // TODO need to figure out error handling
+        return this._errorService.handleError(error, 'Error fetching audit template configs')
+      }),
+    )
+  }
+
+  create(auditTemplateConfig: AuditTemplateConfig): Observable<AuditTemplateConfig> {
+    const url = `/api/v3/audit_template_configs/?organization_id=${auditTemplateConfig.organization}`
+    return this._httpClient.post<AuditTemplateConfigCreateResponse>(url, { ...auditTemplateConfig }).pipe(
+      map((r) => {
+        this._auditTemplateConfig.next(r.data)
+        return r.data
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating Audit Template Config')
+      }),
+    )
+  }
+
+  update(auditTemplateConfig: AuditTemplateConfig): Observable<AuditTemplateConfig | null> {
+    const url = `/api/v3/audit_template_configs/${auditTemplateConfig.id}/?organization_id=${auditTemplateConfig.organization}`
+    return this._httpClient.put<AuditTemplateConfigResponse>(url, { ...auditTemplateConfig }).pipe(
+      map((r) => {
+        this._auditTemplateConfig.next(r.data[0])
+        return r.data[0]
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating Audit Template Config')
+      }),
+    )
   }
 }

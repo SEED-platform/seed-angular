@@ -104,7 +104,39 @@
             <div class="text-lg font-medium">{{ t('Schedule Weekly Update') }}</div>
 
             <div class="flex flex-row">
-              <mat-slide-toggle formControlName="audit_template_sync_enabled">{{ t('Enable Audit Template Auto Sync') }}</mat-slide-toggle>
+              <mat-slide-toggle formControlName="audit_template_sync_enabled" (click)="updateScheduleInputs()">{{ t('Enable Audit Template Auto Sync') }}</mat-slide-toggle>
+            </div>
+            <div class="text-secondary prose mb-6">
+              If you would like to automatically update your SEED organization with
+              Audit Template submission data for the selected Audit Template City ID, 
+              configure the fields below to schedule your weekly update.
+            </div>
+            <div class="flex flex-row">
+              <mat-form-field class="flex">
+                <mat-label>{{ t('Day') }}</mat-label>
+                <mat-select formControlName="audit_template_config_day">
+                  @for (d of days; track d.index) {
+                    <mat-option [value]="d.index">{{ d.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="flex">
+                <mat-label>{{ t('Hour') }}</mat-label>
+                <mat-select formControlName="audit_template_config_hour">
+                  @for (h of hours; track h) {
+                    <mat-option [value]="h">{{ h }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="flex">
+                <mat-label>{{ t('Minute') }}</mat-label>
+                <mat-select formControlName="audit_template_config_minute">
+                  @for (m of minutes; track m) {
+                    <mat-option [value]="m">{{ m }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              
             </div>
           </div>
           <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
@@ -125,7 +157,7 @@
               <mat-select formControlName="audit_template_report_type">
                 <mat-option value="">None</mat-option>
                 @for (atrt of auditTemplateReportTypes; track atrt.name) {
-                  <mat-option [value]="atrt.name">{{ t(atrt.name) }}</mat-option>
+                  <mat-option [value]="atrt.name">{{ atrt.name }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
