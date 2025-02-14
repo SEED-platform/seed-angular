@@ -8,7 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
-import { Subject } from 'rxjs'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { SEEDValidators } from '@seed/validators'
@@ -64,9 +64,11 @@ export class FormModalComponent implements OnDestroy, OnInit {
       this.create = false
       this.form.patchValue(this.data.cycle)
     }
-    this.form.get('start')?.valueChanges.subscribe(() => {
-      this.form.get('end')?.updateValueAndValidity()
-    })
+    this.form.get('start')?.valueChanges
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.form.get('end')?.updateValueAndValidity() }),
+      ).subscribe()
   }
 
   onSubmit() {

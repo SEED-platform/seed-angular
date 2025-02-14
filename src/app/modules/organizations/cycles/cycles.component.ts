@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { Subject } from 'rxjs'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { PageComponent, TableContainerComponent } from '@seed/components'
@@ -44,11 +44,15 @@ export class CyclesComponent implements OnDestroy, OnInit {
   refreshCycles(): void {
     this._cycleService.get()
 
-    this._cycleService.cycles$.subscribe((cycles) => {
-      this.cyclesDataSource.data = cycles
-      this._orgId = cycles[0]?.organization
-      this._existingNames = cycles.map((cycle) => cycle.name)
-    })
+    this._cycleService.cycles$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((cycles) => {
+          this.cyclesDataSource.data = cycles
+          this._orgId = cycles[0]?.organization
+          this._existingNames = cycles.map((cycle) => cycle.name)
+        }),
+      ).subscribe()
   }
 
   createCycle = () => {
@@ -57,9 +61,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   editCycle(cycle: Cycle): void {
@@ -68,9 +74,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   deleteCycle(cycle: Cycle): void {
@@ -79,9 +87,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   trackByFn(_index: number, { id }: Cycle) {

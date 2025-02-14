@@ -9,7 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { type Observable, Subject } from 'rxjs'
-import { forkJoin } from 'rxjs'
+import { forkJoin, takeUntil, tap } from 'rxjs'
 import type { AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
@@ -53,11 +53,15 @@ export class FormModalComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.form.patchValue(this.data.member)
     // watch for changes to access level and repopulate access level instances
-    this.form.get('access_level')?.valueChanges.subscribe((accessLevel) => {
-      this.getPossibleAccessLevelInstances(accessLevel)
-      // default to first access level instance
-      this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
-    })
+    this.form.get('access_level')?.valueChanges
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevel) => {
+          this.getPossibleAccessLevelInstances(accessLevel)
+          // default to first access level instance
+          this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+      ).subscribe()
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
       this.getAccessLevelTree(this.data.orgId)
@@ -68,11 +72,15 @@ export class FormModalComponent implements OnDestroy, OnInit {
     // fetch access level tree
     this._organizationService.getOrganizationAccessLevelTree(orgId)
     // subscribe to stream and set access level tree/names
-    this._organizationService.accessLevelTree$.subscribe((accessLevelTree) => {
-      this.accessLevelNames = accessLevelTree.accessLevelNames
-      this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
-      this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-    })
+    this._organizationService.accessLevelTree$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevelTree) => {
+          this.accessLevelNames = accessLevelTree.accessLevelNames
+          this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
+          this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+        }),
+      ).subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
@@ -95,10 +103,14 @@ export class FormModalComponent implements OnDestroy, OnInit {
     }
     // wait for both to finish
     if (requests.length) {
-      forkJoin(requests).subscribe(() => {
-        this._snackBar.success('User updated')
-        this._dialogRef.close()
-      })
+      forkJoin(requests)
+        .pipe(
+          takeUntil(this._unsubscribeAll$),
+          tap(() => {
+            this._snackBar.success('User updated')
+            this._dialogRef.close()
+          }),
+        ).subscribe()
     }
   }
 
