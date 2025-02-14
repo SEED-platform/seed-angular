@@ -74,19 +74,24 @@ export class OrganizationService {
 
   getOrganizationUsers(orgId: number): void {
     const url = `/api/v3/organizations/${orgId}/users/`
-    this._httpClient.get<OrganizationUsersResponse>(url)
+    this._httpClient
+      .get<OrganizationUsersResponse>(url)
       .pipe(
         map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
-        tap((users) => { this._organizationUsers.next(users) }),
+        tap((users) => {
+          this._organizationUsers.next(users)
+        }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching organization users')
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   getOrganizationAccessLevelTree(orgId: number): void {
     const url = `/api/v3/organizations/${orgId}/access_levels/tree`
-    this._httpClient.get<AccessLevelTreeResponse>(url)
+    this._httpClient
+      .get<AccessLevelTreeResponse>(url)
       .pipe(
         map((response) => {
           // update response to include more usable accessLevelInstancesByDepth
@@ -145,9 +150,13 @@ export class OrganizationService {
   }
 
   /*
-  * Transform access level tree into a more usable format
-  */
-  private _calculateAccessLevelInstancesByDepth(tree: AccessLevelNode[], depth: number, result: AccessLevelsByDepth = {}): AccessLevelsByDepth {
+   * Transform access level tree into a more usable format
+   */
+  private _calculateAccessLevelInstancesByDepth(
+    tree: AccessLevelNode[],
+    depth: number,
+    result: AccessLevelsByDepth = {},
+  ): AccessLevelsByDepth {
     if (!tree) return result
     if (!result[depth]) result[depth] = []
     for (const ali of tree) {
