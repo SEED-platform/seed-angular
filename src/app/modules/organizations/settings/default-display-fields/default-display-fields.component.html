@@ -1,6 +1,62 @@
-<h3 class="text-2xl font-bold">Default Display Field Settings</h3>
-<div class="prose">
-  @if (organization$ | async; as o) {
-    Organization API Key: {{ o.name }}
+<seed-page [config]="{ title: 'Organization Settings: Default Display Fields' }" title="Organization Settings: Default Display Fields">
+  @if (organization) {
+    <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+      <div class="max-w-2xl">
+        <form
+          class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow"
+          [formGroup]="defaultDisplayFieldsForm"
+          (ngSubmit)="submit()"
+        >
+          <div class="flex flex-col">
+            <div class="text-lg font-medium">Property Display Field</div>
+            <div class="text-secondary prose mb-6">
+              <p>
+                Determines which column field is used when displaying and
+                 identifying a property. Defaults to "Address Line 1".
+              </p>
+              
+            </div>
+            <mat-form-field class="mb-6">
+              <mat-label>Property Display Field</mat-label>
+              <mat-select formControlName="property_display_field">
+                <mat-option value="">None</mat-option>
+                @for (col of propertyColumns; track col.name) {
+                  <mat-option [value]="col.column_name">{{ col.display_name }}</mat-option>
+                }
+              </mat-select>
+
+            </mat-form-field>
+          </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <div class="flex flex-col">
+            <div class="text-lg font-medium">TaxLot Display Field</div>
+            <div class="text-secondary prose mb-6">
+              <p>
+                Determines which column field is used when displaying and
+                 identifying a taxlot. Defaults to "Address Line 1".
+              </p>
+              
+            </div>
+            <mat-form-field class="mb-6">
+              <mat-label>TaxLot Display Field</mat-label>
+              <mat-select formControlName="property_display_field">
+                <mat-option value="">None</mat-option>
+                @for (col of taxLotColumns; track col.name) {
+                  <mat-option [value]="col.column_name">{{ col.display_name }}</mat-option>
+                }
+              </mat-select>
+
+            </mat-form-field>
+          </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+
+          <div>
+            <button mat-flat-button [disabled]="defaultDisplayFieldsForm.invalid || defaultDisplayFieldsForm.pending" color="primary">
+              <span class="">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   }
-</div>
+</seed-page>

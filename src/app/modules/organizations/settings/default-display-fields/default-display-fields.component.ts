@@ -1,15 +1,62 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { MatButton } from '@angular/material/button'
+import { MatDivider } from '@angular/material/divider'
+import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
-import { OrganizationService } from '@seed/api/organization'
+import { MatInputModule } from '@angular/material/input'
+import { MatSelectModule } from '@angular/material/select'
+import { Subject, takeUntil } from 'rxjs'
+import { type Column, ColumnService } from '@seed/api/column'
+import { type Organization, OrganizationService } from '@seed/api/organization'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-organizations-settings-default-display-fields',
   templateUrl: './default-display-fields.component.html',
-  imports: [CommonModule, SharedImports, MatIconModule],
+  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, ReactiveFormsModule, PageComponent],
 })
-export class DefaultDisplayFieldComponent {
+export class DefaultDisplayFieldComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
-  organization$ = this._organizationService.currentOrganization$
+  private _columnService = inject(ColumnService)
+
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  organization: Organization
+  propertyColumns: Column[]
+  taxLotColumns: Column[]
+  defaultDisplayFieldsForm = new FormGroup({
+    property_display_field: new FormControl('address_line_1'),
+    taxlot_display_field: new FormControl('address_line_1'),
+    default_reports_x_axis_options: new FormControl([]),
+    default_reports_y_axis_options: new FormControl([]),
+  })
+
+  ngOnInit(): void {
+    this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
+      this.organization = organization
+      this.defaultDisplayFieldsForm.get('property_display_field').setValue(this.organization.property_display_field)
+      this.defaultDisplayFieldsForm.get('taxlot_display_field').setValue(this.organization.taxlot_display_field)
+    })
+    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((propertyColumns) => {
+      this.propertyColumns = propertyColumns
+    })
+    this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((taxLotColumns) => {
+      this.taxLotColumns = taxLotColumns
+    })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+
+  submit(): void {
+    if (this.defaultDisplayFieldsForm.valid) {
+      this.organization.property_display_field = this.defaultDisplayFieldsForm.get('property_display_field').value
+      this.organization.taxlot_display_field = this.defaultDisplayFieldsForm.get('taxlot_display_field').value
+      this._organizationService.updateSettings(this.organization).subscribe()
+    }
+  }
 }

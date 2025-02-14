@@ -34,3 +34,8 @@ export type Column = {
   derived_column: number | null;
   is_excluded_from_hash: boolean;
 }
+
+export type ColumnsResponse = {
+  status: string;
+  columns: Column[];
+}
