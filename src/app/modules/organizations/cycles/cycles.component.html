@@ -1,6 +1,6 @@
 <seed-page [config]="{ title: 'Cycles', action: createCycle, actionIcon: 'fa-solid:plus', actionText: 'Create Cycle' }" title="Cycles">
   <!-- Cycles Table -->
-  <seed-page-table-container>
+  <seed-page-inventory-table-container>
     <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="cyclesDataSource" [trackBy]="trackByFn">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
@@ -40,5 +40,5 @@
         <tr mat-row *matRowDef="let row; columns: cyclesColumns"></tr>
       </tbody>
     </table>
-  </seed-page-table-container>
+  </seed-page-inventory-table-container>
 </seed-page>

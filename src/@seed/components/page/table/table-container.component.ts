@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 
 @Component({
-  selector: 'seed-page-table-container',
+  selector: 'seed-page-inventory-table-container',
   templateUrl: './table-container.component.html',
   imports: [],
 })

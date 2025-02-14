@@ -1,9 +1,9 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTabsModule } from '@angular/material/tabs'
 import { ActivatedRoute, Router } from '@angular/router'
+import { InventoryTabComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from './inventory.types'
 
@@ -11,7 +11,7 @@ import type { InventoryType } from './inventory.types'
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [MatButtonModule, MatIconModule, MatTabsModule, NgClass, SharedImports],
+  imports: [MatButtonModule, MatIconModule, MatTabsModule, SharedImports, InventoryTabComponent],
 })
 export class InventoryComponent {
   private _activatedRoute = inject(ActivatedRoute)

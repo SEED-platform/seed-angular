@@ -1,18 +1,5 @@
 <seed-page [config]="{ title: 'Data Quality' }" *transloco="let t">
-  <div class="flex space-x-1">
-    @for (tab of tabs; track tab) {
-      <div
-        class="bg-default relative flex cursor-pointer self-start overflow-hidden rounded-t-xl border border-b-0 pb-1 pl-5 pr-4 pt-2"
-        [ngClass]="type === tab ? 'z-2' : ['bg-slate-50', 'dark:bg-slate-700']"
-        (click)="toggleInventoryType(tab)"
-        matRipple
-      >
-        <div class="overflow-hidden">
-          <div class="truncate font-medium leading-6">{{ t(tab) }}</div>
-        </div>
-      </div>
-    }
-  </div>
+  <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
 
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
     <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} table</div>

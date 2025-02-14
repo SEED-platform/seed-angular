@@ -1,6 +1,6 @@
 <seed-page [config]="{ title: 'Members' }">
   <!-- Members table -->
-  <seed-page-table-container>
+  <seed-page-inventory-table-container>
     <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="membersDataSource" [trackBy]="trackByFn">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Member Name</th>
@@ -46,5 +46,5 @@
         <tr mat-row *matRowDef="let row; columns: membersColumns"></tr>
       </tbody>
     </table>
-  </seed-page-table-container>
+  </seed-page-inventory-table-container>
 </seed-page>
