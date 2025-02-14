@@ -10,6 +10,7 @@ import { type DerivedColumn, DerivedColumnService } from '@seed/api/derived-colu
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from '../../inventory/inventory.types'
+import { DeleteModalComponent } from './modal/delete-modal.component'
 
 @Component({
   selector: 'seed-organizations-derived-columns',
@@ -67,15 +68,29 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   createDerivedColumn() {
-    console.log('create derived column')
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { derivedColumn: null, orgId: this._orgId },
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.getDerivedColumns()
+    })
   }
 
   editDerivedColumn(dc: DerivedColumn) {
     console.log('edit derived column', dc)
   }
 
-  deleteDerivedColumn(dc: DerivedColumn) {
-    console.log('delete derived column', dc)
+  deleteDerivedColumn(derivedColumn: DerivedColumn) {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { derivedColumn, orgId: this._orgId },
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.getDerivedColumns()
+    })
   }
 
   trackByFn(_index: number, { id }: DerivedColumn) {

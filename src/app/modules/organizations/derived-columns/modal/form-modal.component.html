@@ -1,0 +1,54 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  {{ create ? 'Create' : 'Edit' }} Derived Column
+</h2>
+<!-- <mat-dialog-content>content?</mat-dialog-content> -->
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" placeholder="Derived Column Name" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="type">
+      @for (type of types; track type) {
+      <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Parameter Name</mat-label>
+    <input matInput formControlName="paramA" value="param_a" />
+  </mat-form-field>
+
+  <a mat-flat-button color="primary" (click)="addParameter()">
+    <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+    <span class="ml-2">Add Parameter</span>
+  </a>
+
+  <mat-form-field>
+    <mat-label>Source Column</mat-label>
+    <mat-select formControlName="sourceColumn">
+      @for (type of types; track type) {
+      <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Expression</mat-label>
+      <input matInput formControlName="expression" value="$param_a / 100" />
+    </mat-form-field>
+
+  
+</form>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+  </mat-dialog-actions>
+</div>
