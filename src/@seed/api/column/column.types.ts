@@ -33,6 +33,8 @@ export type Column = {
   column_description: string;
   derived_column: number | null;
   is_excluded_from_hash: boolean;
+  related?: boolean;
+  pinnedLeft?: boolean;
 }
 
 export type ColumnsResponse = {

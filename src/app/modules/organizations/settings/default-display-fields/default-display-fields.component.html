@@ -49,6 +49,40 @@
             </mat-form-field>
           </div>
           <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <div class="flex flex-col">
+            <div class="text-lg font-medium">Columns to Include in Reports x axis Options
+            </div>
+ 
+            <mat-form-field class="mb-6">
+              <mat-label>X Axis Columns
+              </mat-label>
+              <mat-select formControlName="default_reports_x_axis_options" multiple>
+                <mat-option value="">None</mat-option>
+                @for (col of xAxisColumns; track col.id) {
+                  <mat-option [value]="col.id">{{ col.display_name }}</mat-option>
+                }
+              </mat-select>
+
+            </mat-form-field>
+          </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <div class="flex flex-col">
+            <div class="text-lg font-medium">Columns to Include in Reports Y Axis Options
+            </div>
+ 
+            <mat-form-field class="mb-6">
+              <mat-label>Y Axis Columns
+              </mat-label>
+              <mat-select formControlName="default_reports_y_axis_options" multiple>
+                <mat-option value="">None</mat-option>
+                @for (col of yAxisColumns; track col.id) {
+                  <mat-option [value]="col.id">{{ col.display_name }}</mat-option>
+                }
+              </mat-select>
+
+            </mat-form-field>
+          </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
 
           <div>
             <button mat-flat-button [disabled]="defaultDisplayFieldsForm.invalid || defaultDisplayFieldsForm.pending" color="primary">
