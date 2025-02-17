@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, switchMap, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import { ErrorService } from '@seed/services/error/error.service'
+import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 

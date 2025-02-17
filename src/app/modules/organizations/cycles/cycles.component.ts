@@ -60,9 +60,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   editCycle(cycle: Cycle): void {
@@ -71,9 +73,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   deleteCycle(cycle: Cycle): void {
@@ -82,9 +86,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCycles()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshCycles() }),
+      ).subscribe()
   }
 
   trackByFn(_index: number, { id }: Cycle) {
