@@ -11,30 +11,30 @@
   <mat-form-field>
     <mat-label>Type</mat-label>
     <mat-select formControlName="type">
-      @for (type of types; track type) {
-      <mat-option [value]="type">{{ type }}</mat-option>
+      @for (type of inventoryTypes; track type.id) {
+      <mat-option [value]="type.id">{{ type.label }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field>
-    <mat-label>Parameter Name</mat-label>
+  <!-- <mat-form-field>
+    <mat-label>Parameter Name</mat-label>x
     <input matInput formControlName="paramA" value="param_a" />
   </mat-form-field>
 
   <a mat-flat-button color="primary" (click)="addParameter()">
     <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
     <span class="ml-2">Add Parameter</span>
-  </a>
+  </a> -->
 
-  <mat-form-field>
+  <!-- <mat-form-field>
     <mat-label>Source Column</mat-label>
     <mat-select formControlName="sourceColumn">
       @for (type of types; track type) {
       <mat-option [value]="type">{{ type }}</mat-option>
       }
     </mat-select>
-  </mat-form-field>
+  </mat-form-field> -->
 
     <mat-form-field>
       <mat-label>Expression</mat-label>

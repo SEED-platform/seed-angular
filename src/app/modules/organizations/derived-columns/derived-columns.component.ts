@@ -11,6 +11,7 @@ import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from '../../inventory/inventory.types'
 import { DeleteModalComponent } from './modal/delete-modal.component'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-organizations-derived-columns',
@@ -34,7 +35,8 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
-  type = this._route.snapshot.paramMap.get('type') as InventoryType
+  inventoryType = this._route.snapshot.paramMap.get('type') as InventoryType
+  inventoryLabel: 'Property' | 'Tax Lot'
   derivedColumnDataSource = new MatTableDataSource<DerivedColumn>([])
   derivedColumns: DerivedColumn[]
   derivedColumnColumns = ['name', 'expression', 'actions']
@@ -44,12 +46,13 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   getDerivedColumns() {
-    this._derivedColumnService.get(this.type)
+    this._derivedColumnService.get()
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((derivedColumns) => {
-          this.derivedColumns = derivedColumns
-          this.derivedColumnDataSource.data = derivedColumns
+          this.inventoryLabel = this.inventoryType === 'taxlots' ? 'Tax Lot' : 'Property'
+          this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryLabel)
+          this.derivedColumnDataSource.data = this.derivedColumns
           this._orgId = derivedColumns[0]?.organization
         }),
       )
@@ -57,18 +60,18 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   async toggleInventoryType(type: InventoryType) {
-    if (type !== this.type) {
+    if (type !== this.inventoryType) {
       const newRoute = `/organizations/derived-columns/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
-      this.type = type
+      this.inventoryType = type
       this.getDerivedColumns()
     }
   }
 
-  createDerivedColumn() {
-    const dialogRef = this._dialog.open(DeleteModalComponent, {
+  createDerivedColumn = () => {
+    const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
-      data: { derivedColumn: null, orgId: this._orgId },
+      data: { derivedColumn: null, orgId: this._orgId, inventoryType: { id: this.inventoryType, label: this.inventoryLabel } },
     })
 
     dialogRef.afterClosed().subscribe(() => {

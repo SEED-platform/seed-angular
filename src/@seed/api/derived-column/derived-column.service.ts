@@ -13,15 +13,19 @@ export class DerivedColumnService {
   private _snackBar = inject(SnackbarService)
   private _errorService = inject(ErrorService)
   private _derivedColumns = new Subject<DerivedColumn[]>()
+
   orgId: number
 
   derivedColumns$ = this._derivedColumns.asObservable()
 
-  get(inventory_type: string): Observable<DerivedColumn[]> {
+  get(): Observable<DerivedColumn[]> {
+  // get(inventoryType: string): Observable<DerivedColumn[]> {
     return this._organizationService.currentOrganization$
       .pipe(
         switchMap(({ org_id }) => {
-          const url = `/api/v3/derived_columns/?organization_id=${org_id}&inventory_type=${inventory_type}`
+          // exclude param inventory_type to return a mixed array of property and taxlot derived columns
+          // and let component filter as inventory type can get lost
+          const url = `/api/v3/derived_columns/?organization_id=${org_id}`
           return this._httpClient.get<DerivedColumnResponse>(url)
             .pipe(
               map(({ derived_columns }) => derived_columns),
