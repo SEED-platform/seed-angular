@@ -142,13 +142,7 @@ this.auditTemplateForm.patchValue(this.organization)
 
   submit(): void {
     if (this.auditTemplateForm.valid) {
-      this.organization.at_organization_token = this.auditTemplateForm.get('at_organization_token').value
-      this.organization.audit_template_user = this.auditTemplateForm.get('audit_template_user').value
-      this.organization.audit_template_city_id = this.auditTemplateForm.get('audit_template_city_id').value as number
-      this.organization.audit_template_password = this.auditTemplateForm.get('audit_template_password').value
-      this.organization.audit_template_sync_enabled = this.auditTemplateForm.get('audit_template_sync_enabled').value
-      this.organization.audit_template_report_type = this.auditTemplateForm.get('audit_template_report_type').value
-      this.organization.audit_template_conditional_import = this.auditTemplateForm.get('audit_template_conditional_import').value
+this.organization = { ...this.organization, ...this.auditTemplateForm.value }
 
       this.organization.audit_template_status_types = this.status_fields
         .filter((f) => this.auditTemplateForm.get(f.field).value === true)
