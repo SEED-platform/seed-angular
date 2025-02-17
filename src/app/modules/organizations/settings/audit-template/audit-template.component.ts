@@ -87,13 +87,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
-      this.auditTemplateForm.get('at_organization_token').setValue(this.organization.at_organization_token)
-      this.auditTemplateForm.get('audit_template_user').setValue(this.organization.audit_template_user)
-      this.auditTemplateForm.get('audit_template_city_id').setValue(this.organization.audit_template_city_id)
-      this.auditTemplateForm.get('audit_template_password').setValue(this.organization.audit_template_password)
-      this.auditTemplateForm.get('audit_template_sync_enabled').setValue(this.organization.audit_template_sync_enabled)
-      this.auditTemplateForm.get('audit_template_report_type').setValue(this.organization.audit_template_report_type)
-      this.auditTemplateForm.get('audit_template_conditional_import').setValue(this.organization.audit_template_conditional_import)
+this.auditTemplateForm.patchValue(this.organization)
       for (const field of this.status_fields) {
         this.auditTemplateForm.get(field.field).setValue(this.organization.audit_template_status_types.includes(field.key))
       }
