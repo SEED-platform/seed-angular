@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, type OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatOptionModule } from '@angular/material/core'
@@ -7,8 +8,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
-import type { Observable } from 'rxjs'
-import { forkJoin } from 'rxjs'
+import { type Observable, Subject } from 'rxjs'
+import { forkJoin, takeUntil, tap } from 'rxjs'
 import type { AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
@@ -29,11 +30,12 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
     ReactiveFormsModule,
   ],
 })
-export class FormModalComponent implements OnInit {
+export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
   private _snackBar = inject(SnackbarService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   accessLevelNames: string[]
   accessLevelInstancesByDepth: AccessLevelsByDepth = {}
   accessLevelInstances: { id: number; name: string }[] = []
@@ -51,11 +53,15 @@ export class FormModalComponent implements OnInit {
   ngOnInit(): void {
     this.form.patchValue(this.data.member)
     // watch for changes to access level and repopulate access level instances
-    this.form.get('access_level')?.valueChanges.subscribe((accessLevel) => {
-      this.getPossibleAccessLevelInstances(accessLevel)
-      // default to first access level instance
-      this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
-    })
+    this.form.get('access_level')?.valueChanges
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevel) => {
+          this.getPossibleAccessLevelInstances(accessLevel)
+          // default to first access level instance
+          this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+      ).subscribe()
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
       this.getAccessLevelTree(this.data.orgId)
@@ -66,11 +72,15 @@ export class FormModalComponent implements OnInit {
     // fetch access level tree
     this._organizationService.getOrganizationAccessLevelTree(orgId)
     // subscribe to stream and set access level tree/names
-    this._organizationService.accessLevelTree$.subscribe((accessLevelTree) => {
-      this.accessLevelNames = accessLevelTree.accessLevelNames
-      this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
-      this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-    })
+    this._organizationService.accessLevelTree$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevelTree) => {
+          this.accessLevelNames = accessLevelTree.accessLevelNames
+          this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
+          this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+        }),
+      ).subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
@@ -93,14 +103,23 @@ export class FormModalComponent implements OnInit {
     }
     // wait for both to finish
     if (requests.length) {
-      forkJoin(requests).subscribe(() => {
-        this._snackBar.success('User updated')
-        this._dialogRef.close()
-      })
+      forkJoin(requests)
+        .pipe(
+          takeUntil(this._unsubscribeAll$),
+          tap(() => {
+            this._snackBar.success('User updated')
+            this._dialogRef.close()
+          }),
+        ).subscribe()
     }
   }
 
   dismiss() {
     this._dialogRef.close('dismiss')
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

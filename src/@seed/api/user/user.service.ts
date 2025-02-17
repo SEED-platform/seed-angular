@@ -11,7 +11,7 @@ import type {
   SetDefaultOrganizationResponse,
   UserUpdateRequest,
 } from '@seed/api/user'
-import { ErrorService } from '@seed/services/error/error.service'
+import { ErrorService } from '@seed/services'
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

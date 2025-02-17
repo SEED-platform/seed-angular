@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common'
+import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
 import { AlertComponent } from '@seed/components'
 
@@ -15,18 +17,20 @@ import { AlertComponent } from '@seed/components'
     MatDialogModule,
   ],
 })
-export class DeleteModalComponent {
+export class DeleteModalComponent implements OnDestroy {
   private _organizationService = inject(OrganizationService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
 
   data = inject(MAT_DIALOG_DATA) as { member: OrganizationUser; orgId: number }
 
   onSubmit() {
-    this._organizationService.deleteOrganizationUser(this.data.member.user_id, this.data.orgId).subscribe({
-      next: () => { this.close('success') },
-      error: (error: string) => { this.errorMessage = error },
-    })
+    this._organizationService.deleteOrganizationUser(this.data.member.user_id, this.data.orgId)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.close('success') }),
+      ).subscribe()
   }
 
   close(message: string) {
@@ -35,5 +39,10 @@ export class DeleteModalComponent {
 
   dismiss() {
     this._dialogRef.close()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

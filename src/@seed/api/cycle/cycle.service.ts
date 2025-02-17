@@ -2,9 +2,9 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, switchMap, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import { ErrorService } from '@seed/services/error/error.service'
+import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 
@@ -20,24 +20,25 @@ export class CycleService {
   cycles$ = this._cycles.asObservable()
 
   get(): void {
-    // fetch current organization
-    this._organizationService.currentOrganization$.subscribe(({ org_id }) => {
-      this.orgId = org_id
-      const url = `/api/v3/cycles/?organization_id=${org_id}`
-      // fetch cycles
-      this._httpClient
-        .get<CyclesResponse>(url)
-        .pipe(
-          map((response) => response.cycles),
-          tap((cycles) => {
-            this._cycles.next(cycles)
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return this._errorService.handleError(error, 'Error fetching cycles')
-          }),
-        )
-        .subscribe()
-    })
+    this._organizationService.currentOrganization$
+      .pipe(
+        tap(({ org_id }) => { this.orgId = org_id }),
+        switchMap(({ org_id }) => {
+          const url = `/api/v3/cycles/?organization_id=${org_id}`
+          // fetch cycles
+          return this._httpClient
+            .get<CyclesResponse>(url)
+            .pipe(
+              map((response) => response.cycles),
+              tap((cycles) => {
+                this._cycles.next(cycles)
+              }),
+              catchError((error: HttpErrorResponse) => {
+                return this._errorService.handleError(error, 'Error fetching cycles')
+              }),
+            )
+        }),
+      ).subscribe()
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {

@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -8,6 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { SEEDValidators } from '@seed/validators'
@@ -41,10 +42,11 @@ export const MY_DATE_FORMATS = {
     MatNativeDateModule,
   ],
 })
-export class FormModalComponent implements OnInit {
+export class FormModalComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)
   private _datePipe = inject(DatePipe)
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
   create = true
   data = inject(MAT_DIALOG_DATA) as { cycle: Cycle | null; orgId: number; existingNames: string[] }
@@ -62,9 +64,11 @@ export class FormModalComponent implements OnInit {
       this.create = false
       this.form.patchValue(this.data.cycle)
     }
-    this.form.get('start')?.valueChanges.subscribe(() => {
-      this.form.get('end')?.updateValueAndValidity()
-    })
+    this.form.get('start')?.valueChanges
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.form.get('end')?.updateValueAndValidity() }),
+      ).subscribe()
   }
 
   onSubmit() {
@@ -84,6 +88,11 @@ export class FormModalComponent implements OnInit {
 
   dismiss() {
     this._dialogRef.close()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 
   private _formatDates() {
