@@ -87,7 +87,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
-this.auditTemplateForm.patchValue(this.organization)
+      this.auditTemplateForm.patchValue(this.organization)
       for (const field of this.status_fields) {
         this.auditTemplateForm.get(field.field).setValue(this.organization.audit_template_status_types.includes(field.key))
       }
@@ -142,7 +142,7 @@ this.auditTemplateForm.patchValue(this.organization)
 
   submit(): void {
     if (this.auditTemplateForm.valid) {
-this.organization = { ...this.organization, ...this.auditTemplateForm.value }
+      this.organization = { ...this.organization, ...this.auditTemplateForm.value }
 
       this.organization.audit_template_status_types = this.status_fields
         .filter((f) => this.auditTemplateForm.get(f.field).value === true)
