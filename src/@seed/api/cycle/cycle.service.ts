@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, switchMap, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -19,25 +19,21 @@ export class CycleService {
 
   cycles$ = this._cycles.asObservable()
 
-  get(): void {
-    // fetch current organization
-    this._organizationService.currentOrganization$.subscribe(({ org_id }) => {
-      this.orgId = org_id
-      const url = `/api/v3/cycles/?organization_id=${org_id}`
-      // fetch cycles
-      this._httpClient
-        .get<CyclesResponse>(url)
-        .pipe(
-          map((response) => response.cycles),
-          tap((cycles) => {
-            this._cycles.next(cycles)
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return this._errorService.handleError(error, 'Error fetching cycles')
-          }),
-        )
-        .subscribe()
-    })
+  get(): Observable<Cycle[]> {
+    return this._organizationService.currentOrganization$
+      .pipe(
+        switchMap(({ org_id }) => {
+          const url = `/api/v3/cycles/?organization_id=${org_id}`
+          return this._httpClient.get<CyclesResponse>(url)
+            .pipe(
+              map(({ cycles }) => cycles),
+              tap((cycles) => { this._cycles.next(cycles) }),
+              catchError((error: HttpErrorResponse) => {
+                return this._errorService.handleError(error, 'Error fetching cycles')
+              }),
+            )
+        }),
+      )
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {

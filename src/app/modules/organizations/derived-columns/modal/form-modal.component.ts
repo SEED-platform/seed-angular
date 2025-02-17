@@ -64,22 +64,22 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   onSubmit(): void {
-    const fn = this.create 
-    // needs to be parameters?
-    // RP HERE
-      ? this._derivedColumnService.post(this.form.value, this.data.orgId)
-      : this._derivedColumnService.put(this.form.value, this.data.orgId)
-    const { derivedColumn, orgId } = this.data
-    // const { name, type, paramA, sourceColumn, expression } = this.form.value
+    // const fn = this.create
+    // // needs to be parameters?
+    // // RP HERE
+    //   ? this._derivedColumnService.post(this.form.value, this.data.orgId)
+    //   : this._derivedColumnService.put(this.form.value, this.data.orgId)
+    // const { derivedColumn, orgId } = this.data
+    // // const { name, type, paramA, sourceColumn, expression } = this.form.value
 
-    this._derivedColumnService.post(derivedColumn, orgId)
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
+    // this._derivedColumnService.post(derivedColumn, orgId)
+    //   .pipe(
+    //     takeUntil(this._unsubscribeAll$),
+    //     tap(() => {
 
-        })
-      )
-      .subscribe()
+    //     })
+    //   )
+    //   .subscribe()
 
     // // update role
     // if (member.role !== role) {

@@ -44,10 +44,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   getDerivedColumns() {
-    // console.log('get derived columns')
     this._derivedColumnService.get(this.type)
-
-    this._derivedColumnService.derivedColumns$
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((derivedColumns) => {
@@ -64,6 +61,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
       const newRoute = `/organizations/derived-columns/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
       this.type = type
+      this.getDerivedColumns()
     }
   }
 
