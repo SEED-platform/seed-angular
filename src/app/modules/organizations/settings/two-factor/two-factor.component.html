@@ -1,10 +1,24 @@
-<h3 class="text-2xl font-bold">Require Two-Factor Authentication</h3>
-<div class="prose">
-  Checking this box requires all organization users to use Two-Factor Authentication (2FA). If a user does not already have a 2FA method
-  configured, an email-based authentication method will be set as the default.
-</div>
-<div class="prose">
-  @if (organization$ | async; as o) {
-    Organization API Key: {{ o.name }}
+<seed-page [config]="{ title: 'Organization Settings: Require Two-Factor Authentication' }">
+  @if (organization) {
+    <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+      <div class="max-w-2xl">
+        <div class="prose">
+          Checking this box requires all organization users to use Two-Factor Authentication (2FA). If a user does not already have a 2FA
+          method configured, an email-based authentication method will be set as the default.
+        </div>
+        <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow" [formGroup]="twoFactorForm" (ngSubmit)="submit()">
+          <div class="my-6 flex flex-col">
+            <mat-slide-toggle formControlName="require_2fa"
+              ><mat-label>{{ t('Require Two Factor Authentication') }}</mat-label></mat-slide-toggle
+            >
+          </div>
+          <div>
+            <button mat-flat-button [disabled]="twoFactorForm.invalid || twoFactorForm.pending" color="primary">
+              <span class="">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   }
-</div>
+</seed-page>

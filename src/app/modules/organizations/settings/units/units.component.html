@@ -1,7 +1,99 @@
-<h3 class="text-2xl font-bold">Display Units</h3>
-<div class="prose">These settings govern what units will be used for fields within the application</div>
-<div class="prose">
-  @if (organization$ | async; as o) {
-    Organization API Key: {{ o.name }}
+<seed-page [config]="{ title: 'Organization Settings: Display Units' }">
+  @if (organization) {
+    <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+      <div class="max-w-2xl">
+        <div class="prose">These settings govern what units will be used for fields within the application</div>
+        <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow" [formGroup]="unitsForm" (ngSubmit)="submit()">
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for energy use intensities (EUI)</mat-label>
+              <mat-select formControlName="display_units_eui">
+                @for (type of options.eui; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for Green House Gas Emissions (GHG)</mat-label>
+              <mat-select formControlName="display_units_ghg">
+                @for (type of options.ghg; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for Green House Gas Emission Intensity (GHGI)</mat-label>
+              <mat-select formControlName="display_units_ghg_intensity">
+                @for (type of options.ghg_intensity; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for Water Use</mat-label>
+              <mat-select formControlName="display_units_water_use">
+                @for (type of options.water_use; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for Water Use Intensity (WUI)</mat-label>
+              <mat-select formControlName="display_units_wui">
+                @for (type of options.wui; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Measurement Unit Display for Areas</mat-label>
+              <mat-select formControlName="display_units_area">
+                @for (type of options.area; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Number of Decimal Places to Display</mat-label>
+              <mat-select formControlName="display_decimal_places">
+                @for (type of options.decimal; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label class="w-full">Thermal Conversion Assumption</mat-label>
+              <mat-select formControlName="thermal_conversion_assumption">
+                @for (type of options.thermal_conversion; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+
+          <div>
+            <button mat-flat-button [disabled]="unitsForm.invalid || unitsForm.pending" color="primary">
+              <span class="">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   }
-</div>
+</seed-page>
