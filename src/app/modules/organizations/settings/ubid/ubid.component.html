@@ -10,7 +10,7 @@
           <div class="my-6 flex flex-col">
             <mat-form-field appearance="outline">
               <mat-label>UBID Threshold</mat-label>
-              <input matInput formControlName="ubid_threshold" type="number" max="1" min="0" step="0.0001" />
+              <input matInput formControlName="ubid_threshold" type="number" max="1" min="0" step="0.001" />
               @if (ubidForm.controls.ubid_threshold.touched && !ubidForm.controls.ubid_threshold.valid) {
                 <mat-error>UBID Threshold must be a number between 0 and 1</mat-error>
               }
