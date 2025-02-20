@@ -1,8 +1,5 @@
 export type SalesforceConfig = {
-<<<<<<< HEAD
   id: number;
-=======
->>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
   indication_label: number;
   violation_label: number;
   compliance_label: number;
@@ -10,11 +7,7 @@ export type SalesforceConfig = {
   contact_rec_type: string;
   last_update_date: string;
   unique_benchmark_id_fieldname: string;
-<<<<<<< HEAD
   seed_benchmark_id_column: string;
-=======
-  seed_benchmark_id_fieldname: string;
->>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
   url: string;
   username: string;
   password: string;
@@ -36,15 +29,12 @@ export type SalesforceConfig = {
   data_admin_contact_fieldname: number;
   update_at_hour: number;
   update_at_minute: number;
-<<<<<<< HEAD
   delete_label_after_sync: boolean;
 }
 
 export type SalesforceConfigResponse = {
   status: string;
   salesforce_config: SalesforceConfig;
-=======
->>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
 }
 
 export type SalesforceConfigsResponse = {
@@ -59,7 +49,6 @@ export type SalesforceMapping = {
   salesforce_fieldname: string;
 }
 
-<<<<<<< HEAD
 export type SalesforceMappingDeleteResponse = {
   status: string;
   message: string;
@@ -70,17 +59,12 @@ export type SalesforceMappingResponse = {
   salesforce_mapping: SalesforceMapping;
 }
 
-=======
->>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
 export type SalesforceMappingsResponse = {
   status: string;
   salesforce_mappings: SalesforceMapping[];
 }
-<<<<<<< HEAD
 
 export type SalesforceConnectionTestResponse = {
   status: string;
   message?: string;
 }
-=======
->>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
