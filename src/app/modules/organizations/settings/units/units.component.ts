@@ -21,7 +21,7 @@ import * as UnitOptions from './units.types'
 })
 export class UnitsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
-  private _m
+  private _meterTypesService = inject(MeterTypesService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   betterVerifiedIcon = ''
   betterVerifiedIconColor = 'primary'
