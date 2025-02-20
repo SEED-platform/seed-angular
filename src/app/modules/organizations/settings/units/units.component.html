@@ -105,7 +105,7 @@
             <form
               class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow"
               [formGroup]="energyMeterForm"
-              (ngSubmit)="submitEnergyMeters()"
+              (ngSubmit)="submit()"
             >
               <div class="flex flex-col">
                 @for (field of energyMeterFields(); track field) {
@@ -118,9 +118,11 @@
                     </mat-select>
                   </mat-form-field>
                 }
-                <button mat-flat-button [disabled]="energyMeterForm.invalid || energyMeterForm.pending" color="primary">
-                  <span class="">{{ t('Save Energy Meter Changes') }}</span>
-                </button>
+                <div>
+                  <button on mat-flat-button [disabled]="energyMeterForm.invalid || energyMeterForm.pending" color="primary">
+                    <span class="">{{ t('Save Changes') }}</span>
+                  </button>
+                </div>
               </div>
             </form>
           </mat-tab>
@@ -129,7 +131,7 @@
             <form
               class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow"
               [formGroup]="waterMeterForm"
-              (ngSubmit)="submitWaterMeters()"
+              (ngSubmit)="submit()"
             >
               <div class="flex flex-col">
                 @for (field of waterMeterFields(); track field) {
@@ -142,9 +144,11 @@
                     </mat-select>
                   </mat-form-field>
                 }
-                <button mat-flat-button [disabled]="waterMeterForm.invalid || waterMeterForm.pending" color="primary">
-                  <span class="">{{ t('Save Energy Meter Changes') }}</span>
-                </button>
+                <div>
+                  <button mat-flat-button [disabled]="waterMeterForm.invalid || waterMeterForm.pending" color="primary">
+                    <span class="">{{ t('Save Changes') }}</span>
+                  </button>
+              </div>
               </div>
             </form>
           </mat-tab>

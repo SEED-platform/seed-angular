@@ -112,6 +112,8 @@ export class UnitsComponent implements OnDestroy, OnInit {
       this.organization.display_units_area = this.unitsForm.get('display_units_area').value
       this.organization.display_decimal_places = this.unitsForm.get('display_decimal_places').value
       this.organization.thermal_conversion_assumption = this.unitsForm.get('thermal_conversion_assumption').value
+      this.submitEnergyMeters()
+      this.submitWaterMeters()
       this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
@@ -122,7 +124,6 @@ export class UnitsComponent implements OnDestroy, OnInit {
         const control = this.energyMeterForm.controls[field] as FormControl
         this.organization.display_meter_units[field] = control.value as string
       }
-      this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
 
@@ -132,7 +133,6 @@ export class UnitsComponent implements OnDestroy, OnInit {
         const control = this.waterMeterForm.controls[field] as FormControl
         this.organization.display_meter_water_units[field] = control.value as string
       }
-      this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
 }
