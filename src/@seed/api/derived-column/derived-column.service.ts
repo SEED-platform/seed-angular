@@ -19,7 +19,6 @@ export class DerivedColumnService {
   derivedColumns$ = this._derivedColumns.asObservable()
 
   get(): Observable<DerivedColumn[]> {
-  // get(inventoryType: string): Observable<DerivedColumn[]> {
     return this._organizationService.currentOrganization$
       .pipe(
         switchMap(({ org_id }) => {

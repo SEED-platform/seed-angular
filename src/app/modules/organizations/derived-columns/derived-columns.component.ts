@@ -36,8 +36,8 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
-  inventoryType = this._route.snapshot.paramMap.get('type') as InventoryType
-  inventoryLabel: 'Property' | 'Tax Lot'
+  inventoryTypeParam = this._route.snapshot.paramMap.get('type') as InventoryType
+  inventoryType: 'Property' | 'Tax Lot'
   derivedColumnDataSource = new MatTableDataSource<DerivedColumn>([])
   derivedColumns: DerivedColumn[]
   derivedColumnColumns = ['name', 'expression', 'actions']
@@ -52,8 +52,8 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
         takeUntil(this._unsubscribeAll$),
         map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
         tap((derivedColumns) => {
-          this.inventoryLabel = this.inventoryType === 'taxlots' ? 'Tax Lot' : 'Property'
-          this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryLabel)
+          this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
+          this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
           this.derivedColumnDataSource.data = this.derivedColumns
           this._orgId = derivedColumns[0]?.organization
         }),
@@ -62,10 +62,10 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   async toggleInventoryType(type: InventoryType) {
-    if (type !== this.inventoryType) {
+    if (type !== this.inventoryTypeParam) {
       const newRoute = `/organizations/derived-columns/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })
-      this.inventoryType = type
+      this.inventoryTypeParam = type
       this.getDerivedColumns()
     }
   }
@@ -77,7 +77,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
       data: {
         derivedColumn: null,
         orgId: this._orgId,
-        inventoryType: this.inventoryLabel,
+        inventoryType: this.inventoryType,
         existingNames: this.derivedColumns.map((dc) => dc.name),
       },
     })
@@ -94,7 +94,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
       data: {
         derivedColumn,
         orgId: this._orgId,
-        inventoryType: this.inventoryLabel,
+        inventoryType: this.inventoryType,
         existingNames: this.derivedColumns.map((dc) => dc.name),
       },
     })
