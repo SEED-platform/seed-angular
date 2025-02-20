@@ -6,6 +6,7 @@ import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
+<<<<<<< HEAD
 import {
   type SalesforceConfig,
   type SalesforceConfigResponse,
@@ -15,6 +16,13 @@ import {
   type SalesforceMappingDeleteResponse,
   type SalesforceMappingResponse,
   type SalesforceMappingsResponse,
+=======
+import type {
+  SalesforceConfig,
+  SalesforceConfigsResponse,
+  SalesforceMapping,
+  SalesforceMappingsResponse,
+>>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
 } from './salesforce.types'
 
 @Injectable({ providedIn: 'root' })
@@ -34,7 +42,10 @@ export class SalesforceService {
     // Fetch current org data whenever user org id changes
     this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
       this.getConfig(organizationId).subscribe()
+<<<<<<< HEAD
       this.getMappings(organizationId).subscribe()
+=======
+>>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
     })
   }
 
@@ -69,6 +80,7 @@ export class SalesforceService {
       }),
     )
   }
+<<<<<<< HEAD
 
   create(org_id: number, config: SalesforceConfig): Observable<SalesforceConfig> {
     console.log('Creating: ', config)
@@ -148,4 +160,6 @@ export class SalesforceService {
       }),
     )
   }
+=======
+>>>>>>> 93ebf8f (salesforce service for fetching configs and mappings)
 }
