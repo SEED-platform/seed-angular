@@ -4,7 +4,7 @@ import { catchError, map, type Observable, Subject, switchMap, tap } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { OrganizationService } from '../organization'
-import type { DerivedColumn, DerivedColumnResponse } from './derived-column.types'
+import type { DerivedColumn, DerivedColumnResponse, DerivedColumnsResponse } from './derived-column.types'
 
 @Injectable({ providedIn: 'root' })
 export class DerivedColumnService {
@@ -26,7 +26,7 @@ export class DerivedColumnService {
           // exclude param inventory_type to return a mixed array of property and taxlot derived columns
           // and let component filter as inventory type can get lost
           const url = `/api/v3/derived_columns/?organization_id=${org_id}`
-          return this._httpClient.get<DerivedColumnResponse>(url)
+          return this._httpClient.get<DerivedColumnsResponse>(url)
             .pipe(
               map(({ derived_columns }) => derived_columns),
               tap((derived_columns) => { this._derivedColumns.next(derived_columns) }),
@@ -38,30 +38,29 @@ export class DerivedColumnService {
       )
   }
 
-  post(derivedColumn: DerivedColumn, orgId: number) {
+  post({ orgId, data }) {
     const url = `/api/v3/derived_columns/?organization_id=${orgId}`
-    return this._httpClient.post<DerivedColumn>(url, derivedColumn)
+    return this._httpClient.post<DerivedColumnResponse>(url, data)
       .pipe(
-        tap(() => { this._snackBar.success('Derived column created') }),
+        tap(({ derived_column }) => { this._snackBar.success(`Derived column ${derived_column.name} created`) }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error creating derived column')
         }),
       )
   }
 
-  // rp this is copied from post
-  put(derivedColumn: DerivedColumn, orgId: number) {
-    const url = `/api/v3/derived_columns/?organization_id=${orgId}`
-    return this._httpClient.post<DerivedColumn>(url, derivedColumn)
+  put({ orgId, id, data }) {
+    const url = `/api/v3/derived_columns/${id}/?organization_id=${orgId}`
+    return this._httpClient.put<DerivedColumnResponse>(url, data)
       .pipe(
-        tap(() => { this._snackBar.success('Derived column created') }),
+        tap(({ derived_column }) => { this._snackBar.success(`Derived column ${derived_column.name} updated`) }),
         catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error creating derived column')
+          return this._errorService.handleError(error, 'Error updating derived column')
         }),
       )
   }
 
-  delete(id: number, orgId: number) {
+  delete({ orgId, id }) {
     const url = `/api/v3/derived_columns/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url)
       .pipe(

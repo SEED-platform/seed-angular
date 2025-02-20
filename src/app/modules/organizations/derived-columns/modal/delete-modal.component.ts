@@ -8,7 +8,6 @@ import { Subject, takeUntil, tap } from 'rxjs'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
 import { AlertComponent } from '@seed/components'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 
 @Component({
   selector: 'seed-derived-column-delete-modal',
@@ -24,7 +23,6 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class DeleteModalComponent implements OnDestroy {
   private _derivedColumnService = inject(DerivedColumnService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
-  private _snackBar = inject(SnackbarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   errorMessage: string
@@ -32,7 +30,7 @@ export class DeleteModalComponent implements OnDestroy {
   data = inject(MAT_DIALOG_DATA) as { derivedColumn: DerivedColumn; orgId: number }
 
   onSubmit() {
-    this._derivedColumnService.delete(this.data.derivedColumn.id, this.data.orgId)
+    this._derivedColumnService.delete({ orgId: this.data.orgId, id: this.data.derivedColumn.id })
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap(() => { this._dialogRef.close() }),

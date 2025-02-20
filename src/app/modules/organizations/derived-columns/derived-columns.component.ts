@@ -71,7 +71,13 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   createDerivedColumn = () => {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
-      data: { derivedColumn: null, orgId: this._orgId, inventoryType: { id: this.inventoryType, label: this.inventoryLabel } },
+      maxHeight: '50rem',
+      data: {
+        derivedColumn: null,
+        orgId: this._orgId,
+        inventoryType: this.inventoryLabel,
+        existingNames: this.derivedColumns.map((dc) => dc.name),
+      },
     })
 
     dialogRef.afterClosed().subscribe(() => {
@@ -79,8 +85,21 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
     })
   }
 
-  editDerivedColumn(dc: DerivedColumn) {
-    console.log('edit derived column', dc)
+  editDerivedColumn(derivedColumn: DerivedColumn) {
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      maxHeight: '50rem',
+      data: {
+        derivedColumn,
+        orgId: this._orgId,
+        inventoryType: this.inventoryLabel,
+        existingNames: this.derivedColumns.map((dc) => dc.name),
+      },
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.getDerivedColumns()
+    })
   }
 
   deleteDerivedColumn(derivedColumn: DerivedColumn) {

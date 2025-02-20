@@ -8,13 +8,18 @@ export type DerivedColumn = {
 }
 
 export type Parameter = {
-  derived_column: number;
-  id: number;
+  derived_column?: number;
+  id?: number;
   parameter_name: string;
   source_column: number;
 }
 
-export type DerivedColumnResponse = {
+export type DerivedColumnsResponse = {
   status: string;
   derived_columns: DerivedColumn[];
+}
+
+export type DerivedColumnResponse = {
+  status: string;
+  derived_column: DerivedColumn;
 }
