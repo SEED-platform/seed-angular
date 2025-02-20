@@ -109,7 +109,7 @@
             >
               <div class="flex flex-col">
                 @for (field of energyMeterFields(); track field) {
-                  <mat-form-field class="mb-6">
+                  <mat-form-field>
                     <mat-label class="w-full">{{ field }}</mat-label>
                     <mat-select [formControlName]="field">
                       @for (unit of energyUnitsFor(field); track unit) {
@@ -133,7 +133,7 @@
             >
               <div class="flex flex-col">
                 @for (field of waterMeterFields(); track field) {
-                  <mat-form-field class="mb-6">
+                  <mat-form-field>
                     <mat-label class="w-full">{{ field }}</mat-label>
                     <mat-select [formControlName]="field">
                       @for (unit of waterUnitsFor(field); track unit) {
