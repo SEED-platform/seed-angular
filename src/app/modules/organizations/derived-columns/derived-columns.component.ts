@@ -5,10 +5,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { map, Subject, takeUntil, tap } from 'rxjs'
 import { type DerivedColumn, DerivedColumnService } from '@seed/api/derived-column'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { naturalSort } from '@seed/utils'
 import type { InventoryType } from '../../inventory/inventory.types'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -49,6 +50,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
     this._derivedColumnService.get()
       .pipe(
         takeUntil(this._unsubscribeAll$),
+        map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
         tap((derivedColumns) => {
           this.inventoryLabel = this.inventoryType === 'taxlots' ? 'Tax Lot' : 'Property'
           this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryLabel)
