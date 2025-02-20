@@ -1,4 +1,5 @@
 export type SalesforceConfig = {
+  id: number;
   indication_label: number;
   violation_label: number;
   compliance_label: number;
