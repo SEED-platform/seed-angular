@@ -1,2 +1,2 @@
-export * from './salesforce-service'
-export * from './salesforce-types'
+export * from './salesforce.service'
+export * from './salesforce.types'

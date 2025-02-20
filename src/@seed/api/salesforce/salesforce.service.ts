@@ -30,6 +30,7 @@ export class SalesforceService {
     // Fetch current org data whenever user org id changes
     this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
       this.getConfig(organizationId).subscribe()
+      this.getMappings(organizationId).subscribe()
     })
   }
 

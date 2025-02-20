@@ -1,7 +1,38 @@
-<h3 class="text-2xl font-bold">Salesforce Integration</h3>
-<div class="prose">Check this checkbox if you would like to sync data between SEED and a Salesforce instance</div>
-<div class="prose">
-  @if (organization$ | async; as o) {
-    Organization API Key: {{ o.name }}
+<seed-page [config]="{ title: 'Organization Settings: Salesforce Integration' }">
+  @if (organization) {
+    <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+      <div class="max-w-2xl">
+        <div class="prose">
+          Enable this if you would like to sync data between SEED and a Salesforce instance
+        </div>
+        <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow" [formGroup]="salesforceForm" (ngSubmit)="submit()">
+          <div class="flex mb-6">
+            <mat-slide-toggle formControlName="salesforce_enabled">{{ t('Enable Salesforce Integration') }}</mat-slide-toggle>
+
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label>{{ t('Salesforce Account Object Record Type') }}</mat-label>
+              <input type="text" matInput formControlName="account_rec_type" placeholder="" />
+
+            </mat-form-field>
+          </div>
+          <div class="flex flex-col">
+            <mat-form-field class="mb-6">
+              <mat-label>{{ t('Salesforce Contact Object Record Type') }}</mat-label>
+              <input type="text" matInput formControlName="contact_rec_type" placeholder="" />
+
+            </mat-form-field>
+          </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+
+          <div>
+            <button mat-flat-button [disabled]="salesforceForm.invalid || salesforceForm.pending" color="primary">
+              <span class="">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   }
-</div>
+</seed-page>

@@ -6,7 +6,7 @@ export type SalesforceConfig = {
   contact_rec_type: string;
   last_update_date: string;
   unique_benchmark_id_fieldname: string;
-  seed_benchmark_id_fieldname: string;
+  seed_benchmark_id_column: string;
   url: string;
   username: string;
   password: string;
@@ -28,6 +28,7 @@ export type SalesforceConfig = {
   data_admin_contact_fieldname: number;
   update_at_hour: number;
   update_at_minute: number;
+  delete_label_after_sync: boolean;
 }
 
 export type SalesforceConfigsResponse = {
