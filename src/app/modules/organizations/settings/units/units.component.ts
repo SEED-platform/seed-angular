@@ -55,10 +55,10 @@ export class UnitsComponent implements OnDestroy, OnInit {
         this.waterMeterForm.addControl(wmu, new FormControl(this.organization.display_meter_water_units[wmu], [Validators.required]))
       }
     })
-    this._meterTypesService.energyMeters$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((energyMeters) => { 
+    this._meterTypesService.energyMeters$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((energyMeters) => {
       this.energyMeters = energyMeters
     })
-    this._meterTypesService.waterMeters$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((waterMeters) => { 
+    this._meterTypesService.waterMeters$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((waterMeters) => {
       this.waterMeters = waterMeters
     })
   }
