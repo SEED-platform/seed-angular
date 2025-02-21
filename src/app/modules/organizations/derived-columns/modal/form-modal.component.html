@@ -1,0 +1,70 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  {{ update ? 'Edit' : 'Create' }} Derived Column
+</h2>
+
+<form [formGroup]="form" class="flex flex-col gap-4">
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="name" placeholder="Derived Column Name" />
+    @if (form.controls.name?.hasError('valueExists')) {
+      <mat-error>This name already exists.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Type</mat-label>
+    <mat-select formControlName="inventory_type">
+      @for (type of inventoryTypes; track type) {
+        <mat-option [value]="type">{{ type }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @for (param of parameters.controls; track $index) {
+    <div class="flex gap-4" [formGroup]="getParameter($index)">
+      <mat-form-field class="w-1/3">
+        <mat-label>Parameter Name</mat-label>
+        <input matInput formControlName="parameter_name" />
+        @if (getParameter($index).get('parameter_name')?.hasError('missing')) {
+          <mat-error>${{ getParameter($index).value.parameter_name }} is not used in expression.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="w-2/3">
+        <mat-label>Source Column</mat-label>
+        <mat-select formControlName="source_column">
+          @for (column of sourceColumns; track column) {
+            <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (parameters.controls.length > 1) {
+        <a mat-stroked-button class="mt-7" color="warn" (click)="deleteParameter($index)">
+          <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+        </a>
+      }
+    </div>
+  }
+
+  @if (parameters.hasError('duplicates')) {
+    <mat-error>Parameter names must be unique.</mat-error>
+  }
+
+  <a mat-flat-button color="primary" (click)="addParameter()">
+    <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+    <span class="ml-2">Add Parameter</span>
+  </a>
+
+  <mat-form-field>
+    <mat-label>Expression</mat-label>
+    <input matInput formControlName="expression" value="$param_a / 100" />
+  </mat-form-field>
+</form>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+  </mat-dialog-actions>
+</div>

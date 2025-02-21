@@ -19,26 +19,21 @@ export class CycleService {
 
   cycles$ = this._cycles.asObservable()
 
-  get(): void {
-    this._organizationService.currentOrganization$
+  get(): Observable<Cycle[]> {
+    return this._organizationService.currentOrganization$
       .pipe(
-        tap(({ org_id }) => { this.orgId = org_id }),
         switchMap(({ org_id }) => {
           const url = `/api/v3/cycles/?organization_id=${org_id}`
-          // fetch cycles
-          return this._httpClient
-            .get<CyclesResponse>(url)
+          return this._httpClient.get<CyclesResponse>(url)
             .pipe(
-              map((response) => response.cycles),
-              tap((cycles) => {
-                this._cycles.next(cycles)
-              }),
+              map(({ cycles }) => cycles),
+              tap((cycles) => { this._cycles.next(cycles) }),
               catchError((error: HttpErrorResponse) => {
                 return this._errorService.handleError(error, 'Error fetching cycles')
               }),
             )
         }),
-      ).subscribe()
+      )
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {

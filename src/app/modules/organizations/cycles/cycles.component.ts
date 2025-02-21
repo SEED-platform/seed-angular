@@ -43,8 +43,6 @@ export class CyclesComponent implements OnDestroy, OnInit {
 
   refreshCycles(): void {
     this._cycleService.get()
-
-    this._cycleService.cycles$
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((cycles) => {
@@ -52,7 +50,8 @@ export class CyclesComponent implements OnDestroy, OnInit {
           this._orgId = cycles[0]?.organization
           this._existingNames = cycles.map((cycle) => cycle.name)
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   createCycle = () => {
