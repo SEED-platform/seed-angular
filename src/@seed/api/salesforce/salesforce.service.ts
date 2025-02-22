@@ -6,11 +6,12 @@ import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
-import type {
-  SalesforceConfig,
-  SalesforceConfigsResponse,
-  SalesforceMapping,
-  SalesforceMappingsResponse,
+import {
+  type SalesforceConfig,
+  type SalesforceConfigResponse,
+  type SalesforceConfigsResponse,
+  type SalesforceMapping,
+  type SalesforceMappingsResponse,
 } from './salesforce.types'
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +62,19 @@ export class SalesforceService {
       }),
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
+        return this._errorService.handleError(error, 'Error fetching organization')
+      }),
+    )
+  }
+
+  update(org_id: number, config: SalesforceConfig): Observable<SalesforceConfig> {
+    const url = `/api/v3/salesforce_configs/${config.id}/?organization_id=${org_id}`
+    return this._httpClient.put<SalesforceConfigResponse>(url, { ...config }).pipe(
+      map((response) => {
+        this._config.next(response.salesforce_config)
+        return response.salesforce_config
+      }),
+      catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching organization')
       }),
     )

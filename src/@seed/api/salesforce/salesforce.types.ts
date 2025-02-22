@@ -32,6 +32,11 @@ export type SalesforceConfig = {
   delete_label_after_sync: boolean;
 }
 
+export type SalesforceConfigResponse = {
+  status: string;
+  salesforce_config: SalesforceConfig;
+}
+
 export type SalesforceConfigsResponse = {
   status: string;
   salesforce_configs: SalesforceConfig[];
