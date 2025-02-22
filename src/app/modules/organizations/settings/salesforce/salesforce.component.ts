@@ -39,16 +39,16 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   salesforceForm = new FormGroup({
     salesforce_enabled: new FormControl(false),
     salesforceConfig: new FormGroup({
-      id: new FormControl(0),
-      organization_id: new FormControl(0),
-      indication_label: new FormControl(0),
-      violation_label: new FormControl(0),
-      compliance_label: new FormControl(0),
+      delete_label_after_sync: new FormControl(false),
+      id: new FormControl(null),
+      organization_id: new FormControl(null),
+      indication_label: new FormControl(null),
+      violation_label: new FormControl(null),
+      compliance_label: new FormControl(null),
       account_rec_type: new FormControl(''),
       contact_rec_type: new FormControl(''),
-      last_update_date: new FormControl(''),
       unique_benchmark_id_fieldname: new FormControl(''),
-      seed_benchmark_id_column: new FormControl(''),
+      seed_benchmark_id_column: new FormControl(null),
       url: new FormControl(''),
       username: new FormControl(''),
       password: new FormControl(''),
@@ -57,20 +57,19 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       cycle_fieldname: new FormControl(''),
       status_fieldname: new FormControl(''),
       labels_fieldname: new FormControl(''),
-      contact_email_column: new FormControl(0),
-      contact_name_column: new FormControl(0),
-      account_name_column: new FormControl(0),
+      contact_email_column: new FormControl(null),
+      contact_name_column: new FormControl(null),
+      account_name_column: new FormControl(null),
       default_contact_account_name: new FormControl(''),
       logging_email: new FormControl('', [Validators.email]),
       benchmark_contact_fieldname: new FormControl(''),
-      data_admin_email_column: new FormControl(0),
-      data_admin_name_column: new FormControl(0),
-      data_admin_account_name_column: new FormControl(0),
+      data_admin_email_column: new FormControl(null),
+      data_admin_name_column: new FormControl(null),
+      data_admin_account_name_column: new FormControl(null),
       default_data_admin_account_name: new FormControl(''),
-      data_admin_contact_fieldname: new FormControl(0),
+      data_admin_contact_fieldname: new FormControl(null),
       update_at_hour: new FormControl(0, [Validators.min(0), Validators.max(23)]),
       update_at_minute: new FormControl(0, [Validators.min(0), Validators.max(59)]),
-      delete_label_after_sync: new FormControl(false),
     }),
   })
 
@@ -131,13 +130,19 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   submit(): void {
     if (this.salesforceForm.valid) {
       this.organization.salesforce_enabled = this.salesforceForm.get('salesforce_enabled').value
-      for (const field of Object.keys(this.salesforceConfig)) {
+      for (const field of Object.keys(this.salesforceForm.controls.salesforceConfig.controls)) {
         this.salesforceConfig[field] = this.salesforceForm.get(`salesforceConfig.${field}`).value
       }
       this._organizationService.updateSettings(this.organization).subscribe()
-      this._salesforceService.update(this.organization.id, this.salesforceConfig).subscribe((config) => {
-        this.salesforceConfig = config
-      })
+      if (this.salesforceConfig.id) {
+        this._salesforceService.update(this.organization.id, this.salesforceConfig).subscribe((config) => {
+          this.salesforceConfig = config
+        })
+      } else {
+        this._salesforceService.create(this.organization.id, this.salesforceConfig).subscribe((config) => {
+          this.salesforceConfig = config
+        })
+      }
     }
   }
 }
