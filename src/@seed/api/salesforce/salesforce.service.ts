@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, of, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
@@ -10,6 +10,7 @@ import {
   type SalesforceConfig,
   type SalesforceConfigResponse,
   type SalesforceConfigsResponse,
+  type SalesforceConnectionTestResponse,
   type SalesforceMapping,
   type SalesforceMappingsResponse,
 } from './salesforce.types'
@@ -90,6 +91,19 @@ export class SalesforceService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching organization')
+      }),
+    )
+  }
+
+  test_connection(org_id: number, config: SalesforceConfig): Observable<SalesforceConnectionTestResponse> {
+    const url = `/api/v3/salesforce_configs/salesforce_connection/?organization_id=${org_id}`
+    return this._httpClient.post<SalesforceConnectionTestResponse>(url, { salesforce_config: config }).pipe(
+      map((response) => {
+        this._snackBar.success('Salesforce Connection: Success')
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Salesforce Connection Error: ${error.message}`)
       }),
     )
   }

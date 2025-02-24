@@ -53,3 +53,8 @@ export type SalesforceMappingsResponse = {
   status: string;
   salesforce_mappings: SalesforceMapping[];
 }
+
+export type SalesforceConnectionTestResponse = {
+  status: string;
+  message?: string;
+}

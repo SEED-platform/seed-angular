@@ -69,7 +69,10 @@
                 }}</mat-hint>
               </mat-form-field>
             </div>
-            <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+            <div>
+              <button type="button" mat-raised-button (click)="testConnection()" color="accent">Test Connection</button>
+            </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
 
             <div class="flex items-center space-x-2">
               <mat-icon svgIcon="heroicons-solid:clock" />
@@ -78,15 +81,13 @@
             <div class="prose mb-4">
               {{ t('If you would like to automatically update Salesforce on a daily basis, configure the fields below') }}
             </div>
-            <div class="mb-4 flex flex-col">
-              <mat-form-field>
+            <div class="mb-20 flex flex-row gap-2">
+              <mat-form-field class="flex">
                 <mat-label>{{ t('Hour') }}</mat-label>
                 <input type="number" matInput formControlName="update_at_hour" min="0" max="23" />
                 <mat-hint>Enter the hour when the update should be run daily (0-23) Timezone: America/New_York</mat-hint>
               </mat-form-field>
-            </div>
-            <div class="mb-4 flex flex-col">
-              <mat-form-field>
+              <mat-form-field class="flex">
                 <mat-label>{{ t('Minute') }}</mat-label>
                 <input type="number" matInput formControlName="update_at_minute" min="0" max="59" />
                 <mat-hint>Enter the minute after the hour when the update should be run daily (0-59)</mat-hint>
@@ -130,14 +131,17 @@
                 >
               </mat-form-field>
             </div>
-            <div class="mb-4 flex flex-col">
-              <mat-slidetoggle formControlName="delete_label_after_sync">{{
-                t('Delete Indication Label After Successful Salesforce Update')
-              }}</mat-slidetoggle>
-              <mat-hint
-                >Check this checkbox to automatically remove the Indication Label from properties that were successfully updated in
-                Salesforce in order to prevent future automatic updates.</mat-hint
-              >
+            <div class="mb-12 flex flex-col">
+              <mat-slide-toggle formControlName="delete_label_after_sync">
+                <mat-label>
+                  {{ t('Delete Indication Label After Successful Salesforce Update') }}
+                </mat-label>
+
+              </mat-slide-toggle>
+              <mat-hint class="text-sm" style="color: rgb(148, 163, 184)">
+                Check this checkbox to automatically remove the Indication Label from properties that were successfully updated in
+                Salesforce in order to prevent future automatic updates.
+              </mat-hint>
             </div>
             <div class="mb-4 flex flex-col">
               <mat-form-field>

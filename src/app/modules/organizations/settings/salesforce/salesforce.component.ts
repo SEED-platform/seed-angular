@@ -115,6 +115,13 @@ export class SalesforceComponent implements OnDestroy, OnInit {
     console.log('Need to build this')
   }
 
+  testConnection(): void {
+    for (const field of Object.keys(this.salesforceForm.controls.salesforceConfig.controls)) {
+      this.salesforceConfig[field] = this.salesforceForm.get(`salesforceConfig.${field}`).value
+    }
+    this._salesforceService.test_connection(this.organization.id, this.salesforceConfig).subscribe()
+  }
+
   toggleForm(): void {
     const enabled = this.salesforceForm.get('salesforce_enabled').value
     const fg = this.salesforceForm.get('salesforceConfig') as FormGroup
