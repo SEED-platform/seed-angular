@@ -116,7 +116,7 @@
               <div class="flex flex-row items-center space-x-2">
                 <div class="text-grey-700 text-lg">{{ t('Last Salesforce Update') }}: {{ salesforceConfig.last_update_date || 'N/A' }}</div>
                 @if (salesforceConfig.last_update_date) {
-                  <button type="button" mat-raised-button (click)="resetUpdateDate()" color="secondary">Reset</button>
+                  <button type="button" mat-raised-button (click)="resetUpdateDate()" color="accent">Reset</button>
                 }
 >>>>>>> f58679c (rearrange hour/minute, add test connection button and service endpoint for salesforce connections)
               </div>
