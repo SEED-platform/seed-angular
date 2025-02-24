@@ -1,1 +1,1 @@
-export type InventoryType = 'properties' | 'taxlots' | 'goal'
+export type InventoryType = 'properties' | 'taxlots' | 'goals'
