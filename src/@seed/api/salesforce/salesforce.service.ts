@@ -82,10 +82,11 @@ export class SalesforceService {
     )
   }
 
-  update(org_id: number, config: SalesforceConfig): Observable<SalesforceConfig> {
+  update(org_id: number, config: SalesforceConfig, message?: string): Observable<SalesforceConfig> {
     const url = `/api/v3/salesforce_configs/${config.id}/?organization_id=${org_id}`
     return this._httpClient.put<SalesforceConfigResponse>(url, { ...config }).pipe(
       map((response) => {
+        this._snackBar.success(message || 'Salesforce configuration updated')
         this._config.next(response.salesforce_config)
         return response.salesforce_config
       }),

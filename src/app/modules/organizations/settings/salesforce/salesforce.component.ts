@@ -112,13 +112,14 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   }
 
   resetUpdateDate(): void {
-    console.log('Need to build this')
+    this.salesforceConfig.last_update_date = null
+    this._salesforceService.update(this.organization.id, this.salesforceConfig, 'Reset Successful').subscribe((config) => {
+      this.salesforceConfig = config
+    })
   }
 
   testConnection(): void {
-    for (const field of Object.keys(this.salesforceForm.controls.salesforceConfig.controls)) {
-      this.salesforceConfig[field] = this.salesforceForm.get(`salesforceConfig.${field}`).value
-    }
+    this.updateConfig()
     this._salesforceService.test_connection(this.organization.id, this.salesforceConfig).subscribe()
   }
 
@@ -134,12 +135,16 @@ export class SalesforceComponent implements OnDestroy, OnInit {
     }
   }
 
+  updateConfig(): void {
+    for (const field of Object.keys(this.salesforceForm.controls.salesforceConfig.controls)) {
+      this.salesforceConfig[field] = this.salesforceForm.get(`salesforceConfig.${field}`).value
+    }
+  }
+
   submit(): void {
     if (this.salesforceForm.valid) {
       this.organization.salesforce_enabled = this.salesforceForm.get('salesforce_enabled').value
-      for (const field of Object.keys(this.salesforceForm.controls.salesforceConfig.controls)) {
-        this.salesforceConfig[field] = this.salesforceForm.get(`salesforceConfig.${field}`).value
-      }
+      this.updateConfig()
       this._organizationService.updateSettings(this.organization).subscribe()
       if (this.salesforceConfig.id) {
         this._salesforceService.update(this.organization.id, this.salesforceConfig).subscribe((config) => {
