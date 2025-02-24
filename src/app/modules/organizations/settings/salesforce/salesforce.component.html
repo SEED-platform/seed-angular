@@ -3,6 +3,7 @@
     <div class="flex-auto p-6 sm:p-10" *transloco="let t">
       <div class="max-w-2xl">
         <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow" [formGroup]="salesforceForm" (ngSubmit)="submit()">
+<<<<<<< HEAD
           <mat-tab-group>
             <mat-tab label="Salesforce Configuration">
               <div class="prose">Enable this if you would like to sync data between SEED and a Salesforce instance</div>
@@ -11,8 +12,116 @@
                 <mat-slide-toggle (click)="toggleForm()" formControlName="salesforce_enabled">{{
                   t('Enable Salesforce Integration')
                 }}</mat-slide-toggle>
+=======
+          <div class="mb-6 flex">
+            <mat-slide-toggle (click)="toggleForm()" formControlName="salesforce_enabled">{{
+              t('Enable Salesforce Integration')
+            }}</mat-slide-toggle>
+          </div>
+          <div formGroupName="salesforceConfig">
+            <div class="flex items-center space-x-2">
+              <mat-icon svgIcon="heroicons-solid:signal" />
+              <div class="text-2xl font-bold text-gray-700">{{ t('Salesforce Connection') }}</div>
+            </div>
+            <div class="prose mb-4">{{ t('Enter your Salesforce instance details and ensure your connection is successful') }}</div>
+            <div class="flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Salesforce URL') }}</mat-label>
+                <input type="text" matInput formControlName="url" />
+              </mat-form-field>
+            </div>
+            <div class="flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Username') }}</mat-label>
+                <input type="text" matInput formControlName="username" />
+              </mat-form-field>
+            </div>
+            <div class="flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Password') }}</mat-label>
+                <input [type]="passwordHidden ? 'password' : 'text'" matInput formControlName="password" />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="togglePassword()"
+                  [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="passwordHidden"
+                >
+                  <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Security Token') }}</mat-label>
+                <input [type]="tokenHidden ? 'password' : 'text'" matInput formControlName="security_token" />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="toggleToken()"
+                  [attr.aria-label]="'Hide token'"
+                  [attr.aria-pressed]="tokenHidden"
+                >
+                  <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+                </button>
+                <mat-hint>{{ t('Security token set in Salesforce') }}</mat-hint>
+              </mat-form-field>
+            </div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Domain') }}</mat-label>
+                <input type="text" matInput formControlName="domain" />
+                <mat-hint>{{
+                  t("If your Salesforce instance is a sandbox, set this field to the value 'test'; otherwise leave blank.")
+                }}</mat-hint>
+              </mat-form-field>
+            </div>
+            <div>
+              <button type="button" mat-raised-button (click)="testConnection()" color="accent">Test Connection</button>
+            </div>
+          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+
+            <div class="flex items-center space-x-2">
+              <mat-icon svgIcon="heroicons-solid:clock" />
+              <div class="text-2xl font-bold text-gray-700">{{ t('Scheduled Daily Updates') }}</div>
+            </div>
+            <div class="prose mb-4">
+              {{ t('If you would like to automatically update Salesforce on a daily basis, configure the fields below') }}
+            </div>
+            <div class="mb-20 flex flex-row gap-2">
+              <mat-form-field class="flex">
+                <mat-label>{{ t('Hour') }}</mat-label>
+                <input type="number" matInput formControlName="update_at_hour" min="0" max="23" />
+                <mat-hint>Enter the hour when the update should be run daily (0-23) Timezone: America/New_York</mat-hint>
+              </mat-form-field>
+              <mat-form-field class="flex">
+                <mat-label>{{ t('Minute') }}</mat-label>
+                <input type="number" matInput formControlName="update_at_minute" min="0" max="59" />
+                <mat-hint>Enter the minute after the hour when the update should be run daily (0-59)</mat-hint>
+              </mat-form-field>
+            </div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Logging Email') }}</mat-label>
+                <input type="email" matInput formControlName="logging_email" />
+                <mat-hint>Enter the e-mail address to use when reporting errors during the Salesforce updating process</mat-hint>
+                @if (salesforceForm.get('salesforceConfig.logging_email').hasError('email')) {
+                  <mat-error>Please enter a valid email address</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            @if (salesforceConfig) {
+              <div class="flex flex-row items-center space-x-2">
+                <div class="text-grey-700 text-lg">{{ t('Last Salesforce Update') }}: {{ salesforceConfig.last_update_date || 'N/A' }}</div>
+                @if (salesforceConfig.last_update_date) {
+                  <button type="button" mat-raised-button (click)="resetUpdateDate()" color="secondary">Reset</button>
+                }
+>>>>>>> f58679c (rearrange hour/minute, add test connection button and service endpoint for salesforce connections)
               </div>
 
+<<<<<<< HEAD
               <div formGroupName="salesforceConfig">
                 <div class="flex items-center space-x-2">
                   <mat-icon svgIcon="heroicons-solid:signal" />
@@ -81,6 +190,61 @@
                   class="mat-divider mat-divider-horizontal mb-6 mt-4"
                   aria-orientation="horizontal"
                 ></mat-divider>
+=======
+            <div class="flex items-center space-x-2">
+              <mat-icon svgIcon="heroicons-solid:cog" />
+              <div class="text-2xl font-bold text-gray-700">{{ t('Configuration') }}</div>
+            </div>
+            <div class="prose mb-4">{{ t('Configure a few parameters needed for data transfer to Salesforce') }}</div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Indication Label') }}</mat-label>
+                <mat-select formControlName="indication_label">
+                  @for (l of labels; track l.id) {
+                    <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                  }
+                </mat-select>
+                <mat-hint
+                  >Label used to designate that a SEED property should be updated in Salesforce. Example: 'Add to Salesforce'</mat-hint
+                >
+              </mat-form-field>
+            </div>
+            <div class="mb-12 flex flex-col">
+              <mat-slide-toggle formControlName="delete_label_after_sync">
+                <mat-label>
+                  {{ t('Delete Indication Label After Successful Salesforce Update') }}
+                </mat-label>
+
+              </mat-slide-toggle>
+              <mat-hint class="text-sm" style="color: rgb(148, 163, 184)">
+                Check this checkbox to automatically remove the Indication Label from properties that were successfully updated in
+                Salesforce in order to prevent future automatic updates.
+              </mat-hint>
+            </div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Violation Label') }}</mat-label>
+                <mat-select formControlName="violation_label">
+                  @for (l of labels; track l.id) {
+                    <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                  }
+                </mat-select>
+                <mat-hint>Label used to designate that a SEED property has a violation. Example: 'Violation - Insufficient Data'</mat-hint>
+              </mat-form-field>
+            </div>
+            <div class="mb-4 flex flex-col">
+              <mat-form-field>
+                <mat-label>{{ t('Compliance Label') }}</mat-label>
+                <mat-select formControlName="compliance_label">
+                  @for (l of labels; track l.id) {
+                    <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                  }
+                </mat-select>
+                <mat-hint>Label used to designate that a SEED property is in compliance. Example: 'Complied'</mat-hint>
+              </mat-form-field>
+            </div>
+            <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+>>>>>>> f58679c (rearrange hour/minute, add test connection button and service endpoint for salesforce connections)
 
                 <div class="flex items-center space-x-2">
                   <mat-icon svgIcon="heroicons-solid:clock" />
