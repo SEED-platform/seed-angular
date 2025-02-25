@@ -43,7 +43,8 @@ export const DATATYPES = [
 //   required: allTypes,
 // }
 
-export const INVENTORY_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
+export const INVENTORY_COLUMNS = ['enabled', 'field', 'data_type', 'condition', 'criteria', 'units', 'severity', 'status_label', 'actions']
+// export const INVENTORY_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
 export const GOAL_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
 
 export const SEVERITY = [

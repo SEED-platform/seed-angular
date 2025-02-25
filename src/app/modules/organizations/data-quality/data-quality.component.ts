@@ -11,13 +11,15 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
-import { map, Subject, takeUntil, tap } from 'rxjs'
+import { concatMap, from, map, Subject, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import { DataQualityService } from '@seed/api/data-quality/data-quality.service'
 import type { Rule } from '@seed/api/data-quality/data-quality.types'
+import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
+import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { CONDITIONS, DATATYPES, GOAL_COLUMNS, INVENTORY_COLUMNS, SEVERITY, UNITS } from './constants'
 
@@ -46,28 +48,31 @@ import { CONDITIONS, DATATYPES, GOAL_COLUMNS, INVENTORY_COLUMNS, SEVERITY, UNITS
 export class DataQualityComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
+  private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
+  private _snackBar = inject(SnackbarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   private _propertyRules: Rule[] = []
   private _taxlotRules: Rule[] = []
   private _goalRules: Rule[] = []
-
+  private _typeLookup: Record<string, Rule[]> = {}
+  private _tableLookup: Record<string, Rule[]> = {}
   readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
   readonly tableTypes: ['PropertyState', 'TaxLotState', 'Goal']
   // lookup for type -> rules
-  private _typeLookup: Record<string, Rule[]> = {
-    properties: this._propertyRules,
-    taxlots: this._taxlotRules,
-    goals: this._goalRules,
-  }
+  // private _typeLookup: Record<string, Rule[]> = {
+  //   properties: this._propertyRules,
+  //   taxlots: this._taxlotRules,
+  //   goals: this._goalRules,
+  // }
   // lookup for table name -> rules
-  private _tableLookup: Record<string, Rule[]> = {
-    PropertyState: this._propertyRules,
-    TaxLotState: this._taxlotRules,
-    Goal: this._goalRules,
-  }
+  // private _tableLookup: Record<string, Rule[]> = {
+  //   PropertyState: this._propertyRules,
+  //   TaxLotState: this._taxlotRules,
+  //   Goal: this._goalRules,
+  // }
 
   propertyColumns: { key: string; value: string }[] = []
   taxLotColumns: { key: string; value: string }[] = []
@@ -87,8 +92,19 @@ export class DataQualityComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.ruleColumns = this.type === 'goals' ? GOAL_COLUMNS : INVENTORY_COLUMNS
+    this.getOrg()
     this.getColumns()
     this.getRules()
+  }
+
+  getOrg(): void {
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(({ org_id }) => {
+          this._orgId = org_id
+        }),
+      ).subscribe()
   }
 
   getColumns() {
@@ -122,7 +138,25 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   //   return (this.dataTypes[condition] as Record<string, string>[]) || []
   // }
 
+  resetLookups() {
+    this._propertyRules = []
+    this._taxlotRules = []
+    this._goalRules = []
+    this._typeLookup = {
+      properties: this._propertyRules,
+      taxlots: this._taxlotRules,
+      goals: this._goalRules,
+    }
+    this._tableLookup = {
+      PropertyState: this._propertyRules,
+      TaxLotState: this._taxlotRules,
+      Goal: this._goalRules,
+    }
+  }
+
   getRules() {
+    this.resetLookups()
+
     this._dataQualityService.getRules()
       .pipe(
         map((rules) => rules.sort((a, b) => naturalSort(a.field, b.field))),
@@ -162,16 +196,17 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   */
   inventoryFormGroup() {
     return new FormGroup({
+      id: new FormControl<number | null>(null),
       enabled: new FormControl<boolean>(true),
-      condition: new FormControl<string>(''),
+      condition: new FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range' | ''>(''),
       field: new FormControl<string>(''),
       data_type: new FormControl<number | null>(null),
       min: new FormControl<number | null>(null),
       max: new FormControl<number | null>(null),
-      text_match: new FormControl<string>(''),
+      text_match: new FormControl<string | null>(null),
       units: new FormControl<string>(''),
       severity: new FormControl<number | null>(null),
-      status_label: new FormControl<string>(''),
+      status_label: new FormControl<string | null>(null),
     })
   }
 
@@ -223,15 +258,26 @@ export class DataQualityComponent implements OnDestroy, OnInit {
       0: 'bg-red-100 rounded p-2',
       1: 'bg-amber-100 rounded p-2',
       2: 'bg-emerald-200 rounded p-2',
-      // 0: 'border-b-2 border-red-700',
-      // 1: 'border-b-2 border-yellow-400',
-      // 2: 'border-b-2 border-green-600',
     }
     return severityClasses[severity]
   }
 
   onSubmit() {
-    console.log('submit rules', this.form.value)
+    const rulesTouched: Rule[] = this.form.controls.filter((formGroup): formGroup is FormGroup => formGroup.touched).map((formGroup) => formGroup.value as Rule)
+    from(rulesTouched).pipe(
+      concatMap((rule) => {
+        const fn = rule.id
+          ? (rule: Rule) => this._dataQualityService.putRule({ orgId: this._orgId, id: rule.id, rule })
+          : (rule: Rule) => this._dataQualityService.postRule({ orgId: this._orgId, rule })
+        return fn(rule)
+      }),
+    ).subscribe({
+      complete: () => {
+        this._snackBar.success('Success!')
+        console.log('subscribe')
+        this.getRules()
+      },
+    })
   }
 
   resetRules = () => {

@@ -17,3 +17,18 @@ export type Rule = {
   text_match: string | null;
   units: string;
 }
+
+// import type { FormControl, FormGroup } from '@angular/forms'
+// export type InventoryFormGroup = FormGroup<{
+//   id: FormControl<number | null>;
+//   enabled: FormControl<boolean>;
+//   condition: FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range' | ''>;
+//   field: FormControl<string>;
+//   data_type: FormControl<number | null>;
+//   min: FormControl<number | null>;
+//   max: FormControl<number | null>;
+//   text_match: FormControl<string | null>;
+//   units: FormControl<string>;
+//   severity: FormControl<number | null>;
+//   status_label: FormControl<string | null>;
+// }>

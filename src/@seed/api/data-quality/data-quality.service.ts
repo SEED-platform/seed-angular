@@ -1,6 +1,6 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, type Observable, Subject, switchMap, tap } from 'rxjs'
+import { catchError, type Observable, of, Subject, switchMap, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -30,5 +30,20 @@ export class DataQualityService {
             )
         }),
       )
+  }
+
+  putRule({ orgId, id, rule }): Observable<unknown> {
+    const url = `/api/v3/data_quality_checks/${orgId}/rules/${id}/`
+    return this._httpClient.put<Rule>(url, rule)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error updating data quality rule')
+        }),
+      )
+  }
+
+  postRule({ orgId, rule }): Observable<unknown> {
+    console.log('post', orgId, rule)
+    return of([])
   }
 }
