@@ -2,13 +2,16 @@ import { CommonModule } from '@angular/common'
 import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButton } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDivider } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { Subject, takeUntil } from 'rxjs'
+import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatTabsModule } from '@angular/material/tabs'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { type Label, LabelService } from '@seed/api/label'
 import { type Organization, OrganizationService } from '@seed/api/organization'
@@ -16,12 +19,12 @@ import { type SalesforceConfig, type SalesforceMapping, SalesforceService } from
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import { RouteConfigLoadEnd } from '@angular/router'
+import { DeleteModalComponent, FormModalComponent } from './modal'
 
 @Component({
   selector: 'seed-organizations-settings-salesforce',
   templateUrl: './salesforce.component.html',
-  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, PageComponent],
+  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatTableModule, MatTabsModule, ReactiveFormsModule, PageComponent],
 })
 export class SalesforceComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -29,6 +32,7 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   private _labelService = inject(LabelService)
   private _columnService = inject(ColumnService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _dialog = inject(MatDialog)
   passwordHidden = true
   tokenHidden = true
   labels: Label[]
@@ -36,6 +40,8 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   organization: Organization
   salesforceConfig: SalesforceConfig
   salesforceMappings: SalesforceMapping[]
+  salesforceMappingsDataSource = new MatTableDataSource<SalesforceMapping>([])
+  salesforceMappingColumns = ['salesforce_fieldname', 'column', 'actions']
   salesforceForm = new FormGroup({
     salesforce_enabled: new FormControl(false),
     salesforceConfig: new FormGroup({
@@ -89,6 +95,7 @@ export class SalesforceComponent implements OnDestroy, OnInit {
     })
     this._salesforceService.mappings$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((mappings) => {
       this.salesforceMappings = mappings
+      this.salesforceMappingsDataSource.data = mappings
     })
     this._labelService.labels$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((labels) => {
       this.labels = labels
@@ -101,6 +108,63 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  trackByFn(_index: number, { id }: SalesforceMapping) {
+    return id
+  }
+
+  refreshMappings(): void {
+    this._salesforceService.getMappings(this.organization.id).subscribe()
+  }
+
+  addMapping = () => {
+    const newMapping: Omit<SalesforceMapping, 'id' | 'column' | 'salesforce_fieldname'> = {
+      organization_id: this.organization.id,
+    }
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { salesforceMapping: newMapping, organization_id: this.organization.id },
+    })
+
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshMappings() }),
+      ).subscribe()
+  }
+
+  deleteMapping(sfm: SalesforceMapping) {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { salesforceMapping: sfm, columnName: this.columns.find((c) => c.id === sfm.column).display_name },
+    })
+
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshMappings() }),
+      ).subscribe()
+  }
+
+  editMapping(sfm: SalesforceMapping) {
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { salesforceMapping: sfm, organization_id: this.organization.id },
+    })
+
+    dialogRef.afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.refreshMappings() }),
+      ).subscribe()
+  }
+
+  columnName(column_id: number): string {
+    if (!this.columns) {
+      return ''
+    }
+    return this.columns.find((c) => column_id === c.id).display_name
   }
 
   togglePassword(): void {

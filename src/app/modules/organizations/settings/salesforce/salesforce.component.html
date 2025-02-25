@@ -9,6 +9,8 @@
               t('Enable Salesforce Integration')
             }}</mat-slide-toggle>
           </div>
+          <mat-tab-group>
+            <mat-tab label="Salesforce Configuration">
           <div formGroupName="salesforceConfig">
             <div class="flex items-center space-x-2">
               <mat-icon svgIcon="heroicons-solid:signal" />
@@ -72,7 +74,7 @@
             <div>
               <button type="button" mat-raised-button (click)="testConnection()" color="accent">Test Connection</button>
             </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+            <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
 
             <div class="flex items-center space-x-2">
               <mat-icon svgIcon="heroicons-solid:clock" />
@@ -343,6 +345,46 @@
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>
+          </mat-tab>
+          <mat-tab label="Salesforce Column Mappings">
+            <div class="prose">
+              {{ t("Map your Salesforce Benchmark Object's fields to columns in SEED. Use the Object Manager in Salesforce to retrieve the field names (not the field labels), ex: Cycle__c (not Cycle). These fields will only be sent to Salesforce when a property has the compliant label applied.") }}
+            </div>
+            <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="salesforceMappingsDataSource" [trackBy]="trackByFn">
+              <ng-container matColumnDef="salesforce_fieldname">
+                <th mat-header-cell *matHeaderCellDef>Salesforce Field Name</th>
+                <td mat-cell *matCellDef="let sfm">{{ sfm.salesforce_fieldname }}</td>
+              </ng-container>
+        
+              <ng-container matColumnDef="column">
+                <th mat-header-cell *matHeaderCellDef>SEED Field Name</th>
+                <td mat-cell *matCellDef="let sfm">{{ columnName(sfm.column) }}</td>
+              </ng-container>
+        
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="select-none pr-24 text-right">Actions</th>
+                <td mat-cell *matCellDef="let sfm" class="w-50 text-right">
+                  <a mat-stroked-button (click)="editMapping(sfm)" class="mr-2">
+                    <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
+                  </a>
+                  <a mat-stroked-button color="warn" (click)="deleteMapping(sfm)">
+                    <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+                  </a>
+                </td>
+              </ng-container>
+        
+              <thead>
+                <tr mat-header-row *matHeaderRowDef="salesforceMappingColumns"></tr>
+              </thead>
+              <tbody>
+                <tr mat-row *matRowDef="let row; columns: salesforceMappingColumns"></tr>
+              </tbody>
+            </table>
+            <div class="mt-12">
+              <button mat-flat-button type="button" (click)="addMapping()" color="primary">Add Mapping</button>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
         </form>
       </div>
     </div>
