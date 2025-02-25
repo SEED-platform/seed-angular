@@ -12,6 +12,9 @@ const spinner = ora({
 }).start()
 
 try {
+  // Ignore certificate errors on networks with corporate proxies
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
   const lokaliseApi = new LokaliseApi({
     apiKey: process.env.LOKALISE_TOKEN,
     enableCompression: true,

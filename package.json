@@ -31,7 +31,7 @@
     "prettier:fix": "npm run prettier -- -w",
     "stylelint": "stylelint \"src/**/*.scss\"",
     "stylelint:fix": "npm run stylelint -- --fix",
-    "update-translations": "node --env-file=.env --import=tsx update-translations.mts"
+    "update-translations": "node --env-file=.env --import=tsx --no-warnings update-translations.mts"
   },
   "dependencies": {
     "@angular/animations": "^19.1.0",
