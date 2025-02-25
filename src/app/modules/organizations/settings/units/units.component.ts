@@ -17,7 +17,18 @@ import * as UnitOptions from './units.types'
 @Component({
   selector: 'seed-organizations-settings-units',
   templateUrl: './units.component.html',
-  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatSelectModule, MatTabsModule, ReactiveFormsModule, PageComponent],
+  imports: [
+    CommonModule,
+    SharedImports,
+    MatButton,
+    MatDivider,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    MatTabsModule,
+    ReactiveFormsModule,
+    PageComponent,
+  ],
 })
 export class UnitsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

@@ -42,7 +42,8 @@ export class CyclesComponent implements OnDestroy, OnInit {
   }
 
   refreshCycles(): void {
-    this._cycleService.get()
+    this._cycleService
+      .get()
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((cycles) => {
@@ -60,11 +61,15 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshCycles() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshCycles()
+        }),
+      )
+      .subscribe()
   }
 
   editCycle(cycle: Cycle): void {
@@ -73,11 +78,15 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId, existingNames: this._existingNames },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshCycles() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshCycles()
+        }),
+      )
+      .subscribe()
   }
 
   deleteCycle(cycle: Cycle): void {
@@ -86,11 +95,15 @@ export class CyclesComponent implements OnDestroy, OnInit {
       data: { cycle, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshCycles() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshCycles()
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(_index: number, { id }: Cycle) {

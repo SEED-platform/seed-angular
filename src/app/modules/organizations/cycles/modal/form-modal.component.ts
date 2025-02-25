@@ -64,11 +64,15 @@ export class FormModalComponent implements OnDestroy, OnInit {
       this.create = false
       this.form.patchValue(this.data.cycle)
     }
-    this.form.get('start')?.valueChanges
-      .pipe(
+    this.form
+      .get('start')
+      ?.valueChanges.pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.form.get('end')?.updateValueAndValidity() }),
-      ).subscribe()
+        tap(() => {
+          this.form.get('end')?.updateValueAndValidity()
+        }),
+      )
+      .subscribe()
   }
 
   onSubmit() {

@@ -12,13 +12,7 @@ import { AlertComponent } from '@seed/components'
 @Component({
   selector: 'seed-derived-column-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatProgressBarModule,
-  ],
+  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatProgressBarModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _derivedColumnService = inject(DerivedColumnService)
@@ -30,11 +24,15 @@ export class DeleteModalComponent implements OnDestroy {
   data = inject(MAT_DIALOG_DATA) as { derivedColumn: DerivedColumn; orgId: number }
 
   onSubmit() {
-    this._derivedColumnService.delete({ orgId: this.data.orgId, id: this.data.derivedColumn.id })
+    this._derivedColumnService
+      .delete({ orgId: this.data.orgId, id: this.data.derivedColumn.id })
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this._dialogRef.close() }),
-      ).subscribe()
+        tap(() => {
+          this._dialogRef.close()
+        }),
+      )
+      .subscribe()
   }
 
   dismiss() {

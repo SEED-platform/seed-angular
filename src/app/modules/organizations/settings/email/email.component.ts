@@ -14,7 +14,17 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-organizations-settings-email',
   templateUrl: './email.component.html',
-  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, PageComponent],
+  imports: [
+    CommonModule,
+    MatButton,
+    MatDivider,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    PageComponent,
+    ReactiveFormsModule,
+    SharedImports,
+  ],
 })
 export class EmailComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

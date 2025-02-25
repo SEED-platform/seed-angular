@@ -13,15 +13,7 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-organizations-settings-ubid',
   templateUrl: './ubid.component.html',
-  imports: [
-    CommonModule,
-    SharedImports,
-    MatButton,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInput,
-    ReactiveFormsModule,
-    PageComponent],
+  imports: [CommonModule, SharedImports, MatButton, MatFormFieldModule, MatIconModule, MatInput, ReactiveFormsModule, PageComponent],
 })
 export class UBIDComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

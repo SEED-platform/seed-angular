@@ -15,13 +15,7 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatProgressBarModule,
-  ],
+  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatProgressBarModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _cycleService = inject(CycleService)
@@ -56,7 +50,8 @@ export class DeleteModalComponent implements OnDestroy {
     }
 
     // initiate delete cycle task
-    this._cycleService.delete(this.data.cycle.id, this.data.orgId)
+    this._cycleService
+      .delete(this.data.cycle.id, this.data.orgId)
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((response: { progress_key: string; value: number }) => {

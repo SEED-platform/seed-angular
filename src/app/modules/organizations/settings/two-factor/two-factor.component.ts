@@ -21,7 +21,8 @@ import { SharedImports } from '@seed/directives'
     MatIconModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
-    PageComponent],
+    PageComponent,
+  ],
 })
 export class TwoFactorComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

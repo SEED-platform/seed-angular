@@ -14,15 +14,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-members',
   templateUrl: './members.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatTableModule,
-    PageComponent,
-    SharedImports,
-    TableContainerComponent,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, PageComponent, SharedImports, TableContainerComponent],
 })
 export class MembersComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -41,7 +33,8 @@ export class MembersComponent implements OnDestroy, OnInit {
           this._orgId = org_id
           this.getMembers(this._orgId)
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   getMembers(orgId: number): void {
@@ -52,8 +45,11 @@ export class MembersComponent implements OnDestroy, OnInit {
     this._organizationService.organizationUsers$
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap((orgUsers) => { this.membersDataSource.data = orgUsers }),
-      ).subscribe()
+        tap((orgUsers) => {
+          this.membersDataSource.data = orgUsers
+        }),
+      )
+      .subscribe()
   }
 
   editMember(member: OrganizationUser): void {
@@ -62,11 +58,15 @@ export class MembersComponent implements OnDestroy, OnInit {
       data: { member, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getMembers(this._orgId) }),
-      ).subscribe()
+        tap(() => {
+          this.getMembers(this._orgId)
+        }),
+      )
+      .subscribe()
   }
 
   deleteMember(member: OrganizationUser): void {
@@ -75,11 +75,15 @@ export class MembersComponent implements OnDestroy, OnInit {
       data: { member, orgId: this._orgId },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getMembers(this._orgId) }),
-      ).subscribe()
+        tap(() => {
+          this.getMembers(this._orgId)
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(_index: number, { email }: OrganizationUser) {
