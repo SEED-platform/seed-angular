@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
@@ -12,6 +12,8 @@ import {
   type SalesforceConfigsResponse,
   type SalesforceConnectionTestResponse,
   type SalesforceMapping,
+  type SalesforceMappingDeleteResponse,
+  type SalesforceMappingResponse,
   type SalesforceMappingsResponse,
 } from './salesforce.types'
 
@@ -105,6 +107,44 @@ export class SalesforceService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Salesforce Connection Error: ${error.message}`)
+      }),
+    )
+  }
+
+  createMapping(organization_id: number, mapping: Omit<SalesforceMapping, 'id'>): Observable<SalesforceMappingResponse> {
+    const url = `/api/v3/salesforce_mappings/?organization_id=${organization_id}`
+    return this._httpClient.post<SalesforceMappingResponse>(url, { ...mapping }).pipe(
+      map((response) => {
+        this._snackBar.success('Salesforce Mapping Created')
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Salesforce Mapping could not be created: ${error.message}`)
+      }),
+    )
+  }
+  updateMapping(organization_id: number, mapping: SalesforceMapping): Observable<SalesforceMappingResponse> {
+    const url = `/api/v3/salesforce_mappings/${mapping.id}/?organization_id=${organization_id}`
+    return this._httpClient.put<SalesforceMappingResponse>(url, { ...mapping }).pipe(
+      map((response) => {
+        this._snackBar.success('Salesforce Mapping Updated')
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Salesforce Mapping could not be created: ${error.message}`)
+      }),
+    )
+  }
+
+  deleteMapping(mapping: SalesforceMapping): Observable<SalesforceMappingDeleteResponse> {
+    const url = `/api/v3/salesforce_mappings/${mapping.id}/organization_id=${mapping.organization_id}`
+    return this._httpClient.delete<SalesforceMappingDeleteResponse>(url).pipe(
+      map((response) => {
+        this._snackBar.success('Salesforce Mapping Removed')
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Salesforce Mapping could not be removed: ${error.message}`)
       }),
     )
   }

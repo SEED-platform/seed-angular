@@ -49,6 +49,16 @@ export type SalesforceMapping = {
   salesforce_fieldname: string;
 }
 
+export type SalesforceMappingDeleteResponse = {
+  status: string;
+  message: string;
+}
+
+export type SalesforceMappingResponse = {
+  status: string;
+  salesforce_mapping: SalesforceMapping;
+}
+
 export type SalesforceMappingsResponse = {
   status: string;
   salesforce_mappings: SalesforceMapping[];
