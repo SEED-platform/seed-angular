@@ -137,7 +137,7 @@ export class SalesforceService {
   }
 
   deleteMapping(mapping: SalesforceMapping): Observable<SalesforceMappingDeleteResponse> {
-    const url = `/api/v3/salesforce_mappings/${mapping.id}/organization_id=${mapping.organization_id}`
+    const url = `/api/v3/salesforce_mappings/${mapping.id}/?organization_id=${mapping.organization_id}`
     return this._httpClient.delete<SalesforceMappingDeleteResponse>(url).pipe(
       map((response) => {
         this._snackBar.success('Salesforce Mapping Removed')

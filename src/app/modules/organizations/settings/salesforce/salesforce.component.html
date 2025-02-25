@@ -2,15 +2,17 @@
   @if (organization) {
     <div class="flex-auto p-6 sm:p-10" *transloco="let t">
       <div class="max-w-2xl">
-        <div class="prose">Enable this if you would like to sync data between SEED and a Salesforce instance</div>
         <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-2 pb-4 shadow" [formGroup]="salesforceForm" (ngSubmit)="submit()">
+          <mat-tab-group>
+            <mat-tab label="Salesforce Configuration">
+              <div class="prose">Enable this if you would like to sync data between SEED and a Salesforce instance</div>
+
           <div class="mb-6 flex">
             <mat-slide-toggle (click)="toggleForm()" formControlName="salesforce_enabled">{{
               t('Enable Salesforce Integration')
             }}</mat-slide-toggle>
           </div>
-          <mat-tab-group>
-            <mat-tab label="Salesforce Configuration">
+
           <div formGroupName="salesforceConfig">
             <div class="flex items-center space-x-2">
               <mat-icon svgIcon="heroicons-solid:signal" />
@@ -346,8 +348,8 @@
             </button>
           </div>
           </mat-tab>
-          <mat-tab label="Salesforce Column Mappings">
-            <div class="prose">
+          <mat-tab label="Salesforce Column Mappings" [disabled]="!salesforceForm.controls.salesforce_enabled.value">
+            <div class="prose mb-12">
               {{ t("Map your Salesforce Benchmark Object's fields to columns in SEED. Use the Object Manager in Salesforce to retrieve the field names (not the field labels), ex: Cycle__c (not Cycle). These fields will only be sent to Salesforce when a property has the compliant label applied.") }}
             </div>
             <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="salesforceMappingsDataSource" [trackBy]="trackByFn">
