@@ -10,12 +10,7 @@ import { AlertComponent } from '@seed/components'
 @Component({
   selector: 'seed-member-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-  ],
+  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _organizationService = inject(OrganizationService)
@@ -26,11 +21,15 @@ export class DeleteModalComponent implements OnDestroy {
   data = inject(MAT_DIALOG_DATA) as { member: OrganizationUser; orgId: number }
 
   onSubmit() {
-    this._organizationService.deleteOrganizationUser(this.data.member.user_id, this.data.orgId)
+    this._organizationService
+      .deleteOrganizationUser(this.data.member.user_id, this.data.orgId)
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.close('success') }),
-      ).subscribe()
+        tap(() => {
+          this.close('success')
+        }),
+      )
+      .subscribe()
   }
 
   close(message: string) {

@@ -6,10 +6,7 @@ import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
-import type {
-  Column,
-  ColumnsResponse,
-} from './column.types'
+import type { Column, ColumnsResponse } from './column.types'
 
 @Injectable({ providedIn: 'root' })
 export class ColumnService {

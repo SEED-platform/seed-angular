@@ -26,7 +26,8 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatTableModule,
     PageComponent,
     SharedImports,
-    TableContainerComponent],
+    TableContainerComponent,
+  ],
 })
 export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
@@ -47,7 +48,8 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   }
 
   getDerivedColumns() {
-    this._derivedColumnService.get()
+    this._derivedColumnService
+      .get()
       .pipe(
         takeUntil(this._unsubscribeAll$),
         map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),

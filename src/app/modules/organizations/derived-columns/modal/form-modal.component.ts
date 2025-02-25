@@ -91,11 +91,12 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * check presence of the parameter names in the expression on expression changes
-  */
+   * check presence of the parameter names in the expression on expression changes
+   */
   watchExpression(): void {
-    this.form.get('expression')?.valueChanges
-      .pipe(
+    this.form
+      .get('expression')
+      ?.valueChanges.pipe(
         takeUntil(this._unsubscribeAll$),
         tap(() => {
           const parameters = this.form.controls.parameters.controls
@@ -104,27 +105,30 @@ export class FormModalComponent implements OnDestroy, OnInit {
             param.get('parameter_name')?.updateValueAndValidity()
           }
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   /*
-  * check for duplicate parameter names
-  */
+   * check for duplicate parameter names
+   */
   watchParameters(): void {
-    this.form.get('parameters')?.valueChanges
-      .pipe(
+    this.form
+      .get('parameters')
+      ?.valueChanges.pipe(
         takeUntil(this._unsubscribeAll$),
         tap((parameters) => {
           const paramNames = parameters.map((param) => param.parameter_name)
           const error = paramNames.length !== new Set(paramNames).size ? { duplicates: true } : null
           this.form.get('parameters')?.setErrors(error)
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   /*
-  * returns a new parameter form group
-  */
+   * returns a new parameter form group
+   */
   newParameter(name: string | null = null, sourceColumn: number | null = null) {
     const group = new FormGroup({
       parameter_name: new FormControl<string | null>(name, this._derivedColumnValidator.inExpression()),
@@ -136,8 +140,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * populate form with derived column data & disable inventory type for update
-  */
+   * populate form with derived column data & disable inventory type for update
+   */
   populateForm() {
     if (this.update) {
       const { name, inventory_type, expression, parameters } = this.data.derivedColumn
@@ -153,20 +157,24 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * get property and taxlot derived columns
-  */
+   * get property and taxlot derived columns
+   */
   getSourceColumns() {
     this._columnService.propertyColumns$
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap((propertyColumns) => { this.propertyColumns = propertyColumns }),
+        tap((propertyColumns) => {
+          this.propertyColumns = propertyColumns
+        }),
       )
       .subscribe()
 
     this._columnService.taxLotColumns$
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap((taxLotColumns) => { this.taxLotColumns = taxLotColumns }),
+        tap((taxLotColumns) => {
+          this.taxLotColumns = taxLotColumns
+        }),
       )
       .subscribe()
   }

@@ -53,15 +53,17 @@ export class FormModalComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.form.patchValue(this.data.member)
     // watch for changes to access level and repopulate access level instances
-    this.form.get('access_level')?.valueChanges
-      .pipe(
+    this.form
+      .get('access_level')
+      ?.valueChanges.pipe(
         takeUntil(this._unsubscribeAll$),
         tap((accessLevel) => {
           this.getPossibleAccessLevelInstances(accessLevel)
           // default to first access level instance
           this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
         }),
-      ).subscribe()
+      )
+      .subscribe()
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
       this.getAccessLevelTree(this.data.orgId)
@@ -80,7 +82,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
           this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
           this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
@@ -110,7 +113,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
             this._snackBar.success('User updated')
             this._dialogRef.close()
           }),
-        ).subscribe()
+        )
+        .subscribe()
     }
   }
 

@@ -17,7 +17,18 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-organizations-settings-default-display-fields',
   templateUrl: './default-display-fields.component.html',
-  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, ReactiveFormsModule, PageComponent],
+  imports: [
+    CommonModule,
+    MatButton,
+    MatDivider,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    PageComponent,
+    ReactiveFormsModule,
+    SharedImports,
+  ],
 })
 export class DefaultDisplayFieldComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -41,13 +52,21 @@ export class DefaultDisplayFieldComponent implements OnDestroy, OnInit {
       this.organization = organization
       this.defaultDisplayFieldsForm.get('property_display_field').setValue(this.organization.property_display_field)
       this.defaultDisplayFieldsForm.get('taxlot_display_field').setValue(this.organization.taxlot_display_field)
-      this.defaultDisplayFieldsForm.get('default_reports_x_axis_options').setValue(this.organization.default_reports_x_axis_options.map((c) => c.id))
-      this.defaultDisplayFieldsForm.get('default_reports_y_axis_options').setValue(this.organization.default_reports_y_axis_options.map((c) => c.id))
+      this.defaultDisplayFieldsForm
+        .get('default_reports_x_axis_options')
+        .setValue(this.organization.default_reports_x_axis_options.map((c) => c.id))
+      this.defaultDisplayFieldsForm
+        .get('default_reports_y_axis_options')
+        .setValue(this.organization.default_reports_y_axis_options.map((c) => c.id))
     })
     this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((propertyColumns) => {
       this.propertyColumns = propertyColumns
-      this.xAxisColumns = propertyColumns.filter((c) => !c.related && !c.pinnedLeft).sort((a, b) => naturalSort(a.display_name, b.display_name))
-      this.yAxisColumns = this.xAxisColumns.filter((c) => ['area', 'eui', 'float', 'integer', 'number'].includes(c.data_type) || c.derived_column).sort((a, b) => naturalSort(a.display_name, b.display_name))
+      this.xAxisColumns = propertyColumns
+        .filter((c) => !c.related && !c.pinnedLeft)
+        .sort((a, b) => naturalSort(a.display_name, b.display_name))
+      this.yAxisColumns = this.xAxisColumns
+        .filter((c) => ['area', 'eui', 'float', 'integer', 'number'].includes(c.data_type) || c.derived_column)
+        .sort((a, b) => naturalSort(a.display_name, b.display_name))
     })
     this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((taxLotColumns) => {
       this.taxLotColumns = taxLotColumns
@@ -63,8 +82,12 @@ export class DefaultDisplayFieldComponent implements OnDestroy, OnInit {
     if (this.defaultDisplayFieldsForm.valid) {
       this.organization.property_display_field = this.defaultDisplayFieldsForm.get('property_display_field').value
       this.organization.taxlot_display_field = this.defaultDisplayFieldsForm.get('taxlot_display_field').value
-      this.organization.default_reports_x_axis_options = this.propertyColumns.filter((c) => this.defaultDisplayFieldsForm.get('default_reports_x_axis_options').value.includes(c.id))
-      this.organization.default_reports_y_axis_options = this.propertyColumns.filter((c) => this.defaultDisplayFieldsForm.get('default_reports_y_axis_options').value.includes(c.id))
+      this.organization.default_reports_x_axis_options = this.propertyColumns.filter((c) =>
+        this.defaultDisplayFieldsForm.get('default_reports_x_axis_options').value.includes(c.id),
+      )
+      this.organization.default_reports_y_axis_options = this.propertyColumns.filter((c) =>
+        this.defaultDisplayFieldsForm.get('default_reports_y_axis_options').value.includes(c.id),
+      )
       this._organizationService.updateSettings(this.organization).subscribe()
     }
   }

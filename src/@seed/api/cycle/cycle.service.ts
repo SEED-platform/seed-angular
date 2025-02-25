@@ -20,20 +20,20 @@ export class CycleService {
   cycles$ = this._cycles.asObservable()
 
   get(): Observable<Cycle[]> {
-    return this._organizationService.currentOrganization$
-      .pipe(
-        switchMap(({ org_id }) => {
-          const url = `/api/v3/cycles/?organization_id=${org_id}`
-          return this._httpClient.get<CyclesResponse>(url)
-            .pipe(
-              map(({ cycles }) => cycles),
-              tap((cycles) => { this._cycles.next(cycles) }),
-              catchError((error: HttpErrorResponse) => {
-                return this._errorService.handleError(error, 'Error fetching cycles')
-              }),
-            )
-        }),
-      )
+    return this._organizationService.currentOrganization$.pipe(
+      switchMap(({ org_id }) => {
+        const url = `/api/v3/cycles/?organization_id=${org_id}`
+        return this._httpClient.get<CyclesResponse>(url).pipe(
+          map(({ cycles }) => cycles),
+          tap((cycles) => {
+            this._cycles.next(cycles)
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return this._errorService.handleError(error, 'Error fetching cycles')
+          }),
+        )
+      }),
+    )
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {
