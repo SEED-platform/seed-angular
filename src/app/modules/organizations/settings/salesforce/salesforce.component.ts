@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButton } from '@angular/material/button'
+import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
 import { MatDivider } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -24,7 +24,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-settings-salesforce',
   templateUrl: './salesforce.component.html',
-  imports: [CommonModule, SharedImports, MatButton, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatTableModule, MatTabsModule, ReactiveFormsModule, PageComponent],
+  imports: [CommonModule, SharedImports, MatButtonModule, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatTableModule, MatTabsModule, ReactiveFormsModule, PageComponent],
 })
 export class SalesforceComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -189,6 +189,8 @@ export class SalesforceComponent implements OnDestroy, OnInit {
 
   toggleForm(): void {
     const enabled = this.salesforceForm.get('salesforce_enabled').value
+    this.organization.salesforce_enabled = enabled
+    this._organizationService.updateSettings(this.organization).subscribe()
     const fg = this.salesforceForm.get('salesforceConfig') as FormGroup
     for (const field of Object.keys(fg.controls)) {
       if (enabled) {
