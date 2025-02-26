@@ -5,8 +5,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { type Label, LabelService } from '@seed/api/label'
 import { type Organization, OrganizationService } from '@seed/api/organization'
-import { LabelComponent } from '@seed/components'
-import { PageComponent } from '@seed/components'
+import { LabelComponent, PageComponent } from '@seed/components'
 import { DeleteModalComponent, FormModalComponent } from './modal'
 
 @Component({

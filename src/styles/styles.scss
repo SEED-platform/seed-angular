@@ -83,21 +83,26 @@
   border-radius: 4px;
   display: inline;
   width: auto;
+  
   &.orange {
     background-color: theme('colors.orange.400');
   }
+  
   &.red {
     background-color: theme('colors.red.700');
   }
+  
   &.gray {
     background-color: theme('colors.stone.600');
   }
+  
   &.green {
     background-color: theme('colors.green.700');
   }
   
   &.blue {
     background-color: theme('colors.blue.700');
+  
     &.light {
       background-color: theme('colors.cyan.600') !important;
     }
