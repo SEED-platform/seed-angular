@@ -13,7 +13,7 @@ import { type SalesforceMapping, SalesforceService } from '@seed/api/salesforce'
 import { naturalSort } from '@seed/utils'
 
 @Component({
-  selector: 'seed-cycles-form-modal',
+  selector: 'seed-salesforce-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
     CommonModule,

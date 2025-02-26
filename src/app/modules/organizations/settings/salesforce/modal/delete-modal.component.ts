@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { type SalesforceMapping, SalesforceService } from '@seed/api/salesforce'
 
 @Component({
-  selector: 'seed-cycles-form-modal',
+  selector: 'seed-salesforce-delete-modal',
   templateUrl: './delete-modal.component.html',
   imports: [
     CommonModule,
