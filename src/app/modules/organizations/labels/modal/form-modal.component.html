@@ -14,7 +14,9 @@
     <mat-label>Color</mat-label>
     <mat-select formControlName="color">
       @for (c of colors; track c) {
-        <mat-option [value]="c"><div class="label {{ c }}">{{ c }}</div></mat-option>
+        <mat-option [value]="c"
+          ><div class="label {{ c }}">{{ c }}</div></mat-option
+        >
       }
     </mat-select>
     @if (form.controls.color?.hasError('required')) {
@@ -27,7 +29,7 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">{{ create ? 'Create' : 'Save'}}</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">{{ create ? 'Create' : 'Save' }}</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
     <button mat-stroked-button (click)="close()">Cancel</button>
