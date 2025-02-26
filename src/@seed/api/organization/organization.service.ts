@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
+import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { naturalSort } from '../../utils'
@@ -41,9 +41,16 @@ export class OrganizationService {
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
-      this.getById(organizationId).subscribe()
-    })
+    this._userService.currentOrganizationId$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap((organizationId) => {
+        return combineLatest([
+          this.getById(organizationId),
+          this.getOrganizationUsers(organizationId),
+          this.getOrganizationAccessLevelTree(organizationId),
+        ])
+      }),
+    ).subscribe()
   }
 
   get(org_id?: number): Observable<Organization[]> | Observable<Organization> {
@@ -72,9 +79,9 @@ export class OrganizationService {
     )
   }
 
-  getOrganizationUsers(orgId: number): void {
+  getOrganizationUsers(orgId: number): Observable<OrganizationUser[]> {
     const url = `/api/v3/organizations/${orgId}/users/`
-    this._httpClient
+    return this._httpClient
       .get<OrganizationUsersResponse>(url)
       .pipe(
         map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
@@ -85,12 +92,11 @@ export class OrganizationService {
           return this._errorService.handleError(error, 'Error fetching organization users')
         }),
       )
-      .subscribe()
   }
 
-  getOrganizationAccessLevelTree(orgId: number): void {
+  getOrganizationAccessLevelTree(orgId: number): Observable<AccessLevelTree> {
     const url = `/api/v3/organizations/${orgId}/access_levels/tree`
-    this._httpClient
+    return this._httpClient
       .get<AccessLevelTreeResponse>(url)
       .pipe(
         map((response) => {
@@ -108,7 +114,6 @@ export class OrganizationService {
           return this._errorService.handleError(error, 'Error fetching organization access level tree')
         }),
       )
-      .subscribe()
   }
 
   deleteOrganizationUser(userId: number, orgId: number) {

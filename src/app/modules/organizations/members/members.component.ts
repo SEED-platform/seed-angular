@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
 import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -26,30 +26,20 @@ export class MembersComponent implements OnDestroy, OnInit {
   membersColumns = ['name', 'email', 'access level', 'access level instance', 'role', 'actions']
 
   ngOnInit(): void {
-    this._organizationService.currentOrganization$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(({ org_id }) => {
-          this._orgId = org_id
-          this.getMembers(this._orgId)
-        }),
-      )
-      .subscribe()
+    // get org id and org users
+    combineLatest([
+      this._organizationService.currentOrganization$,
+      this._organizationService.organizationUsers$,
+    ])
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(([organization, orgUsers]) => {
+        this._orgId = organization.org_id
+        this.membersDataSource.data = orgUsers
+      })
   }
 
   getMembers(orgId: number): void {
-    // fetch org users
-    this._organizationService.getOrganizationUsers(orgId)
-
-    // subscribe to org users stream and set members
-    this._organizationService.organizationUsers$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap((orgUsers) => {
-          this.membersDataSource.data = orgUsers
-        }),
-      )
-      .subscribe()
+    this._organizationService.getOrganizationUsers(orgId).subscribe()
   }
 
   editMember(member: OrganizationUser): void {

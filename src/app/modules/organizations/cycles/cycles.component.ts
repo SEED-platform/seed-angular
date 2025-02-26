@@ -38,21 +38,16 @@ export class CyclesComponent implements OnDestroy, OnInit {
   cyclesColumns = ['id', 'name', 'start', 'end', 'actions']
 
   ngOnInit(): void {
-    this.refreshCycles()
+    this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((cycles) => {
+        this.cyclesDataSource.data = cycles
+        this._orgId = cycles[0]?.organization
+        this._existingNames = cycles.map((cycle) => cycle.name)
+      })
   }
 
   refreshCycles(): void {
-    this._cycleService
-      .get()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap((cycles) => {
-          this.cyclesDataSource.data = cycles
-          this._orgId = cycles[0]?.organization
-          this._existingNames = cycles.map((cycle) => cycle.name)
-        }),
-      )
-      .subscribe()
+    this._cycleService.get(this._orgId).subscribe()
   }
 
   createCycle = () => {

@@ -1,6 +1,6 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, map, type Observable, Subject, switchMap, tap } from 'rxjs'
+import { catchError, map, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { OrganizationService } from '../organization'
@@ -13,26 +13,31 @@ export class DerivedColumnService {
   private _snackBar = inject(SnackbarService)
   private _errorService = inject(ErrorService)
   private _derivedColumns = new Subject<DerivedColumn[]>()
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
   orgId: number
 
   derivedColumns$ = this._derivedColumns.asObservable()
 
-  get(): Observable<DerivedColumn[]> {
-    return this._organizationService.currentOrganization$.pipe(
-      switchMap(({ org_id }) => {
-        // exclude param inventory_type to return a mixed array of property and taxlot derived columns
-        // and let component filter as inventory type can get lost
-        const url = `/api/v3/derived_columns/?organization_id=${org_id}`
-        return this._httpClient.get<DerivedColumnsResponse>(url).pipe(
-          map(({ derived_columns }) => derived_columns),
-          tap((derived_columns) => {
-            this._derivedColumns.next(derived_columns)
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return this._errorService.handleError(error, 'Error fetching derived columns')
-          }),
-        )
+  constructor() {
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(({ org_id }) => this.get(org_id)),
+      ).subscribe()
+  }
+
+  get(orgId: number): Observable<DerivedColumn[]> {
+    // exclude param inventory_type to return a mixed array of property and taxlot derived columns
+    // and let component filter as inventory type can get lost
+    const url = `/api/v3/derived_columns/?organization_id=${orgId}`
+    return this._httpClient.get<DerivedColumnsResponse>(url).pipe(
+      map(({ derived_columns }) => derived_columns),
+      tap((derived_columns) => {
+        this._derivedColumns.next(derived_columns)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching derived columns')
       }),
     )
   }

@@ -66,24 +66,16 @@ export class FormModalComponent implements OnDestroy, OnInit {
       .subscribe()
     // prevent ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
-      this.getAccessLevelTree(this.data.orgId)
+      this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelTree) => {
+        this.accessLevelNames = accessLevelTree.accessLevelNames
+        this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
+        this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+      })
     })
   }
 
   getAccessLevelTree(orgId: number): void {
-    // fetch access level tree
-    this._organizationService.getOrganizationAccessLevelTree(orgId)
-    // subscribe to stream and set access level tree/names
-    this._organizationService.accessLevelTree$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap((accessLevelTree) => {
-          this.accessLevelNames = accessLevelTree.accessLevelNames
-          this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
-          this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-        }),
-      )
-      .subscribe()
+    this._organizationService.getOrganizationAccessLevelTree(orgId).subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
