@@ -1,5 +1,5 @@
 export type Rule = {
-  condition: 'exclude' | 'include' | 'required' | 'not_null' | 'range';
+  condition: Condition;
   cross_cycle: boolean;
   data_type: number;
   enabled: boolean;
@@ -18,17 +18,19 @@ export type Rule = {
   units: string;
 }
 
-// import type { FormControl, FormGroup } from '@angular/forms'
-// export type InventoryFormGroup = FormGroup<{
-//   id: FormControl<number | null>;
-//   enabled: FormControl<boolean>;
-//   condition: FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range' | ''>;
-//   field: FormControl<string>;
-//   data_type: FormControl<number | null>;
-//   min: FormControl<number | null>;
-//   max: FormControl<number | null>;
-//   text_match: FormControl<string | null>;
-//   units: FormControl<string>;
-//   severity: FormControl<number | null>;
-//   status_label: FormControl<string | null>;
-// }>
+export type Condition = 'exclude' | 'include' | 'required' | 'not_null' | 'range'
+
+import type { FormControl, FormGroup } from '@angular/forms'
+export type InventoryFormGroup = FormGroup<{
+  id: FormControl<number | null>;
+  enabled: FormControl<boolean>;
+  condition: FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range'>;
+  field: FormControl<string>;
+  data_type: FormControl<number | null>;
+  min: FormControl<number | null>;
+  max: FormControl<number | null>;
+  text_match: FormControl<string | null>;
+  units: FormControl<string>;
+  severity: FormControl<number | null>;
+  status_label: FormControl<string | null>;
+}>

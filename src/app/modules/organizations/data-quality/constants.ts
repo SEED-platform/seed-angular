@@ -1,12 +1,13 @@
 export const CONDITIONS = [
   { key: 'exclude', value: 'Must Not Contain' },
   { key: 'include', value: 'Must Contain' },
-  { key: 'required', value: 'Required' },
   { key: 'not_null', value: 'Not Null' },
   { key: 'range', value: 'Range' },
+  { key: 'required', value: 'Required' },
 ]
 
-export const DATATYPES = [
+const allTypes = [
+  { key: null, value: null },
   { key: 0, value: 'Number' },
   { key: 1, value: 'Text' },
   { key: 2, value: 'Date' },
@@ -14,37 +15,34 @@ export const DATATYPES = [
   { key: 4, value: 'Area' },
   { key: 5, value: 'EUI' },
 ]
+const textTypes = [
+  { key: null, value: null },
+  { key: 1, value: 'Text' },
+]
+const numericTypes = [
+  { key: null, value: null },
+  { key: 0, value: 'Number' },
+  { key: 2, value: 'Date' },
+  { key: 3, value: 'Year' },
+  { key: 4, value: 'Area' },
+  { key: 5, value: 'EUI' },
+]
 
-// RP TODO - make data types dynamic
-// const allTypes = [
-//   { key: 0, value: 'Number' },
-//   { key: 1, value: 'Text' },
-//   { key: 2, value: 'Date' },
-//   { key: 3, value: 'Year' },
-//   { key: 4, value: 'Area' },
-//   { key: 5, value: 'EUI' },
-// ]
-// const textTypes = [
-//   { key: 1, value: 'Text' },
-// ]
-// const numericTypes = [
-//   { key: 0, value: 'Number' },
-//   { key: 2, value: 'Date' },
-//   { key: 3, value: 'Year' },
-//   { key: 4, value: 'Area' },
-//   { key: 5, value: 'EUI' },
-// ]
+export const DATATYPES_BY_CONDITION: {
+  exclude: typeof textTypes;
+  include: typeof textTypes;
+  not_null: typeof allTypes;
+  range: typeof numericTypes;
+  required: typeof allTypes;
+} = {
+  exclude: textTypes,
+  include: textTypes,
+  not_null: allTypes,
+  range: numericTypes,
+  required: allTypes,
+}
 
-// export const DATATYPES = {
-//   exclude: textTypes,
-//   include: textTypes,
-//   not_null: allTypes,
-//   range: numericTypes,
-//   required: allTypes,
-// }
-
-export const INVENTORY_COLUMNS = ['enabled', 'field', 'data_type', 'condition', 'criteria', 'units', 'severity', 'status_label', 'actions']
-// export const INVENTORY_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
+export const INVENTORY_COLUMNS = ['enabled', 'field', 'condition', 'data_type', 'criteria', 'units', 'severity', 'status_label', 'actions']
 export const GOAL_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
 
 export const SEVERITY = [

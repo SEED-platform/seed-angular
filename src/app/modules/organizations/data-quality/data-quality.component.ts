@@ -14,14 +14,15 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { concatMap, from, map, Subject, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import { DataQualityService } from '@seed/api/data-quality/data-quality.service'
-import type { Rule } from '@seed/api/data-quality/data-quality.types'
+import type { Condition, InventoryFormGroup, Rule } from '@seed/api/data-quality/data-quality.types'
 import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { CONDITIONS, DATATYPES, GOAL_COLUMNS, INVENTORY_COLUMNS, SEVERITY, UNITS } from './constants'
+import { CONDITIONS, DATATYPES_BY_CONDITION, GOAL_COLUMNS, INVENTORY_COLUMNS, SEVERITY, UNITS } from './constants'
+import { DataQualityValidator } from './data-quality.validator'
 
 @Component({
   selector: 'seed-organizations-data-quality',
@@ -61,18 +62,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _tableLookup: Record<string, Rule[]> = {}
   readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
   readonly tableTypes: ['PropertyState', 'TaxLotState', 'Goal']
-  // lookup for type -> rules
-  // private _typeLookup: Record<string, Rule[]> = {
-  //   properties: this._propertyRules,
-  //   taxlots: this._taxlotRules,
-  //   goals: this._goalRules,
-  // }
-  // lookup for table name -> rules
-  // private _tableLookup: Record<string, Rule[]> = {
-  //   PropertyState: this._propertyRules,
-  //   TaxLotState: this._taxlotRules,
-  //   Goal: this._goalRules,
-  // }
+  private _dataQualityValidator = inject(DataQualityValidator)
 
   propertyColumns: { key: string; value: string }[] = []
   taxLotColumns: { key: string; value: string }[] = []
@@ -83,7 +73,6 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   // constants
   ruleColumns: string[] = []
   conditions = CONDITIONS
-  dataTypes = DATATYPES
   units = UNITS
   severity = SEVERITY
 
@@ -142,21 +131,12 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     this._propertyRules = []
     this._taxlotRules = []
     this._goalRules = []
-    this._typeLookup = {
-      properties: this._propertyRules,
-      taxlots: this._taxlotRules,
-      goals: this._goalRules,
-    }
-    this._tableLookup = {
-      PropertyState: this._propertyRules,
-      TaxLotState: this._taxlotRules,
-      Goal: this._goalRules,
-    }
+    this._typeLookup = { properties: this._propertyRules, taxlots: this._taxlotRules, goals: this._goalRules }
+    this._tableLookup = { PropertyState: this._propertyRules, TaxLotState: this._taxlotRules, Goal: this._goalRules }
   }
 
   getRules() {
     this.resetLookups()
-
     this._dataQualityService.getRules()
       .pipe(
         map((rules) => rules.sort((a, b) => naturalSort(a.field, b.field))),
@@ -185,22 +165,27 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     for (const rule of rules) {
       const formGroup = this.inventoryFormGroup()
       formGroup.patchValue(rule)
+      // this.watchFormGroup(formGroup)
       this.form.push(formGroup)
     }
     this.ruleDataSource.data = this.form.controls as FormGroup[]
-    console.log(this.ruleDataSource.data)
   }
+
+  // watchFormGroup(formGroup: FormGroup) {
+  //   // formGroup.get('condition')?.valueChanges
+  //   console.log('watchFormGroup', formGroup)
+  // }
 
   /*
   * return form's 'row' for a property or tax lot rule
   */
-  inventoryFormGroup() {
+  inventoryFormGroup(): InventoryFormGroup {
     return new FormGroup({
       id: new FormControl<number | null>(null),
       enabled: new FormControl<boolean>(true),
-      condition: new FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range' | ''>(''),
+      condition: new FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range' >('required'),
       field: new FormControl<string>(''),
-      data_type: new FormControl<number | null>(null),
+      data_type: new FormControl<number | null>(null, this._dataQualityValidator.dataTypeMatch()),
       min: new FormControl<number | null>(null),
       max: new FormControl<number | null>(null),
       text_match: new FormControl<string | null>(null),
@@ -229,6 +214,36 @@ export class DataQualityComponent implements OnDestroy, OnInit {
 
   getFormGroup(index: number) {
     return this.form.at(index) as FormGroup
+  }
+
+  isRowTouched(index: number) {
+    const formGroup = this.form.at(index) as FormGroup
+    return formGroup.touched && !formGroup.invalid
+  }
+
+  // feels like this should be done in a validator
+  isDataTypeMismatch(index: number) {
+    if (index) {
+      return ''
+    }
+    // const formGroup = this.form.at(index) as InventoryFormGroup
+    // const groups = this.form.controls.filter((fg: InventoryFormGroup) => fg.value.field === formGroup.value.field)
+    // if (groups.length === 1) {
+    //   return ''
+    // }
+    // if (groups.every((fg: InventoryFormGroup) => fg.value.data_type === formGroup.value.data_type)) {
+    //   return ''
+    // }
+    // return 'bg-red-200'
+  }
+
+  getRowClass(index: number) {
+    const formGroup = this.form.at(index) as FormGroup
+    if (formGroup.invalid) {
+      return 'bg-red-50'
+    } else if (formGroup.touched) {
+      return 'bg-blue-50'
+    }
   }
 
   isText(index: number) {
@@ -260,6 +275,11 @@ export class DataQualityComponent implements OnDestroy, OnInit {
       2: 'bg-emerald-200 rounded p-2',
     }
     return severityClasses[severity]
+  }
+
+  getDataTypes(index: number) {
+    const condition = this.form.at(index).get('condition').value as Condition
+    return DATATYPES_BY_CONDITION[condition] || []
   }
 
   onSubmit() {
