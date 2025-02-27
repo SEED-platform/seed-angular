@@ -1,0 +1,16 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  Delete Salesforce Field Mapping
+</h2>
+<div class="flex flex-col gap-4">
+  <div class="prose flex">Really Delete the mapping for:</div>
+  <div class="background-grey-100 text-grey-900 flex font-bold">{{ salesforceMapping.salesforce_fieldname }} -> {{ columnName }}</div>
+</div>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onSubmit()">Yes</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button mat-stroked-button (click)="close()">No</button>
+  </mat-dialog-actions>
+</div>

@@ -1,5 +1,5 @@
-<mat-drawer-container class="h-full">
-  <mat-drawer mode="side" opened class="h-lvh">
+<mat-drawer-container class="static h-full">
+  <mat-drawer mode="side" opened class="fixed top-16 h-full">
     <seed-vertical-navigation
       class="mt-4 bg-gray-100 dark:bg-gray-700 print:hidden"
       [appearance]="'default'"
@@ -10,7 +10,7 @@
     >
       <!-- Navigation header hook -->
       <ng-container verticalNavigationContentHeader>
-        <div class="flex items-center justify-center p-4">
+        <div class="static flex items-center justify-center p-4">
           <h3 class="font-xl font-bold">Settings</h3>
         </div>
       </ng-container>
