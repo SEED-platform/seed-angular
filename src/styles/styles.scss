@@ -1,4 +1,6 @@
 // Styles from this file will override 'vendors.scss' and SEED's base styles.
+@tailwind utilities;
+
 .mat-mdc-snack-bar-container {
   &.success-snackbar  {
     --mat-snack-bar-button-color: #fff;
@@ -71,4 +73,38 @@
 
 .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked:not(.mat-disabled) .mdc-switch__track::after {
   background-color: rgb(113 226 147) !important;
+}
+
+.label {
+  color: #fff !important;
+  font-weight: 700;
+  padding: 4px;
+  margin: 2px;
+  border-radius: 4px;
+  display: inline;
+  width: auto;
+  
+  &.orange {
+    background-color: theme('colors.orange.400');
+  }
+  
+  &.red {
+    background-color: theme('colors.red.700');
+  }
+  
+  &.gray {
+    background-color: theme('colors.stone.600');
+  }
+  
+  &.green {
+    background-color: theme('colors.green.700');
+  }
+  
+  &.blue {
+    background-color: theme('colors.blue.700');
+  
+    &.light {
+      background-color: theme('colors.cyan.600') !important;
+    }
+  }
 }

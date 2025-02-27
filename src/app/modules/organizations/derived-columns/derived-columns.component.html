@@ -4,7 +4,7 @@
 >
   <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
 
-  <seed-page-inventory-table-container>
+  <seed-page-table-container>
     <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="derivedColumnDataSource" [trackBy]="trackByFn">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -35,5 +35,5 @@
         <tr mat-row *matRowDef="let row; columns: derivedColumnColumns"></tr>
       </tbody>
     </table>
-  </seed-page-inventory-table-container>
+  </seed-page-table-container>
 </seed-page>
