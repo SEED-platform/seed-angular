@@ -5,7 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
-import { map, Subject, takeUntil, tap } from 'rxjs'
+import { map, Subject, takeUntil } from 'rxjs'
 import { type DerivedColumn, DerivedColumnService } from '@seed/api/derived-column'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -44,23 +44,23 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   derivedColumnColumns = ['name', 'expression', 'actions']
 
   ngOnInit(): void {
-    this.getDerivedColumns()
-  }
-
-  getDerivedColumns() {
-    this._derivedColumnService
-      .get()
+    this._derivedColumnService.derivedColumns$
       .pipe(
         takeUntil(this._unsubscribeAll$),
         map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
-        tap((derivedColumns) => {
-          this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
-          this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
-          this.derivedColumnDataSource.data = this.derivedColumns
-          this._orgId = derivedColumns[0]?.organization
-        }),
+
       )
-      .subscribe()
+
+      .subscribe((derivedColumns) => {
+        this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
+        this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
+        this.derivedColumnDataSource.data = this.derivedColumns
+        this._orgId = derivedColumns[0]?.organization
+      })
+  }
+
+  getDerivedColumns() {
+    this._derivedColumnService.get(this._orgId).subscribe()
   }
 
   async toggleInventoryType(type: InventoryType) {

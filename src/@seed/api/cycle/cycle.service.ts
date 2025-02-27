@@ -1,8 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, switchMap, tap } from 'rxjs'
+import { type Observable, Subject, switchMap } from 'rxjs'
+import { BehaviorSubject, catchError, map, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -15,23 +15,28 @@ export class CycleService {
   private _snackBar = inject(SnackbarService)
   private _errorService = inject(ErrorService)
   private _cycles = new BehaviorSubject<Cycle[]>([])
+  private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
 
   cycles$ = this._cycles.asObservable()
 
-  get(): Observable<Cycle[]> {
-    return this._organizationService.currentOrganization$.pipe(
-      switchMap(({ org_id }) => {
-        const url = `/api/v3/cycles/?organization_id=${org_id}`
-        return this._httpClient.get<CyclesResponse>(url).pipe(
-          map(({ cycles }) => cycles),
-          tap((cycles) => {
-            this._cycles.next(cycles)
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return this._errorService.handleError(error, 'Error fetching cycles')
-          }),
-        )
+  constructor() {
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(({ org_id }) => this.get(org_id)),
+      ).subscribe()
+  }
+
+  get(orgId: number): Observable<Cycle[]> {
+    const url = `/api/v3/cycles/?organization_id=${orgId}`
+    return this._httpClient.get<CyclesResponse>(url).pipe(
+      map(({ cycles }) => cycles),
+      tap((cycles) => {
+        this._cycles.next(cycles)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching cycles')
       }),
     )
   }
