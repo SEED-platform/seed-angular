@@ -28,11 +28,20 @@
       </ng-container>
 
       <ng-container matColumnDef="severity">
-        <th mat-header-cell class="min-w-50" *matHeaderCellDef>Severity</th>
+        <th mat-header-cell *matHeaderCellDef>Severity</th>
         <td mat-cell *matCellDef="let rule">
           <div class="py-1 px-2 rounded" [ngClass]="severityLookup[rule.severity].class">
-            {{ severityLookup[rule.severity].label }}
+            {{ severityLookup[rule.severity].name }}
           </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="label">
+        <th mat-header-cell *matHeaderCellDef>Label</th>
+        <td mat-cell *matCellDef="let rule">
+          @if (rule.status_label) {
+            <seed-label [label]="labelLookup[rule.status_label]"></seed-label>
+          }
         </td>
       </ng-container>
 
@@ -58,7 +67,4 @@
     </table>
   </seed-page-table-container>
 
-  TEST
 </seed-page>
-
-  <!-- inventoryColumns = ['enabled', 'field', 'criteria', 'severity', 'status_label', 'actions'] -->

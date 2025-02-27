@@ -202,7 +202,7 @@ export class DataQualityBakComponent implements OnDestroy, OnInit {
       text_match: new FormControl<string | null>(null),
       units: new FormControl<string>(''),
       severity: new FormControl<number | null>(null),
-      status_label: new FormControl<string | null>(null),
+      status_label: new FormControl<number | null>(null),
     })
   }
 

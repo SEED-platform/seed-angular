@@ -12,8 +12,9 @@ import { combineLatest, map, Subject, takeUntil } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import type { Rule, UnitSymbols } from '@seed/api/data-quality'
 import { DataQualityService } from '@seed/api/data-quality'
+import { type Label, LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent, TableContainerComponent } from '@seed/components'
+import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { InventoryTabComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -21,10 +22,12 @@ import type { InventoryType } from '../../inventory/inventory.types'
 @Component({
   selector: 'seed-organizations-data-quality',
   templateUrl: './data-quality.component.html',
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   imports: [
     CommonModule,
     InventoryTabComponent,
     FormsModule,
+    LabelComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
@@ -41,16 +44,18 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
+  private _labelsService = inject(LabelService)
   readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
+  // private _labels: Label[]
   private _rules: Rule[]
   private _propertyRules: Rule[]
   private _taxlotRules: Rule[]
   private _goalRules: Rule[]
   currentRules: Rule[]
   rulesDataSource = new MatTableDataSource<Rule>([])
-  rulesColumns = ['enabled', 'field', 'criteria', 'severity', 'actions']
+  rulesColumns = ['enabled', 'field', 'criteria', 'severity', 'label', 'actions']
   // inventoryColumns = ['enabled', 'field', 'criteria', 'severity', 'status_label', 'actions']
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   propertyColumnsLookup: Record<string, string> = {}
@@ -66,31 +71,35 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     'kWh/m**2/year': 'kWh/m²/year',
     'kBtu/m**2/year': 'kBtu/m²/year',
   }
-
+  labelLookup = {}
   severityLookup = {
-    0: { label: 'Error', class: 'bg-red-200' },
-    1: { label: 'Warning', class: 'bg-amber-200' },
-    2: { label: 'Valid', class: 'bg-emerald-200' },
+    0: { name: 'Error', class: 'bg-red-200' },
+    1: { name: 'Warning', class: 'bg-amber-200' },
+    2: { name: 'Valid', class: 'bg-green-200' },
   }
 
   ngOnInit(): void {
     // subscribe to org, rules, columns
     combineLatest([
       this._organizationService.currentOrganization$,
-      this._dataQualityService.rules$.pipe(map((rules) => rules.sort((a, b) => naturalSort(a.field, b.field)))),
       this._columnService.propertyColumns$,
       this._columnService.taxLotColumns$,
+      this._labelsService.labels$,
+      this._dataQualityService.rules$.pipe(map((rules) => rules.sort((a, b) => naturalSort(a.field, b.field)))),
     ])
       .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(([organization, rules, propertyColumns, taxLotColumns]) => {
+      .subscribe(([organization, propertyColumns, taxLotColumns, labels, rules]) => {
         this._orgId = organization.id
-        this._rules = rules
         for (const col of propertyColumns) {
           this.propertyColumnsLookup[col.column_name] = col.display_name
         }
         for (const col of taxLotColumns) {
           this.taxlotColumnsLookup[col.column_name] = col.display_name
         }
+        for (const label of labels) {
+          this.labelLookup[label.id] = label
+        }
+        this._rules = rules
         this.setRules()
       })
   }

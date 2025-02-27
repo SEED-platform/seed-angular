@@ -12,7 +12,7 @@ export type Rule = {
   required: boolean;
   rule_type: number;
   severity: number;
-  status_label: string | null;
+  status_label: number;
   table_name: 'PropertyState' | 'TaxLotState' | 'Goal';
   text_match: string | null;
   units: string;
@@ -32,7 +32,7 @@ export type InventoryFormGroup = FormGroup<{
   text_match: FormControl<string | null>;
   units: FormControl<string>;
   severity: FormControl<number | null>;
-  status_label: FormControl<string | null>;
+  status_label: FormControl<number | null>;
 }>
 
 export type UnitSymbols = 'ft**2' | 'm**2' | 'kBtu/ft**2/year' | 'gal/ft**2/year' | 'GJ/m**2/year' | 'MJ/m**2/year' | 'kWh/m**2/year' | 'kBtu/m**2/year'
