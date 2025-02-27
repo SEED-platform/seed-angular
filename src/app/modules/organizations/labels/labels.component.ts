@@ -1,7 +1,9 @@
 import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { type Label, LabelService } from '@seed/api/label'
@@ -12,7 +14,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-labels',
   templateUrl: './labels.component.html',
-  imports: [LabelComponent, PageComponent, TableContainerComponent, MatButtonModule, MatIconModule, MatTableModule],
+  imports: [LabelComponent, PageComponent, TableContainerComponent, MatButtonModule, MatCheckboxModule, MatIconModule, MatSlideToggleModule, MatTableModule],
 })
 export class LabelsComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -23,13 +25,24 @@ export class LabelsComponent implements OnInit, OnDestroy {
   organization: Organization
   labelsDataSource = new MatTableDataSource<Label>([])
   labelColumns = ['label', 'shown in list', 'actions']
+  allVisible = true
 
   ngOnInit(): void {
     this._labelService.labels$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((labels) => {
       this.labelsDataSource.data = labels
+      if (labels.find((l) => !l.show_in_list)) {
+        this.allVisible = false
+      }
     })
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
+    })
+  }
+
+  toggleAllShown = (): void => {
+    this._labelService.bulkUpdate(this.organization.id, this.labelsDataSource.data, !this.allVisible).subscribe(() => {
+      this.refreshLabels()
+      this.allVisible = !this.allVisible
     })
   }
 

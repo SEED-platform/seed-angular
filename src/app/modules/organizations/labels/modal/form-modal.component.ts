@@ -45,7 +45,6 @@ export class FormModalComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.create = !('id' in this.data.label)
     this.form.patchValue(this.data.label)
-    console.log(this.data.label)
   }
 
   onSubmit() {
