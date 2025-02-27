@@ -2,7 +2,7 @@
   [config]="{ title: 'Data Quality', action: resetRules, actionIcon: 'fa-solid:rotate-left', actionText: 'Reset All Rules' }"
   *transloco="let t">
   <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
-  <seed-page-inventory-table-container>
+  <seed-page-table-container>
     <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="rulesDataSource"
       [trackBy]="trackByFn">
 
@@ -56,7 +56,7 @@
       </tbody>
       
     </table>
-  </seed-page-inventory-table-container>
+  </seed-page-table-container>
 
   TEST
 </seed-page>

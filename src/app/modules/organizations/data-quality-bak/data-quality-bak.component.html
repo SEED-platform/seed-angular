@@ -1,6 +1,6 @@
 <seed-page [config]="{ title: 'Data Quality Backup', action: resetRules, actionIcon: 'fa-solid:rotate-left', actionText: 'Reset All Rules' }" *transloco="let t">
   <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
-  <seed-page-inventory-table-container>
+  <seed-page-table-container>
     <form (ngSubmit)="onSubmit()">
       <div class="flex justify-end mb-12">
         <button class="absolute" mat-raised-button color="primary" [disabled]="form.invalid">Submit</button>
@@ -125,5 +125,5 @@
 
     </form>
 
-  </seed-page-inventory-table-container>
+  </seed-page-table-container>
 </seed-page>
