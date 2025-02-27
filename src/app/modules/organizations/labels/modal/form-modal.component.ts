@@ -7,13 +7,12 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
-import { Subject, takeUntil } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type SalesforceMapping, SalesforceService } from '@seed/api/salesforce'
-import { naturalSort } from '@seed/utils'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { Subject } from 'rxjs'
+import { type Label, LabelService } from '@seed/api/label'
 
 @Component({
-  selector: 'seed-salesforce-form-modal',
+  selector: 'seed-labels-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
     CommonModule,
@@ -23,43 +22,37 @@ import { naturalSort } from '@seed/utils'
     FormsModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
   ],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
-  private _columnService = inject(ColumnService)
-  private _salesforceService = inject(SalesforceService)
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
+  private _labelService = inject(LabelService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  columns: Column[]
-
+  label: Label
+  colors = ['blue', 'gray', 'green', 'light blue', 'orange', 'red']
   create = true
-  data = inject(MAT_DIALOG_DATA) as { salesforceMapping: SalesforceMapping | null; organization_id: number; column: number; salesforce_fieldname: string }
+  data = inject(MAT_DIALOG_DATA) as { label: Label | null; organization_id: number }
   form = new FormGroup({
-    salesforce_fieldname: new FormControl<string | null>('', [Validators.required]),
-    column: new FormControl<number | null>(null, [Validators.required]),
+    name: new FormControl<string | null>('', [Validators.required]),
+    color: new FormControl<string | null>(null, [Validators.required]),
     organization_id: new FormControl<number | null>(null),
+    show_in_list: new FormControl<boolean>(false),
     id: new FormControl<number | null>(null),
   })
 
   ngOnInit(): void {
-    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((columns) => {
-      this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-    })
-    if (this.data.salesforceMapping) {
-      this.create = false
-      this.form.patchValue(this.data.salesforceMapping)
-    } else {
-      this.form.get('organization_id').setValue(this.data.organization_id)
-    }
+    this.create = !('id' in this.data.label)
+    this.form.patchValue(this.data.label)
   }
 
   onSubmit() {
-    const data = this.form.value as SalesforceMapping
+    const data = this.form.value as Label
     if (data.id) {
-      this._salesforceService.updateMapping(data.organization_id, data).subscribe()
+      this._labelService.update(data).subscribe()
     } else {
-      this._salesforceService.createMapping(data.organization_id, data).subscribe()
+      this._labelService.create(data).subscribe()
     }
     this.close()
   }
