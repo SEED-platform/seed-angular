@@ -1,17 +1,18 @@
 import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { type Label, LabelService } from '@seed/api/label'
 import { type Organization, OrganizationService } from '@seed/api/organization'
-import { LabelComponent, PageComponent } from '@seed/components'
+import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { DeleteModalComponent, FormModalComponent } from './modal'
 
 @Component({
   selector: 'seed-organizations-labels',
   templateUrl: './labels.component.html',
-  imports: [LabelComponent, PageComponent, MatIconModule, MatTableModule],
+  imports: [LabelComponent, PageComponent, TableContainerComponent, MatButtonModule, MatIconModule, MatTableModule],
 })
 export class LabelsComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
