@@ -9,7 +9,7 @@
       <ng-container matColumnDef="shown in list">
         <th mat-header-cell *matHeaderCellDef class="flex flex-col">
           <div class="flex">Shown In List?</div>
-          <mat-slide-toggle class="flex my-2" [checked]="allVisible" (click)="toggleAllShown()">{{
+          <mat-slide-toggle class="my-2 flex" [checked]="allVisible" (click)="toggleAllShown()">{{
             allVisible ? 'Hide All' : 'Show All'
           }}</mat-slide-toggle>
         </th>
