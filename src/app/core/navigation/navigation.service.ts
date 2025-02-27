@@ -70,6 +70,14 @@ export class NavigationService {
           type: 'basic',
         },
         {
+          id: 'organizations/data-quality-bak',
+          link: '/organizations/data-quality-bak/properties',
+          title: 'Data Quality Backup',
+          icon: 'fa-solid:flag',
+          type: 'basic',
+          regexMatch: /^\/organizations\/data-quality-bak\/(properties|taxlots|goal)/,
+        },
+        {
           id: 'organizations/data-quality',
           link: '/organizations/data-quality/properties',
           title: 'Data Quality',

@@ -34,3 +34,6 @@ export type InventoryFormGroup = FormGroup<{
   severity: FormControl<number | null>;
   status_label: FormControl<string | null>;
 }>
+
+export type UnitSymbols = 'ft**2' | 'm**2' | 'kBtu/ft**2/year' | 'gal/ft**2/year' | 'GJ/m**2/year' | 'MJ/m**2/year' | 'kWh/m**2/year' | 'kBtu/m**2/year'
+export type UnitNames = 'square feet' | 'square metres' | 'kBtu/sq. ft./year' | 'gal/sq. ft./year' | 'GJ/m²/year' | 'MJ/m²/year' | 'kWh/m²/year' | 'kBtu/m²/year'

@@ -1,0 +1,129 @@
+<seed-page [config]="{ title: 'Data Quality Backup', action: resetRules, actionIcon: 'fa-solid:rotate-left', actionText: 'Reset All Rules' }" *transloco="let t">
+  <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
+  <seed-page-inventory-table-container>
+    <form (ngSubmit)="onSubmit()">
+      <div class="flex justify-end mb-12">
+        <button class="absolute" mat-raised-button color="primary" [disabled]="form.invalid">Submit</button>
+      </div>
+
+        <table 
+          class="mat-elevation-z8 w-full bg-transparent vertical-stripe" 
+          mat-table
+          matSort
+          [dataSource]="ruleDataSource"
+          [trackBy]="trackByFn"
+        >
+        
+          <ng-container matColumnDef="enabled">
+            <th mat-header-cell *matHeaderCellDef>Enabled</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              <mat-slide-toggle formControlName="enabled"></mat-slide-toggle>
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="field">
+            <th mat-header-cell *matHeaderCellDef>Field</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+                <mat-select formControlName="field">
+                  @for (item of fields; track item) {
+                    <mat-option [value]="item.key">{{ item.value }}</mat-option>
+                  }
+                </mat-select>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="condition">
+            <th mat-header-cell class="min-w-50" *matHeaderCellDef>Condition</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              <mat-select formControlName="condition">
+                @for (item of conditions; track item) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+                }
+              </mat-select>
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="data_type">
+            <th mat-header-cell class="min-w-40" *matHeaderCellDef>Data Type</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)" [ngClass]="isDataTypeMismatch(i)">
+              <mat-form-field apppearance="fill">
+                <mat-select formControlName="data_type">
+                  @for (item of getDataTypes(i); track item) {
+                    <mat-option [value]="item.key">{{ item.value }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="criteria">
+            <th mat-header-cell *matHeaderCellDef>Criteria</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              @if (isRange(i)) {
+              <div class="flex">
+                <div class="flex items-center gap-2 mr-2">
+                  <mat-label class="text-gray-400">Min</mat-label>
+                  <input matInput formControlName="min" type="number" class="p-2 border rounded" placeholder="(no minumum)"/>
+                </div>
+                <div class="flex items-center gap-2 mr-2">
+                  <mat-label class="text-gray-400">Max</mat-label>
+                  <input matInput formControlName="max" type="number" class="p-2 border rounded" placeholder="(no maximum)"/>
+                </div>
+              </div>
+              }
+               @else if (isTextMatch(i)) {
+              <input matInput class="p-2 border rounded w-full" formControlName="text_match" [placeholder]="getPlaceholderText(i)" />
+              }
+            </td> 
+          </ng-container>
+          
+          <ng-container matColumnDef="units">
+            <th mat-header-cell class="min-w-50" *matHeaderCellDef>Units</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              @if (isRange(i)) {
+              <mat-select formControlName="units">
+                @for (item of units; track item) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+                }
+              </mat-select>
+            }
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="severity">
+            <th mat-header-cell class="min-w-50" *matHeaderCellDef>Severity</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)" 
+              
+            >
+              <mat-select formControlName="severity" [ngClass]="getSeverityClass(i)">
+                @for (item of severity; track item) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+                }
+              </mat-select>
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="status_label">
+            <th mat-header-cell *matHeaderCellDef>Label</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              {{ rule.status_label }}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="select-none">Actions</th>
+            <td mat-cell *matCellDef="let rule; let i = index" [formGroup]="getFormGroup(i)">
+              <a mat-stroked-button color="warn" (click)="deleteRule(rule)">
+                <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+              </a>
+            </td>
+          </ng-container>
+  
+          <tr mat-header-row *matHeaderRowDef="ruleColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: ruleColumns; let i = index" [ngClass]="getRowClass(i)"></tr>
+  
+        </table>
+
+    </form>
+
+  </seed-page-inventory-table-container>
+</seed-page>
