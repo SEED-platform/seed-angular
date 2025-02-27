@@ -80,4 +80,17 @@ export class LabelService {
       }),
     )
   }
+
+  bulkUpdate(org_id: number, labels: Label[], show_in_list: boolean): Observable<HttpResponse<null>> {
+    const url = `/api/v3/labels/bulk_update/?organization_id=${org_id}`
+    return this._httpClient.put<HttpResponse<null>>(url, { data: { show_in_list }, label_ids: labels.map((l) => l.id) }).pipe(
+      map((response) => {
+        this._snackBar.success(`All labels ${show_in_list ? 'shown' : 'hidden'}`)
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error updating labels: ${error.message}`)
+      }),
+    )
+  }
 }
