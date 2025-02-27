@@ -31,8 +31,12 @@
           </a>
         </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="labelColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: labelColumns"></tr>
+      <thead>
+        <tr mat-header-row *matHeaderRowDef="labelColumns"></tr>
+      </thead>
+      <tbody>
+        <tr mat-row *matRowDef="let row; columns: labelColumns"></tr>
+      </tbody>
     </table>
   </seed-page-table-container>
 </seed-page>
