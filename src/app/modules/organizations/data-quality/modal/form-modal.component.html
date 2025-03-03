@@ -1,0 +1,107 @@
+<div class="overflow-x-none">
+  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+    {{ create ? 'Create' : 'Edit' }} Rule</h2>
+  <div class="h-100 overflow-y-auto mt-4">
+    <form [formGroup]="form" class="flex flex-col gap-4">
+    
+        <!-- enabled -->
+        <div class="flex">
+          <mat-label required class="font-medium mr-4">Enabled</mat-label>
+          <mat-slide-toggle formControlName="enabled"></mat-slide-toggle>
+        </div>
+    
+        <!-- field -->
+        <mat-form-field>
+          <mat-label>Field</mat-label>
+          <mat-select formControlName="field">
+            @for (item of columns; track item) {
+              <mat-option [value]="item.column_name">{{ item.display_name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        
+        <!-- condition -->
+        <div class="flex">
+          <mat-form-field class="mr-1 w-1/4">
+            <mat-label>Condition</mat-label>
+            <mat-select formControlName="condition">
+              @for (item of constants.conditions; track item) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+        @if (form.value.condition === 'range') {
+          <!-- min -->
+          <mat-form-field class="mr-1 w-1/4">
+            <mat-label>Min</mat-label>
+            <input matInput formControlName="min" type="number" />
+          </mat-form-field>
+          
+          <!-- max -->
+          <mat-form-field class="mr-1 w-1/4">
+            <mat-label>Max</mat-label>
+            <input matInput formControlName="max" type="number" />
+          </mat-form-field>
+          
+          <!-- units -->
+          <mat-form-field class="w-1/4">
+            <mat-label>Units</mat-label>
+            <mat-select formControlName="units">
+              @for (item of constants.units; track item) {
+              <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        } @else if (['exclude', 'include'].includes(form.value.condition)) {
+          <!-- text_match -->
+          <mat-form-field class="w-3/4">
+            <mat-label>Text Match</mat-label>
+            <input matInput formControlName="text_match" />
+          </mat-form-field>
+        }
+        </div>
+
+        <div class="flex">
+          <!-- severity -->
+          <mat-form-field class="w-1/2 mr-1">
+            <mat-label>Severity</mat-label>
+            <mat-select formControlName="severity">
+              @for (item of constants.severities; track item) {
+                <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+  
+          <!-- labels -->
+          <mat-form-field class="w-1/2">
+            <mat-label>Labels</mat-label>
+            <mat-select formControlName="status_label">
+              <mat-select-trigger>
+                <!-- {{form.value.status_label}} -->
+                 @if (form.value.status_label) {
+                   <seed-label [label]="labelLookup[form.value.status_label]"></seed-label>
+                 }
+              </mat-select-trigger>
+              @for (item of labels; track item) {
+                <mat-option [value]="item.id">
+                  <seed-label [label]="item"></seed-label>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end">
+    <mat-dialog-actions>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    </mat-dialog-actions>
+  </div>
+</div>

@@ -39,6 +39,7 @@ export class DataQualityService {
     const url = `/api/v3/data_quality_checks/${orgId}/rules/${id}/`
     return this._httpClient.put<Rule>(url, rule)
       .pipe(
+        tap(() => { this._snackBar.success('Data quality rule updated') }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error updating data quality rule')
         }),

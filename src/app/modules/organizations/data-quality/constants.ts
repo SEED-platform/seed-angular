@@ -45,10 +45,10 @@ export const DATATYPES_BY_CONDITION: {
 export const INVENTORY_COLUMNS = ['enabled', 'field', 'condition', 'data_type', 'criteria', 'units', 'severity', 'status_label', 'actions']
 export const GOAL_COLUMNS = ['enabled', 'condition', 'field', 'data_type', 'min', 'max', 'units', 'severity', 'status_label', 'actions']
 
-export const SEVERITY = [
-  { key: 0, value: 'Error' },
-  { key: 1, value: 'Warning' },
-  { key: 2, value: 'Valid' },
+export const SEVERITIES = [
+  { key: 0, value: 'Error', class: 'bg-red-200' },
+  { key: 1, value: 'Warning', class: 'bg-amber-200' },
+  { key: 2, value: 'Valid', class: 'bg-green-200' },
 ]
 
 export const UNITS = [

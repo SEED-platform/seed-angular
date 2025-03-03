@@ -21,13 +21,13 @@ import { naturalSort } from '@seed/utils'
 import type { InventoryType } from '../../inventory/inventory.types'
 import { DataQualityUtils } from './data-quality.utils'
 import { DeleteModalComponent } from './modal/delete-modal.component'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-organizations-data-quality',
   templateUrl: './data-quality.component.html',
   imports: [
     CommonModule,
-    DeleteModalComponent,
     InventoryTabComponent,
     FormsModule,
     LabelComponent,
@@ -52,7 +52,6 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
-  // private _labels: Label[]
   private _rules: Rule[]
   private _propertyRules: Rule[]
   private _taxlotRules: Rule[]
@@ -140,7 +139,19 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   }
 
   editRule(rule: Rule) {
-    console.log('edit rule', rule)
+    const displayName = DataQualityUtils.getDisplayName(this.getFieldName(rule.field), rule)
+    const columns$ = this.type === 'properties' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '50rem',
+      data: { rule, orgId: this._orgId, displayName, columns$ },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.getRules() }),
+      ).subscribe()
   }
 
   deleteRule(rule: Rule) {

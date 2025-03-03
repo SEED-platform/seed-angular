@@ -37,14 +37,14 @@ export class DataQualityUtils {
     const { min, max, data_type, units } = rule
     const unitText = this._unitLookup[units as UnitSymbols] || ''
 
-    if (min && max) {
+    if (min !== null && max !== null) {
       const minText = data_type === 2 ? this.formatDate(min) : min
       const maxText = data_type === 2 ? this.formatDate(max) : max
       return `is between [ ${minText} ] and [ ${maxText} ] ${unitText}`
     }
 
-    if (min) return `is greater than [ ${min} ] ${unitText}`
-    if (max) return `is less than [ ${max} ] ${unitText}`
+    if (min !== null) return `is greater than [ ${min} ] ${unitText}`
+    if (max !== null) return `is less than [ ${max} ] ${unitText}`
 
     return ''
   }
