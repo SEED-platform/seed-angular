@@ -1,6 +1,6 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, type Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, type Observable, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -12,7 +12,7 @@ export class DataQualityService {
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackbarService)
   private _errorService = inject(ErrorService)
-  private _rules = new Subject<Rule[]>()
+  private _rules = new ReplaySubject<Rule[]>()
   private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
   rules$ = this._rules.asObservable()

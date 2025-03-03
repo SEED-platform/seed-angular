@@ -5,7 +5,6 @@ import {
   ColumnMappingsComponent,
   ColumnSettingsComponent,
   CyclesComponent,
-  DataQualityBakComponent,
   DataQualityComponent,
   DerivedColumnsComponent,
   EmailTemplatesComponent,
@@ -22,11 +21,6 @@ const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: 
 
 const columnMappingTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'column-mappings' }
-  return genericTypeMatcher(args)(segments)
-}
-
-const dataQualityBakTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'data-quality-bak' }
   return genericTypeMatcher(args)(segments)
 }
 
@@ -50,7 +44,6 @@ export default [
   { path: 'access-level-tree', component: AccessLevelTreeComponent },
   { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
   { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },
-  { matcher: dataQualityBakTypeMatcher, component: DataQualityBakComponent },
   { matcher: dataQualityTypeMatcher, component: DataQualityComponent },
   { matcher: derivedColumnsTypeMatcher, component: DerivedColumnsComponent },
   { path: 'cycles', component: CyclesComponent },
