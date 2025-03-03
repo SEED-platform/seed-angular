@@ -49,4 +49,14 @@ export class DataQualityService {
     console.log('post', orgId, rule)
     return of([])
   }
+
+  deleteRule({ orgId, id }): Observable<unknown> {
+    const url = `/api/v3/data_quality_checks/${orgId}/rules/${id}/`
+    return this._httpClient.delete(url).pipe(
+      tap(() => { this._snackBar.success('Rule deleted from organization') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting rule')
+      }),
+    )
+  }
 }
