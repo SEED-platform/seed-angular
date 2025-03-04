@@ -6,21 +6,19 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
 import { combineLatest, map, Subject, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import type { Rule } from '@seed/api/data-quality'
 import { DataQualityService } from '@seed/api/data-quality'
-import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { InventoryTabComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import type { InventoryType } from '../../inventory/inventory.types'
-import { DataQualityUtils } from './data-quality.utils'
-import { DeleteModalComponent } from './modal/delete-modal.component'
+import { DataQualityInventoryTableComponent } from './inventory/inventory-table.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -28,6 +26,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   templateUrl: './data-quality.component.html',
   imports: [
     CommonModule,
+    DataQualityInventoryTableComponent,
     InventoryTabComponent,
     FormsModule,
     LabelComponent,
@@ -47,52 +46,26 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
-  private _labelsService = inject(LabelService)
   private _dialog = inject(MatDialog)
   readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
-  private _rules: Rule[]
   private _propertyRules: Rule[]
   private _taxlotRules: Rule[]
   private _goalRules: Rule[]
+  rules: Rule[]
   currentRules: Rule[]
-  rulesDataSource = new MatTableDataSource<Rule>([])
-  rulesColumns = ['enabled', 'field', 'criteria', 'severity', 'label', 'actions']
-  // inventoryColumns = ['enabled', 'field', 'criteria', 'severity', 'status_label', 'actions']
   type = this._route.snapshot.paramMap.get('type') as InventoryType
-  propertyColumnsLookup: Record<string, string> = {}
-  taxlotColumnsLookup: Record<string, string> = {}
-
-  labelLookup = {}
-  severityLookup = {
-    0: { name: 'Error', class: 'bg-red-200' },
-    1: { name: 'Warning', class: 'bg-amber-200' },
-    2: { name: 'Valid', class: 'bg-green-200' },
-  }
 
   ngOnInit(): void {
-    // subscribe to org, rules, columns
     combineLatest([
       this._organizationService.currentOrganization$,
-      this._columnService.propertyColumns$,
-      this._columnService.taxLotColumns$,
-      this._labelsService.labels$,
       this._dataQualityService.rules$.pipe(map((rules) => rules.sort((a, b) => naturalSort(a.field, b.field)))),
     ])
       .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(([organization, propertyColumns, taxLotColumns, labels, rules]) => {
+      .subscribe(([organization, rules]) => {
         this._orgId = organization.id
-        for (const col of propertyColumns) {
-          this.propertyColumnsLookup[col.column_name] = col.display_name
-        }
-        for (const col of taxLotColumns) {
-          this.taxlotColumnsLookup[col.column_name] = col.display_name
-        }
-        for (const label of labels) {
-          this.labelLookup[label.id] = label
-        }
-        this._rules = rules
+        this.rules = rules
         this.setRules()
       })
   }
@@ -100,11 +73,11 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   getRules() { this._dataQualityService.getRules(this._orgId).subscribe() }
 
   setRules() {
-    this._propertyRules = this._rules.filter((rule) => rule.table_name === 'PropertyState')
-    this._taxlotRules = this._rules.filter((rule) => rule.table_name === 'TaxLotState')
-    this._goalRules = this._rules.filter((rule) => rule.table_name === 'Goal')
+    this._propertyRules = this.rules.filter((rule) => rule.table_name === 'PropertyState')
+    this._taxlotRules = this.rules.filter((rule) => rule.table_name === 'TaxLotState')
+    this._goalRules = this.rules.filter((rule) => rule.table_name === 'Goal')
     const typeLookup = { properties: this._propertyRules, taxlots: this._taxlotRules, goals: this._goalRules }
-    this.currentRules = this.rulesDataSource.data = typeLookup[this.type]
+    this.currentRules = typeLookup[this.type]
   }
 
   async toggleInventoryType(type: InventoryType) {
@@ -116,34 +89,16 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     }
   }
 
-  getFieldName(field: string): string {
-    if (this.type === 'properties') {
-      return this.propertyColumnsLookup[field] || field
-    } else {
-      return this.taxlotColumnsLookup[field] || field
-    }
-  }
-
-  getCriteria(rule: Rule) { return DataQualityUtils.getCriteria(rule) }
-
-  getRangeText(rule: Rule) { return DataQualityUtils.getRangeText(rule) }
-
-  formatDate(dateYMD: number) { return DataQualityUtils.formatDate(dateYMD) }
-
-  toggleEnable(index: number) {
-    console.log('toggle enable', index)
-  }
-
-  resetRules() {
+  resetRules = () => {
     console.log('reset rules')
   }
 
-  editRule(rule: Rule) {
-    const displayName = DataQualityUtils.getDisplayName(this.getFieldName(rule.field), rule)
+  createRule = () => {
     const columns$ = this.type === 'properties' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
+    const tableName = this.type === 'properties' ? 'PropertyState' : 'TaxLotState'
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '50rem',
-      data: { rule, orgId: this._orgId, displayName, columns$ },
+      data: { rule: null, orgId: this._orgId, columns$, tableName },
     })
 
     dialogRef
@@ -152,26 +107,6 @@ export class DataQualityComponent implements OnDestroy, OnInit {
         takeUntil(this._unsubscribeAll$),
         tap(() => { this.getRules() }),
       ).subscribe()
-  }
-
-  deleteRule(rule: Rule) {
-    const displayName = DataQualityUtils.getDisplayName(this.getFieldName(rule.field), rule)
-    const dialogRef = this._dialog.open(DeleteModalComponent, {
-      width: '40rem',
-      data: { rule, orgId: this._orgId, displayName },
-    })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getRules() }),
-      ).subscribe()
-    console.log('delete rule', rule)
-  }
-
-  trackByFn(index: number) {
-    return index
   }
 
   ngOnDestroy(): void {

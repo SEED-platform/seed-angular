@@ -12,7 +12,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { combineLatest, type Observable, Subject } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
-import { LabelService, type Label } from '@seed/api/label'
+import { type Label, LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
 import { LabelComponent } from '@seed/components'
@@ -47,9 +47,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
   data = inject(MAT_DIALOG_DATA) as {
     rule: Rule | null;
     orgId: number;
-    displayName: string;
     columns$: Observable<Column[]>;
     labels$: Observable<Label[]>;
+    tableName: 'PropertyState' | 'TaxLotState' | 'Goal';
   }
   create = true
   columns: Column[]
@@ -79,9 +79,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
     rule_type: new FormControl<number | null>(null),
     severity: new FormControl<number | null>(null),
     status_label: new FormControl<number | null>(null),
-    table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(null), // unused
+    table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
     text_match: new FormControl<string | null>(null),
-    units: new FormControl<string | null>(null),
+    units: new FormControl<string>(''),
   })
 
   ngOnInit(): void {
