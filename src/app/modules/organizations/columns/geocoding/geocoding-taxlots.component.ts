@@ -11,8 +11,8 @@ import { naturalSort } from '@seed/utils'
 import { GeocodingComponent } from './geocoding.component'
 
 @Component({
-  selector: 'seed-organizations-column-geocoding-taxlots',
-  templateUrl: './geocoding2.component.html',
+  selector: 'seed-organizations-column-geocoding-properties',
+  templateUrl: './geocoding.component.html',
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports, CdkDropList, CdkDrag, MatButtonModule, MatIcon, MatSelectModule, MatTooltip, ReactiveFormsModule],
 })
