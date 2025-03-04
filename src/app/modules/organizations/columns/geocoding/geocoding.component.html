@@ -1,1 +1,45 @@
-{{ type }}
+<div class="prose my-6">
+  Drag columns to reorder them.  Add columns with the selector below.
+</div>
+<div class="prose">When all your changes have been made, make sure to save them.</div>
+<div>
+  <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
+    <span class="">Save Changes</span>
+  </button>
+</div>
+
+<div cdkDropList class="" (cdkDropListDropped)="drop($event)">
+@for (column of columns; track column.id) {
+  <div class="flex flex-row w-75 justify-between items-center border border-solid border-slate-600 bg-slate-100 rounded-md space-x-2 p-2 my-2 drop-shadow-md" cdkDrag  >
+    <div class="flex flex-row space-x-4 text-lg leading-40">
+      <div>{{ column.geocoding_order }}</div>
+      <div>{{ column.display_name }}</div>
+    </div>
+    <div class="flex ml-auto"><a mat-stroked-button (click)="delete(column)"><mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Remove from geocoding"></mat-icon></a></div>
+  </div>
+}
+</div>
+
+<div class="text-xl font-bold">Add A GeoCoding Column</div>
+<form [formGroup]="addForm" (ngSubmit)="add()" class="flex flex-col">
+  <mat-form-field>
+    <mat-label>Add Column</mat-label>
+    <mat-select formControlName="addGeocoder">
+      @for (c of availableColumns; track c.id) {
+        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <div>
+    <button mat-flat-button [disabled]="addForm.invalid || addForm.pending" color="secondary">
+      <span class="">Add Geocoding Column</span>
+    </button>
+  </div>
+</form>
+
+<div class="prose">When all your changes have been made, make sure to save them.</div>
+<div>
+  <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
+    <span class="">Save Changes</span>
+  </button>
+</div>
