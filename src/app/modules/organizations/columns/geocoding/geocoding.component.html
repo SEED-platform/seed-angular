@@ -1,7 +1,7 @@
 <div class="prose my-6">
   Drag columns to reorder them.  Add columns with the selector below.
 </div>
-<div class="prose">When all your changes have been made, make sure to save them.</div>
+<div class="prose my-4">When all your changes have been made, make sure to save them.</div>
 <div>
   <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
     <span class="">Save Changes</span>
@@ -31,13 +31,13 @@
     </mat-select>
   </mat-form-field>
   <div>
-    <button mat-flat-button [disabled]="addForm.invalid || addForm.pending" color="secondary">
+    <button mat-flat-button [disabled]="addForm.invalid || addForm.pending" color="accent">
       <span class="">Add Geocoding Column</span>
     </button>
   </div>
 </form>
 
-<div class="prose">When all your changes have been made, make sure to save them.</div>
+<div class="my-4 prose">When all your changes have been made, make sure to save them.</div>
 <div>
   <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
     <span class="">Save Changes</span>
