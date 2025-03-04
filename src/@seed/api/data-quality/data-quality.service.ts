@@ -47,8 +47,14 @@ export class DataQualityService {
   }
 
   postRule({ orgId, rule }): Observable<unknown> {
-    console.log('post', orgId, rule)
-    return of([])
+    const url = `/api/v3/data_quality_checks/${orgId}/rules/`
+    return this._httpClient.post<Rule>(url, rule)
+      .pipe(
+        tap(() => { this._snackBar.success('Data quality rule created') }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error creating data quality rule')
+        }),
+      )
   }
 
   deleteRule({ orgId, id }): Observable<unknown> {
