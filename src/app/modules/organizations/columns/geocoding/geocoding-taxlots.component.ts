@@ -3,7 +3,7 @@ import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-organizations-column-geocoding-taxlots',
-  templateUrl: './geocoding.component.html',
+  templateUrl: './geocoding2.component.html',
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports],
 })

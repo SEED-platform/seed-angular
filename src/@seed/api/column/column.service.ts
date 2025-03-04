@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
+import { type UploaderResponse } from '@seed/services/uploader/uploader.types'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 import { UserService } from '../user'
 import type { Column, ColumnsResponse } from './column.types'
@@ -55,6 +56,18 @@ export class ColumnService {
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching columns')
+      }),
+    )
+  }
+
+  updateMultipleColumns(organization_id: number, table_name: string, changes: object): Observable<UploaderResponse> {
+    const url = '/api/v3/columns/update_multiple/'
+    return this._httpClient.post<UploaderResponse>(url, { organization_id, table_name, changes }).pipe(
+      map((ur) => {
+        return ur
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating columns')
       }),
     )
   }
