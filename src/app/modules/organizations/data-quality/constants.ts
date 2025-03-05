@@ -1,6 +1,6 @@
 export const CONDITIONS = [
-  { key: 'exclude', value: 'Must Not Contain' },
   { key: 'include', value: 'Must Contain' },
+  { key: 'exclude', value: 'Must Not Contain' },
   { key: 'not_null', value: 'Not Null' },
   { key: 'range', value: 'Range' },
   { key: 'required', value: 'Required' },

@@ -5,12 +5,11 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
-import { AlertComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _dataQualityService = inject(DataQualityService)

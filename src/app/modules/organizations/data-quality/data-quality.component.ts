@@ -13,7 +13,7 @@ import { ColumnService } from '@seed/api/column'
 import type { Rule } from '@seed/api/data-quality'
 import { DataQualityService } from '@seed/api/data-quality'
 import { OrganizationService } from '@seed/api/organization'
-import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
+import { PageComponent, TableContainerComponent } from '@seed/components'
 import { InventoryTabComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -29,7 +29,6 @@ import { FormModalComponent } from './modal/form-modal.component'
     DataQualityInventoryTableComponent,
     InventoryTabComponent,
     FormsModule,
-    LabelComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
@@ -90,7 +89,10 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   }
 
   resetRules = () => {
-    console.log('reset rules')
+    this._dataQualityService.resetRules(this._orgId)
+      .subscribe(() => {
+        this.getRules()
+      })
   }
 
   createRule = () => {
@@ -98,7 +100,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     const tableName = this.type === 'properties' ? 'PropertyState' : 'TaxLotState'
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '50rem',
-      data: { rule: null, orgId: this._orgId, columns$, tableName },
+      data: { rule: null, orgId: this._orgId, columns$, tableName, currentRules: this.currentRules },
     })
 
     dialogRef

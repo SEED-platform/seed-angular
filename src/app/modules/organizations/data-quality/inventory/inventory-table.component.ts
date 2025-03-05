@@ -4,7 +4,7 @@ import { Component, inject, Input, Output } from '@angular/core'
 import { EventEmitter } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
-import type { MatDialogRef } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
@@ -12,11 +12,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute } from '@angular/router'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
-import type { Rule } from '@seed/api/data-quality'
+import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
-import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
-import { InventoryTabComponent } from '@seed/components'
+import { LabelComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
@@ -28,7 +27,6 @@ import { FormModalComponent } from '../modal/form-modal.component'
   templateUrl: './inventory-table.component.html',
   imports: [
     CommonModule,
-    InventoryTabComponent,
     FormsModule,
     LabelComponent,
     MatButtonModule,
@@ -36,9 +34,7 @@ import { FormModalComponent } from '../modal/form-modal.component'
     MatIconModule,
     MatSlideToggleModule,
     MatTableModule,
-    PageComponent,
     SharedImports,
-    TableContainerComponent,
   ],
 })
 export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy, OnInit {
@@ -46,6 +42,7 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
   @Output() getRules = new EventEmitter<void>()
   private _route = inject(ActivatedRoute)
   private _organizationService = inject(OrganizationService)
+  private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
   private _labelsService = inject(LabelService)
   private _dialog = inject(MatDialog)
@@ -60,9 +57,9 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
 
   labelLookup = {}
   severityLookup = {
-    0: { name: 'Error', class: 'bg-red-200' },
-    1: { name: 'Warning', class: 'bg-amber-200' },
-    2: { name: 'Valid', class: 'bg-green-200' },
+    0: { name: 'Error', class: 'bg-red-200 border rounded border-red-900 text-red-900' },
+    1: { name: 'Warning', class: 'bg-amber-200 border rounded border-amber-900 text-amber-900' },
+    2: { name: 'Valid', class: 'bg-green-200 border rounded border-green-900 text-green-900' },
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -108,14 +105,16 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
   formatDate(dateYMD: number) { return DataQualityUtils.formatDate(dateYMD) }
 
   toggleEnable(index: number) {
-    console.log('toggle enable', index)
+    const rule = this.currentRules[index]
+    this._dataQualityService.putRule({ rule, id: rule.id, orgId: this._orgId }).subscribe()
   }
 
   editRule(rule: Rule) {
     const columns$ = this.type === 'properties' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
+    const tableName = this.type === 'properties' ? 'PropertyState' : 'TaxLotState'
     const dialogRef: MatDialogRef<FormModalComponent, boolean> = this._dialog.open(FormModalComponent, {
       width: '50rem',
-      data: { rule, orgId: this._orgId, columns$ },
+      data: { rule, orgId: this._orgId, columns$, tableName, currentRules: this.currentRules },
     })
     this.fetchRules(dialogRef)
   }

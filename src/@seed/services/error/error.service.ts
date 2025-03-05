@@ -8,8 +8,27 @@ export class ErrorService {
   private _snackBar = inject(SnackbarService)
 
   handleError(error: HttpErrorResponse, defaultMessage: string) {
-    const errorMessage = (error.error as { message: string })?.message || defaultMessage
+    let errorMessage = ''
+    if ((error.error as { message: string })?.message) {
+      errorMessage = (error.error as { message: string })?.message
+    } else if (this.isObjOfArrayStrings(error.error)) {
+      // format if error is an object of string[]
+      // e.g. { x: ['y', 'z']} => 'x: y, z'
+      errorMessage = Object.entries(error.error)
+        .map(([key, value]) => `${key}: ${value.join(', ')}`)
+        .join(' ')
+    } else {
+      errorMessage = defaultMessage
+    }
     this._snackBar.alert(errorMessage)
     return throwError(() => new Error(error?.message || defaultMessage))
+  }
+
+  isObjOfArrayStrings(obj: unknown): obj is Record<string, string[]> {
+    return (
+      typeof obj === 'object'
+      && obj !== null
+      && Object.values(obj).every((value) => Array.isArray(value) && value.every((item) => typeof item === 'string'))
+    )
   }
 }

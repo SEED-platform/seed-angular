@@ -1,6 +1,6 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, type Observable, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, type Observable, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -63,6 +63,16 @@ export class DataQualityService {
       tap(() => { this._snackBar.success('Rule deleted from organization') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting rule')
+      }),
+    )
+  }
+
+  resetRules(orgId: number): Observable<unknown> {
+    const url = `/api/v3/data_quality_checks/${orgId}/rules/reset/`
+    return this._httpClient.put(url, {}).pipe(
+      tap(() => { this._snackBar.success('Data quality rules reset') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error resetting data quality rules')
       }),
     )
   }

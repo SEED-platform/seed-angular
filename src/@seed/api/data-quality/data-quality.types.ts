@@ -21,18 +21,25 @@ export type Rule = {
 export type Condition = 'exclude' | 'include' | 'required' | 'not_null' | 'range'
 
 import type { FormControl, FormGroup } from '@angular/forms'
+
 export type InventoryFormGroup = FormGroup<{
   id: FormControl<number | null>;
-  enabled: FormControl<boolean>;
   condition: FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range'>;
-  field: FormControl<string>;
+  cross_cycle: FormControl<boolean>;
   data_type: FormControl<number | null>;
+  enabled: FormControl<boolean>;
+  field: FormControl<string>;
+  for_derived_column: FormControl<boolean>;
   min: FormControl<number | null>;
   max: FormControl<number | null>;
-  text_match: FormControl<string | null>;
-  units: FormControl<string>;
+  not_null: FormControl<boolean>;
+  required: FormControl<boolean>;
+  rule_type: FormControl<number | null>;
   severity: FormControl<number | null>;
   status_label: FormControl<number | null>;
+  table_name: FormControl<'PropertyState' | 'TaxLotState' | 'Goal'>;
+  text_match: FormControl<string | null>;
+  units: FormControl<string>;
 }>
 
 export type UnitSymbols = 'ft**2' | 'm**2' | 'kBtu/ft**2/year' | 'gal/ft**2/year' | 'GJ/m**2/year' | 'MJ/m**2/year' | 'kWh/m**2/year' | 'kBtu/m**2/year'
