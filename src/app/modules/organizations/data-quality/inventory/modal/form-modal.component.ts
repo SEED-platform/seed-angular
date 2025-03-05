@@ -18,8 +18,8 @@ import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
 import { LabelComponent } from '@seed/components'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
-import { CONDITIONS, DATATYPES_BY_CONDITION, SEVERITIES, UNITS } from '../constants'
-import { DataQualityValidator } from '../data-quality.validator'
+import { CONDITIONS, DATATYPES_BY_CONDITION, SEVERITIES, UNITS } from '../../constants'
+import { DataQualityValidator } from '../../data-quality.validator'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',

@@ -19,7 +19,7 @@ import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import type { InventoryType } from '../../inventory/inventory.types'
 import { DataQualityInventoryTableComponent } from './inventory/inventory-table.component'
-import { FormModalComponent } from './modal/form-modal.component'
+import { FormModalComponent } from './inventory/modal/form-modal.component'
 
 @Component({
   selector: 'seed-organizations-data-quality',

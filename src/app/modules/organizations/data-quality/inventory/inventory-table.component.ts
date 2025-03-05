@@ -19,8 +19,8 @@ import { LabelComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
-import { DeleteModalComponent } from '../modal/delete-modal.component'
-import { FormModalComponent } from '../modal/form-modal.component'
+import { DeleteModalComponent } from './modal/delete-modal.component'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-data-quality-inventory-table',
