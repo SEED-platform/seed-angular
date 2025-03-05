@@ -20,8 +20,8 @@ import { UpdateModalComponent } from '../modal/update-modal.component'
   imports: [SharedImports, CdkDropList, CdkDrag, MatButtonModule, MatIcon, MatSelectModule, MatTooltip, ReactiveFormsModule],
 })
 export class GeocodingComponent implements OnDestroy {
-  _columnService = inject(ColumnService)
-  readonly _unsubscribeAll$ = new Subject<void>()
+  protected _columnService = inject(ColumnService)
+  protected readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columns: Column[]
   availableColumns: Column[]
