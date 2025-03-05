@@ -10,14 +10,19 @@
 
       <div class="flex">
         <!-- data type -->
-        <mat-form-field class="mr-1 w-1/2">
+        <mat-form-field class="mr-1 w-1/3">
           <mat-label>Data Type</mat-label>
           <input matInput disabled [value]="constants.dataTypeLookup[data.rule.data_type]" />
         </mat-form-field>
         <!-- condition -->
-        <mat-form-field class="mr-1 w-1/2">
+        <mat-form-field class="mr-1 w-1/3">
           <mat-label>Condition</mat-label>
           <input matInput disabled [value]="data.rule.condition === 'range' ? 'Range' : 'Not Null'" />
+        </mat-form-field>
+        <!-- cross cycle -->
+        <mat-form-field class="mr-1 w-1/3">
+          <mat-label>Range</mat-label>
+          <input matInput disabled [value]="data.rule.cross_cycle ? 'Across Cycles' : 'Within Cycle'" />
         </mat-form-field>
       </div>
 

@@ -54,6 +54,9 @@
             } @else {
               <input matInput formControlName="min" type="number" />
             }
+            @if (form.get('min').value === null) {
+              <mat-hint>No minimum</mat-hint>
+            }
           </mat-form-field>
 
           <!-- max -->
@@ -65,6 +68,9 @@
               <mat-datepicker #max></mat-datepicker>
             } @else {
               <input matInput formControlName="max" type="number" />
+            }
+            @if (form.get('max').value === null) {
+              <mat-hint>No maximum</mat-hint>
             }
           </mat-form-field>
 
