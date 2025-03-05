@@ -1,12 +1,10 @@
 <div class="overflow-x-none">
-  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-    Edit Rule</h2>
-  <div class="h-150 overflow-y-auto mt-2">
+  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Rule</h2>
+  <div class="h-150 mt-2 overflow-y-auto">
     <form [formGroup]="form" class="flex flex-col gap-4">
-
       <!-- enabled -->
-      <div class="flex mt-4">
-        <mat-label required class="font-medium mr-4">Enabled</mat-label>
+      <div class="mt-4 flex">
+        <mat-label required class="mr-4 font-medium">Enabled</mat-label>
         <mat-slide-toggle formControlName="enabled"></mat-slide-toggle>
       </div>
 
@@ -14,31 +12,31 @@
         <!-- data type -->
         <mat-form-field class="mr-1 w-1/2">
           <mat-label>Data Type</mat-label>
-          <input matInput disabled [value]="constants.dataTypeLookup[data.rule.data_type]"/>
+          <input matInput disabled [value]="constants.dataTypeLookup[data.rule.data_type]" />
         </mat-form-field>
         <!-- condition -->
         <mat-form-field class="mr-1 w-1/2">
           <mat-label>Condition</mat-label>
-          <input matInput disabled [value]="data.rule.condition === 'range' ? 'Range' : 'Not Null'"/>
+          <input matInput disabled [value]="data.rule.condition === 'range' ? 'Range' : 'Not Null'" />
         </mat-form-field>
       </div>
-       
+
       <!-- range -->
       <div class="flex">
         @if (data.rule.condition === 'range') {
-        <!-- max -->
+          <!-- max -->
           <mat-form-field class="mr-1 w-1/2">
             <mat-label>Min</mat-label>
-            <input matInput formControlName="min" type="number"/>
+            <input matInput formControlName="min" type="number" />
             @if (form.get('min').value === null) {
               <mat-hint>No minimum</mat-hint>
             }
           </mat-form-field>
-          
+
           <!-- min -->
           <mat-form-field class="mr-1 w-1/2">
             <mat-label>Max</mat-label>
-            <input matInput formControlName="max" type="number"/>
+            <input matInput formControlName="max" type="number" />
             @if (form.get('max').value === null) {
               <mat-hint>No maximum</mat-hint>
             }
@@ -48,11 +46,11 @@
 
       <div class="flex">
         <!-- severity -->
-        <mat-form-field class="w-1/2 mr-1">
+        <mat-form-field class="mr-1 w-1/2">
           <mat-label>Severity</mat-label>
           <mat-select formControlName="severity">
             @for (item of constants.severities; track item) {
-            <mat-option [value]="item.key">{{ item.value }}</mat-option>
+              <mat-option [value]="item.key">{{ item.value }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -64,28 +62,27 @@
             <mat-select-trigger>
               <!-- {{form.value.status_label}} -->
               @if (form.value.status_label) {
-              <seed-label [label]="labelLookup[form.value.status_label]"></seed-label>
+                <seed-label [label]="labelLookup[form.value.status_label]"></seed-label>
               }
             </mat-select-trigger>
             <mat-option [value]="null"></mat-option>
             @for (item of labels; track item) {
-            <mat-option [value]="item.id">
-              <seed-label [label]="item"></seed-label>
-            </mat-option>
+              <mat-option [value]="item.id">
+                <seed-label [label]="item"></seed-label>
+              </mat-option>
             }
           </mat-select>
         </mat-form-field>
       </div>
-
     </form>
   </div>
 
   @if (formErrors) {
-  <ul class="rounded border border-red-400 bg-red-100 p-2">
-    @for (error of formErrors; track error) {
-    <li class="text-red-900">* {{ error }}</li>
-    }
-  </ul>
+    <ul class="rounded border border-red-400 bg-red-100 p-2">
+      @for (error of formErrors; track error) {
+        <li class="text-red-900">* {{ error }}</li>
+      }
+    </ul>
   }
 
   <!-- Actions -->

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, inject, Input, Output } from '@angular/core'
-import { EventEmitter } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import type { MatDialogRef } from '@angular/material/dialog'
