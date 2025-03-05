@@ -1,5 +1,5 @@
 import { CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop'
-import { Component, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
+import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
@@ -19,9 +19,9 @@ import { UpdateModalComponent } from '../modal/update-modal.component'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports, CdkDropList, CdkDrag, MatButtonModule, MatIcon, MatSelectModule, MatTooltip, ReactiveFormsModule],
 })
-export class GeocodingComponent implements OnDestroy, OnInit {
-  private _columnService = inject(ColumnService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
+export class GeocodingComponent implements OnDestroy {
+  _columnService = inject(ColumnService)
+  readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columns: Column[]
   availableColumns: Column[]
@@ -31,20 +31,6 @@ export class GeocodingComponent implements OnDestroy, OnInit {
   addForm = new FormGroup({
     addGeocoder: new FormControl<number>(null, [Validators.required]),
   })
-
-  ngOnInit(): void {
-    if (this.type === 'PropertyState') {
-      this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((columns) => {
-        this.columns = columns.sort((a, b) => a.geocoding_order - b.geocoding_order).filter((c) => c.geocoding_order != 0)
-        this.availableColumns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => c.geocoding_order === 0)
-      })
-    } else if (this.type === 'TaxLotState') {
-      this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((columns) => {
-        this.columns = columns.sort((a, b) => a.geocoding_order - b.geocoding_order).filter((c) => c.geocoding_order != 0)
-        this.availableColumns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => c.geocoding_order === 0)
-      })
-    }
-  }
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
