@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -31,15 +31,14 @@ export const MY_DATE_FORMATS = {
   templateUrl: './form-modal.component.html',
   providers: [DatePipe, { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }],
   imports: [
-    CommonModule,
+    FormsModule,
     MatButtonModule,
+    MatDatepickerModule,
     MatDialogModule,
     MatFormFieldModule,
-    FormsModule,
     MatInputModule,
-    MatDatepickerModule,
-    ReactiveFormsModule,
     MatNativeDateModule,
+    ReactiveFormsModule,
   ],
 })
 export class FormModalComponent implements OnDestroy, OnInit {

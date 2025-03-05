@@ -17,12 +17,12 @@ import { SharedImports } from '@seed/directives'
   templateUrl: './security.component.html',
   imports: [
     AlertComponent,
-    MatIconModule,
     FormsModule,
+    MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatButtonModule,
     SharedImports,
   ],
 })

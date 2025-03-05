@@ -1,16 +1,16 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
-import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
+import type { OrganizationUser } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { AlertComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-member-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule],
+  imports: [AlertComponent, MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _organizationService = inject(OrganizationService)

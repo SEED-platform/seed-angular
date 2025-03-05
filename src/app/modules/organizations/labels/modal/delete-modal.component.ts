@@ -1,20 +1,15 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { type Label, LabelService } from '@seed/api/label'
+import type { Label } from '@seed/api/label'
+import { LabelService } from '@seed/api/label'
 import { LabelComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-labels-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    CommonModule,
-    LabelComponent,
-    MatButtonModule,
-    MatDialogModule,
-  ],
+  imports: [LabelComponent, MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnInit {
   private _labelService = inject(LabelService)

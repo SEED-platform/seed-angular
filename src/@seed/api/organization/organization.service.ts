@@ -41,16 +41,18 @@ export class OrganizationService {
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap((organizationId) => {
-        return combineLatest([
-          this.getById(organizationId),
-          this.getOrganizationUsers(organizationId),
-          this.getOrganizationAccessLevelTree(organizationId),
-        ])
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((organizationId) => {
+          return combineLatest([
+            this.getById(organizationId),
+            this.getOrganizationUsers(organizationId),
+            this.getOrganizationAccessLevelTree(organizationId),
+          ])
+        }),
+      )
+      .subscribe()
   }
 
   get(org_id?: number): Observable<Organization[]> | Observable<Organization> {
@@ -81,39 +83,35 @@ export class OrganizationService {
 
   getOrganizationUsers(orgId: number): Observable<OrganizationUser[]> {
     const url = `/api/v3/organizations/${orgId}/users/`
-    return this._httpClient
-      .get<OrganizationUsersResponse>(url)
-      .pipe(
-        map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
-        tap((users) => {
-          this._organizationUsers.next(users)
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching organization users')
-        }),
-      )
+    return this._httpClient.get<OrganizationUsersResponse>(url).pipe(
+      map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
+      tap((users) => {
+        this._organizationUsers.next(users)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching organization users')
+      }),
+    )
   }
 
   getOrganizationAccessLevelTree(orgId: number): Observable<AccessLevelTree> {
     const url = `/api/v3/organizations/${orgId}/access_levels/tree`
-    return this._httpClient
-      .get<AccessLevelTreeResponse>(url)
-      .pipe(
-        map((response) => {
-          // update response to include more usable accessLevelInstancesByDepth
-          this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
-          return {
-            accessLevelNames: response.access_level_names,
-            accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
-          }
-        }),
-        tap((accessLevelTree) => {
-          this._accessLevelTree.next(accessLevelTree)
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching organization access level tree')
-        }),
-      )
+    return this._httpClient.get<AccessLevelTreeResponse>(url).pipe(
+      map((response) => {
+        // update response to include more usable accessLevelInstancesByDepth
+        this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
+        return {
+          accessLevelNames: response.access_level_names,
+          accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
+        }
+      }),
+      tap((accessLevelTree) => {
+        this._accessLevelTree.next(accessLevelTree)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching organization access level tree')
+      }),
+    )
   }
 
   deleteOrganizationUser(userId: number, orgId: number) {

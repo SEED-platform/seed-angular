@@ -1,15 +1,17 @@
-import { CommonModule } from '@angular/common'
-import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { MatButton } from '@angular/material/button'
-import { MatDivider } from '@angular/material/divider'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { Subject, takeUntil } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type Organization, OrganizationService } from '@seed/api/organization'
+import type { Column } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
+import type { Organization } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -18,9 +20,8 @@ import { naturalSort } from '@seed/utils'
   selector: 'seed-organizations-settings-default-display-fields',
   templateUrl: './default-display-fields.component.html',
   imports: [
-    CommonModule,
-    MatButton,
-    MatDivider,
+    MatButtonModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

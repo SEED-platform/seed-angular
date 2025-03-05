@@ -5,7 +5,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
-import { OrganizationService, type OrganizationUser } from '@seed/api/organization'
+import type { OrganizationUser } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
@@ -27,10 +28,7 @@ export class MembersComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     // get org id and org users
-    combineLatest([
-      this._organizationService.currentOrganization$,
-      this._organizationService.organizationUsers$,
-    ])
+    combineLatest([this._organizationService.currentOrganization$, this._organizationService.organizationUsers$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([organization, orgUsers]) => {
         this._orgId = organization.org_id

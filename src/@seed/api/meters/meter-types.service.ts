@@ -1,6 +1,8 @@
-import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { catchError, map, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import type { MeterTypeWithUnitsResponse, MeterWithUnits } from './meter-types.types'
 

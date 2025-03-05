@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -9,23 +8,13 @@ import { Subject, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { PageComponent, TableContainerComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-organizations-cycles',
   templateUrl: './cycles.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatTableModule,
-    PageComponent,
-    SharedImports,
-    TableContainerComponent,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, PageComponent, TableContainerComponent],
 })
 export class CyclesComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)
@@ -38,12 +27,11 @@ export class CyclesComponent implements OnDestroy, OnInit {
   cyclesColumns = ['id', 'name', 'start', 'end', 'actions']
 
   ngOnInit(): void {
-    this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe((cycles) => {
-        this.cyclesDataSource.data = cycles
-        this._orgId = cycles[0]?.organization
-        this._existingNames = cycles.map((cycle) => cycle.name)
-      })
+    this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((cycles) => {
+      this.cyclesDataSource.data = cycles
+      this._orgId = cycles[0]?.organization
+      this._existingNames = cycles.map((cycle) => cycle.name)
+    })
   }
 
   refreshCycles(): void {

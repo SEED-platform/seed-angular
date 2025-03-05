@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common'
-import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDivider } from '@angular/material/divider'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
@@ -12,10 +12,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Subject, takeUntil, tap } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type Label, LabelService } from '@seed/api/label'
-import { type Organization, OrganizationService } from '@seed/api/organization'
-import { type SalesforceConfig, type SalesforceMapping, SalesforceService } from '@seed/api/salesforce'
+import type { Column } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
+import type { Label } from '@seed/api/label'
+import { LabelService } from '@seed/api/label'
+import type { Organization } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
+import type { SalesforceConfig, SalesforceMapping } from '@seed/api/salesforce'
+import { SalesforceService } from '@seed/api/salesforce'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -24,7 +28,20 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-settings-salesforce',
   templateUrl: './salesforce.component.html',
-  imports: [CommonModule, SharedImports, MatButtonModule, MatDivider, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatTableModule, MatTabsModule, ReactiveFormsModule, PageComponent],
+  imports: [
+    MatButtonModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatTableModule,
+    MatTabsModule,
+    PageComponent,
+    ReactiveFormsModule,
+    SharedImports,
+  ],
 })
 export class SalesforceComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
@@ -127,11 +144,15 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       data: { salesforceMapping: newMapping, organization_id: this.organization.id },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshMappings() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshMappings()
+        }),
+      )
+      .subscribe()
   }
 
   deleteMapping(sfm: SalesforceMapping) {
@@ -140,11 +161,15 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       data: { salesforceMapping: sfm, columnName: this.columns.find((c) => c.id === sfm.column).display_name },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshMappings() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshMappings()
+        }),
+      )
+      .subscribe()
   }
 
   editMapping(sfm: SalesforceMapping) {
@@ -153,11 +178,15 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       data: { salesforceMapping: sfm, organization_id: this.organization.id },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshMappings() }),
-      ).subscribe()
+        tap(() => {
+          this.refreshMappings()
+        }),
+      )
+      .subscribe()
   }
 
   columnName(column_id: number): string {

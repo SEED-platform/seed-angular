@@ -19,13 +19,13 @@ export const ghg_intensity = [
 
 export const water_use = [
   { label: 'gal/year', value: 'gal/year' },
-  { label: 'kgal/year', value: 'kgal/year' }, // cspell:disable-line
+  { label: 'kgal/year', value: 'kgal/year' },
   { label: 'L/year', value: 'L/year' },
 ]
 
 export const wui = [
   { label: 'gal/ft²/year', value: 'gal/ft**2/year' },
-  { label: 'kgal/ft²/year', value: 'kgal/ft**2/year' }, // cspell:disable-line
+  { label: 'kgal/ft²/year', value: 'kgal/ft**2/year' },
   { label: 'L/m²/year', value: 'L/m**2/year' },
 ]
 
