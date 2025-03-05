@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core'
 import { type ValidationErrors, type ValidatorFn } from '@angular/forms'
-import type { InventoryFormGroup } from '@seed/api/data-quality'
+import type { DataQualityFormGroup } from '@seed/api/data-quality'
 import type { Rule } from '@seed/api/data-quality/data-quality.types'
+import { DATATYPE_LOOKUP } from './constants'
 
 @Injectable({ providedIn: 'root' })
 export class DataQualityValidator {
   hasRange(): ValidatorFn {
-    return (formGroup: InventoryFormGroup): ValidationErrors | null => {
+    return (formGroup: DataQualityFormGroup): ValidationErrors | null => {
       const { min, max, condition, data_type } = formGroup.value
 
       if (condition !== 'range') return null
@@ -28,7 +29,7 @@ export class DataQualityValidator {
   }
 
   hasTextMatch(): ValidatorFn {
-    return (formGroup: InventoryFormGroup): ValidationErrors | null => {
+    return (formGroup: DataQualityFormGroup): ValidationErrors | null => {
       const { condition, text_match } = formGroup.value
 
       if (['exclude', 'include'].includes(condition) && !text_match) {
@@ -40,13 +41,12 @@ export class DataQualityValidator {
   }
 
   dataTypeMatch(currentRules: Rule[]): ValidatorFn {
-    return (formGroup: InventoryFormGroup): ValidationErrors | null => {
-      const lookup = { 0: 'Number', 1: 'Text', 2: 'Date', 3: 'Year', 4: 'Area', 5: 'EUI' }
+    return (formGroup: DataQualityFormGroup): ValidationErrors | null => {
       const { id, field, data_type } = formGroup.value
       const fieldRules = currentRules.filter((rule) => rule.field === field && rule.id !== id)
       if (!fieldRules.length) return null
 
-      const existingDataType = lookup[fieldRules[0].data_type as keyof typeof lookup]
+      const existingDataType = DATATYPE_LOOKUP[fieldRules[0].data_type]
       if (!existingDataType) return null
       if (data_type !== fieldRules[0].data_type) {
         return { dataTypeMismatch: `Rules of the same field cannot have different data types. Try [ ${existingDataType} ]` }
@@ -57,7 +57,7 @@ export class DataQualityValidator {
   }
 
   hasValidLabel(): ValidatorFn {
-    return (formGroup: InventoryFormGroup): ValidationErrors | null => {
+    return (formGroup: DataQualityFormGroup): ValidationErrors | null => {
       const { severity, status_label } = formGroup.value
 
       if (severity === 2 && !status_label) return { invalidLabel: 'Valid severity must have a label' }

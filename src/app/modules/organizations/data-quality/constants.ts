@@ -6,6 +6,8 @@ export const CONDITIONS = [
   { key: 'required', value: 'Required' },
 ]
 
+export const DATATYPE_LOOKUP = { 0: 'Number', 1: 'Text', 2: 'Date', 3: 'Year', 4: 'Area', 5: 'EUI' }
+
 const allTypes = [
   { key: null, value: null },
   { key: 0, value: 'Number' },

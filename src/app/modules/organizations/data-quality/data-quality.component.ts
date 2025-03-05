@@ -18,6 +18,7 @@ import { InventoryTabComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import type { InventoryType } from '../../inventory/inventory.types'
+import { DataQualityGoalTableComponent } from './goal/goal-table.component'
 import { DataQualityInventoryTableComponent } from './inventory/inventory-table.component'
 import { FormModalComponent } from './inventory/modal/form-modal.component'
 
@@ -26,6 +27,7 @@ import { FormModalComponent } from './inventory/modal/form-modal.component'
   templateUrl: './data-quality.component.html',
   imports: [
     CommonModule,
+    DataQualityGoalTableComponent,
     DataQualityInventoryTableComponent,
     InventoryTabComponent,
     FormsModule,
@@ -46,7 +48,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
   private _dialog = inject(MatDialog)
-  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
+  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goal']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   private _propertyRules: Rule[]
@@ -69,13 +71,28 @@ export class DataQualityComponent implements OnDestroy, OnInit {
       })
   }
 
+  get config() {
+    // remove create rule button if on the goal tab
+    return {
+      title: 'Data Quality',
+      action: this.resetRules,
+      actionIcon: 'fa-solid:rotate-left',
+      actionText: 'Reset All Rules',
+      ...(this.type !== 'goal' && {
+        action2: this.createRule,
+        action2Icon: 'fa-solid:plus',
+        action2Text: 'Create Rule',
+      }),
+    }
+  }
+
   getRules() { this._dataQualityService.getRules(this._orgId).subscribe() }
 
   setRules() {
     this._propertyRules = this.rules.filter((rule) => rule.table_name === 'PropertyState')
     this._taxlotRules = this.rules.filter((rule) => rule.table_name === 'TaxLotState')
     this._goalRules = this.rules.filter((rule) => rule.table_name === 'Goal')
-    const typeLookup = { properties: this._propertyRules, taxlots: this._taxlotRules, goals: this._goalRules }
+    const typeLookup = { properties: this._propertyRules, taxlots: this._taxlotRules, goal: this._goalRules }
     this.currentRules = typeLookup[this.type]
   }
 

@@ -19,7 +19,7 @@ import { LabelComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
-import { DeleteModalComponent } from './modal/delete-modal.component'
+import { DeleteModalComponent } from '../modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -46,7 +46,7 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
   private _columnService = inject(ColumnService)
   private _labelsService = inject(LabelService)
   private _dialog = inject(MatDialog)
-  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goals']
+  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goal']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   rulesDataSource = new MatTableDataSource<Rule>([])
@@ -120,7 +120,7 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
   }
 
   deleteRule(rule: Rule) {
-    const displayName = DataQualityUtils.getDisplayName(this.getFieldName(rule.field), rule)
+    const displayName = `${this.getFieldName(rule.field)} ${DataQualityUtils.getCriteria(rule)}`
     const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { rule, orgId: this._orgId, displayName },

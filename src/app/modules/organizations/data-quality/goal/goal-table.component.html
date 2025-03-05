@@ -1,0 +1,62 @@
+<table class="mat-elevation-z8 w-full bg-transparent [&_td]:whitespace-nowrap" mat-table matSort
+  [dataSource]="rulesDataSource" [trackBy]="trackByFn">
+
+  <ng-container matColumnDef="enabled">
+    <th mat-header-cell *matHeaderCellDef>Enabled</th>
+    <td mat-cell *matCellDef="let rule; let i = index">
+      <mat-slide-toggle (click)="toggleEnable(i)" [(ngModel)]="currentRules[i].enabled"></mat-slide-toggle>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="dataType">
+    <th mat-header-cell *matHeaderCellDef>Data Type</th>
+    <td mat-cell *matCellDef="let rule; let i = index">
+      {{ dataTypeLookup[rule.data_type] }}
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="criteria">
+      <th mat-header-cell *matHeaderCellDef>Criteria</th>
+      <td mat-cell *matCellDef="let rule">
+        {{ getCriteria(rule)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="severity">
+      <th mat-header-cell *matHeaderCellDef>Severity</th>
+      <td mat-cell *matCellDef="let rule">
+        <div class="py-1 px-2 rounded" [ngClass]="severityLookup[rule.severity].class">
+          {{ severityLookup[rule.severity].name }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="label">
+      <th mat-header-cell *matHeaderCellDef>Label</th>
+      <td mat-cell *matCellDef="let rule">
+        @if (rule.status_label) {
+        <seed-label [label]="labelLookup[rule.status_label]"></seed-label>
+        }
+      </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="select-none pr-24 text-right">Actions</th>
+      <td mat-cell *matCellDef="let rule" class="w-50 text-right">
+        <a mat-stroked-button (click)="editRule(rule)" class="mr-2">
+          <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
+        </a>
+        <a mat-stroked-button color="warn" (click)="deleteRule(rule)">
+          <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+        </a>
+      </td>
+    </ng-container>
+
+    <thead>
+      <tr mat-header-row *matHeaderRowDef="rulesColumns"></tr>
+    </thead>
+    <tbody>
+      <tr mat-row *matRowDef="let row; columns: rulesColumns"></tr>
+    </tbody>
+  
+</table>

@@ -6,19 +6,19 @@
       <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">{{ config.title }}</h2>
     </div>
     <!-- Actions -->
+    @if (config.action2) {
+    <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
+      <a mat-flat-button color="primary" (click)="config.action2()">
+        <mat-icon class="icon-size-4" [svgIcon]="config.action2Icon"></mat-icon>
+        <span class="ml-2">{{ config.action2Text }}</span>
+      </a>
+    </div>
+    }
     @if (config.action) {
       <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
         <a mat-flat-button color="primary" (click)="config.action()">
           <mat-icon class="icon-size-4" [svgIcon]="config.actionIcon"></mat-icon>
           <span class="ml-2">{{ config.actionText }}</span>
-        </a>
-      </div>
-    }
-    @if (config.action2) {
-      <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
-        <a mat-flat-button color="primary" (click)="config.action2()">
-          <mat-icon class="icon-size-4" [svgIcon]="config.action2Icon"></mat-icon>
-          <span class="ml-2">{{ config.action2Text }}</span>
         </a>
       </div>
     }

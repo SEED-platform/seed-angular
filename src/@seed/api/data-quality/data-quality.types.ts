@@ -1,7 +1,7 @@
 export type Rule = {
   condition: Condition;
   cross_cycle: boolean;
-  data_type: number;
+  data_type: 0 | 1 | 2 | 3 | 4 | 5;
   enabled: boolean;
   field: string;
   for_derived_column: boolean;
@@ -22,7 +22,7 @@ export type Condition = 'exclude' | 'include' | 'required' | 'not_null' | 'range
 
 import type { FormControl, FormGroup } from '@angular/forms'
 
-export type InventoryFormGroup = FormGroup<{
+export type DataQualityFormGroup = FormGroup<{
   id: FormControl<number | null>;
   condition: FormControl<'exclude' | 'include' | 'required' | 'not_null' | 'range'>;
   cross_cycle: FormControl<boolean>;

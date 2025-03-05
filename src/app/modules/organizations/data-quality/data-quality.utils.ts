@@ -33,18 +33,23 @@ export class DataQualityUtils {
     }
   }
 
+  static getGoalCriteria(rule: Rule): string {
+    const cycleText = rule.cross_cycle ? '% change across cycles ' : ''
+    return cycleText + this.getCriteria(rule)
+  }
+
   static getRangeText(rule: Rule): string {
     const { min, max, data_type, units } = rule
     const unitText = this._unitLookup[units as UnitSymbols] || ''
 
     if (min !== null && max !== null) {
-      const minText = data_type === 2 ? this.formatDate(min) : min
-      const maxText = data_type === 2 ? this.formatDate(max) : max
+      const minText = data_type === 2 ? this.formatDate(min) : min.toLocaleString()
+      const maxText = data_type === 2 ? this.formatDate(max) : max.toLocaleString()
       return `is between [ ${minText} ] and [ ${maxText} ] ${unitText}`
     }
 
-    if (min !== null) return `is greater than [ ${min} ] ${unitText}`
-    if (max !== null) return `is less than [ ${max} ] ${unitText}`
+    if (min !== null) return `is greater than [ ${min.toLocaleString()} ] ${unitText}`
+    if (max !== null) return `is less than [ ${max.toLocaleString()} ] ${unitText}`
 
     return ''
   }
