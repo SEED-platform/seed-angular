@@ -1,4 +1,5 @@
-import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
@@ -24,7 +25,8 @@ export class DerivedColumnService {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         switchMap(({ org_id }) => this.get(org_id)),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   get(orgId: number): Observable<DerivedColumn[]> {

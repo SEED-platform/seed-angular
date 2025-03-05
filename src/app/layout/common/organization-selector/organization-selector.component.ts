@@ -1,8 +1,7 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
-import { MatIcon } from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { Subject, takeUntil } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization/organization.service'
@@ -15,7 +14,7 @@ import { UserService } from '@seed/api/user'
   templateUrl: './organization-selector.component.html',
   encapsulation: ViewEncapsulation.None,
   exportAs: 'organization-selector',
-  imports: [CommonModule, MatMenuModule, MatButtonModule, MatIcon],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)

@@ -6,7 +6,8 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
 import { map, Subject, takeUntil } from 'rxjs'
-import { type DerivedColumn, DerivedColumnService } from '@seed/api/derived-column'
+import type { DerivedColumn } from '@seed/api/derived-column'
+import { DerivedColumnService } from '@seed/api/derived-column'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -48,7 +49,6 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
-
       )
 
       .subscribe((derivedColumns) => {

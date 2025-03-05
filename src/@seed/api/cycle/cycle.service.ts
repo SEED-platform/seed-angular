@@ -1,8 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { type Observable, Subject, switchMap } from 'rxjs'
-import { BehaviorSubject, catchError, map, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { BehaviorSubject, catchError, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
@@ -25,7 +25,8 @@ export class CycleService {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         switchMap(({ org_id }) => this.get(org_id)),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   get(orgId: number): Observable<Cycle[]> {

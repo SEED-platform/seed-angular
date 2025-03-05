@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -8,23 +7,16 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { Subject, takeUntil } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type SalesforceMapping, SalesforceService } from '@seed/api/salesforce'
+import type { Column } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
+import type { SalesforceMapping } from '@seed/api/salesforce'
+import { SalesforceService } from '@seed/api/salesforce'
 import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-salesforce-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    FormsModule,
-    MatInputModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
@@ -34,7 +26,12 @@ export class FormModalComponent implements OnDestroy, OnInit {
   columns: Column[]
 
   create = true
-  data = inject(MAT_DIALOG_DATA) as { salesforceMapping: SalesforceMapping | null; organization_id: number; column: number; salesforce_fieldname: string }
+  data = inject(MAT_DIALOG_DATA) as {
+    salesforceMapping: SalesforceMapping | null;
+    organization_id: number;
+    column: number;
+    salesforce_fieldname: string;
+  }
   form = new FormGroup({
     salesforce_fieldname: new FormControl<string | null>('', [Validators.required]),
     column: new FormControl<number | null>(null, [Validators.required]),

@@ -1,15 +1,17 @@
-import { CommonModule } from '@angular/common'
-import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButton } from '@angular/material/button'
-import { MatDivider } from '@angular/material/divider'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Subject, takeUntil } from 'rxjs'
-import { MeterTypesService, type MeterWithUnits } from '@seed/api/meters'
-import { type Organization, OrganizationService } from '@seed/api/organization'
+import type { MeterWithUnits } from '@seed/api/meters'
+import { MeterTypesService } from '@seed/api/meters'
+import type { Organization } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import * as UnitOptions from './units.types'
@@ -18,16 +20,15 @@ import * as UnitOptions from './units.types'
   selector: 'seed-organizations-settings-units',
   templateUrl: './units.component.html',
   imports: [
-    CommonModule,
-    SharedImports,
-    MatButton,
-    MatDivider,
+    MatButtonModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
     MatTabsModule,
-    ReactiveFormsModule,
     PageComponent,
+    ReactiveFormsModule,
+    SharedImports,
   ],
 })
 export class UnitsComponent implements OnDestroy, OnInit {

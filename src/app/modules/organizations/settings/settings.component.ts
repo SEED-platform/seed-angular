@@ -1,18 +1,17 @@
-import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { RouterOutlet } from '@angular/router'
-import { type NavigationItem, VerticalNavigationComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
+import type { NavigationItem } from '@seed/components'
+import { VerticalNavigationComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-organizations',
   templateUrl: './settings.component.html',
-  imports: [CommonModule, SharedImports, MatIconModule, MatSidenavModule, VerticalNavigationComponent, RouterOutlet],
+  imports: [MatIconModule, MatSidenavModule, RouterOutlet, VerticalNavigationComponent],
 })
 export class SettingsComponent {
-  settingsNavigationMenu: NavigationItem[] = [
+  readonly settingsNavigationMenu: NavigationItem[] = [
     {
       id: 'organizations/settings/options',
       link: '/organizations/settings/options',

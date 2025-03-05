@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -21,15 +20,14 @@ import { DerivedColumnsValidator } from '../derived-columns.validator'
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSelectModule,
-    MatOptionModule,
+    FormsModule,
     MatButtonModule,
     MatDialogModule,
-    FormsModule,
+    MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatOptionModule,
+    MatSelectModule,
     ReactiveFormsModule,
   ],
 })

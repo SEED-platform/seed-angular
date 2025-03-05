@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -9,17 +8,17 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject } from 'rxjs'
-import { type Label, LabelService } from '@seed/api/label'
+import type { Label } from '@seed/api/label'
+import { LabelService } from '@seed/api/label'
 
 @Component({
   selector: 'seed-labels-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
-    CommonModule,
+    FormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    FormsModule,
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,

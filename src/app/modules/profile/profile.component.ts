@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import { Component, ViewEncapsulation } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import type { NavigationItem } from '@seed/components'
@@ -9,7 +8,7 @@ import { SharedImports } from '@seed/directives'
   selector: 'seed-profile',
   templateUrl: './profile.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, HorizontalNavigationComponent, SharedImports, RouterOutlet],
+  imports: [HorizontalNavigationComponent, SharedImports, RouterOutlet],
 })
 export class ProfileComponent {
   tabs = ['Profile Info', 'Security', 'Developer', 'Admin']

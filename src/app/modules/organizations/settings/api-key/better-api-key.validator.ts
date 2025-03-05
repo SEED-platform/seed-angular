@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core'
-import { type AbstractControl, type AsyncValidator, type ValidationErrors } from '@angular/forms'
-import { catchError, map, type Observable, of } from 'rxjs'
+import type { AbstractControl, AsyncValidator, ValidationErrors } from '@angular/forms'
+import type { Observable } from 'rxjs'
+import { catchError, map, of } from 'rxjs'
 import { BetterService } from '@seed/services/better/better.service'
 
 @Injectable({ providedIn: 'root' })

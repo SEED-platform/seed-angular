@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, of } from 'rxjs'
-import { type BetterTokenVerificationResponse } from './better.types'
+import type { BetterTokenVerificationResponse } from './better.types'
 
 @Injectable({ providedIn: 'root' })
 export class BetterService {

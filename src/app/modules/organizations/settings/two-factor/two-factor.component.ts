@@ -1,28 +1,20 @@
-import { CommonModule } from '@angular/common'
-import { Component, inject, type OnDestroy, type OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { MatButton } from '@angular/material/button'
+import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject, takeUntil } from 'rxjs'
-import { type Organization, OrganizationService } from '@seed/api/organization'
+import type { Organization } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-organizations-settings-two-factor',
   templateUrl: './two-factor.component.html',
-  imports: [
-    CommonModule,
-    SharedImports,
-    MatButton,
-    MatFormFieldModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    ReactiveFormsModule,
-    PageComponent,
-  ],
+  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatSlideToggleModule, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class TwoFactorComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

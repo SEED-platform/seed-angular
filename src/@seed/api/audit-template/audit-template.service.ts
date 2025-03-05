@@ -1,6 +1,8 @@
-import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
 import type {
@@ -23,14 +25,14 @@ export class AuditTemplateService {
 
   constructor() {
     this._reportTypes.next([
-      { name: 'ASHRAE Level 2 Report' }, // cspell:disable-line
+      { name: 'ASHRAE Level 2 Report' },
       { name: 'Atlanta Report' },
       { name: 'Baltimore Energy Audit Report' },
       { name: 'Berkeley Report' },
       { name: 'BRICR Phase 0/1' },
       { name: 'Brisbane Energy Audit Report' },
-      { name: 'DC BEPS Energy Audit Report' }, // cspell:disable-line
-      { name: 'DC BEPS RCx Report' }, // cspell:disable-line
+      { name: 'DC BEPS Energy Audit Report' },
+      { name: 'DC BEPS RCx Report' },
       { name: 'Demo City Report' },
       { name: 'Denver Energy Audit Report' },
       { name: 'EE-RLF Template' },

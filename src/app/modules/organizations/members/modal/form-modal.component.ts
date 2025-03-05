@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -8,8 +7,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
-import { type Observable, Subject } from 'rxjs'
-import { forkJoin, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { forkJoin, Subject, takeUntil, tap } from 'rxjs'
 import type { AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
@@ -19,14 +18,13 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatOptionModule,
+    FormsModule,
     MatButtonModule,
     MatDialogModule,
-    FormsModule,
+    MatFormFieldModule,
     MatInputModule,
+    MatOptionModule,
+    MatSelectModule,
     ReactiveFormsModule,
   ],
 })

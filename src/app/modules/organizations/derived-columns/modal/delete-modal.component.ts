@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -12,7 +11,7 @@ import { AlertComponent } from '@seed/components'
 @Component({
   selector: 'seed-derived-column-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatProgressBarModule],
+  imports: [AlertComponent, MatButtonModule, MatDialogModule, MatProgressBarModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _derivedColumnService = inject(DerivedColumnService)
