@@ -19,19 +19,19 @@
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="severity">
+    <th mat-header-cell *matHeaderCellDef>Severity</th>
+    <td mat-cell *matCellDef="let rule" class="w-26">
+      <div class="rounded px-2 py-1" [ngClass]="severityLookup[rule.severity].class">
+        {{ severityLookup[rule.severity].name }}
+      </div>
+    </td>
+  </ng-container>
+
   <ng-container matColumnDef="criteria">
     <th mat-header-cell *matHeaderCellDef>Criteria</th>
     <td mat-cell *matCellDef="let rule">
       {{ getCriteria(rule) }}
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="severity">
-    <th mat-header-cell *matHeaderCellDef>Severity</th>
-    <td mat-cell *matCellDef="let rule">
-      <div class="rounded px-2 py-1" [ngClass]="severityLookup[rule.severity].class">
-        {{ severityLookup[rule.severity].name }}
-      </div>
     </td>
   </ng-container>
 

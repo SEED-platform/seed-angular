@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common'
-import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import type { AfterViewInit, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
@@ -31,14 +33,17 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
+    MatPaginatorModule,
     MatSlideToggleModule,
     MatTableModule,
+    MatTooltipModule,
     SharedImports,
   ],
 })
-export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy, OnInit {
+export class DataQualityInventoryTableComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]
   @Output() getRules = new EventEmitter<void>()
+  @ViewChild(MatPaginator) paginator!: MatPaginator
   private _route = inject(ActivatedRoute)
   private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
@@ -49,10 +54,11 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   rulesDataSource = new MatTableDataSource<Rule>([])
-  rulesColumns = ['enabled', 'field', 'criteria', 'severity', 'label', 'actions']
+  rulesColumns = ['enabled', 'field', 'severity', 'criteria', 'label', 'actions']
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   propertyColumnsLookup: Record<string, string> = {}
   taxlotColumnsLookup: Record<string, string> = {}
+  isOverflowing = false
 
   labelLookup = {}
   severityLookup = {
@@ -65,6 +71,10 @@ export class DataQualityInventoryTableComponent implements OnChanges, OnDestroy,
     if (changes.currentRules) {
       this.rulesDataSource.data = this.currentRules
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.rulesDataSource.paginator = this.paginator
   }
 
   ngOnInit(): void {

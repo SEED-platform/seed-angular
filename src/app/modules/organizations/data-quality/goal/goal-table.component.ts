@@ -45,7 +45,7 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   rulesDataSource = new MatTableDataSource<Rule>([])
-  rulesColumns = ['enabled', 'dataType', 'criteria', 'severity', 'label', 'actions']
+  rulesColumns = ['enabled', 'dataType', 'severity', 'criteria', 'label', 'actions']
   labelLookup = {}
   severityLookup = {
     0: { name: 'Error', class: 'bg-red-200 border rounded border-red-900 text-red-900' },
@@ -77,7 +77,7 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
     this._unsubscribeAll$.complete()
   }
 
-  getCriteria(rule: Rule) { return DataQualityUtils.getGoalCriteria(rule) }
+  getCriteria(rule: Rule) { return DataQualityUtils.getCriteria(rule) }
 
   editRule(rule: Rule) {
     const tableName = 'Goal'
@@ -89,7 +89,7 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
   }
 
   deleteRule(rule: Rule) {
-    const displayName = `${this.dataTypeLookup[rule.data_type]} ${DataQualityUtils.getGoalCriteria(rule)}`
+    const displayName = `${this.dataTypeLookup[rule.data_type]} ${DataQualityUtils.getCriteria(rule)}`
     const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { rule, orgId: this._orgId, displayName },

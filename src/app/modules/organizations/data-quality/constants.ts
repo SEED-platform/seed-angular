@@ -55,12 +55,12 @@ export const SEVERITIES = [
 
 export const UNITS = [
   { key: '', value: '' },
-  { key: 'ft**2', value: 'square feet' },
-  { key: 'm**2', value: 'square metres' },
-  { key: 'kBtu/ft**2/year', value: 'kBtu/sq. ft./year' },
-  { key: 'gal/ft**2/year', value: 'gal/sq. ft./year' },
-  { key: 'GJ/m**2/year', value: 'GJ/m²/year' },
-  { key: 'MJ/m**2/year', value: 'MJ/m²/year' },
-  { key: 'kWh/m**2/year', value: 'kWh/m²/year' },
-  { key: 'kBtu/m**2/year', value: 'kBtu/m²/year' },
+  { key: 'ft**2', value: 'ft²' },
+  { key: 'm**2', value: 'm²' },
+  { key: 'kBtu/ft**2/year', value: 'kBtu/ft²/yr' },
+  { key: 'gal/ft**2/year', value: 'gal/ft²/yr' },
+  { key: 'GJ/m**2/year', value: 'GJ/m²/yr' },
+  { key: 'MJ/m**2/year', value: 'MJ/m²/yr' },
+  { key: 'kWh/m**2/year', value: 'kWh/m²/yr' },
+  { key: 'kBtu/m**2/year', value: 'kBtu/m²/yr' },
 ]

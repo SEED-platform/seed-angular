@@ -32,7 +32,7 @@
         </mat-form-field>
 
         <!-- data type -->
-        <mat-form-field class="mr-1 w-1/2">
+        <mat-form-field class="w-1/2">
           <mat-label>Data Type</mat-label>
           <mat-select formControlName="data_type">
             @for (item of constants.dataTypesByCondition[form.value.condition]; track item) {
@@ -105,10 +105,9 @@
 
         <!-- labels -->
         <mat-form-field class="w-1/2">
-          <mat-label>Labels</mat-label>
+          <mat-label>Label</mat-label>
           <mat-select formControlName="status_label">
             <mat-select-trigger>
-              <!-- {{form.value.status_label}} -->
               @if (form.value.status_label) {
                 <seed-label [label]="labelLookup[form.value.status_label]"></seed-label>
               }
