@@ -1,5 +1,8 @@
-import { Component, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
+import { type AfterViewInit, Component, inject, type OnDestroy, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIcon } from '@angular/material/icon'
+import { MatInputModule } from '@angular/material/input'
+import { MatPaginator } from '@angular/material/paginator'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { MatTooltip } from '@angular/material/tooltip'
 import { Subject, takeUntil } from 'rxjs'
@@ -11,9 +14,9 @@ import { naturalSort } from '@seed/utils'
   selector: 'seed-organizations-columns-list-taxlots',
   templateUrl: './list.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports, MatIcon, MatTableModule, MatTooltip],
+  imports: [SharedImports, MatFormFieldModule, MatIcon, MatInputModule, MatPaginator, MatTableModule, MatTooltip],
 })
-export class ListTaxLotComponent implements OnDestroy, OnInit {
+export class ListTaxLotComponent implements AfterViewInit, OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   columnTableDataSource = new MatTableDataSource<Column>([])
@@ -25,11 +28,16 @@ export class ListTaxLotComponent implements OnDestroy, OnInit {
     'actions',
   ]
   type = 'taxlots'
+  @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
     this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((columns) => {
       this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
     })
+  }
+
+  ngAfterViewInit() {
+    this.columnTableDataSource.paginator = this.paginator
   }
 
   ngOnDestroy(): void {
@@ -43,5 +51,10 @@ export class ListTaxLotComponent implements OnDestroy, OnInit {
 
   rename(column: Column) {
     console.log('Rename called for column: ', column)
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value
+    this.columnTableDataSource.filter = filterValue.trim().toLowerCase()
   }
 }
