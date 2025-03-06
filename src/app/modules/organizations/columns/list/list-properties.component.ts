@@ -35,4 +35,9 @@ export class ListPropertiesComponent extends ListComponent implements AfterViewI
   ngAfterViewInit(): void {
     this.columnTableDataSource.paginator = this.paginator
   }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value
+    this.columnTableDataSource.filter = filterValue.trim().toLowerCase()
+  }
 }

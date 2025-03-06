@@ -35,4 +35,9 @@ export class ListTaxLotComponent extends ListComponent implements AfterViewInit,
   ngAfterViewInit() {
     this.columnTableDataSource.paginator = this.paginator
   }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value
+    this.columnTableDataSource.filter = filterValue.trim().toLowerCase()
+  }
 }
