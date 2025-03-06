@@ -1,6 +1,6 @@
 import type { Routes } from '@angular/router'
-import { DataTypesPropertiesComponent } from './data_types/data-types-properties.component'
-import { DataTypesTaxLotsComponent } from './data_types/data-types-taxlots.component'
+import { DataTypesPropertiesComponent } from './data-types/data-types-properties.component'
+import { DataTypesTaxLotsComponent } from './data-types/data-types-taxlots.component'
 import { GeocodingPropertiesComponent } from './geocoding/geocoding-properties.component'
 import { GeocodingTaxlotsComponent } from './geocoding/geocoding-taxlots.component'
 import { ListPropertiesComponent } from './list/list-properties.component'
