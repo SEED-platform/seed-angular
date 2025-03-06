@@ -141,7 +141,8 @@ export default tseslint.config(
         ignoreDeclarationSort: true,
       }],
       'unused-imports/no-unused-imports': 'error',
-      // TODO after enable strict
+      // TODO enable (or remove) after enable strict
+      '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       // TODO
