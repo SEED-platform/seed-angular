@@ -1,6 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
@@ -36,6 +37,18 @@ export class MembersComponent implements OnDestroy, OnInit {
       })
   }
 
+  get config() {
+    return {
+      title: 'Members',
+      action: this.resetPasswords,
+      actionIcon: 'fa-solid:rotate-left',
+      actionText: 'Reset All Passwords',
+      action2: this.inviteMember,
+      action2Icon: 'fa-solid:plus',
+      action2Text: 'Invite Member',
+    }
+  }
+
   getMembers(orgId: number): void {
     this._organizationService.getOrganizationUsers(orgId).subscribe()
   }
@@ -58,11 +71,28 @@ export class MembersComponent implements OnDestroy, OnInit {
   }
 
   deleteMember(member: OrganizationUser): void {
-    const dialogRef = this._dialog.open(DeleteModalComponent, {
+    const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { member, orgId: this._orgId },
     })
 
+    this.fetchMembers(dialogRef)
+  }
+
+  resetPasswords(): void {
+    console.log('reset passwords')
+  }
+
+  inviteMember(): void {
+    const dialogRef: MatDialogRef<FormModalComponent, boolean> = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { orgId: this._orgId },
+    })
+
+    this.fetchMembers(dialogRef)
+  }
+
+  fetchMembers(dialogRef: MatDialogRef<unknown, boolean>): void {
     dialogRef
       .afterClosed()
       .pipe(
