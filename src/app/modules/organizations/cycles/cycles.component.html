@@ -1,4 +1,4 @@
-<seed-page [config]="{ title: 'Cycles', action: createCycle, actionIcon: 'fa-solid:plus', actionText: 'Create Cycle' }" title="Cycles">
+<seed-page [config]="{ title: 'Cycles', titleIcon: 'fa-solid:calendar-days', action: createCycle, actionIcon: 'fa-solid:plus', actionText: 'Create Cycle' }" title="Cycles">
   <!-- Cycles Table -->
   <seed-page-table-container>
     <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="cyclesDataSource" [trackBy]="trackByFn">

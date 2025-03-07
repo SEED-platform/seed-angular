@@ -74,6 +74,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     // remove create rule button if on the goal tab
     return {
       title: 'Data Quality',
+      titleIcon: 'fa-solid:flag',
       action: this.resetRules,
       actionIcon: 'fa-solid:rotate-left',
       actionText: 'Reset All Rules',
