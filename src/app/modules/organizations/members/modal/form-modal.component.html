@@ -1,22 +1,21 @@
 <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Member</h2>
 <form [formGroup]="form" class="flex flex-col gap-4">
-
   <mat-form-field>
     <mat-label>Email</mat-label>
-    <input matInput formControlName="email"/>
+    <input matInput formControlName="email" />
     @if (form.get('email')?.hasError('email')) {
       <mat-error>Invalid email format</mat-error>
     }
   </mat-form-field>
-  
+
   <div class="flex">
     <mat-form-field class="mr-1 w-1/2">
       <mat-label>First Name</mat-label>
-      <input matInput formControlName="first_name"/>
+      <input matInput formControlName="first_name" />
     </mat-form-field>
     <mat-form-field class="w-1/2">
       <mat-label>Last Name</mat-label>
-      <input matInput formControlName="last_name"/>
+      <input matInput formControlName="last_name" />
     </mat-form-field>
   </div>
 
