@@ -1,6 +1,4 @@
-<div class="prose my-6">
-  Drag columns to reorder them.  Add columns with the selector below.
-</div>
+<div class="prose my-6">Drag columns to reorder them. Add columns with the selector below.</div>
 <div class="prose my-4">When all your changes have been made, make sure to save them.</div>
 <div>
   <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
@@ -9,15 +7,22 @@
 </div>
 
 <div cdkDropList class="" (cdkDropListDropped)="drop($event)">
-@for (column of columns; track column.id) {
-  <div class="flex flex-row w-75 justify-between items-center border border-solid border-slate-600 bg-slate-100 rounded-md space-x-2 p-2 my-2 drop-shadow-md" cdkDrag  >
-    <div class="flex flex-row space-x-4 text-lg leading-40">
-      <div>{{ column.geocoding_order }}</div>
-      <div>{{ column.display_name }}</div>
+  @for (column of columns; track column.id) {
+    <div
+      class="w-75 my-2 flex flex-row items-center justify-between space-x-2 rounded-md border border-solid border-slate-600 bg-slate-100 p-2 drop-shadow-md"
+      cdkDrag
+    >
+      <div class="leading-40 flex flex-row space-x-4 text-lg">
+        <div>{{ column.geocoding_order }}</div>
+        <div>{{ column.display_name }}</div>
+      </div>
+      <div class="ml-auto flex">
+        <a mat-stroked-button (click)="delete(column)"
+          ><mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Remove from geocoding"></mat-icon
+        ></a>
+      </div>
     </div>
-    <div class="flex ml-auto"><a mat-stroked-button (click)="delete(column)"><mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Remove from geocoding"></mat-icon></a></div>
-  </div>
-}
+  }
 </div>
 
 <div class="text-xl font-bold">Add A GeoCoding Column</div>
@@ -37,7 +42,7 @@
   </div>
 </form>
 
-<div class="my-4 prose">When all your changes have been made, make sure to save them.</div>
+<div class="prose my-4">When all your changes have been made, make sure to save them.</div>
 <div>
   <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
     <span class="">Save Changes</span>
