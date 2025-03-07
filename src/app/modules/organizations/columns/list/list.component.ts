@@ -1,9 +1,10 @@
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
-import { Subject, takeUntil } from 'rxjs'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
+import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -31,8 +32,25 @@ export class ListComponent implements OnDestroy {
     this._unsubscribeAll$.complete()
   }
 
-  delete(column: Column) {
-    console.log('Delete called for column: ', column)
+  delete(column: Column): void {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { column },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          if (column.table_name === 'PropertyState') {
+            this._columnService.getPropertyColumns(column.organization_id).subscribe()
+          } else if (column.table_name === 'TaxLotState') {
+            this._columnService.getTaxLotColumns(column.organization_id).subscribe()
+          }
+        }),
+      )
+      .subscribe()
   }
 
   rename(column: Column) {
