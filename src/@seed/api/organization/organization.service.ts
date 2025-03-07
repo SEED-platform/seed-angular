@@ -152,6 +152,15 @@ export class OrganizationService {
     )
   }
 
+  resetPasswords(orgId: number): Observable<unknown> {
+    const url = `/api/v3/organizations/${orgId}/reset_all_passwords/`
+    return this._httpClient.post(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error resetting passwords')
+      }),
+    )
+  }
+
   /*
    * Transform access level tree into a more usable format
    */
