@@ -32,29 +32,30 @@ export class ColumnsComponent implements OnInit {
   columnsNavigationMenu: NavigationItem[] = [
     {
       id: 'organizations/columns/list',
+      exactMatch: false,
       title: 'Column List',
-      link: '/organizations/columns/list/properties',
+      link: '/organizations/columns/list',
       type: 'basic',
       fn: (n: NavigationItem) => { this.setNavTitle(n) },
     },
     {
       id: 'organizations/columns/geocoding',
-      link: '/organizations/columns/geocoding/properties',
+      link: '/organizations/columns/geocoding',
       title: 'Geocoding',
       type: 'basic',
       fn: (n: NavigationItem) => { this.setNavTitle(n) },
     },
     {
       id: 'organization/columns/data_type',
-      link: '/organizations/columns/data_types/properties',
+      link: '/organizations/columns/data-types',
       title: 'Data Types',
       type: 'basic',
       fn: (n: NavigationItem) => { this.setNavTitle(n) },
     },
     {
-      id: 'organizations/columns/matching_criteria',
-      link: '/organizations/columns/matching_criteria/properties',
-      title: 'Matching Criteria',
+      id: 'organizations/columns/import-settings',
+      link: '/organizations/columns/import-settings',
+      title: 'Import Settings',
       type: 'basic',
       fn: (n: NavigationItem) => { this.setNavTitle(n) },
     },
@@ -89,6 +90,6 @@ export class ColumnsComponent implements OnInit {
 
   setTitle() {
     const basePath = `${this._location.path().split('/').slice(0, -1).join('/')}/properties`
-    this.pageTitle = this.columnsNavigationMenu.find((n) => n.link === basePath).title
+    this.pageTitle = this.columnsNavigationMenu.find((n) => basePath.includes(n.link)).title
   }
 }
