@@ -18,18 +18,8 @@ const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: 
   }
 }
 
-const columnMappingTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'column-mappings' }
-  return genericTypeMatcher(args)(segments)
-}
-
 const dataQualityTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'data-quality' }
-  return genericTypeMatcher(args)(segments)
-}
-
-const columnSettingsTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'column-settings' }
   return genericTypeMatcher(args)(segments)
 }
 
