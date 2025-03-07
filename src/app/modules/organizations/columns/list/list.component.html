@@ -33,6 +33,9 @@
       <a mat-stroked-button (click)="edit(c)" class="mr-2">
         <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil" matTooltip="Edit Column"></mat-icon>
       </a>
+      <a mat-stroked-button (click)="rename(c)" class="mr-2">
+        <mat-icon class="icon-size-4" svgIcon="fa-solid:copy" matTooltip="Rename Column"></mat-icon>
+      </a>
       @if (c.is_extra_data) {
         <a mat-stroked-button color="warn" (click)="delete(c)">
           <mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Delete Column"></mat-icon>
