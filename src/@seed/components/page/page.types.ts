@@ -6,4 +6,5 @@ export type Config = {
   action2Icon?: string;
   action2Text?: string;
   title: string;
+  titleIcon?: string;
 }
