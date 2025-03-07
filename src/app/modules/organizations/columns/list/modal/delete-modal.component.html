@@ -1,0 +1,23 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  Delete Column {{ data.column.display_name }}?
+</h2>
+
+<div class="mb-4 mt-4">
+  @if (inProgress) {
+    <mat-progress-bar mode="determinate" [value]="progressBarObj.progress"></mat-progress-bar>
+  }
+  @if (errorMessage) {
+    <seed-alert type="error">{{ errorMessage }}</seed-alert>
+  }
+</div>
+
+@if (!inProgress) {
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="warn" (click)="onSubmit()" [disabled]="errorMessage">Delete</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+  </mat-dialog-actions>
+</div>
+}
