@@ -2,11 +2,11 @@ import { Component, ViewEncapsulation } from '@angular/core'
 import { SharedImports } from '@seed/directives'
 
 @Component({
-  selector: 'seed-organizations-column-matching-criteria-taxlots',
-  templateUrl: './matching-criteria.component.html',
+  selector: 'seed-organizations-column-import-settings-properties',
+  templateUrl: './import-settings.component.html',
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports],
 })
-export class MatchingCriteriaTaxLotsComponent {
-  type = 'taxlots'
+export class ImportSettingsPropertiesComponent {
+  type = 'properties'
 }
