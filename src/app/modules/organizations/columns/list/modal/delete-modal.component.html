@@ -12,12 +12,12 @@
 </div>
 
 @if (!inProgress) {
-<div class="flex justify-end">
-  <mat-dialog-actions>
-    <button mat-raised-button color="warn" (click)="onSubmit()" [disabled]="errorMessage">Delete</button>
-  </mat-dialog-actions>
-  <mat-dialog-actions>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
-  </mat-dialog-actions>
-</div>
+  <div class="flex justify-end">
+    <mat-dialog-actions>
+      <button mat-raised-button color="warn" (click)="onSubmit()" [disabled]="errorMessage">Delete</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    </mat-dialog-actions>
+  </div>
 }

@@ -1,6 +1,4 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-  Edit Column
-</h2>
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Column</h2>
 <form [formGroup]="form" class="flex flex-col gap-4">
   <mat-form-field>
     <mat-label>Display Name</mat-label>
@@ -22,12 +20,12 @@
   <mat-progress-bar mode="determinate" [value]="progressBarObj.progress"></mat-progress-bar>
 }
 @if (!inProgress) {
-<div class="flex justify-end">
-  <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Save</button>
-  </mat-dialog-actions>
-  <mat-dialog-actions>
-    <button mat-stroked-button (click)="close()">Cancel</button>
-  </mat-dialog-actions>
-</div>
+  <div class="flex justify-end">
+    <mat-dialog-actions>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Save</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button mat-stroked-button (click)="close()">Cancel</button>
+    </mat-dialog-actions>
+  </div>
 }

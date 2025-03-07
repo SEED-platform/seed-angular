@@ -1,7 +1,6 @@
-
 <mat-form-field class="mt-4">
   <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
 </mat-form-field>
 <mat-table [dataSource]="columnTableDataSource" class="mat-elevation-z4 w-100 p-4">
   <ng-container matColumnDef="canonical">
@@ -47,5 +46,4 @@
   <tr mat-header-row *matHeaderRowDef="columnTableColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: columnTableColumns"></tr>
 </mat-table>
-<mat-paginator [pageSizeOptions]="[10, 20]"showFirstLastButtons aria-label="Select page">
-</mat-paginator>
+<mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"> </mat-paginator>
