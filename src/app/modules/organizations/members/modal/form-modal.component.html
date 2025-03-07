@@ -1,14 +1,23 @@
 <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Member</h2>
 <form [formGroup]="form" class="flex flex-col gap-4">
-  <!-- Display only -->
-  <div class="flex flex-col">
-    <div>Email</div>
-    <div class="rounded bg-gray-100 p-2">{{ form.value.email }}</div>
-  </div>
 
-  <div class="flex flex-col">
-    <div>Name</div>
-    <div class="h-9 rounded bg-gray-100 p-2">{{ form.value.first_name }} {{ form.value.last_name }}</div>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email"/>
+    @if (form.get('email')?.hasError('email')) {
+      <mat-error>Invalid email format</mat-error>
+    }
+  </mat-form-field>
+  
+  <div class="flex">
+    <mat-form-field class="mr-1 w-1/2">
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="first_name"/>
+    </mat-form-field>
+    <mat-form-field class="w-1/2">
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="last_name"/>
+    </mat-form-field>
   </div>
 
   <mat-form-field>
