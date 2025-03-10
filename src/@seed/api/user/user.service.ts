@@ -1,26 +1,45 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
+import type { OnDestroy } from '@angular/core'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, ReplaySubject, switchMap, take, tap } from 'rxjs'
+import { catchError, distinctUntilChanged, map, ReplaySubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type {
+  Action,
+  CreateUserRequest,
   CurrentUser,
   GenerateApiKeyResponse,
   PasswordUpdateRequest,
   PasswordUpdateResponse,
   SetDefaultOrganizationResponse,
+  UserAuth,
+  UserAuthResponse,
   UserUpdateRequest,
 } from '@seed/api/user'
 import { ErrorService } from '@seed/services'
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class UserService implements OnDestroy {
   private _httpClient = inject(HttpClient)
   private _currentOrganizationId = new ReplaySubject<number>(1)
   private _currentUser = new ReplaySubject<CurrentUser>(1)
+  private _auth = new ReplaySubject<UserAuth>(1)
   private _errorService = inject(ErrorService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
+
   currentOrganizationId$ = this._currentOrganizationId.asObservable().pipe(distinctUntilChanged())
   currentUser$ = this._currentUser.asObservable()
+  auth$ = this._auth.asObservable()
+
+  constructor() {
+    this.currentUser$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap(({ id, org_id }) => {
+        const actions: Action[] = ['can_invite_member', 'can_remove_member', 'requires_owner', 'requires_member', 'requires_superuser']
+        return this.getUserAuthorization(org_id, id, actions)
+      }),
+    ).subscribe()
+  }
 
   /**
    * Get the current signed-in user data
@@ -53,6 +72,17 @@ export class UserService {
     )
   }
 
+  /*
+  * Create user
+  */
+  createUser(orgId: number, params: CreateUserRequest): Observable<CurrentUser> {
+    return this._httpClient.post<CurrentUser>(`/api/v3/users/?organization_id=${orgId}`, params).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating user')
+      }),
+    )
+  }
+
   /**
    * Update user
    */
@@ -80,7 +110,6 @@ export class UserService {
   }
 
   updateUserAccessLevelInstance(userId: number, orgId: number, accessLevelInstanceId: number): Observable<{ status: string }> {
-    console.log('update access level instance', userId, orgId, accessLevelInstanceId)
     const url = `/api/v3/users/${userId}/access_level_instance/?organization_id=${orgId}`
     return this._httpClient.put<{ status: string }>(url, { access_level_instance_id: accessLevelInstanceId }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -121,5 +150,23 @@ export class UserService {
         this.getCurrentUser().subscribe()
       }),
     )
+  }
+
+  getUserAuthorization(orgId: number, userId: number, actions: Action[]): Observable<UserAuth> {
+    const url = `/api/v3/users/${userId}/is_authorized/?organization_id=${orgId}`
+    return this._httpClient.post(url, { actions }).pipe(
+      map((response: UserAuthResponse) => response.auth),
+      tap((auth) => {
+        this._auth.next(auth)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error checking user authorization')
+      }),
+    )
+  }
+
+  ngOnDestroy() {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }
