@@ -46,7 +46,7 @@ export class ColumnsComponent implements OnInit {
       fn: (n: NavigationItem) => { this.setNavTitle(n) },
     },
     {
-      id: 'organization/columns/data_type',
+      id: 'organization/columns/data-type',
       link: '/organizations/columns/data-types',
       title: 'Data Types',
       type: 'basic',
