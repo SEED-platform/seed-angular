@@ -103,7 +103,7 @@ export class NavigationService {
           id: 'organizations/members',
           link: '/organizations/members',
           title: 'Members',
-          icon: 'fa-solid:user',
+          icon: 'fa-solid:users',
           type: 'basic',
         },
       ],
