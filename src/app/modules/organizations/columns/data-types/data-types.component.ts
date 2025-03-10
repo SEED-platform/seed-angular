@@ -4,8 +4,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
-import { UpdateModalComponent } from '../modal/update-modal.component'
 import { type UploaderResponse } from '@seed/services/uploader'
+import { UpdateModalComponent } from '../modal/update-modal.component'
 import { DataTypes } from './data-types.constants'
 
 @Component({

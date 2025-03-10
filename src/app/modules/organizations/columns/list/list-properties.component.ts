@@ -24,7 +24,7 @@ export class ListPropertiesComponent extends ListComponent implements AfterViewI
     this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
       map((columns) => {
         this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-      })
+      }),
     ).subscribe()
   }
 
