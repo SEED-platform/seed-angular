@@ -1,6 +1,6 @@
 export * from './access-level-tree/access-level-tree.component'
 export * from './column-mappings/column-mappings.component'
-export * from './column-settings/column-settings.component'
+export * from './columns/columns.component'
 export * from './cycles/cycles.component'
 export * from './data-quality/data-quality.component'
 export * from './derived-columns/derived-columns.component'
