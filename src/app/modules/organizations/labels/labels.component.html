@@ -1,4 +1,6 @@
-<seed-page [config]="{ title: 'Labels', action: create, actionIcon: 'fa-solid:plus', actionText: 'Create Label' }">
+<seed-page
+  [config]="{ title: 'Labels', titleIcon: 'fa-solid:tags', action: create, actionIcon: 'fa-solid:plus', actionText: 'Create Label' }"
+>
   <seed-page-table-container>
     <table mat-table [dataSource]="labelsDataSource">
       <ng-container matColumnDef="label">
