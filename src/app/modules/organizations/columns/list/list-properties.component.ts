@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatPaginator } from '@angular/material/paginator'
 import { MatTableModule } from '@angular/material/table'
 import { MatTooltip } from '@angular/material/tooltip'
-import { takeUntil } from 'rxjs'
+import { map, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import { ListComponent } from './list.component'
@@ -21,17 +21,14 @@ export class ListPropertiesComponent extends ListComponent implements AfterViewI
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((columns) => {
-      this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-    })
+    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
+      map((columns) => {
+        this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+      })
+    ).subscribe()
   }
 
   ngAfterViewInit(): void {
     this.columnTableDataSource.paginator = this.paginator
-  }
-
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value
-    this.columnTableDataSource.filter = filterValue.trim().toLowerCase()
   }
 }
