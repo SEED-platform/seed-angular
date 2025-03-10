@@ -63,9 +63,6 @@ export class ColumnService {
   updateMultipleColumns(organization_id: number, table_name: string, changes: object): Observable<UploaderResponse> {
     const url = '/api/v3/columns/update_multiple/'
     return this._httpClient.post<UploaderResponse>(url, { organization_id, table_name, changes }).pipe(
-      map((ur) => {
-        return ur
-      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating columns')
       }),
@@ -75,9 +72,6 @@ export class ColumnService {
   deleteColumn(column: Column): Observable<UploaderResponse> {
     const url = `/api/v3/columns/${column.id}/?organization_id=${column.organization_id}`
     return this._httpClient.delete<UploaderResponse>(url).pipe(
-      map((ur) => {
-        return ur
-      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting column')
       }),
