@@ -91,12 +91,14 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   onSubmit(): void {
-    const fn = this.create ? this.createMember : this.editMember
-    fn()
+    if (this.create) {
+      this.createMember()
+    } else {
+      this.editMember()
+    }
   }
 
   createMember() {
-    console.log('create')
     const { first_name, last_name, email, access_level_instance_id, role } = this.form.value
     const userDetails: CreateUserRequest = {
       first_name,
@@ -107,6 +109,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
       org_name: null,
     }
     this._userService.createUser(this.data.orgId, userDetails).subscribe(() => {
+      this._snackBar.success('User created')
       this._dialogRef.close()
     })
   }

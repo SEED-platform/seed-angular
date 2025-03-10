@@ -16,6 +16,7 @@ import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
+import { ResetPasswordsModalComponent } from './modal/reset-passwords-modal.component'
 
 @Component({
   selector: 'seed-organizations-members',
@@ -49,7 +50,7 @@ export class MembersComponent implements OnDestroy, OnInit {
   }
 
   get config() {
-    const config: Config = { title: 'Members' }
+    const config: Config = { title: 'Members', titleIcon: 'fa-solid:users' }
 
     if (this.auth?.can_remove_member) {
       Object.assign(config, {
@@ -91,9 +92,8 @@ export class MembersComponent implements OnDestroy, OnInit {
     this.fetchMembers(dialogRef)
   }
 
-  resetPasswords(): void {
-    console.log('reset passwords')
-    const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
+  resetPasswords = (): void => {
+    const dialogRef: MatDialogRef<ResetPasswordsModalComponent, boolean> = this._dialog.open(ResetPasswordsModalComponent, {
       width: '40rem',
       data: { orgId: this._organization.org_id },
     })
