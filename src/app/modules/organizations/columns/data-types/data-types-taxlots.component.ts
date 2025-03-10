@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { type AfterViewInit, Component, inject, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -9,7 +9,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { map, takeUntil } from 'rxjs'
 import { type Column } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
-import { type UploaderResponse } from '@seed/services/uploader/uploader.types'
 import { naturalSort } from '@seed/utils'
 import { DataTypesComponent } from './data-types.component'
 
@@ -36,7 +35,7 @@ export class DataTypesTaxLotsComponent extends DataTypesComponent implements Aft
           this.dataTypesForm.addControl(`${c.id}`, new FormControl((c.data_type), [Validators.required]))
         }
         this.columnTableDataSource.data = this.columns
-      })
+      }),
     ).subscribe()
   }
 
