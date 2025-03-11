@@ -18,5 +18,12 @@
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
     <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} table</div>
+    <ag-grid-angular
+      style="width: 100%; height: 100%"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      class="ag-theme-alpine">
+    </ag-grid-angular>
   </div>
+
 </div>
