@@ -1,5 +1,5 @@
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
-import { FormGroup } from '@angular/forms'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
@@ -32,7 +32,7 @@ export class DataTypesComponent implements OnDestroy {
 
   save(): void {
     const changes = {}
-    for (const column of this.columns) {
+    for (const column of this.columns.filter((c) => c.is_extra_data)) {
       const setting = this.dataTypesForm.get(`${column.id}`).value
       if (setting !== column.data_type) {
         changes[column.id] = { data_type: setting }
@@ -51,6 +51,16 @@ export class DataTypesComponent implements OnDestroy {
           )
           .subscribe()
       })
+    }
+  }
+
+  initializeFormControls() {
+    for (const c of this.columns) {
+      const stringId = `${c.id}`
+      this.dataTypesForm.addControl(stringId, new FormControl((c.data_type), [Validators.required]))
+      if (!c.is_extra_data) {
+        this.dataTypesForm.controls[stringId].disable()
+      }
     }
   }
 }

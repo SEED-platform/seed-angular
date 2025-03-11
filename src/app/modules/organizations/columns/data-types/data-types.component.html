@@ -4,15 +4,15 @@
     <div class="my-4 text-lg">No extra data columns have been created yet.</div>
   }
   <div [hidden]="isLoading">
-    <mat-table [dataSource]="columnTableDataSource" class="mat-elevation-z8 w-full p-2">
+    <table mat-table [dataSource]="columnTableDataSource" class="mat-elevation-z8 w-full p-2">
       <ng-container matColumnDef="display_name">
-        <th mat-header-cell *matHeaderCellDef class="w-1/2">Display Name</th>
-        <td mat-cell class="w-1/2" *matCellDef="let c">{{ c.display_name }}</td>
+        <th mat-header-cell *matHeaderCellDef class="w-2/3">Display Name</th>
+        <td mat-cell class="w-2/3" *matCellDef="let c">{{ c.display_name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="data_type">
-        <th mat-header-cell *matHeaderCellDef class="w-1/2">Data Type</th>
-        <td mat-cell class="w-1/2" *matCellDef="let c">
+        <th mat-header-cell *matHeaderCellDef class="w-1/3">Data Type</th>
+        <td mat-cell class="w-1/3" *matCellDef="let c">
           <mat-select formControlName="{{ c.id }}">
             @for (type of dataTypes; track type.id) {
               <mat-option [value]="type.id">{{ type.label }}</mat-option>
@@ -23,7 +23,7 @@
 
       <tr mat-header-row *matHeaderRowDef="columnTableColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: columnTableColumns"></tr>
-    </mat-table>
+    </table>
     <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"></mat-paginator>
 
     <div class="my-4">

@@ -30,10 +30,8 @@ export class DataTypesTaxLotsComponent extends DataTypesComponent implements Aft
   ngOnInit(): void {
     this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
       map((columns) => {
-        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => c.is_extra_data)
-        for (const c of this.columns) {
-          this.dataTypesForm.addControl(`${c.id}`, new FormControl((c.data_type), [Validators.required]))
-        }
+        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+        this.initializeFormControls()
         this.columnTableDataSource.data = this.columns
       }),
     ).subscribe()

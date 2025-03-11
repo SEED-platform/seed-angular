@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
+import { ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatPaginator } from '@angular/material/paginator'
@@ -30,10 +30,8 @@ export class DataTypesPropertiesComponent extends DataTypesComponent implements 
   ngOnInit(): void {
     this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
       map((columns) => {
-        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => c.is_extra_data)
-        for (const c of this.columns) {
-          this.dataTypesForm.addControl(`${c.id}`, new FormControl((c.data_type), [Validators.required]))
-        }
+        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+        this.initializeFormControls()
         if (this.columns.length > 0) {
           this.isLoading = false
         }
