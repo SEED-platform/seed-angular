@@ -21,10 +21,20 @@
     }
     @if (config.action) {
       <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
-        <a mat-flat-button color="primary" (click)="config.action()">
-          <mat-icon class="icon-size-4" [svgIcon]="config.actionIcon"></mat-icon>
-          <span class="ml-2">{{ config.actionText }}</span>
-        </a>
+        @if (config.actionIcon && !config.actionText) {
+          <button [class]="config.actionClasses" mat-icon-button (click)="config.action()">
+            <mat-icon [svgIcon]="config.actionIcon"></mat-icon>
+          </button>
+        } @else {
+          <button [class]="config.actionClasses" mat-flat-button color="primary" (click)="config.action()">
+            @if (config.actionIcon) {
+              <mat-icon class="icon-size-4" [svgIcon]="config.actionIcon"></mat-icon>
+            }
+            @if (config.actionText) {
+              <span [class.ml-2]="config.actionIcon">{{ config.actionText }}</span>
+            }
+          </button>
+        }
       </div>
     }
   </div>

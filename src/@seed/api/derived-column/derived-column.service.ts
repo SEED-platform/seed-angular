@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { OrganizationService } from '../organization'
 import type { DerivedColumn, DerivedColumnResponse, DerivedColumnsResponse } from './derived-column.types'
 
@@ -11,7 +11,7 @@ import type { DerivedColumn, DerivedColumnResponse, DerivedColumnsResponse } fro
 export class DerivedColumnService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _derivedColumns = new ReplaySubject<DerivedColumn[]>()
   private readonly _unsubscribeAll$ = new Subject<void>()

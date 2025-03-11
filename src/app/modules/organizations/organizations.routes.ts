@@ -1,4 +1,8 @@
+import { inject } from '@angular/core'
 import type { UrlSegment } from '@angular/router'
+import { switchMap, take } from 'rxjs'
+import { OrganizationService } from '../../../@seed/api/organization'
+import { UserService } from '../../../@seed/api/user'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
   AccessLevelTreeComponent,
@@ -41,7 +45,23 @@ const derivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
 
 export default [
   { path: 'settings', component: SettingsComponent, loadChildren: () => import('app/modules/organizations/settings/settings.routes') },
-  { path: 'access-level-tree', component: AccessLevelTreeComponent },
+  {
+    path: 'access-level-tree',
+    title: 'Access Level Tree',
+    component: AccessLevelTreeComponent,
+    resolve: {
+      accessLevelTree: () => {
+        const organizationService = inject(OrganizationService)
+        const userService = inject(UserService)
+        return userService.currentOrganizationId$.pipe(
+          take(1),
+          switchMap(() => {
+            return organizationService.accessLevelTree$
+          }),
+        )
+      },
+    },
+  },
   { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
   { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },
   { matcher: dataQualityTypeMatcher, component: DataQualityComponent },

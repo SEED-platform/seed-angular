@@ -111,6 +111,11 @@ export type AccessLevelTreeResponse = {
 
 export type AccessLevelTree = {
   accessLevelNames: string[];
+  accessLevelTree: AccessLevelNode[];
+}
+
+export type AccessLevelInstancesByDepth = {
+  accessLevelNames: string[];
   accessLevelInstancesByDepth: AccessLevelsByDepth;
 }
 
@@ -122,4 +127,4 @@ export type AccessLevelNode = {
   children: AccessLevelNode[];
 }
 
-export type AccessLevelsByDepth = Record<string, { id: number; name: string }[]>
+export type AccessLevelsByDepth = Record<number, { id: number; name: string }[]>

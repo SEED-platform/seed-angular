@@ -1,5 +1,6 @@
 export type Config = {
   action?: () => void;
+  actionClasses?: string;
   actionIcon?: string;
   actionText?: string;
   action2?: () => void;
