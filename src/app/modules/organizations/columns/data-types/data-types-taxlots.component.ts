@@ -8,9 +8,9 @@ import { MatPaginator } from '@angular/material/paginator'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
 import { map, takeUntil } from 'rxjs'
+import { TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import { TableContainerComponent } from '@seed/components'
 import { DataTypesComponent } from './data-types.component'
 
 @Component({
