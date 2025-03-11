@@ -70,7 +70,7 @@ export class DataTypesComponent implements OnDestroy {
       const stringId = `${c.id}`
       this.dataTypesForm.addControl(stringId, new FormControl((c.data_type), [Validators.required]))
       if (!c.is_extra_data) {
-        this.dataTypesForm.controls[stringId].disable()
+        this.dataTypesForm.get(stringId)?.disable()
       }
     }
   }

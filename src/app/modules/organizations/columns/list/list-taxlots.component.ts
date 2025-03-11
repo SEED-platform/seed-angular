@@ -6,9 +6,9 @@ import { MatPaginator } from '@angular/material/paginator'
 import { MatTableModule } from '@angular/material/table'
 import { MatTooltip } from '@angular/material/tooltip'
 import { map, takeUntil } from 'rxjs'
+import { TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import { TableContainerComponent } from '@seed/components'
 import { ListComponent } from './list.component'
 
 @Component({

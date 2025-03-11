@@ -10,7 +10,7 @@ import { ImportSettingsComponent } from './import-settings.component'
   imports: [SharedImports],
 })
 
-export class ImportSettingsPropertiesComponent extends ImportSettingsComponent implements OnInit{
+export class ImportSettingsPropertiesComponent extends ImportSettingsComponent implements OnInit {
   type = 'properties'
 
   ngOnInit(): void {

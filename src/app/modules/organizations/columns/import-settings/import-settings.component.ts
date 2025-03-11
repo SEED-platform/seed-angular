@@ -23,7 +23,20 @@ export class ImportSettingsComponent implements OnDestroy {
   }
 
   filterColumns(columns: Column[]) {
-    this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => { c.is_excluded_from_hash || c.merge_protection || c.recognize_empty})
-    this.availableColumns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name)).filter((c) => !this.columns.includes(c))   
+    this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+      .filter((c) => { this.includeColumn(c) })
+    this.availableColumns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+      .filter((c) => !this.columns.includes(c))
+  }
+
+  includeColumn(column: Column): boolean {
+    if (column.is_excluded_from_hash) {
+      return true
+    } else if (column.recognize_empty) {
+      return true
+    } else if (column.merge_protection === 'Favor Existing') {
+      return true
+    }
+    return false
   }
 }
