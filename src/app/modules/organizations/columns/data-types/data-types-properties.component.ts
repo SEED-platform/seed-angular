@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ReactiveFormsModule } from '@angular/forms'
 =======
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 >>>>>>> f6a7449 (linter)
+=======
+import { ReactiveFormsModule } from '@angular/forms'
+>>>>>>> b0b94cd (show all columns - canonical are disabled)
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
