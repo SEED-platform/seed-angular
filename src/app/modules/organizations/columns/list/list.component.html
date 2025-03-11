@@ -1,9 +1,9 @@
-<mat-form-field class="mt-4">
-  <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
-</mat-form-field>
 <seed-page-table-container>
-<table mat-table [dataSource]="columnTableDataSource">
+  <mat-form-field class="w-full">
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
+  </mat-form-field>  
+  <table mat-table [dataSource]="columnTableDataSource">
   <ng-container matColumnDef="canonical">
     <th mat-header-cell *matHeaderCellDef>Canonical?</th>
     <td mat-cell *matCellDef="let c">
