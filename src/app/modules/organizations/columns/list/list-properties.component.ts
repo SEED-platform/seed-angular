@@ -8,13 +8,14 @@ import { MatTooltip } from '@angular/material/tooltip'
 import { map, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
+import { TableContainerComponent } from '@seed/components'
 import { ListComponent } from './list.component'
 
 @Component({
   selector: 'seed-organizations-columns-list-properties',
   templateUrl: './list.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports, MatFormFieldModule, MatIcon, MatInputModule, MatPaginator, MatTableModule, MatTooltip],
+  imports: [SharedImports, MatFormFieldModule, MatIcon, MatInputModule, MatPaginator, MatTableModule, MatTooltip, TableContainerComponent],
 })
 export class ListPropertiesComponent extends ListComponent implements AfterViewInit, OnDestroy, OnInit {
   type = 'properties'
