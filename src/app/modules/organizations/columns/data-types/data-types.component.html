@@ -1,15 +1,14 @@
 <div class="prose my-4">This allows the user to set the type, such as Text, Number, Date for Extra Data Fields.</div>
-  @if (columns && columns.length === 0) {
-    <div class="my-4 text-lg">No extra data columns have been created yet.</div>
-  }
-  <div [hidden]="isLoading">
-    <seed-page-table-container>
-      <mat-form-field class="w-full">
-        <mat-label>Filter</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
-      </mat-form-field>
-      <form [formGroup]="dataTypesForm" (ngSubmit)="save()">
-
+@if (columns && columns.length === 0) {
+  <div class="my-4 text-lg">No extra data columns have been created yet.</div>
+}
+<div [hidden]="isLoading">
+  <seed-page-table-container>
+    <mat-form-field class="w-full">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
+    </mat-form-field>
+    <form [formGroup]="dataTypesForm" (ngSubmit)="save()">
       <table mat-table [dataSource]="columnTableDataSource">
         <ng-container matColumnDef="display_name">
           <th mat-header-cell *matHeaderCellDef class="w-2/3">Display Name</th>
@@ -32,13 +31,11 @@
       </table>
       <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"></mat-paginator>
 
-    <div class="my-4">
-      <button mat-flat-button color="primary" [disabled]="dataTypesForm.invalid">
-        <span class="">Save Changes</span>
-      </button>
-    </div>
-  </form>
-
+      <div class="my-4">
+        <button mat-flat-button color="primary" [disabled]="dataTypesForm.invalid">
+          <span class="">Save Changes</span>
+        </button>
+      </div>
+    </form>
   </seed-page-table-container>
-
-  </div>
+</div>
