@@ -3,28 +3,25 @@ import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulatio
 import { ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
 import { MatPaginator } from '@angular/material/paginator'
 import { MatSelectModule } from '@angular/material/select'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatTableModule } from '@angular/material/table'
 import { map, takeUntil } from 'rxjs'
-import { type Column } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
+import { TableContainerComponent } from '@seed/components'
 import { DataTypesComponent } from './data-types.component'
 
 @Component({
   selector: 'seed-organizations-column-data-types-properties',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, SharedImports, MatButtonModule, MatFormFieldModule, MatPaginator, MatSelectModule, MatTableModule, ReactiveFormsModule],
+  imports: [CommonModule, SharedImports, TableContainerComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatPaginator, MatSelectModule, MatTableModule, ReactiveFormsModule],
 })
 export class DataTypesPropertiesComponent extends DataTypesComponent implements AfterViewInit, OnInit {
   type = 'PropertyState'
-  columnTableDataSource = new MatTableDataSource<Column>([])
-  columnTableColumns = [
-    'display_name',
-    'data_type',
-  ]
+
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {

@@ -1,35 +1,44 @@
 <div class="prose my-4">This allows the user to set the type, such as Text, Number, Date for Extra Data Fields.</div>
-<form [formGroup]="dataTypesForm" (ngSubmit)="save()" class="flex flex-col">
   @if (columns && columns.length === 0) {
     <div class="my-4 text-lg">No extra data columns have been created yet.</div>
   }
   <div [hidden]="isLoading">
-    <table mat-table [dataSource]="columnTableDataSource" class="mat-elevation-z8 w-full p-2">
-      <ng-container matColumnDef="display_name">
-        <th mat-header-cell *matHeaderCellDef class="w-2/3">Display Name</th>
-        <td mat-cell class="w-2/3" *matCellDef="let c">{{ c.display_name }}</td>
-      </ng-container>
+    <seed-page-table-container>
+      <mat-form-field class="w-full">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
+      </mat-form-field>
+      <form [formGroup]="dataTypesForm" (ngSubmit)="save()">
 
-      <ng-container matColumnDef="data_type">
-        <th mat-header-cell *matHeaderCellDef class="w-1/3">Data Type</th>
-        <td mat-cell class="w-1/3" *matCellDef="let c">
-          <mat-select formControlName="{{ c.id }}">
-            @for (type of dataTypes; track type.id) {
-              <mat-option [value]="type.id">{{ type.label }}</mat-option>
-            }
-          </mat-select>
-        </td>
-      </ng-container>
+      <table mat-table [dataSource]="columnTableDataSource">
+        <ng-container matColumnDef="display_name">
+          <th mat-header-cell *matHeaderCellDef class="w-2/3">Display Name</th>
+          <td mat-cell class="w-2/3" *matCellDef="let c">{{ c.display_name }}</td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columnTableColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnTableColumns"></tr>
-    </table>
-    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"></mat-paginator>
+        <ng-container matColumnDef="data_type">
+          <th mat-header-cell *matHeaderCellDef class="w-1/3">Data Type</th>
+          <td mat-cell class="w-1/3" *matCellDef="let c">
+            <mat-select formControlName="{{ c.id }}">
+              @for (type of dataTypes; track type.id) {
+                <mat-option [value]="type.id">{{ type.label }}</mat-option>
+              }
+            </mat-select>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnTableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnTableColumns"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"></mat-paginator>
 
     <div class="my-4">
       <button mat-flat-button color="primary" [disabled]="dataTypesForm.invalid">
         <span class="">Save Changes</span>
       </button>
     </div>
+  </form>
+
+  </seed-page-table-container>
+
   </div>
-</form>

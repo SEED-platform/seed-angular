@@ -1,6 +1,7 @@
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
+import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
@@ -20,6 +21,11 @@ export class DataTypesComponent implements OnDestroy {
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columns: Column[]
+  columnTableDataSource = new MatTableDataSource<Column>([])
+  columnTableColumns = [
+    'display_name',
+    'data_type',
+  ]
   type: string
   dataTypesForm = new FormGroup({})
   dataTypes = DataTypes
@@ -28,6 +34,11 @@ export class DataTypesComponent implements OnDestroy {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value
+    this.columnTableDataSource.filter = filterValue.trim().toLowerCase()
   }
 
   save(): void {
