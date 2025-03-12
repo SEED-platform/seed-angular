@@ -3,7 +3,7 @@ import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
-import type { ConfirmationConfig } from '@seed/services'
+import type { ConfirmationConfig } from '..'
 
 @Component({
   selector: 'seed-confirmation-dialog',

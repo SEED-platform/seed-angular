@@ -13,10 +13,12 @@
       <div class="flex w-full flex-col">
         <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Levels</div>
 
-        <button class="mx-6" mat-flat-button color="primary">
-          <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
-          <span class="ml-2">Edit</span>
-        </button>
+        <div class="flex h-12 items-center">
+          <button class="mx-6 w-full" mat-flat-button color="primary">
+            <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
+            <span class="ml-2">Edit</span>
+          </button>
+        </div>
 
         <ol class="mx-6 mt-8 list-inside list-decimal space-y-4 font-bold">
           @for (level of accessLevelNames; track level) {
@@ -29,8 +31,41 @@
     <mat-drawer-content class="flex flex-col overflow-hidden">
       <div class="relative flex h-full flex-auto flex-col overflow-hidden">
         <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Level Instances</div>
-        <div class="max-w-3xl p-6">
-          <div>Filter</div>
+        <div class="max-w-4xl px-6 pb-6">
+          <div class="mb-4 flex h-12 flex-auto items-center gap-4">
+            <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="dynamic">
+              <mat-icon class="icon-size-5" svgIcon="fa-solid:magnifying-glass" matPrefix></mat-icon>
+              <input
+                matInput
+                autocomplete="off"
+                placeholder="Filter access level instances"
+                (input)="filterByQuery(filterInput.value)"
+                #filterInput
+              />
+            </mat-form-field>
+
+            <div
+              matTooltip="Create a second access level before creating new instances"
+              [matTooltipDisabled]="accessLevelNames.length >= 2"
+            >
+              <button
+                class="min-w-10 px-2 sm:px-4"
+                mat-flat-button
+                color="primary"
+                (click)="createInstance()"
+                [disabled]="accessLevelNames.length < 2"
+              >
+                <mat-icon class="icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon>
+                <span class="ml-2 hidden sm:inline-block">New</span>
+              </button>
+            </div>
+
+            <button class="min-w-10 px-2 sm:px-4" mat-flat-button color="primary" (click)="uploadInstances()">
+              <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
+              <span class="ml-2 hidden sm:inline-block">Upload</span>
+            </button>
+          </div>
+
           <div class="flex h-6 items-center">
             <div class="inline-flex h-[22px] select-none items-center rounded-md bg-gray-200 px-2 text-sm dark:bg-gray-800">
               {{ accessLevelNames[0] }}
@@ -101,12 +136,12 @@
       </span>
     </div>
     <mat-divider class="my-2"></mat-divider>
-    <button mat-menu-item>
+    <button mat-menu-item (click)="renameInstance(instance)">
       <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
       <span>Rename</span>
     </button>
     @if (depth > 0) {
-      <button mat-menu-item>
+      <button mat-menu-item (click)="deleteInstance(instance)">
         <mat-icon class="icon-size-5" svgIcon="fa-solid:trash-can"></mat-icon>
         <span>Delete</span>
       </button>

@@ -8,11 +8,13 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { naturalSort } from '../../utils'
 import { UserService } from '../user'
 import type {
-  AccessLevelNode,
+  AccessLevelInstance,
   AccessLevelsByDepth,
   AccessLevelTree,
   AccessLevelTreeResponse,
   BriefOrganization,
+  CanDeleteInstanceResponse,
+  EditAccessLevelInstanceRequest,
   Organization,
   OrganizationResponse,
   OrganizationSettings,
@@ -101,9 +103,10 @@ export class OrganizationService {
     return this._httpClient.get<AccessLevelTreeResponse>(url).pipe(
       map(({ access_level_names, access_level_tree }) => ({
         accessLevelNames: access_level_names,
-        accessLevelTree: access_level_tree,
+        accessLevelTree: this._sortAccessLevelInstances(access_level_tree),
       })),
       tap((accessLevelTree) => {
+        console.log(accessLevelTree)
         this._accessLevelTree.next(accessLevelTree)
         this._accessLevelInstancesByDepth.next(this._calculateAccessLevelInstancesByDepth(accessLevelTree.accessLevelTree))
       }),
@@ -113,6 +116,44 @@ export class OrganizationService {
     )
   }
 
+  editAccessLevelInstance(organizationId: number, accessLevelInstanceId: number, name: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/edit_instance/`
+    const data: EditAccessLevelInstanceRequest = { name }
+    return this._httpClient.put<null>(url, data).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  canDeleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/can_delete_instance/`
+    return this._httpClient.get<CanDeleteInstanceResponse>(url).pipe(
+      map(({ can_delete, reasons }) => (can_delete ? { canDelete: can_delete } : { canDelete: can_delete, reasons })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching access level instance delete status')
+      }),
+    )
+  }
+
+  deleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/delete_instance/`
+    return this._httpClient.delete<null>(url).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Failed to delete Access Level Instance')
+      }),
+    )
+  }
+
+  // TODO add response type
   deleteOrganizationUser(userId: number, organizationId: number) {
     const url = `/api/v3/organizations/${organizationId}/users/${userId}/remove/`
     return this._httpClient.delete(url).pipe(
@@ -152,10 +193,23 @@ export class OrganizationService {
     )
   }
 
+  private _sortAccessLevelInstances(tree: AccessLevelInstance[]): AccessLevelInstance[] {
+    return tree
+      .map((node) => ({
+        ...node,
+        ...(node.children ? { children: this._sortAccessLevelInstances(node.children) } : {}),
+      }))
+      .sort((a, b) => naturalSort(a.name, b.name))
+  }
+
   /*
    * Transform access level tree into a more usable format
    */
-  private _calculateAccessLevelInstancesByDepth(tree: AccessLevelNode[], depth = 0, result: AccessLevelsByDepth = {}): AccessLevelsByDepth {
+  private _calculateAccessLevelInstancesByDepth(
+    tree: AccessLevelInstance[],
+    depth = 0,
+    result: AccessLevelsByDepth = {},
+  ): AccessLevelsByDepth {
     if (!tree) return result
     if (!result[depth]) result[depth] = []
     for (const { children, id, name } of tree) {

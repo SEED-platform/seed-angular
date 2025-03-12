@@ -106,12 +106,12 @@ export type OrganizationUsersResponse = {
 
 export type AccessLevelTreeResponse = {
   access_level_names: string[];
-  access_level_tree: AccessLevelNode[];
+  access_level_tree: AccessLevelInstance[];
 }
 
 export type AccessLevelTree = {
   accessLevelNames: string[];
-  accessLevelTree: AccessLevelNode[];
+  accessLevelTree: AccessLevelInstance[];
 }
 
 export type AccessLevelInstancesByDepth = {
@@ -119,12 +119,21 @@ export type AccessLevelInstancesByDepth = {
   accessLevelInstancesByDepth: AccessLevelsByDepth;
 }
 
-export type AccessLevelNode = {
+export type AccessLevelInstance = {
   id: number;
   name: string;
   organization: number;
   path: Record<string, string>;
-  children: AccessLevelNode[];
+  children?: AccessLevelInstance[];
 }
 
 export type AccessLevelsByDepth = Record<number, { id: number; name: string }[]>
+
+export type EditAccessLevelInstanceRequest = {
+  name: string;
+}
+
+export type CanDeleteInstanceResponse = {
+  can_delete: boolean;
+  reasons?: string[];
+}
