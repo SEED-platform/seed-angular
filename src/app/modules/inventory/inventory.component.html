@@ -1,15 +1,15 @@
+<seed-page 
+  [config]="{
+    title: 'Properties',
+    titleIcon: 'fa-solid:building'
+  }"
+>
+</seed-page>
+
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <!-- Header -->
   <div class="bg-card">
     <div class="mx-auto flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
-      <div class="my-8 flex min-w-0 flex-auto flex-col sm:my-12 sm:flex-row sm:items-center">
-        <div class="flex min-w-0 flex-auto items-center">
-          <div class="ml-4 flex min-w-0 flex-col">
-            <div class="truncate text-2xl font-semibold leading-7 tracking-tight md:text-5xl md:leading-snug">{{ type }} filters</div>
-          </div>
-        </div>
-      </div>
-
       <!-- Tabs -->
       <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
     </div>
@@ -17,13 +17,37 @@
 
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
-    <div class="mx-auto w-full max-w-screen-xl">{{ t(type) }} table</div>
-    <ag-grid-angular
-      style="width: 100%; height: 100%"
-      [rowData]="rowData"
-      [columnDefs]="columnDefs"
-      class="ag-theme-alpine">
-    </ag-grid-angular>
+    <!-- config -->
+    <mat-expansion-panel>
+      <mat-expansion-panel-header class="flex-row-reverse gap-2">
+        <mat-panel-title>
+          Config
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="flex m-2">
+
+        <mat-form-field class="mr-1 w-1/2">
+          <mat-label>Profile</mat-label>
+            <mat-select [(value)]="currentProfile.id">
+              @for (item of profiles; track item) {
+              <mat-option [value]="item.id">{{ item.name }}</mat-option>
+              }
+            </mat-select>
+        </mat-form-field>
+
+      </div>
+    </mat-expansion-panel>
+    <!-- <div class="ag-theme-alpine-dark"> -->
+      <div class="h-full w-full ag-theme-alpine-dark">
+        <ag-grid-angular
+          style="width: 100%; height: 100%;"
+          [rowData]="rowData"
+          [columnDefs]="columnDefs"
+          class="ag-theme-alpine-dark"
+          />
+      </div>
+
+    <!-- </div> -->
   </div>
 
 </div>
