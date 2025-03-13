@@ -3,30 +3,32 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDivider } from '@angular/material/divider'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatMenuModule } from '@angular/material/menu'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import { Subject, takeUntil } from 'rxjs'
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs'
 import type { AccessLevelInstance, AccessLevelTree } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import { UserService } from '@seed/api/user'
 import type { DrawerMode } from '@seed/components'
 import { PageComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
 import { ConfirmationService, MediaWatcherService } from '@seed/services'
-import { UserService } from '../../../../@seed/api/user'
 import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
-import type { RenameInstanceData } from './access-level-tree.types'
-import { RenameInstanceDialogComponent } from './rename-instance-dialog/rename-instance-dialog.component'
+import type { EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
+import { EditAccessLevelsDialogComponent } from './edit-access-levels-dialog'
+import { RenameInstanceDialogComponent } from './rename-instance-dialog'
 
 @Component({
   selector: 'seed-organizations-access-level-tree',
   templateUrl: './access-level-tree.component.html',
   imports: [
     MatButtonModule,
-    MatDivider,
+    MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -36,6 +38,7 @@ import { RenameInstanceDialogComponent } from './rename-instance-dialog/rename-i
     NgClass,
     NgTemplateOutlet,
     PageComponent,
+    SharedImports,
   ],
   encapsulation: ViewEncapsulation.None,
 })
@@ -49,14 +52,20 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _organizationId: number
+  private _filterSubject$ = new Subject<string>()
   accessLevelNames: AccessLevelTree['accessLevelNames']
   accessLevelTree: AccessLevelTree['accessLevelTree']
+  filteredAccessLevelTree?: AccessLevelTree['accessLevelTree']
   drawerMode: DrawerMode = 'side'
   drawerOpened = true
 
   expanded = new Set<number>()
 
   ngOnInit(): void {
+    this._filterSubject$.pipe(debounceTime(300), distinctUntilChanged()).subscribe((value) => {
+      this.filterAccessLevelTree(value)
+    })
+
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {
       if (matchingAliases.includes('md')) {
         this.drawerMode = 'side'
@@ -91,6 +100,18 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   countChildren = (instance: AccessLevelInstance): number => {
     return (instance.children ?? []).reduce((count, child) => count + 1 + this.countChildren(child), 0)
+  }
+
+  editAccessLevels(): void {
+    this._matDialog.open(EditAccessLevelsDialogComponent, {
+      autoFocus: false,
+      disableClose: true,
+      data: {
+        accessLevelNames: this.accessLevelNames,
+        organizationId: this._organizationId,
+      } satisfies EditAccessLevelsData,
+      panelClass: 'seed-dialog-panel',
+    })
   }
 
   renameInstance(instance: AccessLevelInstance): void {
@@ -136,11 +157,25 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     })
   }
 
-  filterByQuery(_value: string) {
-    // TODO
+  onFilterChange(value: string) {
+    this._filterSubject$.next(value)
   }
 
-  createInstance() {
+  // Handle debounced filter
+  filterAccessLevelTree(filter: string) {
+    const filterTree = (tree: AccessLevelInstance[]): AccessLevelInstance[] => {
+      return tree
+        .map((instance) => ({
+          ...instance,
+          ...(instance.children ? { children: filterTree(instance.children) } : {}),
+        }))
+        .filter((instance) => instance.name.toLowerCase().includes(filter.toLowerCase()) || instance.children?.length > 0)
+    }
+
+    this.filteredAccessLevelTree = filter ? filterTree(this.accessLevelTree) : undefined
+  }
+
+  createInstance(_parent?: AccessLevelInstance) {
     // TODO
   }
 

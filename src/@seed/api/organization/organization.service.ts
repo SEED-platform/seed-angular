@@ -21,6 +21,8 @@ import type {
   OrganizationsResponse,
   OrganizationUser,
   OrganizationUsersResponse,
+  UpdateAccessLevelsRequest,
+  UpdateAccessLevelsResponse,
 } from './organization.types'
 
 @Injectable({ providedIn: 'root' })
@@ -106,12 +108,25 @@ export class OrganizationService {
         accessLevelTree: this._sortAccessLevelInstances(access_level_tree),
       })),
       tap((accessLevelTree) => {
-        console.log(accessLevelTree)
         this._accessLevelTree.next(accessLevelTree)
         this._accessLevelInstancesByDepth.next(this._calculateAccessLevelInstancesByDepth(accessLevelTree.accessLevelTree))
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching organization access level tree')
+      }),
+    )
+  }
+
+  updateAccessLevels(organizationId: number, accessLevelNames: string[]) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/access_level_names/`
+    const data: UpdateAccessLevelsRequest = { access_level_names: accessLevelNames }
+    return this._httpClient.post<UpdateAccessLevelsResponse>(url, data).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
       }),
     )
   }
@@ -195,9 +210,9 @@ export class OrganizationService {
 
   private _sortAccessLevelInstances(tree: AccessLevelInstance[]): AccessLevelInstance[] {
     return tree
-      .map((node) => ({
-        ...node,
-        ...(node.children ? { children: this._sortAccessLevelInstances(node.children) } : {}),
+      .map((instance) => ({
+        ...instance,
+        ...(instance.children ? { children: this._sortAccessLevelInstances(instance.children) } : {}),
       }))
       .sort((a, b) => naturalSort(a.name, b.name))
   }

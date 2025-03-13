@@ -20,6 +20,7 @@
             matInput
             cdkFocusInitial
             autocomplete="off"
+            class="text-ellipsis"
             [formControl]="nameValidator"
             [placeholder]="originalName"
             (keydown.enter)="rename(renameInput.value)"
@@ -34,7 +35,7 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled">Cancel</button>
+    <button mat-stroked-button matDialogClose="canceled" class="w-24">Cancel</button>
     <button
       mat-flat-button
       class="flex w-24 items-center justify-center"
@@ -43,7 +44,7 @@
       [disabled]="submitted || !isValid(renameInput.value)"
     >
       @if (!submitted) {
-        <span>Rename</span>
+        Rename
       } @else {
         <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
       }

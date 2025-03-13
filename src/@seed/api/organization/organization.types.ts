@@ -129,6 +129,12 @@ export type AccessLevelInstance = {
 
 export type AccessLevelsByDepth = Record<number, { id: number; name: string }[]>
 
+export type UpdateAccessLevelsRequest = {
+  access_level_names: string[];
+}
+
+export type UpdateAccessLevelsResponse = string[]
+
 export type EditAccessLevelInstanceRequest = {
   name: string;
 }

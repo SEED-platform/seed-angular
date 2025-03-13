@@ -40,8 +40,8 @@ export class RenameInstanceDialogComponent {
   submitted = false
 
   constructor() {
-    this._findSiblingNames()
     this.nameValidator.markAsTouched()
+    this._findSiblingNames()
   }
 
   isValid(name: string) {
@@ -50,7 +50,7 @@ export class RenameInstanceDialogComponent {
 
   rename(name: string) {
     if (!this.submitted && this.isValid(name)) {
-      if (name !== this.originalName) {
+      if (name.trim() !== this.originalName) {
         this.submitted = true
         this._organizationService
           .editAccessLevelInstance(this._data.organizationId, this._data.instance.id, name.trim())

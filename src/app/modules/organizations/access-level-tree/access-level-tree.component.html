@@ -14,7 +14,7 @@
         <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Levels</div>
 
         <div class="flex h-12 items-center">
-          <button class="mx-6 w-full" mat-flat-button color="primary">
+          <button class="mx-6 w-full" mat-flat-button color="primary" (click)="editAccessLevels()">
             <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
             <span class="ml-2">Edit</span>
           </button>
@@ -39,7 +39,8 @@
                 matInput
                 autocomplete="off"
                 placeholder="Filter access level instances"
-                (input)="filterByQuery(filterInput.value)"
+                class="text-ellipsis"
+                (input)="onFilterChange(filterInput.value)"
                 #filterInput
               />
             </mat-form-field>
@@ -66,12 +67,25 @@
             </button>
           </div>
 
-          <div class="flex h-6 items-center">
-            <div class="inline-flex h-[22px] select-none items-center rounded-md bg-gray-200 px-2 text-sm dark:bg-gray-800">
-              {{ accessLevelNames[0] }}
+          @if (filteredAccessLevelTree?.length === 0) {
+            <div class="ml-[calc(0.5rem-1px)] flex items-center">
+              <div
+                class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-accent-200 text-accent-600 dark:bg-accent-600 dark:text-accent-50"
+              >
+                <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:magnifying-glass-minus"></mat-icon>
+              </div>
+              <span class="ml-2">No matching instances</span>
             </div>
-          </div>
-          <ng-container *ngTemplateOutlet="instanceTemplate; context: { $implicit: accessLevelTree, depth: 0 }"></ng-container>
+          } @else {
+            <div class="flex h-6 items-center">
+              <div class="inline-flex h-[22px] select-none items-center rounded-md bg-gray-200 px-2 text-sm dark:bg-gray-800">
+                {{ accessLevelNames[0] }}
+              </div>
+            </div>
+            <ng-container
+              *ngTemplateOutlet="instanceTemplate; context: { $implicit: filteredAccessLevelTree ?? accessLevelTree, depth: 0 }"
+            ></ng-container>
+          }
         </div>
       </div>
     </mat-drawer-content>
@@ -104,7 +118,7 @@
           <div class="ml-3 h-full truncate">{{ instance.name }}</div>
         </div>
         <div
-          class="m-1.5 hidden h-7 w-7 cursor-pointer items-center justify-center rounded-md hover:bg-gray-300 group-hover:flex hover:dark:bg-gray-700"
+          class="m-1.5 hidden h-7 w-7 cursor-pointer items-center justify-center rounded-md hover:bg-gray-300 group-hover:flex dark:hover:bg-gray-700"
           [matMenuTriggerFor]="instanceMenu"
           [matMenuTriggerData]="{ $implicit: instance, depth }"
           (click)="$event.stopPropagation()"
@@ -136,6 +150,10 @@
       </span>
     </div>
     <mat-divider class="my-2"></mat-divider>
+    <button mat-menu-item (click)="createInstance(instance)">
+      <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
+      <span>Create child instance</span>
+    </button>
     <button mat-menu-item (click)="renameInstance(instance)">
       <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
       <span>Rename</span>
