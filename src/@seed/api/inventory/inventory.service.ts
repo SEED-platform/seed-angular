@@ -1,12 +1,12 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import type { Observable } from 'rxjs'
+import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
-import { FilterResponse, Inventory, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
-import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
+import type { FilterResponse, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -34,7 +34,6 @@ export class InventoryService {
   }
 
   getProperties(params: Record<string, string | number | boolean>, data: Record<string, unknown>): Observable<FilterResponse> {
-    // const { cycle, ids_only, include_related, organization_id, page, per_page } = params
     const url = 'api/v3/properties/filter/'
     return this._httpClient.post<FilterResponse>(url, data, { params }).pipe(
       map((response) => response),
@@ -47,9 +46,8 @@ export class InventoryService {
     )
   }
 
-  getAgProperties(params: Record<string, string | number | boolean>, data: Record<string, unknown>): Observable<AgFilterResponse> {
-    // const { cycle, ids_only, include_related, organization_id, page, per_page } = params
-    const url = 'api/v3/properties/filter/'
+  getAgProperties(params: Record<string, string | number | boolean>, data: Record<string, unknown>): Observable<FilterResponse> {
+    const url = 'api/v3/properties/ag_filter/'
     return this._httpClient.post<FilterResponse>(url, data, { params }).pipe(
       map((response) => response),
       tap((response) => {
@@ -91,17 +89,4 @@ export class InventoryService {
       }),
     )
   }
-
-  // get(orgId: number): Observable<Cycle[]> {
-  //   const url = `/api/v3/cycles/?organization_id=${orgId}`
-  //   return this._httpClient.get<CyclesResponse>(url).pipe(
-  //     map(({ cycles }) => cycles),
-  //     tap((cycles) => {
-  //       this._cycles.next(cycles)
-  //     }),
-  //     catchError((error: HttpErrorResponse) => {
-  //       return this._errorService.handleError(error, 'Error fetching cycles')
-  //     }),
-  //   )
-  // }
 }

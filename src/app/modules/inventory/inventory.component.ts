@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -7,24 +8,23 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
 import { ActivatedRoute, Router } from '@angular/router'
-import { AgGridModule } from 'ag-grid-angular'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridOptions } from 'ag-grid-community'
-import { ClientSideRowModelModule, ModuleRegistry } from 'ag-grid-community'
-import { combineLatest, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
+import { forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
 import { OrganizationService } from '@seed/api/organization'
-import { InventoryTabComponent } from '@seed/components'
-import { PageComponent } from '@seed/components'
+import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { ConfigService } from '@seed/services'
 import type { InventoryPagination, InventoryType, Profile } from './inventory.types'
 
-// ModuleRegistry.registerModules([AllCommunityModule])
-ModuleRegistry.registerModules([ClientSideRowModelModule])
+ModuleRegistry.registerModules([AllCommunityModule])
+// ModuleRegistry.registerModules([ClientSideRowModelModule])
 
 @Component({
   selector: 'seed-inventory',
@@ -33,6 +33,7 @@ ModuleRegistry.registerModules([ClientSideRowModelModule])
   imports: [
     AgGridAngular,
     AgGridModule,
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatExpansionModule,
@@ -51,84 +52,171 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _columnService = inject(ColumnService)
-  private _orgId: number
-  private _cycles: Cycle[]
+  private _configService = inject(ConfigService)
+  private _orgId: number = null
   private _cycle: Cycle
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  gridApi!: GridApi
   pagination: InventoryPagination
   properties: Record<string, unknown>[]
   profiles: Profile[]
-  currentProfile: Profile = {
-    id: null,
-    inventory_type: null,
-    name: null,
-    profile_location: null,
-  }
+  propertyProfiles: Profile[]
+  currentProfileId: number | null = null
   propertyColumns: Column[]
   taxlotColumns: Column[]
+  cycles: Cycle[]
+  cycleId: number
+  chunk = 100
+  agPageSize = 100
+
+  gridTheme = themeAlpine.withPart(colorSchemeLight)
 
   columnDefs: ColDef[]
+
   rowData: Record<string, unknown>[]
-  gridOptions: GridOptions = { rowModelType: 'clientSide' }
+  defaultColDef = {
+    sortable: true,
+    filter: true,
+    floatingFilter: true,
+    resizable: true,
+    // checkBoxSelection: (params) => params.column.getColId() === 'selection',
+    // headerCheckboxSelection: (params) => params.column.getColId() === 'selection',
+  }
+
+  gridOptions: GridOptions = {
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: true,
+      headerCheckbox: true,
+    },
+  }
 
   ngOnInit(): void {
+    this.setTheme()
     this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap(({ org_id }) => {
-        this._orgId = org_id
-        return combineLatest([
-          this._cycleService.get(this._orgId),
-          this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-          this._columnService.propertyColumns$,
-        ])
+        return this.getDependencies(org_id)
       }),
-      switchMap(([cycles, profiles, propertyColumns]) => {
-        this._cycles = cycles
-        this._cycle = cycles.at(0) ?? null
-        this.profiles = profiles
-        this.propertyColumns = propertyColumns
-        if (cycles.length) this.loadInventory(1)
+    ).subscribe()
+  }
 
-        return profiles.length
-          ? this._inventoryService.getColumnListProfile(profiles.at(0).id)
-          : of(null)
-      }),
-    ).subscribe((profile) => {
-      this.currentProfile = profile
-      console.log('current p', this.currentProfile)
+  setTheme() {
+    this._configService.config$.subscribe(({ scheme }) => {
+      // if auto, check browser preference, otherwise use scheme
+      const darkMode = scheme === 'auto'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : scheme === 'dark'
+
+      this.gridTheme = themeAlpine.withPart(darkMode ? colorSchemeDarkBlue : colorSchemeLight)
+    })
+  }
+
+  /*
+  * get cycles, profiles, columns, inventory
+  */
+  getDependencies(org_id: number) {
+    this._orgId = org_id
+
+    return forkJoin({
+      cycles: this._cycleService.get(this._orgId),
+      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
+      propertyColumns: this._columnService.propertyColumns$.pipe(take(1)),
+    }).pipe(
+      tap((results) => { this.setDependencies(results) }),
+    )
+  }
+
+  /*
+  * set class variables: cycles, profiles, columns, inventory
+  */
+  setDependencies({ cycles, profiles, propertyColumns }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[] }) {
+    this.cycles = cycles
+    this._cycle = cycles.at(0) ?? null
+    this.cycleId = this._cycle?.id
+    this.profiles = profiles
+    this.propertyProfiles = this.profiles.filter((p) => p.inventory_type === 0)
+    this.propertyColumns = propertyColumns
+
+    const id = this.profiles.length ? this.profiles[0].id : null
+    this.getProfile(id)
+  }
+
+  /*
+  * get profile and reload inventory
+  */
+  getProfile(id: number) {
+    const profileRequest = id ? this._inventoryService.getColumnListProfile(id) : of(null)
+    profileRequest.subscribe((profile) => {
+      this.currentProfileId = profile?.id
+      this.loadInventory(1)
     })
   }
 
   loadInventory(page: number) {
+    console.log('load inventory')
+
     const params = {
       cycle: this._cycle.id,
       ids_only: false,
       include_related: true,
       organization_id: this._orgId,
       page,
-      per_page: 100,
+      per_page: this.chunk,
     }
     const data = {
       include_property_ids: null,
+      profile_id: this.currentProfileId,
     }
-    this._inventoryService.getProperties(params, data).subscribe(({ pagination, results}) => {
+    this._inventoryService.getAgProperties(params, data).subscribe(({ pagination, results, column_defs }) => {
       this.pagination = pagination
       this.properties = results
       this.rowData = results
-      this.setColumnDefs()
-      console.log('properties', results)
+      this.columnDefs = column_defs
+      // this.columnDefs.unshift(this.checkBoxConfig)
       // need a spinner or loading bar
     })
   }
 
-  setColumnDefs() {
-    this.columnDefs = [{ field: 'pm_property_id_1' }]
-    return
-    if (this.properties.length) {
-      this.columnDefs = Object.keys(this.properties[0]).map((key) => ({ field: key }))
-    }
+  onCycleChange(id: number) {
+    console.log('cycle change', id)
+    this.cycleId = id
+    this._cycle = this.cycles.find((cycle) => cycle.id === id)
+    this.loadInventory(1)
+  }
+
+  onProfileChange(id: number) {
+    console.log('profile change', id)
+    this.getProfile(id)
+  }
+
+  onGridReady(params: GridReadyEvent) {
+    console.log('grid ready')
+    this.gridApi = params.api
+  }
+
+  onSortChange() {
+    const sorts = this.gridApi.getColumnState()
+      .filter((col) => col.sort)
+      .map((col) => ({ colId: col.colId, sort: col.sort }))
+    console.log('sort change', sorts)
+  }
+
+  onFilterChange() {
+    const filters = this.gridApi.getFilterModel()
+    console.log('filter change', filters)
+  }
+
+  onPageChange(direction: 'first' | 'previous' | 'next' | 'last') {
+    const { page, num_pages } = this.pagination
+    const pageLookup = { first: 1, previous: page - 1, next: page + 1, last: num_pages }
+
+    const newPage = pageLookup[direction]
+    if (newPage < 1 || newPage > num_pages) return
+
+    this.loadInventory(pageLookup[direction])
   }
 
   async toggleInventoryType(type: InventoryType) {

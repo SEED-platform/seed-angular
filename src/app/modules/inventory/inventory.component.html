@@ -18,36 +18,68 @@
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
     <!-- config -->
-    <mat-expansion-panel>
+    <!-- <mat-expansion-panel>
       <mat-expansion-panel-header class="flex-row-reverse gap-2">
         <mat-panel-title>
           Config
         </mat-panel-title>
-      </mat-expansion-panel-header>
+      </mat-expansion-panel-header> -->
+      {{ pagination | json }}
       <div class="flex m-2">
 
         <mat-form-field class="mr-1 w-1/2">
+          <mat-label>Cycle</mat-label>
+          <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)">
+            @for (item of cycles; track item) {
+            <mat-option [value]="item.id">{{ item.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="mr-1 w-1/2">
           <mat-label>Profile</mat-label>
-            <mat-select [(value)]="currentProfile.id">
-              @for (item of profiles; track item) {
-              <mat-option [value]="item.id">{{ item.name }}</mat-option>
-              }
-            </mat-select>
+          <mat-select [(value)]="currentProfileId" (selectionChange)="onProfileChange($event.value)">
+            @for (item of propertyProfiles; track item) {
+            <mat-option [value]="item.id">{{ item.name }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
 
       </div>
-    </mat-expansion-panel>
-    <!-- <div class="ag-theme-alpine-dark"> -->
-      <div class="h-full w-full ag-theme-alpine-dark">
-        <ag-grid-angular
-          style="width: 100%; height: 100%;"
-          [rowData]="rowData"
-          [columnDefs]="columnDefs"
-          class="ag-theme-alpine-dark"
-          />
-      </div>
+      <!-- pagination buttons -->
+      <div class="flex justify-end">
+        @if (pagination) {
+          <span class="my-auto mr-10">{{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}</span>
+          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('first')">
+            <mat-icon svgIcon="fa-solid:angles-left" class="scale-50"></mat-icon>
+          </div>
+          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('previous')">
+            <mat-icon svgIcon="fa-solid:chevron-left" class="scale-50"></mat-icon>
+          </div>
+          <span class="my-auto">Page {{ pagination.page }} of {{ pagination.num_pages }}</span>
+          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('next')">
+            <mat-icon svgIcon="fa-solid:chevron-right" class="scale-50"></mat-icon>
+          </div>
+          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('last')">
+            <mat-icon svgIcon="fa-solid:angles-right" class="scale-50"></mat-icon>
+          </div>
 
-    <!-- </div> -->
+        }
+      </div>
+    <!-- </mat-expansion-panel> -->
+      <ag-grid-angular
+        style="width: 100%; height: 100%;"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [gridOptions]="gridOptions"
+        (gridReady)="onGridReady($event)"
+        [paginationPageSize]="agPageSize"
+        [rowData]="rowData"
+        (filterChanged)="onFilterChange()"
+        (sortChanged)="onSortChange()"
+        [theme]="gridTheme"
+        />
+
   </div>
 
 </div>
