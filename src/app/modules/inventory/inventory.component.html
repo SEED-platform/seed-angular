@@ -24,10 +24,9 @@
           Config
         </mat-panel-title>
       </mat-expansion-panel-header> -->
-      {{ pagination | json }}
       <div class="flex m-2">
 
-        <mat-form-field class="mr-1 w-1/2">
+        <mat-form-field class="mr-1 w-60">
           <mat-label>Cycle</mat-label>
           <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)">
             @for (item of cycles; track item) {
@@ -36,7 +35,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="mr-1 w-1/2">
+        <mat-form-field class="mr-1">
           <mat-label>Profile</mat-label>
           <mat-select [(value)]="currentProfileId" (selectionChange)="onProfileChange($event.value)">
             @for (item of propertyProfiles; track item) {
@@ -66,19 +65,21 @@
 
         }
       </div>
-    <!-- </mat-expansion-panel> -->
-      <ag-grid-angular
-        style="width: 100%; height: 100%;"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
-        [gridOptions]="gridOptions"
-        (gridReady)="onGridReady($event)"
-        [paginationPageSize]="agPageSize"
-        [rowData]="rowData"
-        (filterChanged)="onFilterChange()"
-        (sortChanged)="onSortChange()"
-        [theme]="gridTheme"
-        />
+
+     <div class="flex flex-grow h-full">
+       <ag-grid-angular
+         style="width: 100%; height: 100%;"
+         [columnDefs]="columnDefs"
+         [defaultColDef]="defaultColDef"
+         [gridOptions]="gridOptions"
+         (gridReady)="onGridReady($event)"
+         [paginationPageSize]="agPageSize"
+         [rowData]="rowData"
+         (filterChanged)="onFilterChange()"
+         (sortChanged)="onSortChange()"
+         [theme]="gridTheme"
+         />
+     </div>
 
   </div>
 
