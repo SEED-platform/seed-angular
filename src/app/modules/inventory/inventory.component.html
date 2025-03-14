@@ -45,41 +45,22 @@
         </mat-form-field>
 
       </div>
-      <!-- pagination buttons -->
-      <div class="flex justify-end">
-        @if (pagination) {
-          <span class="my-auto mr-10">{{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}</span>
-          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('first')">
-            <mat-icon svgIcon="fa-solid:angles-left" class="scale-50"></mat-icon>
-          </div>
-          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('previous')">
-            <mat-icon svgIcon="fa-solid:chevron-left" class="scale-50"></mat-icon>
-          </div>
-          <span class="my-auto">Page {{ pagination.page }} of {{ pagination.num_pages }}</span>
-          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('next')">
-            <mat-icon svgIcon="fa-solid:chevron-right" class="scale-50"></mat-icon>
-          </div>
-          <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('last')">
-            <mat-icon svgIcon="fa-solid:angles-right" class="scale-50"></mat-icon>
-          </div>
+      <!-- Grid controls: refresh, pagination buttons -->
+       <seed-inventory-grid-controls [pagination]="pagination" [onPageChange]="onPageChange" [resetColumns]="resetColumns"></seed-inventory-grid-controls>
 
-        }
-      </div>
-
-     <div class="flex flex-grow h-full">
-       <ag-grid-angular
-         style="width: 100%; height: 100%;"
-         [columnDefs]="columnDefs"
-         [defaultColDef]="defaultColDef"
-         [gridOptions]="gridOptions"
-         (gridReady)="onGridReady($event)"
-         [paginationPageSize]="agPageSize"
-         [rowData]="rowData"
-         (filterChanged)="onFilterChange()"
-         (sortChanged)="onSortChange()"
-         [theme]="gridTheme"
-         />
-     </div>
+        <ag-grid-angular
+          class="w-full h-[calc(100%-150px)]"
+          style="width: 100%; height: 100%;"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [gridOptions]="gridOptions"
+          (gridReady)="onGridReady($event)"
+          [paginationPageSize]="agPageSize"
+          [rowData]="rowData"
+          (filterChanged)="onFilterChange()"
+          (sortChanged)="onSortChange()"
+          [theme]="gridTheme"
+        />
 
   </div>
 

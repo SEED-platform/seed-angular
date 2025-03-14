@@ -7,9 +7,10 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellContextMenuEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
 import { forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
@@ -21,8 +22,9 @@ import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
-import type { InventoryPagination, InventoryType, Profile } from './inventory.types'
+import { InventoryGridControlsComponent } from './grid/grid-controls.component'
 import * as GridConfig from './inventory-grid.config'
+import type { InventoryPagination, InventoryType, Profile } from './inventory.types'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 // ModuleRegistry.registerModules([ClientSideRowModelModule])
@@ -41,9 +43,11 @@ ModuleRegistry.registerModules([AllCommunityModule])
     MatFormFieldModule,
     MatSelectModule,
     MatTabsModule,
+    MatTooltipModule,
     PageComponent,
     SharedImports,
     InventoryTabComponent,
+    InventoryGridControlsComponent,
   ],
 })
 export class InventoryComponent implements OnDestroy, OnInit {
@@ -77,7 +81,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   rowData: Record<string, unknown>[]
   defaultColDef = GridConfig.defaultColDef
   gridOptions: GridOptions = GridConfig.gridOptions
-  firstColumns = GridConfig.firstColumns
+  constantColumns = GridConfig.constantColumns
 
   ngOnInit(): void {
     this.setTheme()
@@ -120,7 +124,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   setDependencies({ cycles, profiles, propertyColumns }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[] }) {
     this.cycles = cycles
-    this._cycle = cycles.at(0) ?? null
+    this._cycle = cycles.at(2) ?? null
     this.cycleId = this._cycle?.id
     this.profiles = profiles
     this.propertyProfiles = this.profiles.filter((p) => p.inventory_type === 0)
@@ -160,7 +164,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       this.pagination = pagination
       this.properties = results
       this.rowData = results
-      this.columnDefs = [...this.firstColumns, ...column_defs]
+      this.columnDefs = [...this.constantColumns, ...column_defs]
 
       // this.columnDefs.unshift(this.actionButton)
       // this.columnDefs.unshift(this.checkBoxConfig)
@@ -180,46 +184,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.getProfile(id)
   }
 
-  onGridReady(params: GridReadyEvent) {
-    console.log('grid ready')
-    this.gridApi = params.api
+  onGridReady(params: GridReadyEvent) { this.gridApi = params.api }
 
-    // this.gridApi.addEventListener('cellContextMenu', this.onRightClick.bind(this))
-  }
-
-  // onRightClick(event: CellContextMenuEvent<unknown>) {
-  //   event.event.preventDefault() // Prevent browser default menu
-
-  //   // Get row data
-  //   const rowData = event.node?.data as { id: number }
-
-  //   // Remove any existing menu
-  //   document.querySelector('.custom-context-menu')?.remove();
-
-  //   // Create custom menu
-  //   const menu = document.createElement('div')
-  //   menu.classList.add('custom-context-menu')
-  //   menu.style.top = `${(event.event as MouseEvent).clientY}px`
-  //   menu.style.left = `${(event.event as MouseEvent).clientX}px`
-
-  //   menu.innerHTML = `
-  //   <div class="menu-item" onclick="handleMenuAction('view', ${rowData.id})">🔍 View Details</div>
-  //   <div class="menu-item" onclick="handleMenuAction('edit', ${rowData.id})">✏️ Edit</div>
-  //   <div class="menu-item delete" onclick="handleMenuAction('delete', ${rowData.id})">❌ Delete</div>
-  // `
-
-  //   document.body.appendChild(menu)
-
-  //   // Remove menu when clicking elsewhere
-  //   document.addEventListener('click', () => {
-  //     menu.remove()
-  //   }, { once: true })
-  // }
-
-  // // Global function to handle menu actions
-  // handleMenuAction(action, rowId) {
-  //   console.log(`Action: ${action}, Row ID: ${rowId}`);
-  // }
+  resetColumns = () => { this.gridApi?.resetColumnState() }
 
   onSortChange() {
     const sorts = this.gridApi.getColumnState()
@@ -233,7 +200,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     console.log('filter change', filters)
   }
 
-  onPageChange(direction: 'first' | 'previous' | 'next' | 'last') {
+  onPageChange = (direction: 'first' | 'previous' | 'next' | 'last') => {
     const { page, num_pages } = this.pagination
     const pageLookup = { first: 1, previous: page - 1, next: page + 1, last: num_pages }
 

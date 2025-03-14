@@ -46,3 +46,19 @@ export type ProfileColumn = {
   column_name: string;
   table_name: string;
 }
+
+export type AgGridDataRow = {
+  // dynamic columns
+  [key: string]: unknown;
+  // constant columns
+  groups_indicator: boolean;
+  id: number;
+  merged_indicator: boolean;
+  meters_exist_indicator: boolean;
+  notes_count: number;
+  related: unknown[];
+}
+
+export type AgGridParams = {
+  data: AgGridDataRow;
+}

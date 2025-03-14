@@ -1,0 +1,22 @@
+<div class="flex justify-between mx-2">
+  <mat-icon svgIcon="fa-solid:arrows-rotate" class="scale-75 cursor-pointer" (click)="resetColumns()"
+    matTooltip="Reset Columns"></mat-icon>
+  <div class="flex justify-end my-auto">
+    @if (pagination) {
+    <span class="my-auto mr-10">{{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}</span>
+    <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('first')">
+      <mat-icon svgIcon="fa-solid:angles-left" class="scale-50"></mat-icon>
+    </div>
+    <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('previous')">
+      <mat-icon svgIcon="fa-solid:chevron-left" class="scale-50"></mat-icon>
+    </div>
+    <span class="my-auto">Page {{ pagination.page }} of {{ pagination.num_pages }}</span>
+    <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('next')">
+      <mat-icon svgIcon="fa-solid:chevron-right" class="scale-50"></mat-icon>
+    </div>
+    <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('last')">
+      <mat-icon svgIcon="fa-solid:angles-right" class="scale-50"></mat-icon>
+    </div>
+    }
+  </div>
+</div>
