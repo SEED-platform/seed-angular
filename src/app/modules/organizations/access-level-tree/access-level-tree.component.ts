@@ -52,17 +52,17 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _organizationId: number
+  private _filterValue = ''
   private _filterSubject$ = new Subject<string>()
   accessLevelNames: AccessLevelTree['accessLevelNames']
   accessLevelTree: AccessLevelTree['accessLevelTree']
   filteredAccessLevelTree?: AccessLevelTree['accessLevelTree']
   drawerMode: DrawerMode = 'side'
   drawerOpened = true
-
   expanded = new Set<number>()
 
   ngOnInit(): void {
-    this._filterSubject$.pipe(debounceTime(300), distinctUntilChanged()).subscribe((value) => {
+    this._filterSubject$.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this._unsubscribeAll$)).subscribe((value) => {
       this.filterAccessLevelTree(value)
     })
 
@@ -79,6 +79,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames, accessLevelTree }) => {
       this.accessLevelNames = accessLevelNames
       this.accessLevelTree = accessLevelTree
+      this.filterAccessLevelTree(this._filterValue)
     })
 
     this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
@@ -129,7 +130,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   deleteInstance(instance: AccessLevelInstance): void {
     this._organizationService.canDeleteAccessLevelInstance(this._organizationId, instance.id).subscribe(({ reasons }) => {
-      const totalChildren = this.countChildren(instance)
+      const totalChildren = this.countChildren(this._getUnfilteredInstance(instance))
       const showStats = reasons?.length > 0 || totalChildren > 0
       const stats = `<div class="mt-4 text-warn prose">Deleting this Access Level Instance will delete everything else associated with it:
         <ul class="mt-2 mb-0">
@@ -158,6 +159,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   }
 
   onFilterChange(value: string) {
+    this._filterValue = value
     this._filterSubject$.next(value)
   }
 
@@ -186,5 +188,27 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  // When a filter is used, lookup the unfiltered instance to accurately count the total number of child instances
+  private _getUnfilteredInstance(instance: AccessLevelInstance): AccessLevelInstance {
+    const path: string[] = []
+    for (const name of this.accessLevelNames) {
+      if (name in instance.path) {
+        path.push(instance.path[name])
+      } else {
+        break
+      }
+    }
+
+    // Remove the root name
+    path.shift()
+    let unfilteredInstance = this.accessLevelTree[0]
+
+    for (const instanceName of path) {
+      unfilteredInstance = unfilteredInstance.children.find((child) => child.name === instanceName)
+    }
+
+    return unfilteredInstance
   }
 }

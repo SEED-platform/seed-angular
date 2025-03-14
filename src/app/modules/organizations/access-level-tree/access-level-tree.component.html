@@ -10,7 +10,7 @@
 >
   <mat-drawer-container class="h-full flex-auto">
     <mat-drawer class="w-72 dark:bg-gray-900" [mode]="drawerMode" [(opened)]="drawerOpened">
-      <div class="flex w-full flex-col">
+      <div class="flex h-full w-full flex-col">
         <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Levels</div>
 
         <div class="flex h-12 items-center">
@@ -25,46 +25,30 @@
             <li class="pl-5 -indent-5">{{ level }}</li>
           }
         </ol>
+        <button class="m-6 mt-auto flex" mat-flat-button color="primary" (click)="uploadInstances()">
+          <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
+          <span class="ml-2">Upload</span>
+        </button>
       </div>
     </mat-drawer>
 
     <mat-drawer-content class="flex flex-col overflow-hidden">
-      <div class="relative flex h-full flex-auto flex-col overflow-hidden">
+      <div class="relative flex flex-auto flex-col overflow-y-auto sm:max-h-[calc(100svh-14rem-1px)]">
         <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Level Instances</div>
-        <div class="max-w-4xl px-6 pb-6">
-          <div class="mb-4 flex h-12 flex-auto items-center gap-4">
+        <div class="max-w-3xl px-6 pb-6">
+          <div class="mb-4 flex h-12 flex-auto items-center">
             <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="dynamic">
               <mat-icon class="icon-size-5" svgIcon="fa-solid:magnifying-glass" matPrefix></mat-icon>
               <input
                 matInput
                 autocomplete="off"
                 placeholder="Filter access level instances"
+                spellcheck="false"
                 class="text-ellipsis"
                 (input)="onFilterChange(filterInput.value)"
                 #filterInput
               />
             </mat-form-field>
-
-            <div
-              matTooltip="Create a second access level before creating new instances"
-              [matTooltipDisabled]="accessLevelNames.length >= 2"
-            >
-              <button
-                class="min-w-10 px-2 sm:px-4"
-                mat-flat-button
-                color="primary"
-                (click)="createInstance()"
-                [disabled]="accessLevelNames.length < 2"
-              >
-                <mat-icon class="icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon>
-                <span class="ml-2 hidden sm:inline-block">New</span>
-              </button>
-            </div>
-
-            <button class="min-w-10 px-2 sm:px-4" mat-flat-button color="primary" (click)="uploadInstances()">
-              <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
-              <span class="ml-2 hidden sm:inline-block">Upload</span>
-            </button>
           </div>
 
           @if (filteredAccessLevelTree?.length === 0) {
@@ -107,6 +91,7 @@
         class="group flex h-10 w-full select-none items-center rounded-lg hover:bg-hover"
         [ngClass]="hasChildren ? 'cursor-pointer' : 'cursor-default'"
         (click)="hasChildren && toggleExpand(instance.id)"
+        (contextmenu)="$event.preventDefault(); menuTrigger.openMenu()"
       >
         @if (hasChildren) {
           <div class="flex min-w-10 items-center justify-center">
@@ -119,6 +104,7 @@
         </div>
         <div
           class="m-1.5 hidden h-7 w-7 cursor-pointer items-center justify-center rounded-md hover:bg-gray-300 group-hover:flex dark:hover:bg-gray-700"
+          #menuTrigger="matMenuTrigger"
           [matMenuTriggerFor]="instanceMenu"
           [matMenuTriggerData]="{ $implicit: instance, depth }"
           (click)="$event.stopPropagation()"
@@ -144,16 +130,23 @@
 
 <mat-menu #instanceMenu="matMenu" overlapTrigger xPosition="before">
   <ng-template matMenuContent let-instance let-depth="depth">
+    @let isMaximumDepth = depth === accessLevelNames.length - 1;
     <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
       <span class="flex flex-col leading-none">
         <span class="mt-1.5">{{ instance.name }}</span>
       </span>
     </div>
     <mat-divider class="my-2"></mat-divider>
-    <button mat-menu-item (click)="createInstance(instance)">
-      <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
-      <span>Create child instance</span>
-    </button>
+    <div
+      matTooltip="Create an additional access level before creating new instances here"
+      [matTooltipDisabled]="!isMaximumDepth"
+      matTooltipPosition="before"
+    >
+      <button mat-menu-item (click)="createInstance(instance)" [disabled]="isMaximumDepth">
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
+        <span>Create child instance</span>
+      </button>
+    </div>
     <button mat-menu-item (click)="renameInstance(instance)">
       <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
       <span>Rename</span>
