@@ -14,6 +14,7 @@ import type {
   AccessLevelTreeResponse,
   BriefOrganization,
   CanDeleteInstanceResponse,
+  CreateAccessLevelInstanceRequest,
   EditAccessLevelInstanceRequest,
   Organization,
   OrganizationResponse,
@@ -124,6 +125,27 @@ export class OrganizationService {
       tap(() => {
         // Update accessLevelTree
         this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  createAccessLevelInstance(organizationId: number, parentAccessLevelInstanceId: number, name: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/add_instance/`
+    const data: CreateAccessLevelInstanceRequest = {
+      name,
+      parent_id: parentAccessLevelInstanceId,
+    }
+    return this._httpClient.post<AccessLevelTreeResponse>(url, data).pipe(
+      map(({ access_level_names, access_level_tree }) => ({
+        accessLevelNames: access_level_names,
+        accessLevelTree: this._sortAccessLevelInstances(access_level_tree),
+      })),
+      tap((accessLevelTree) => {
+        this._accessLevelTree.next(accessLevelTree)
+        this._accessLevelInstancesByDepth.next(this._calculateAccessLevelInstancesByDepth(accessLevelTree.accessLevelTree))
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error renaming access level instance')

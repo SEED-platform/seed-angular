@@ -19,7 +19,8 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfirmationService, MediaWatcherService } from '@seed/services'
 import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
-import type { EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
+import type { CreateInstanceData, EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
+import { CreateInstanceDialogComponent } from './create-instance-dialog'
 import { EditAccessLevelsDialogComponent } from './edit-access-levels-dialog'
 import { RenameInstanceDialogComponent } from './rename-instance-dialog'
 
@@ -115,6 +116,18 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     })
   }
 
+  createInstance(parentInstance: AccessLevelInstance) {
+    this._matDialog.open(CreateInstanceDialogComponent, {
+      autoFocus: false,
+      data: {
+        accessLevelNames: this.accessLevelNames,
+        parentInstance: this._getUnfilteredInstance(parentInstance),
+        organizationId: this._organizationId,
+      } satisfies CreateInstanceData,
+      panelClass: 'seed-dialog-panel',
+    })
+  }
+
   renameInstance(instance: AccessLevelInstance): void {
     this._matDialog.open(RenameInstanceDialogComponent, {
       autoFocus: false,
@@ -177,10 +190,6 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     this.filteredAccessLevelTree = filter ? filterTree(this.accessLevelTree) : undefined
   }
 
-  createInstance(_parent?: AccessLevelInstance) {
-    // TODO
-  }
-
   uploadInstances() {
     // TODO
   }
@@ -190,7 +199,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     this._unsubscribeAll$.complete()
   }
 
-  // When a filter is used, lookup the unfiltered instance to accurately count the total number of child instances
+  // When a filter is used, lookup the unfiltered instance to accurately get the child instances
   private _getUnfilteredInstance(instance: AccessLevelInstance): AccessLevelInstance {
     const path: string[] = []
     for (const name of this.accessLevelNames) {

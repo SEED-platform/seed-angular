@@ -5,6 +5,12 @@ export type EditAccessLevelsData = {
   organizationId: number;
 }
 
+export type CreateInstanceData = {
+  accessLevelNames: string[];
+  parentInstance: AccessLevelInstance;
+  organizationId: number;
+}
+
 export type RenameInstanceData = {
   accessLevelNames: string[];
   accessLevelTree: AccessLevelInstance[];

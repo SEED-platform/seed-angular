@@ -135,6 +135,11 @@ export type UpdateAccessLevelsRequest = {
 
 export type UpdateAccessLevelsResponse = string[]
 
+export type CreateAccessLevelInstanceRequest = {
+  name: string;
+  parent_id: number;
+}
+
 export type EditAccessLevelInstanceRequest = {
   name: string;
 }

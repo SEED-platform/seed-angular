@@ -10,11 +10,11 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { finalize } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import type { RenameInstanceData } from '..'
+import type { CreateInstanceData } from '..'
 
 @Component({
-  selector: 'seed-rename-instance-dialog',
-  templateUrl: './rename-instance-dialog.component.html',
+  selector: 'seed-create-instance-dialog',
+  templateUrl: './create-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
   imports: [
     A11yModule,
@@ -28,41 +28,38 @@ import type { RenameInstanceData } from '..'
     ReactiveFormsModule,
   ],
 })
-export class RenameInstanceDialogComponent {
-  private _data = inject(MAT_DIALOG_DATA) as RenameInstanceData
-  private _dialogRef = inject(MatDialogRef<RenameInstanceDialogComponent>)
+export class CreateInstanceDialogComponent {
+  private _data = inject(MAT_DIALOG_DATA) as CreateInstanceData
+  private _dialogRef = inject(MatDialogRef<CreateInstanceDialogComponent>)
   private _organizationService = inject(OrganizationService)
 
-  private _siblingInstanceNames = new Set<string>()
-  originalName = this._data.instance.name
-  hasChildren = this._data.instance.children?.length > 0
+  private _siblingInstanceNames = new Set(this._data.parentInstance.children?.map(({ name }) => name) ?? [])
+  breadcrumbs: string[] = []
   nameValidator = new FormControl('', [this._siblingNameValidator()])
   submitted = false
 
   constructor() {
     this.nameValidator.markAsTouched()
-    this._findSiblingNames()
+    this._getBreadcrumbs()
   }
 
   isValid(name: string) {
     return name.trim().length > 0 && !this._siblingInstanceNames.has(name.trim())
   }
 
-  rename(name: string) {
+  create(name: string) {
     if (!this.submitted && this.isValid(name)) {
-      if (name.trim() !== this.originalName) {
-        this.submitted = true
-        this._organizationService
-          .editAccessLevelInstance(this._data.organizationId, this._data.instance.id, name.trim())
-          .pipe(
-            finalize(() => {
-              this._dialogRef.close()
-            }),
-          )
-          .subscribe()
-      } else {
-        this._dialogRef.close()
-      }
+      this.submitted = true
+      this._organizationService
+        .createAccessLevelInstance(this._data.organizationId, this._data.parentInstance.id, name.trim())
+        .pipe(
+          finalize(() => {
+            this._dialogRef.close()
+          }),
+        )
+        .subscribe()
+    } else {
+      this._dialogRef.close()
     }
   }
 
@@ -73,33 +70,16 @@ export class RenameInstanceDialogComponent {
     }
   }
 
-  private _findSiblingNames() {
+  private _getBreadcrumbs() {
     // Find parent to get sibling names
-    const path: string[] = []
+    const breadcrumbs: string[] = []
     for (const name of this._data.accessLevelNames) {
-      if (name in this._data.instance.path) {
-        path.push(this._data.instance.path[name])
+      if (name in this._data.parentInstance.path) {
+        breadcrumbs.push(this._data.parentInstance.path[name])
       } else {
         break
       }
     }
-    const parentPath = path.slice(0, -1)
-
-    // Root instance has no parent
-    if (parentPath.length > 0) {
-      // Remove the root name
-      parentPath.shift()
-      let parent = this._data.accessLevelTree[0]
-
-      for (const instanceName of parentPath) {
-        parent = parent.children.find((child) => child.name === instanceName)
-      }
-
-      for (const { name } of parent.children) {
-        if (name !== this.originalName) {
-          this._siblingInstanceNames.add(name)
-        }
-      }
-    }
+    this.breadcrumbs = breadcrumbs
   }
 }
