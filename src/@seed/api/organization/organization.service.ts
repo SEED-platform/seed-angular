@@ -16,6 +16,7 @@ import type {
   CanDeleteInstanceResponse,
   CreateAccessLevelInstanceRequest,
   EditAccessLevelInstanceRequest,
+  EditAccessLevelInstanceResponse,
   Organization,
   OrganizationResponse,
   OrganizationSettings,
@@ -156,7 +157,7 @@ export class OrganizationService {
   editAccessLevelInstance(organizationId: number, accessLevelInstanceId: number, name: string) {
     const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/edit_instance/`
     const data: EditAccessLevelInstanceRequest = { name }
-    return this._httpClient.put<null>(url, data).pipe(
+    return this._httpClient.put<EditAccessLevelInstanceResponse>(url, data).pipe(
       tap(() => {
         // Update accessLevelTree
         this.getAccessLevelTree(organizationId).subscribe()

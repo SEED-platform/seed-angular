@@ -17,3 +17,9 @@ export type RenameInstanceData = {
   instance: AccessLevelInstance;
   organizationId: number;
 }
+
+export type DeleteInstanceData = {
+  instance: AccessLevelInstance;
+  organizationId: number;
+  warnings: string[];
+}

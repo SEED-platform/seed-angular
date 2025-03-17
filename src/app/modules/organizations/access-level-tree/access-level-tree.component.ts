@@ -19,8 +19,9 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfirmationService, MediaWatcherService } from '@seed/services'
 import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
-import type { CreateInstanceData, EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
+import type { CreateInstanceData, DeleteInstanceData, EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
 import { CreateInstanceDialogComponent } from './create-instance-dialog'
+import { DeleteInstanceDialogComponent } from './delete-instance-dialog'
 import { EditAccessLevelsDialogComponent } from './edit-access-levels-dialog'
 import { RenameInstanceDialogComponent } from './rename-instance-dialog'
 
@@ -119,6 +120,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   createInstance(parentInstance: AccessLevelInstance) {
     this._matDialog.open(CreateInstanceDialogComponent, {
       autoFocus: false,
+      disableClose: true,
       data: {
         accessLevelNames: this.accessLevelNames,
         parentInstance: this._getUnfilteredInstance(parentInstance),
@@ -131,6 +133,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   renameInstance(instance: AccessLevelInstance): void {
     this._matDialog.open(RenameInstanceDialogComponent, {
       autoFocus: false,
+      disableClose: true,
       data: {
         accessLevelNames: this.accessLevelNames,
         accessLevelTree: this.accessLevelTree,
@@ -143,30 +146,21 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   deleteInstance(instance: AccessLevelInstance): void {
     this._organizationService.canDeleteAccessLevelInstance(this._organizationId, instance.id).subscribe(({ reasons }) => {
+      const warnings = reasons ?? []
       const totalChildren = this.countChildren(this._getUnfilteredInstance(instance))
-      const showStats = reasons?.length > 0 || totalChildren > 0
-      const stats = `<div class="mt-4 text-warn prose">Deleting this Access Level Instance will delete everything else associated with it:
-        <ul class="mt-2 mb-0">
-          ${reasons?.length > 0 ? `<li>${reasons.join('</li><li>')}</li>` : ''}
-          ${totalChildren > 0 ? `<li>Has ${totalChildren} Access Level Instance${totalChildren === 1 ? '' : 's'} below this one</li>` : ''}
-        </ul>
-      </div>`
-      const confirmation = this._confirmationService.open({
-        title: `Delete Access Level Instance<div class="font-semibold">${instance.name}</div>`,
-        message: `Are you sure you want to delete this Access Level Instance? This action cannot be undone.${showStats ? stats : ''}`,
-        actions: {
-          confirm: {
-            label: 'Delete',
-          },
-        },
-      })
+      if (totalChildren > 0) {
+        warnings.push(`Has ${totalChildren} Access Level Instance${totalChildren === 1 ? '' : 's'} below this one`)
+      }
 
-      confirmation.afterClosed().subscribe((result: 'confirmed' | 'canceled') => {
-        if (result === 'confirmed') {
-          this._organizationService.deleteAccessLevelInstance(this._organizationId, instance.id).subscribe(() => {
-            this._snackBar.success('Access Level Instance deleted')
-          })
-        }
+      this._matDialog.open(DeleteInstanceDialogComponent, {
+        autoFocus: false,
+        disableClose: true,
+        data: {
+          instance,
+          organizationId: this._organizationId,
+          warnings,
+        } satisfies DeleteInstanceData,
+        panelClass: 'seed-dialog-panel',
       })
     })
   }

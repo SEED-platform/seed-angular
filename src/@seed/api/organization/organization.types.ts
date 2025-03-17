@@ -144,6 +144,10 @@ export type EditAccessLevelInstanceRequest = {
   name: string;
 }
 
+export type EditAccessLevelInstanceResponse = {
+  status: 'success';
+}
+
 export type CanDeleteInstanceResponse = {
   can_delete: boolean;
   reasons?: string[];
