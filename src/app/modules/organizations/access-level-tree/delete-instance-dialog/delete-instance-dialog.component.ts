@@ -23,10 +23,6 @@ export class DeleteInstanceDialogComponent {
   readonly warnings = this._data.warnings
   submitted = false
 
-  constructor() {
-    console.log('Warnings!!', this.warnings)
-  }
-
   delete() {
     if (!this.submitted) {
       this.submitted = true

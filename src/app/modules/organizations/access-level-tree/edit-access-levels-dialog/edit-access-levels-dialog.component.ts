@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { finalize, Subject, takeUntil } from 'rxjs'
+import type { AccessLevelsByDepth } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { arraysEqual } from '@seed/utils'
 import type { EditAccessLevelsData } from '..'
@@ -40,6 +41,7 @@ export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
   form = new FormGroup({
     levels: new FormArray(this.originalAccessLevels.map((level) => new FormControl(level, [Validators.required]))),
   })
+  private _accessLevelInstancesByDepth: AccessLevelsByDepth
 
   get levels(): FormArray<FormControl<string>> {
     return this.form?.get('levels') as FormArray<FormControl<string>>
@@ -53,11 +55,29 @@ export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
     this.levels.valueChanges.pipe(takeUntil(this._unsubscribeAll$)).subscribe(() => {
       this._checkForDuplicates(this.levels)
     })
+
+    this._organizationService.accessLevelInstancesByDepth$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((accessLevelInstancesByDepth) => {
+        this._accessLevelInstancesByDepth = accessLevelInstancesByDepth
+      })
   }
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  isLevelRemoved() {
+    return this.originalAccessLevels.length > this.levels.value.length
+  }
+
+  instancesToBeRemoved() {
+    const levelsRemoved = this.originalAccessLevels.length - this.levels.value.length
+    return Array.from(
+      { length: levelsRemoved },
+      (_, i) => (this._accessLevelInstancesByDepth[this.originalAccessLevels.length - 1 - i] ?? []).length,
+    ).reduce((count, length) => count + length, 0)
   }
 
   isValid() {

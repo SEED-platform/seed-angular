@@ -54,12 +54,12 @@ export class CreateInstanceDialogComponent {
         .createAccessLevelInstance(this._data.organizationId, this._data.parentInstance.id, name.trim())
         .pipe(
           finalize(() => {
-            this._dialogRef.close()
+            this._dialogRef.close(true)
           }),
         )
         .subscribe()
     } else {
-      this._dialogRef.close()
+      this._dialogRef.close(false)
     }
   }
 

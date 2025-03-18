@@ -15,7 +15,7 @@
         @if (warnings.length > 0) {
           <div class="prose mt-4 text-warn">
             Deleting this Access Level Instance will delete everything else associated with it:
-            <ul class="mb-0 mt-2">
+            <ul class="my-0">
               @for (warning of warnings; track $index) {
                 <li>{{ warning }}</li>
               }

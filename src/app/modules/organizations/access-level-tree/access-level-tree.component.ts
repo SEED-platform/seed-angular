@@ -118,7 +118,7 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   }
 
   createInstance(parentInstance: AccessLevelInstance) {
-    this._matDialog.open(CreateInstanceDialogComponent, {
+    const dialog = this._matDialog.open(CreateInstanceDialogComponent, {
       autoFocus: false,
       disableClose: true,
       data: {
@@ -127,6 +127,13 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
         organizationId: this._organizationId,
       } satisfies CreateInstanceData,
       panelClass: 'seed-dialog-panel',
+    })
+
+    dialog.afterClosed().subscribe((created: boolean) => {
+      if (created) {
+        // Expand the parent where the child was just created
+        this.expanded.add(parentInstance.id)
+      }
     })
   }
 
