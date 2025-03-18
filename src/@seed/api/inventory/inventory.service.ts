@@ -46,9 +46,9 @@ export class InventoryService {
     )
   }
 
-  getAgProperties(params: Record<string, string | number | boolean>, data: Record<string, unknown>): Observable<FilterResponse> {
-    const url = 'api/v3/properties/ag_filter/'
-    return this._httpClient.post<FilterResponse>(url, data, { params }).pipe(
+  getAgProperties(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
+    const url = `api/v3/properties/ag_filter/?${paramString}`
+    return this._httpClient.post<FilterResponse>(url, data).pipe(
       map((response) => response),
       tap((response) => {
         this._properties.next(response)

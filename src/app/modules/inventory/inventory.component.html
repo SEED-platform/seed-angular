@@ -16,37 +16,73 @@
   </div>
 
   <!-- Main -->
-  <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
+  <div class="z-1 -mt-px flex-auto border-t pt-2">
     <!-- config -->
-    <!-- <mat-expansion-panel> -->
+    <!-- <mat-expansion-panel #panel [hideToggle]="true">
+      <mat-expansion-panel-header class="flex flex-row-reverse gap-2">
+          <mat-icon 
+            svgIcon="fa-solid:chevron-down"
+            class="chevron transition-transform duration-300 scale-50"
+            [class.rotate-180]="panel.expanded"
+            ></mat-icon>
+          @if (!panel.expanded) {
+            <div class="flex p-2 font-normal">
+              <div>
+                Cycle: <span [ngClass]="{ 'border border-gray-500 rounded px-4 py-2 mr-4': cycle }">{{ cycle ? cycle.name : '' }}</span> 
+              </div>
+              <div>
+                Profile: <span [ngClass]="{ 'border border-gray-500 rounded px-4 py-2': profile }">{{ profile ? profile.name : '' }}</span>
+              </div>
+            </div>
+          }
+
+      </mat-expansion-panel-header> 
+      expanded stuff here
+    </mat-expansion-panel> -->
+
+    <!-- GRID CONFIG -->
       <div class="flex m-2">
 
-        <mat-form-field class="mr-1 w-60">
-          <mat-label>Cycle</mat-label>
-          <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)">
-            @for (item of cycles; track item) {
-            <mat-option [value]="item.id">{{ item.name }}</mat-option>
+        <mat-form-field class="mr-2 w-60" appearance="outline">
+          <mat-label>Actions</mat-label>
+          <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)" class="text-sm">
+            @for (item of actions; track item) {
+            <mat-option [value]="item" class="!h-3 text-sm">{{ item.name }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="mr-1">
-          <mat-label>Profile</mat-label>
-          <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)">
-            @for (item of propertyProfiles; track item) {
-            <mat-option [value]="item.id">{{ item.name }}</mat-option>
+        <mat-form-field class="mr-2 w-60" appearance="outline">
+          <mat-label>Cycle</mat-label>
+          <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)" class="text-sm">
+            @for (item of cycles; track item) {
+            <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
+
+        <mat-form-field class="mr-1" appearance="outline">
+          <mat-label>Profile</mat-label>
+          <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)" class="text-sm">
+            @for (item of propertyProfiles; track item) {
+            <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button>Filters and Sorts</button>
 
       </div>
       <!-- INVENTORY GRID -->
       <seed-inventory-grid
+        #grid
         [columnDefs]="columnDefs"
         [pagination]="pagination"
         [rowData]="rowData"
         [labelLookup]="labelLookup"
         (pageChange)="onPageChange($event)"
+        (filterSortChange)="onFilterSortChange($event)"
+        (gridReady)="onGridReady($event)"
       ></seed-inventory-grid>
 
   </div>

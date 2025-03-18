@@ -4,7 +4,7 @@ import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
-import type { InventoryPagination } from '../inventory.types'
+import type { FiltersSorts, InventoryPagination } from '../inventory.types'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 import { CommonModule } from '@angular/common'
 
@@ -27,6 +27,8 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
   @Output() pageChange = new EventEmitter<number>()
+  @Output() filterSortChange = new EventEmitter<FiltersSorts>()
+  @Output() gridReady = new EventEmitter<GridApi>()
 
   private _configService = inject(ConfigService)
 
@@ -61,7 +63,10 @@ export class InventoryGridComponent implements OnChanges, OnInit {
     }
   }
 
-  onGridReady(params: GridReadyEvent) { this.gridApi = params.api }
+  onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api
+    this.gridReady.emit(this.gridApi)
+  }
 
   setTheme() {
     this._configService.config$.subscribe(({ scheme }) => {
@@ -163,16 +168,25 @@ export class InventoryGridComponent implements OnChanges, OnInit {
 
   resetColumns = () => { this.gridApi?.resetColumnState() }
 
-  onSortChange() {
+  /*
+  * ascending sorts formatted as 'column_id'
+  * descending sorts formatted as '-column_id'
+  */
+  getSorts() {
     const sorts = this.gridApi.getColumnState()
       .filter((col) => col.sort)
-      .map((col) => ({ colId: col.colId, sort: col.sort }))
-    console.log('sort change', sorts)
+      .map((col) => `${col.sort === 'desc' ? '-' : ''}${col.colId}`)
+    return sorts
   }
 
-  onFilterChange() {
-    const filters = this.gridApi.getFilterModel()
-    console.log('filter change', filters)
+  getFilters() {
+    return this.gridApi.getFilterModel()
+  }
+
+  onFilterSortChange() {
+    const filters = this.getFilters()
+    const sorts = this.getSorts()
+    this.filterSortChange.emit({filters, sorts})
   }
 
   onPageChange(page: number) {

@@ -46,3 +46,8 @@ export type ProfileColumn = {
   column_name: string;
   table_name: string;
 }
+
+export type FiltersSorts = {
+  filters: unknown;
+  sorts: string[];
+}
