@@ -37,8 +37,8 @@ export class UploaderService {
   }
 
   /*
-  Fetches progress for a given progress key
-  */
+   * Fetches progress for a given progress key
+   */
   checkProgress(progressKey: string): Observable<UploaderResponse> {
     const url = `/api/v3/progress/${progressKey}/`
     return this._httpClient.get<UploaderResponse>(url).pipe(
@@ -52,7 +52,7 @@ export class UploaderService {
   /*
    * Updates the progress bar object with incoming progress data.
    */
-  _updateProgressBarObj({ data, offset, multiplier, progressBarObj }: UpdateProgressBarObjParams): void {
+  private _updateProgressBarObj({ data, offset, multiplier, progressBarObj }: UpdateProgressBarObjParams): void {
     const rightNow = Date.now()
     progressBarObj.progressLastChecked = rightNow
 

@@ -24,6 +24,7 @@ import { CreateInstanceDialogComponent } from './create-instance-dialog'
 import { DeleteInstanceDialogComponent } from './delete-instance-dialog'
 import { EditAccessLevelsDialogComponent } from './edit-access-levels-dialog'
 import { RenameInstanceDialogComponent } from './rename-instance-dialog'
+import { UploadInstancesDialogComponent } from './upload-instances-dialog'
 
 @Component({
   selector: 'seed-organizations-access-level-tree',
@@ -192,7 +193,12 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   }
 
   uploadInstances() {
-    // TODO
+    this._matDialog.open(UploadInstancesDialogComponent, {
+      autoFocus: false,
+      disableClose: true,
+      panelClass: 'seed-dialog-panel',
+      width: '640px',
+    })
   }
 
   ngOnDestroy(): void {
