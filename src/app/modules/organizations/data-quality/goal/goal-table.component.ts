@@ -60,10 +60,7 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
     }
   }
   ngOnInit() {
-    combineLatest([
-      this._organizationService.currentOrganization$,
-      this._labelsService.labels$,
-    ])
+    combineLatest([this._organizationService.currentOrganization$, this._labelsService.labels$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([organization, labels]) => {
         this._orgId = organization.id
@@ -77,7 +74,9 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
     this._unsubscribeAll$.complete()
   }
 
-  getCriteria(rule: Rule) { return DataQualityUtils.getCriteria(rule) }
+  getCriteria(rule: Rule) {
+    return DataQualityUtils.getCriteria(rule)
+  }
 
   editRule(rule: Rule) {
     const tableName = 'Goal'
@@ -102,8 +101,11 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getRules.emit() }),
-      ).subscribe()
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   toggleEnable(index: number) {

@@ -58,28 +58,28 @@ export class FormModalComponent implements OnDestroy, OnInit {
     severities: SEVERITIES,
   }
 
-  form: DataQualityFormGroup = new FormGroup({
-    condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
-    cross_cycle: new FormControl<boolean>(false), // unused
-    data_type: new FormControl<number | null>(null),
-    enabled: new FormControl<boolean>(true),
-    field: new FormControl<string | null>(null),
-    for_derived_column: new FormControl<boolean>(false), // unused
-    id: new FormControl<number | null>(null), // hidden
-    max: new FormControl<number | null>(null),
-    min: new FormControl<number | null>(null),
-    not_null: new FormControl<boolean>(false),
-    required: new FormControl<boolean>(false),
-    rule_type: new FormControl<number | null>(null),
-    severity: new FormControl<number | null>(null, Validators.required),
-    status_label: new FormControl<number | null>(null),
-    table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
-    text_match: new FormControl<string | null>(null),
-    units: new FormControl<string>(''),
-  }, { validators: [
-    this._dataQualityValidator.hasRange(),
-    this._dataQualityValidator.hasValidLabel(),
-  ] })
+  form: DataQualityFormGroup = new FormGroup(
+    {
+      condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
+      cross_cycle: new FormControl<boolean>(false), // unused
+      data_type: new FormControl<number | null>(null),
+      enabled: new FormControl<boolean>(true),
+      field: new FormControl<string | null>(null),
+      for_derived_column: new FormControl<boolean>(false), // unused
+      id: new FormControl<number | null>(null), // hidden
+      max: new FormControl<number | null>(null),
+      min: new FormControl<number | null>(null),
+      not_null: new FormControl<boolean>(false),
+      required: new FormControl<boolean>(false),
+      rule_type: new FormControl<number | null>(null),
+      severity: new FormControl<number | null>(null, Validators.required),
+      status_label: new FormControl<number | null>(null),
+      table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
+      text_match: new FormControl<string | null>(null),
+      units: new FormControl<string>(''),
+    },
+    { validators: [this._dataQualityValidator.hasRange(), this._dataQualityValidator.hasValidLabel()] },
+  )
 
   ngOnInit(): void {
     this._labelsService.labels$.subscribe((labels) => {
@@ -96,15 +96,13 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   get formErrors() {
-    return this.form.errors ? Object.values(this.form.errors) as string[] : null
+    return this.form.errors ? (Object.values(this.form.errors) as string[]) : null
   }
 
   onSubmit() {
-    this._dataQualityService
-      .putRule({ rule: this.form.value as Rule, id: this.data.rule.id, orgId: this.data.orgId })
-      .subscribe(() => {
-        this.close()
-      })
+    this._dataQualityService.putRule({ rule: this.form.value as Rule, id: this.data.rule.id, orgId: this.data.orgId }).subscribe(() => {
+      this.close()
+    })
   }
 
   dismiss() {

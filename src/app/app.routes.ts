@@ -87,6 +87,14 @@ export const appRoutes: Route[] = [
         path: 'organizations',
         loadChildren: () => import('app/modules/organizations/organizations.routes'),
       },
+      {
+        path: 'insights',
+        loadChildren: () => import('app/modules/insights/insights.routes'),
+      },
+      {
+        path: 'analyses',
+        loadChildren: () => import('app/modules/analyses/analyses.routes'),
+      },
       // 404, redirect to dashboard
       { path: '**', redirectTo: 'dashboard' },
     ],
