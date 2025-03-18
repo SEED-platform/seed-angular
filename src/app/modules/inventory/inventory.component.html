@@ -18,12 +18,7 @@
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-4 sm:pt-6">
     <!-- config -->
-    <!-- <mat-expansion-panel>
-      <mat-expansion-panel-header class="flex-row-reverse gap-2">
-        <mat-panel-title>
-          Config
-        </mat-panel-title>
-      </mat-expansion-panel-header> -->
+    <!-- <mat-expansion-panel> -->
       <div class="flex m-2">
 
         <mat-form-field class="mr-1 w-60">
@@ -37,7 +32,7 @@
 
         <mat-form-field class="mr-1">
           <mat-label>Profile</mat-label>
-          <mat-select [(value)]="currentProfileId" (selectionChange)="onProfileChange($event.value)">
+          <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)">
             @for (item of propertyProfiles; track item) {
             <mat-option [value]="item.id">{{ item.name }}</mat-option>
             }
@@ -45,22 +40,14 @@
         </mat-form-field>
 
       </div>
-      <!-- Grid controls: refresh, pagination buttons -->
-       <seed-inventory-grid-controls [pagination]="pagination" [onPageChange]="onPageChange" [resetColumns]="resetColumns"></seed-inventory-grid-controls>
-
-        <ag-grid-angular
-          class="w-full h-[calc(100%-150px)]"
-          style="width: 100%; height: 100%;"
-          [columnDefs]="columnDefs"
-          [defaultColDef]="defaultColDef"
-          [gridOptions]="gridOptions"
-          (gridReady)="onGridReady($event)"
-          [paginationPageSize]="agPageSize"
-          [rowData]="rowData"
-          (filterChanged)="onFilterChange()"
-          (sortChanged)="onSortChange()"
-          [theme]="gridTheme"
-        />
+      <!-- INVENTORY GRID -->
+      <seed-inventory-grid
+        [columnDefs]="columnDefs"
+        [pagination]="pagination"
+        [rowData]="rowData"
+        [labelLookup]="labelLookup"
+        (pageChange)="onPageChange($event)"
+      ></seed-inventory-grid>
 
   </div>
 
