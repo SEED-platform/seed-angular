@@ -29,6 +29,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
+  @Output() selectionChanged = new EventEmitter<number>()
 
   private _configService = inject(ConfigService)
 
@@ -50,6 +51,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
+    onSelectionChanged: () => this.onSelectionChanged()
   }
 
   ngOnInit(): void {
@@ -58,7 +60,6 @@ export class InventoryGridComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['rowData']) {
-      console.log('changes!')
       this.getColumnDefs()
     }
   }
@@ -77,6 +78,11 @@ export class InventoryGridComponent implements OnChanges, OnInit {
 
       this.gridTheme = themeAlpine.withPart(darkMode ? colorSchemeDarkBlue : colorSchemeLight)
     })
+  }
+
+  onSelectionChanged() {
+    const selectedCount = this.gridApi?.getSelectedRows().length ?? 0
+    this.selectionChanged.emit(selectedCount)
   }
 
 

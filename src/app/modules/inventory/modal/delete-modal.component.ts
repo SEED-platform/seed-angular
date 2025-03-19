@@ -1,0 +1,45 @@
+import { Component, inject, OnDestroy } from '@angular/core'
+import { AlertComponent } from '@seed/components'
+import { MatButtonModule } from '@angular/material/button'
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { InventoryService } from "@seed/api/inventory";
+import { Subject, takeUntil, tap } from 'rxjs';
+
+@Component({
+  selector: 'seed-inventory-delete-modal',
+  templateUrl: './delete-modal.component.html',
+  imports: [AlertComponent, MatButtonModule, MatDialogModule],
+})
+export class DeleteModalComponent implements OnDestroy{
+  private _inventoryService = inject(InventoryService)
+  private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
+  private readonly _unsubscribeAll$ = new Subject<void>()
+
+  data = inject(MAT_DIALOG_DATA) as { viewIds: number[]; orgId: number }
+  errorMessage = false
+
+  onSubmit() {
+    this._inventoryService.deletePropertyStates({orgId: this.data.orgId, viewIds: this.data.viewIds})
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.close()
+        })
+      )
+      .subscribe()
+  }
+
+  close() {
+    this._dialogRef.close()
+  }
+
+  dismiss() {
+    console.log('dismiss')
+    this._dialogRef.close()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+}

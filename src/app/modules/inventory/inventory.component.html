@@ -45,9 +45,8 @@
 
         <mat-form-field class="mr-2 w-60" appearance="outline">
           <mat-label>Actions</mat-label>
-          <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)" class="text-sm">
-            @for (item of actions; track item) {
-            <mat-option [value]="item" class="!h-3 text-sm">{{ item.name }}</mat-option>
+          <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)" class="text-sm inventory-actions-dropdown">
+            @for (item of actions; track $index) {
             }
           </mat-select>
         </mat-form-field>
@@ -83,6 +82,7 @@
         (pageChange)="onPageChange($event)"
         (filterSortChange)="onFilterSortChange($event)"
         (gridReady)="onGridReady($event)"
+        (selectionChanged)="onSelectionChanged($event)"
       ></seed-inventory-grid>
 
   </div>

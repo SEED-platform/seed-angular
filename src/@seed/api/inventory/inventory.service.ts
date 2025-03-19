@@ -70,7 +70,6 @@ export class InventoryService {
     return this._httpClient.get<ProfilesResponse>(url, { params }).pipe(
       map((response) => response.data),
       tap((profiles) => {
-        console.log('profile response', profiles)
         this._columnListProfiles.next(profiles)
       }),
       catchError((error: HttpErrorResponse) => {
@@ -87,6 +86,20 @@ export class InventoryService {
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching column list profile')
       }),
+    )
+  }
+
+  deletePropertyStates({orgId, viewIds}) {
+    const url = '/api/v3/properties/batch_delete/'
+    const data = { property_view_ids: viewIds }
+    const options = { params: { organization_id: orgId }, body: data }
+    return this._httpClient.delete(url, options).pipe(
+      tap(() => {
+        this._snackBar.success('Property states deleted')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting property states')
+      })
     )
   }
 }

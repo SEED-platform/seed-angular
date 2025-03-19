@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatTooltipModule } from '@angular/material/tooltip'
@@ -23,6 +24,8 @@ import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
 import type { FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import { DeleteModalComponent, MoreActionsModalComponent } from './modal'
+import { MatDividerModule } from '@angular/material/divider'
 
 @Component({
   selector: 'seed-inventory',
@@ -31,6 +34,8 @@ import type { FiltersSorts, InventoryPagination, InventoryType, Profile } from '
   imports: [
     CommonModule,
     MatButtonModule,
+    MatDividerModule,
+    MatDialogModule,
     MatIconModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -53,10 +58,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
   private _labelService = inject(LabelService)
   private _orgId: number = null
+  private _dialog = inject(MatDialog)
+  
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  actions: Record<string, unknown>[] = []
   chunk = 100
   columnDefs: ColDef[]
   cycle: Cycle
@@ -74,11 +80,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   propertyColumns: Column[]
   propertyProfiles: Profile[]
   rowData: Record<string, unknown>[]
+  selectedCount = 0
   sorts: string[] = []
   taxlotColumns: Column[]
 
   ngOnInit(): void {
-    this.setActions()
     this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap(({ org_id }) => {
@@ -89,6 +95,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   
   onGridReady(gridApi: GridApi) {
     this.gridApi = gridApi
+  }
+  
+  onSelectionChanged(count: number) {
+    this.selectedCount = count
   }
 
   /*
@@ -112,7 +122,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   setDependencies({ cycles, profiles, propertyColumns, labels }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[]; labels: Label[] }) {
     this.cycles = cycles
-    this.cycle = cycles.at(2) ?? null
+    // TEMP - remove when cycle is set in backend
+    this.cycle = cycles.at(1) ?? null
     this.cycleId = this.cycle?.id
 
     this.profiles = profiles
@@ -154,8 +165,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   * Loads inventory for the grid
   */
   loadInventory() {
+    if (!this.cycleId) return
     const params = new URLSearchParams({
-      cycle: this.cycle.id.toString(),
+      cycle: this.cycleId.toString(),
       ids_only: "false",
       include_related: "true",
       organization_id: this._orgId.toString(),
@@ -200,22 +212,58 @@ export class InventoryComponent implements OnDestroy, OnInit {
     }
   }
 
-  setActions() {
-    this.actions = [
-      {
-        name: 'Select All',
-        action: () => { this.gridApi.selectAll()}
-      },
-      {
-        name: 'Select None',
-        action: () => { this.gridApi.deselectAll() }
-      },
+  get actions() {
+    return [
+      { name: 'Select All', action: () => this.gridApi.selectAll(), disabled: false },
+      { name: 'Select None', action: () => this.gridApi.deselectAll(), disabled: false },
+      { name: 'Only Show Populated Columns', action: () => this.tempAction(), disabled: !this.properties },
+      { name: `Delete`, action: this.deletePropertyStates, disabled: !this.selectedCount },
+      { name: `Merge`, action: this.tempAction, disabled: !this.selectedCount },
+      { name: 'More...', action: () => this.openMoreActionsModal(), disabled: !this.selectedCount },
     ]
+  }
+  
+  tempAction() {
+    console.log('temp action')
+  }
+
+  openMoreActionsModal() {
+    const viewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
+
+    const dialogRef = this._dialog.open(MoreActionsModalComponent, {
+      width: '40rem',
+      data: { viewIds, orgId: this._orgId },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.loadInventory() })
+      )
+      .subscribe()
   }
 
   onAction(action: () => void, select: MatSelect) {
     action()
     select.value = null
+  }
+
+  deletePropertyStates = () => {
+    console.log('open more actions modal')
+    const viewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { orgId: this._orgId, viewIds },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => { this.loadInventory() })
+      )
+      .subscribe()
   }
 
 
