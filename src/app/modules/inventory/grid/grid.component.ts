@@ -187,13 +187,43 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   }
 
   getFilters() {
-    return this.gridApi.getFilterModel()
+    const filterModels = this.gridApi.getFilterModel()
+    const filters = []
+    for (const columnName of Object.keys(filterModels)) {
+      const filterModel = filterModels[columnName]
+      filters.push(this.buildFilter(columnName, filterModel))
+    }
+    return filters
   }
+
+  // TODO: the backend should handle the filter building. This is being forced into the existing API
+  buildFilter(columnName: string, {filter, type}: { filter: number | string, type: string }) {
+    const prefixLookup = {
+      contains: '__icontains',
+      notContains: '??',
+      equals: '__exact',
+      notEqual: '__ne',
+      startsWith: '??',
+      endsWith: '??',
+      blank: '__exact',
+      notBlank: '__ne',
+      greaterThan: '__gt',
+      greatherThanOrEqual: '__gte',
+      lessThan: '__lt',
+      lessThanOrEqual: '__lte',
+      between: '__gt and __lt', // needs to be updated to allow multiple filters...
+    }
+    const blankFilter = ['blank', 'notBlank'].includes(type)
+    const key = columnName + prefixLookup[type]
+    const value = blankFilter ? null : filter.toString()
+
+    return [ key, value ]
+  } 
 
   onFilterSortChange() {
     const filters = this.getFilters()
     const sorts = this.getSorts()
-    this.filterSortChange.emit({filters, sorts})
+    this.filterSortChange.emit({ filters, sorts })
   }
 
   onPageChange(page: number) {

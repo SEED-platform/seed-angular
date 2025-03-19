@@ -48,6 +48,6 @@ export type ProfileColumn = {
 }
 
 export type FiltersSorts = {
-  filters: unknown;
+  filters: string[][];
   sorts: string[];
 }

@@ -70,7 +70,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   cycles: Cycle[]
   gridApi: GridApi
   labelLookup: Record<number, Label> = {}
-  filters: {}
+  filters: string[][] = [[]]
   page = 1
   pagination: InventoryPagination
   profile: Profile
@@ -178,6 +178,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     // Add multiple order_by params dynamically
     this.sorts.forEach((sort) => params.append("order_by", sort));
+    // Add filters
+    this.filters.forEach(([k, v]) => params.append(k, v))
 
     const paramString = params.toString();
     const data = {
@@ -272,6 +274,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
         tap(() => { this.loadInventory() })
       )
       .subscribe()
+  }
+
+  openFilterSortModal() {
+    console.log('open filter sort label')
   }
 
 
