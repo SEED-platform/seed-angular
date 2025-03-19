@@ -23,7 +23,7 @@ import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
-import type { FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import type { FiltersSorts, Inventory, InventoryPagination, InventoryType, Profile } from './inventory.types'
 import { DeleteModalComponent, MoreActionsModalComponent } from './modal'
 import { MatDividerModule } from '@angular/material/divider'
 
@@ -80,7 +80,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   propertyColumns: Column[]
   propertyProfiles: Profile[]
   rowData: Record<string, unknown>[]
-  selectedCount = 0
+  selectedViewIds: number[] = []
   sorts: string[] = []
   taxlotColumns: Column[]
 
@@ -97,8 +97,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.gridApi = gridApi
   }
   
-  onSelectionChanged(count: number) {
-    this.selectedCount = count
+  onSelectionChanged() {
+    this.selectedViewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
+    // this.selectedViewIds.length = count
   }
 
   /*
@@ -123,7 +124,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   setDependencies({ cycles, profiles, propertyColumns, labels }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[]; labels: Label[] }) {
     this.cycles = cycles
     // TEMP - remove when cycle is set in backend
-    this.cycle = cycles.at(1) ?? null
+    this.cycle = cycles.at(2) ?? null
     this.cycleId = this.cycle?.id
 
     this.profiles = profiles
@@ -183,7 +184,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       include_property_ids: null,
       profile_id: this.profileId,
     }
-    this._inventoryService.getAgProperties(paramString, data).subscribe(({ pagination, results, column_defs }) => {
+    this._inventoryService.getAgProperties(paramString, data).subscribe(({ pagination, results, column_defs }: {pagination: InventoryPagination, results: Inventory[], column_defs: ColDef[]}) => {
       this.pagination = pagination
       this.properties = results
       this.columnDefs = column_defs
@@ -214,12 +215,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   get actions() {
     return [
-      { name: 'Select All', action: () => this.gridApi.selectAll(), disabled: false },
-      { name: 'Select None', action: () => this.gridApi.deselectAll(), disabled: false },
+      { name: 'Select All', action: () => this.selectAll(), disabled: false },
+      { name: 'Select None', action: () => this.deselectAll(), disabled: false },
       { name: 'Only Show Populated Columns', action: () => this.tempAction(), disabled: !this.properties },
-      { name: `Delete`, action: this.deletePropertyStates, disabled: !this.selectedCount },
-      { name: `Merge`, action: this.tempAction, disabled: !this.selectedCount },
-      { name: 'More...', action: () => this.openMoreActionsModal(), disabled: !this.selectedCount },
+      { name: `Delete`, action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
+      { name: `Merge`, action: this.tempAction, disabled: !this.selectedViewIds.length },
+      { name: 'More...', action: () => this.openMoreActionsModal(), disabled: !this.selectedViewIds.length },
     ]
   }
   
@@ -228,20 +229,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   openMoreActionsModal() {
-    const viewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
-
-    const dialogRef = this._dialog.open(MoreActionsModalComponent, {
+    this._dialog.open(MoreActionsModalComponent, {
       width: '40rem',
-      data: { viewIds, orgId: this._orgId },
+      autoFocus: false,
+      data: { viewIds: this.selectedViewIds, orgId: this._orgId },
     })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => { this.loadInventory() })
-      )
-      .subscribe()
   }
 
   onAction(action: () => void, select: MatSelect) {
@@ -249,12 +241,28 @@ export class InventoryComponent implements OnDestroy, OnInit {
     select.value = null
   }
 
+  selectAll() {
+    this.gridApi.selectAll()
+    const params = new URLSearchParams({
+      cycle: this.cycleId.toString(),
+      ids_only: "true",
+      include_related: "true",
+      organization_id: this._orgId.toString(),
+    });
+    const paramString = params.toString();
+    this._inventoryService.getAgProperties(paramString, {}).subscribe(({ results }: { results: number[] }) => {
+      this.selectedViewIds = results
+    })
+  }
+
+  deselectAll() {
+    this.gridApi.deselectAll()
+  }
+
   deletePropertyStates = () => {
-    console.log('open more actions modal')
-    const viewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { orgId: this._orgId, viewIds },
+      data: { orgId: this._orgId, viewIds: this.selectedViewIds },
     })
 
     dialogRef

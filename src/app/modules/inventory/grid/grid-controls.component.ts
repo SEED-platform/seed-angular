@@ -11,6 +11,7 @@ import type { InventoryPagination } from '../inventory.types'
 export class InventoryGridControlsComponent {
   @Input() pagination!: InventoryPagination
   @Input() resetColumns: () => void
+  @Input() selectedViewIds: number[]
   @Output() pageChange = new EventEmitter<number>()
 
   onPageChange = (direction: 'first' | 'previous' | 'next' | 'last') => {

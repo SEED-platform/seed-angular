@@ -2,6 +2,9 @@
   <mat-icon svgIcon="fa-solid:arrows-rotate" class="scale-75 cursor-pointer" (click)="resetColumns()"
     matTooltip="Reset Columns"></mat-icon>
   <div class="flex justify-end my-auto">
+    @if (selectedViewIds.length > 0) {
+      <span class="my-auto mr-10">({{ selectedViewIds.length }} selected)</span>
+    }
     @if (pagination) {
     <span class="my-auto mr-10">{{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}</span>
     <div class="h-[25px] m-1 rounded cursor-pointer hover:bg-white" (click)="onPageChange('first')">

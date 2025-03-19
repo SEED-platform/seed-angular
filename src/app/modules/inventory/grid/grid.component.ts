@@ -26,10 +26,11 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   @Input() labelLookup: Record<number, Label>
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
+  @Input() selectedViewIds: number[]
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
-  @Output() selectionChanged = new EventEmitter<number>()
+  @Output() selectionChanged = new EventEmitter<null>()
 
   private _configService = inject(ConfigService)
 
@@ -82,7 +83,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
 
   onSelectionChanged() {
     const selectedCount = this.gridApi?.getSelectedRows().length ?? 0
-    this.selectionChanged.emit(selectedCount)
+    this.selectionChanged.emit()
   }
 
 

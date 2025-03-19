@@ -108,3 +108,7 @@
     }
   }
 }
+
+.inventory-actions-dropdown .mat-select-panel, .mat-mdc-select-panel {
+  min-height: fit-content !important;
+}
