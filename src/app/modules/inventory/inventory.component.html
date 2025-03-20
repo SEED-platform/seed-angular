@@ -42,18 +42,16 @@
 
     <!-- GRID CONFIG -->
     <div class="m-2 flex">
-      <mat-form-field class="thin-field mr-2 w-60" density="3" appearance="outline">
-        <mat-label>Actions</mat-label>
-        <mat-select
-          #actionSelect
-          (selectionChange)="onAction($event.value.action, actionSelect)"
-          class="inventory-actions-dropdown text-sm"
-        >
-          @for (item of actions; track $index) {
-            <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+
+      <seed-inventory-grid-actions
+        [cycleId]="cycleId"
+        [gridApi]="gridApi"
+        [inventory]="inventory"
+        (loadInventory)="loadInventory()"
+        [orgId]="orgId"
+        [profile]="profile"
+        [selectedViewIds]="selectedViewIds"
+      ></seed-inventory-grid-actions>
 
       <mat-form-field class="mr-2 w-60" appearance="outline">
         <mat-label>Cycle</mat-label>
