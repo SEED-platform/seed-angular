@@ -94,6 +94,7 @@ export const appConfig: ApplicationConfig = {
       seed: {
         layout: 'main',
         scheme: 'auto',
+        // scheme: 'light',
         theme: 'theme-default',
         themes: [
           {

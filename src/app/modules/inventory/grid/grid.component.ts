@@ -128,8 +128,8 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       width: 60,
       cellRenderer: ({ value }) => {
         const eGui = document.createElement('span')
-        eGui.className = 'cursor-pointer truncate'
-        eGui.style.cssText = 'border: 1px solid white; border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
+        eGui.className = 'cursor-pointer truncate border border-gray-400 dark:border-white'
+        eGui.style.cssText = 'border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
         eGui.textContent = 'i'
         eGui.onclick = () => {
           console.log('/details/', value)

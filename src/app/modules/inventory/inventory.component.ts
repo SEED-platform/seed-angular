@@ -25,6 +25,7 @@ import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
 import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 import { DeleteModalComponent, MoreActionsModalComponent } from './modal'
+import { PopulatedColumnsModalComponent } from './modal/populated-columns-modal.component'
 
 @Component({
   selector: 'seed-inventory',
@@ -231,7 +232,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     return [
       { name: 'Select All', action: () => { this.selectAll() }, disabled: false },
       { name: 'Select None', action: () => { this.deselectAll() }, disabled: false },
-      { name: 'Only Show Populated Columns', action: () => { this.tempAction() }, disabled: !this.properties },
+      { name: 'Only Show Populated Columns', action: () => { this.openShowPopulatedColumnsModal() }, disabled: !this.properties },
       { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
       { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
       { name: 'More...', action: () => { this.openMoreActionsModal() }, disabled: !this.selectedViewIds.length },
@@ -297,10 +298,15 @@ export class InventoryComponent implements OnDestroy, OnInit {
   // }
 
   openShowPopulatedColumnsModal() {
-    this._dialog.open(MoreActionsModalComponent, {
+    this._dialog.open(PopulatedColumnsModalComponent, {
       width: '40rem',
-      autoFocus: false,
-      data: { viewIds: this.selectedViewIds, orgId: this._orgId },
+      data: {
+        orgId: this._orgId,
+        columns: null,
+        profile: this.profile,
+        cycleId: this.cycleId,
+        inventoryType: this.type,
+      },
     })
   }
 
