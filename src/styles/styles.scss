@@ -112,3 +112,10 @@
 .inventory-actions-dropdown .mat-select-panel, .mat-mdc-select-panel {
   min-height: fit-content !important;
 }
+
+.even-row {
+  @apply bg-gray-100
+}
+.dark .even-row {
+  @apply bg-zinc-800
+}

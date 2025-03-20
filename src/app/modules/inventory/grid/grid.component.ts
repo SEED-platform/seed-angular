@@ -4,6 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
+import { map, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
 import type { AgFilter, AgFilterModel, FiltersSorts, InventoryPagination } from '../inventory.types'
@@ -21,7 +22,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
     InventoryGridControlsComponent,
   ],
 })
-export class InventoryGridComponent implements OnChanges, OnInit {
+export class InventoryGridComponent implements OnInit, OnChanges {
   @Input() columnDefs!: ColDef[]
   @Input() labelLookup: Record<number, Label>
   @Input() pagination!: InventoryPagination
@@ -31,12 +32,14 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
-
   private _configService = inject(ConfigService)
 
   agPageSize = 100
   gridApi!: GridApi
+  darkMode: boolean
   gridTheme = themeAlpine.withPart(colorSchemeLight)
+  theme: string
+
   defaultColDef = {
     sortable: true,
     filter: true,
@@ -52,11 +55,24 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
+    rowClassRules: {
+      'even-row': (params) => params.node.rowIndex % 2 === 0,
+    },
     onSelectionChanged: () => { this.onSelectionChanged() },
   }
 
-  ngOnInit(): void {
-    this.setTheme()
+  ngOnInit() {
+    this._configService.config$.pipe(
+      map(({ scheme }) => {
+        return scheme === 'auto'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          : scheme
+      }),
+      tap((theme) => {
+        this.gridTheme = themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)
+        this.theme = theme
+      }),
+    ).subscribe()
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -68,17 +84,6 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
-  }
-
-  setTheme() {
-    this._configService.config$.subscribe(({ scheme }) => {
-      // if auto, check browser preference, otherwise use scheme
-      const darkMode = scheme === 'auto'
-        ? window.matchMedia('(prefers-color-scheme: dark)').matches
-        : scheme === 'dark'
-
-      this.gridTheme = themeAlpine.withPart(darkMode ? colorSchemeDarkBlue : colorSchemeLight)
-    })
   }
 
   onSelectionChanged() { this.selectionChanged.emit() }
