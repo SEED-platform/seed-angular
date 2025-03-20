@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatTooltipModule } from '@angular/material/tooltip'
@@ -23,9 +23,8 @@ import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
-import type { FiltersSorts, Inventory, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 import { DeleteModalComponent, MoreActionsModalComponent } from './modal'
-import { MatDividerModule } from '@angular/material/divider'
 
 @Component({
   selector: 'seed-inventory',
@@ -34,7 +33,6 @@ import { MatDividerModule } from '@angular/material/divider'
   imports: [
     CommonModule,
     MatButtonModule,
-    MatDividerModule,
     MatDialogModule,
     MatIconModule,
     MatExpansionModule,
@@ -59,7 +57,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _labelService = inject(LabelService)
   private _orgId: number = null
   private _dialog = inject(MatDialog)
-  
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
@@ -70,15 +67,16 @@ export class InventoryComponent implements OnDestroy, OnInit {
   cycles: Cycle[]
   gridApi: GridApi
   labelLookup: Record<number, Label> = {}
-  filters: string[][] = [[]]
+  filters: string[][] | [] = []
   page = 1
   pagination: InventoryPagination
   profile: Profile
   profileId: number
-  profiles: Profile[]
+  allProfiles: Profile[]
   properties: Record<string, unknown>[]
   propertyColumns: Column[]
   propertyProfiles: Profile[]
+  taxlotProfiles: Profile[]
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
   sorts: string[] = []
@@ -92,14 +90,13 @@ export class InventoryComponent implements OnDestroy, OnInit {
       }),
     ).subscribe()
   }
-  
+
   onGridReady(gridApi: GridApi) {
     this.gridApi = gridApi
   }
-  
+
   onSelectionChanged() {
-    this.selectedViewIds = this.gridApi.getSelectedRows().map((row) => row.property_view_id)
-    // this.selectedViewIds.length = count
+    this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
   }
 
   /*
@@ -127,8 +124,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.cycle = cycles.at(2) ?? null
     this.cycleId = this.cycle?.id
 
-    this.profiles = profiles
-    this.propertyProfiles = this.profiles.filter((p) => p.inventory_type === 0)
+    // this.allProfiles = profiles
+    this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
+    this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
     this.propertyColumns = propertyColumns
 
     for (const label of labels) {
@@ -138,11 +136,19 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const id = this.profiles.length ? this.profiles[0].id : null
     this.getProfile(id)
   }
+  get profiles() {
+    return this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
+  }
 
   /*
   * get profile and reload inventory
   */
   getProfile(id: number) {
+    if (!id) {
+      this.loadInventory()
+      return
+    }
+
     const profileRequest = id ? this._inventoryService.getColumnListProfile(id) : of(null)
     profileRequest.subscribe((profile) => {
       this.profile = profile
@@ -169,24 +175,26 @@ export class InventoryComponent implements OnDestroy, OnInit {
     if (!this.cycleId) return
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
-      ids_only: "false",
-      include_related: "true",
+      ids_only: 'false',
+      include_related: 'true',
       organization_id: this._orgId.toString(),
       page: this.page.toString(),
       per_page: this.chunk.toString(),
-    });
+    })
 
     // Add multiple order_by params dynamically
-    this.sorts.forEach((sort) => params.append("order_by", sort));
-    // Add filters
-    this.filters.forEach(([k, v]) => params.append(k, v))
+    for (const sort of this.sorts) params.append('order_by', sort)
+    // Add filters. Filters are represented as [[k, v], [k, v]]. No filters represented as []
+    if (this.filters.length && this.filters[0].length) {
+      for (const [k, v] of this.filters) params.append(k, v)
+    }
 
-    const paramString = params.toString();
+    const paramString = params.toString()
     const data = {
       include_property_ids: null,
       profile_id: this.profileId,
     }
-    this._inventoryService.getAgProperties(paramString, data).subscribe(({ pagination, results, column_defs }: {pagination: InventoryPagination, results: Inventory[], column_defs: ColDef[]}) => {
+    this._inventoryService.getAgInventory(this.type, paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
       this.pagination = pagination
       this.properties = results
       this.columnDefs = column_defs
@@ -198,7 +206,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = page
     this.loadInventory()
   }
-
 
   onFilterSortChange({ filters, sorts }: FiltersSorts) {
     this.filters = filters
@@ -215,17 +222,22 @@ export class InventoryComponent implements OnDestroy, OnInit {
     }
   }
 
+  openFilterSortModal() {
+    console.log('open filter sort label')
+  }
+
+  // SHOULD ACTIONS BE ITS OWN COMPONENT?
   get actions() {
     return [
-      { name: 'Select All', action: () => this.selectAll(), disabled: false },
-      { name: 'Select None', action: () => this.deselectAll(), disabled: false },
-      { name: 'Only Show Populated Columns', action: () => this.tempAction(), disabled: !this.properties },
-      { name: `Delete`, action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
-      { name: `Merge`, action: this.tempAction, disabled: !this.selectedViewIds.length },
-      { name: 'More...', action: () => this.openMoreActionsModal(), disabled: !this.selectedViewIds.length },
+      { name: 'Select All', action: () => { this.selectAll() }, disabled: false },
+      { name: 'Select None', action: () => { this.deselectAll() }, disabled: false },
+      { name: 'Only Show Populated Columns', action: () => { this.tempAction() }, disabled: !this.properties },
+      { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
+      { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
+      { name: 'More...', action: () => { this.openMoreActionsModal() }, disabled: !this.selectedViewIds.length },
     ]
   }
-  
+
   tempAction() {
     console.log('temp action')
   }
@@ -247,12 +259,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.gridApi.selectAll()
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
-      ids_only: "true",
-      include_related: "true",
+      ids_only: 'true',
+      include_related: 'true',
       organization_id: this._orgId.toString(),
-    });
-    const paramString = params.toString();
-    this._inventoryService.getAgProperties(paramString, {}).subscribe(({ results }: { results: number[] }) => {
+    })
+    const paramString = params.toString()
+    this._inventoryService.getAgInventory(this.type, paramString, {}).subscribe(({ results }: { results: number[] }) => {
       this.selectedViewIds = results
     })
   }
@@ -271,15 +283,28 @@ export class InventoryComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.loadInventory() })
+        tap(() => { this.loadInventory() }),
       )
       .subscribe()
   }
 
-  openFilterSortModal() {
-    console.log('open filter sort label')
+  // openShowPopulatedColumnsModal() {
+  //   // if (!this.profiles.length) {
+  //   //   this.newProfile().subscribe(() => this.openPopulatedColumnsModal());
+  //   // } else {
+  //   //   this.openPopulatedColumnsModal();
+  //   // }
+  // }
+
+  openShowPopulatedColumnsModal() {
+    this._dialog.open(MoreActionsModalComponent, {
+      width: '40rem',
+      autoFocus: false,
+      data: { viewIds: this.selectedViewIds, orgId: this._orgId },
+    })
   }
 
+  // ^^ ACTIONS
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()

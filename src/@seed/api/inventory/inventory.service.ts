@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
-import type { FilterResponse, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -46,8 +46,8 @@ export class InventoryService {
     )
   }
 
-  getAgProperties(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
-    const url = `api/v3/properties/ag_filter/?${paramString}`
+  getAgInventory(type: InventoryType, paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
+    const url = `api/v3/${type}/ag_filter/?${paramString}`
     return this._httpClient.post<FilterResponse>(url, data).pipe(
       map((response) => response),
       tap((response) => {
@@ -89,7 +89,7 @@ export class InventoryService {
     )
   }
 
-  deletePropertyStates({orgId, viewIds}) {
+  deletePropertyStates({ orgId, viewIds }: DeleteParams): Observable<object> {
     const url = '/api/v3/properties/batch_delete/'
     const data = { property_view_ids: viewIds }
     const options = { params: { organization_id: orgId }, body: data }
@@ -99,7 +99,7 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting property states')
-      })
+      }),
     )
   }
 }

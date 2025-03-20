@@ -1,15 +1,15 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core'
-import { ConfigService } from '@seed/services'
+import { CommonModule } from '@angular/common'
+import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
-import type { FiltersSorts, InventoryPagination } from '../inventory.types'
+import { ConfigService } from '@seed/services'
+import type { AgFilter, AgFilterModel, FiltersSorts, InventoryPagination } from '../inventory.types'
 import { InventoryGridControlsComponent } from './grid-controls.component'
-import { CommonModule } from '@angular/common'
 
 ModuleRegistry.registerModules([AllCommunityModule])
-
 
 @Component({
   selector: 'seed-inventory-grid',
@@ -18,7 +18,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
     AgGridAngular,
     AgGridModule,
     CommonModule,
-    InventoryGridControlsComponent
+    InventoryGridControlsComponent,
   ],
 })
 export class InventoryGridComponent implements OnChanges, OnInit {
@@ -52,7 +52,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
-    onSelectionChanged: () => this.onSelectionChanged()
+    onSelectionChanged: () => { this.onSelectionChanged() },
   }
 
   ngOnInit(): void {
@@ -60,7 +60,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['rowData']) {
+    if (changes.rowData) {
       this.getColumnDefs()
     }
   }
@@ -81,11 +81,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
     })
   }
 
-  onSelectionChanged() {
-    const selectedCount = this.gridApi?.getSelectedRows().length ?? 0
-    this.selectionChanged.emit()
-  }
-
+  onSelectionChanged() { this.selectionChanged.emit() }
 
   getColumnDefs() {
     this.columnDefs = [
@@ -95,16 +91,17 @@ export class InventoryGridComponent implements OnChanges, OnInit {
   }
 
   getShortcutColumns(): ColDef[] {
-    const metersAction = () => { console.log('meters') }
-    const notesAction = () => { console.log('notes') }
+    const tempAction = (message: string) => {
+      console.log(message)
+    }
 
     const shortcutColumns = [
       this.buildInfoCell(),
       this.buildShortcutColumn('merged_indicator', 'Merged', 85, 'ag-icon ag-icon-tick'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'ag-icon ag-icon-tick cursor-pointer', metersAction),
-      this.buildShortcutColumn('notes_count', 'Notes', 80, 'ag-icon ag-icon-tick cursor-pointer', notesAction),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'ag-icon ag-icon-tick cursor-pointer', () => { tempAction('meters') }),
+      this.buildShortcutColumn('notes_count', 'Notes', 80, 'ag-icon ag-icon-tick cursor-pointer', () => { tempAction('notes') }),
       this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'ag-icon ag-icon-tick cursor-pointer'),
-      this.buildLabelsCell()
+      this.buildLabelsCell(),
     ]
     return shortcutColumns
   }
@@ -118,7 +115,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       sortable: false,
       cellRenderer: ({ value }) => {
         return value ? this.buildCellRenderer(className, action) : ''
-      }
+      },
     }
   }
 
@@ -131,10 +128,12 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       width: 60,
       cellRenderer: ({ value }) => {
         const eGui = document.createElement('span')
-        eGui.className = "cursor-pointer truncate"
+        eGui.className = 'cursor-pointer truncate'
         eGui.style.cssText = 'border: 1px solid white; border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
         eGui.textContent = 'i'
-        eGui.onclick = () => console.log('/details/', value)
+        eGui.onclick = () => {
+          console.log('/details/', value)
+        }
         return eGui
       },
     }
@@ -186,19 +185,19 @@ export class InventoryGridComponent implements OnChanges, OnInit {
     return sorts
   }
 
-  getFilters() {
-    const filterModels = this.gridApi.getFilterModel()
-    const filters = []
+  getFilters(): string[][] {
+    const filterModels: AgFilterModel = this.gridApi.getFilterModel()
+    const filters: string[][] = []
     for (const columnName of Object.keys(filterModels)) {
-      const filterModel = filterModels[columnName]
+      const filterModel: AgFilter = filterModels[columnName]
       filters.push(this.buildFilter(columnName, filterModel))
     }
     return filters
   }
 
   // TODO: the backend should handle the filter building. This is being forced into the existing API
-  buildFilter(columnName: string, {filter, type}: { filter: number | string, type: string }) {
-    const prefixLookup = {
+  buildFilter(columnName: string, { filter, type }: { filter: number | string; type: string }): string[] {
+    const prefixLookup: Record<string, string> = {
       contains: '__icontains',
       notContains: '??',
       equals: '__exact',
@@ -208,7 +207,7 @@ export class InventoryGridComponent implements OnChanges, OnInit {
       blank: '__exact',
       notBlank: '__ne',
       greaterThan: '__gt',
-      greatherThanOrEqual: '__gte',
+      greaterThanOrEqual: '__gte',
       lessThan: '__lt',
       lessThanOrEqual: '__lte',
       between: '__gt and __lt', // needs to be updated to allow multiple filters...
@@ -217,8 +216,8 @@ export class InventoryGridComponent implements OnChanges, OnInit {
     const key = columnName + prefixLookup[type]
     const value = blankFilter ? null : filter.toString()
 
-    return [ key, value ]
-  } 
+    return [key, value]
+  }
 
   onFilterSortChange() {
     const filters = this.getFilters()

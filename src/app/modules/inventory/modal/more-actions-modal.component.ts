@@ -1,8 +1,8 @@
-import { Component, inject, OnDestroy } from '@angular/core'
+import type { OnDestroy } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { Subject } from 'rxjs';
-
+import { Subject } from 'rxjs'
 
 @Component({
   selector: 'seed-inventory-more-actions-modal',
@@ -17,15 +17,15 @@ export class MoreActionsModalComponent implements OnDestroy {
   errorMessage = false
 
   actionsColumn1 = [
-    { name:'Add / Remove Groups', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Add / Remove Labels', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Add / Update UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Change ALI', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Compare UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Data Quality Check', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Decode UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Delete', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name:'Email', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Add / Remove Groups', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Add / Remove Labels', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Add / Update UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Change ALI', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Compare UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Data Quality Check', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Decode UBID', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Delete', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Email', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Export', action: this.tempAction, disabled: !this.data.viewIds.length },
 
   ]

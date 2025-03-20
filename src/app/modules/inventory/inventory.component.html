@@ -1,7 +1,7 @@
-<seed-page 
+<seed-page
   [config]="{
     title: 'Properties',
-    titleIcon: 'fa-solid:building'
+    titleIcon: 'fa-solid:building',
   }"
 >
 </seed-page>
@@ -41,52 +41,52 @@
     </mat-expansion-panel> -->
 
     <!-- GRID CONFIG -->
-      <div class="flex m-2">
+    <div class="m-2 flex">
+      <mat-form-field class="thin-field mr-2 w-60" density="3" appearance="outline">
+        <mat-label>Actions</mat-label>
+        <mat-select
+          #actionSelect
+          (selectionChange)="onAction($event.value.action, actionSelect)"
+          class="inventory-actions-dropdown text-sm"
+        >
+          @for (item of actions; track $index) {
+            <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field class="mr-2 w-60" appearance="outline">
-          <mat-label>Actions</mat-label>
-          <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)" class="text-sm inventory-actions-dropdown">
-            @for (item of actions; track $index) {
-              <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field class="mr-2 w-60" appearance="outline">
-          <mat-label>Cycle</mat-label>
-          <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)" class="text-sm">
-            @for (item of cycles; track item) {
+      <mat-form-field class="mr-2 w-60" appearance="outline">
+        <mat-label>Cycle</mat-label>
+        <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)" class="text-sm">
+          @for (item of cycles; track item) {
             <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+          }
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field class="mr-1" appearance="outline">
-          <mat-label>Profile</mat-label>
-          <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)" class="text-sm">
-            @for (item of propertyProfiles; track item) {
+      <mat-form-field class="mr-1" appearance="outline">
+        <mat-label>Profile</mat-label>
+        <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)" class="text-sm">
+          @for (item of profiles; track item) {
             <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+          }
+        </mat-select>
+      </mat-form-field>
 
-        <button mat-stroked-button (click)="openFilterSortModal()" class="mt-2">Filters / Sorts</button>
-
-      </div>
-      <!-- INVENTORY GRID -->
-      <seed-inventory-grid
-        #grid
-        [columnDefs]="columnDefs"
-        [pagination]="pagination"
-        [rowData]="rowData"
-        [labelLookup]="labelLookup"
-        [selectedViewIds]="selectedViewIds"
-        (pageChange)="onPageChange($event)"
-        (filterSortChange)="onFilterSortChange($event)"
-        (gridReady)="onGridReady($event)"
-        (selectionChanged)="onSelectionChanged()"
-      ></seed-inventory-grid>
-
+      <button mat-stroked-button (click)="openFilterSortModal()" class="mt-2">Filters / Sorts</button>
+    </div>
+    <!-- INVENTORY GRID -->
+    <seed-inventory-grid
+      #grid
+      [columnDefs]="columnDefs"
+      [pagination]="pagination"
+      [rowData]="rowData"
+      [labelLookup]="labelLookup"
+      [selectedViewIds]="selectedViewIds"
+      (pageChange)="onPageChange($event)"
+      (filterSortChange)="onFilterSortChange($event)"
+      (gridReady)="onGridReady($event)"
+      (selectionChanged)="onSelectionChanged()"
+    ></seed-inventory-grid>
   </div>
-
 </div>

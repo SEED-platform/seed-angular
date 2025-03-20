@@ -51,3 +51,22 @@ export type FiltersSorts = {
   filters: string[][];
   sorts: string[];
 }
+
+export type DeleteParams = {
+  orgId: number;
+  viewIds: number[];
+}
+
+export type AgFilterResponse = {
+  pagination: InventoryPagination;
+  results: Inventory[];
+  column_defs: ColDef[];
+}
+
+export type AgFilterModel = Record<string, AgFilter>
+
+export type AgFilter = {
+  filterType: string;
+  filter: string | number;
+  type: string;
+}
