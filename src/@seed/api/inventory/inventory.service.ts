@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackbarService } from 'app/core/snackbar/snackbar.service'
-import type { DeleteParams, FilterResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -46,8 +46,8 @@ export class InventoryService {
     )
   }
 
-  getAgInventory(type: InventoryType, paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
-    const url = `api/v3/${type}/ag_filter/?${paramString}`
+  getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
+    const url = `api/v4/tax_lot_properties/filter/?${paramString}`
     return this._httpClient.post<FilterResponse>(url, data).pipe(
       map((response) => response),
       tap((response) => {

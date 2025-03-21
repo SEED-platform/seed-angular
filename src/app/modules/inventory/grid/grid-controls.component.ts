@@ -10,7 +10,7 @@ import type { InventoryPagination } from '../inventory.types'
 })
 export class InventoryGridControlsComponent {
   @Input() pagination!: InventoryPagination
-  @Input() resetColumns: () => void
+  @Input() resetGrid: () => void
   @Input() selectedViewIds: number[]
   @Output() pageChange = new EventEmitter<number>()
 

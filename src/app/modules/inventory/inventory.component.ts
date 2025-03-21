@@ -24,6 +24,7 @@ import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
 import { ActionsComponent } from './grid/actions.component'
+import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 
 @Component({
@@ -173,6 +174,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   loadInventory() {
     if (!this.cycleId) return
+    const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
       ids_only: 'false',
@@ -180,6 +182,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       organization_id: this.orgId.toString(),
       page: this.page.toString(),
       per_page: this.chunk.toString(),
+      inventory_type,
     })
 
     // Add multiple order_by params dynamically
@@ -194,10 +197,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
       include_property_ids: null,
       profile_id: this.profileId,
     }
-    this._inventoryService.getAgInventory(this.type, paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
+    this._inventoryService.getAgInventory(paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
       this.pagination = pagination
       this.inventory = results
-      this.columnDefs = column_defs
+
+      this.columnDefs = column_defs.map((colDef) => ({ ...colDef, headerComponent: CellHeaderMenuComponent }))
       this.rowData = results
     })
   }

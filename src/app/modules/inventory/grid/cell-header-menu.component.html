@@ -1,0 +1,15 @@
+  <div class="flex justify-between gap-4 overflow-hidden" >
+    <span class="my-auto">{{ params.displayName }}</span>
+    <mat-icon svgIcon="fa-solid:chevron-down" class="scale-50 cursor-pointer"(click)="toggleMenu($event)"></mat-icon>
+  </div>
+  @if (menuVisible) {
+    <div 
+      class="cell-menu absolute bg-white border border-gray-300 shadow-lg rounded-md w-48 p-2 z-[1000]"
+
+    >
+      <button (click)="sortAsc()">Sort Asc</button>
+      <button (click)="sortAsc()">Sort Asc</button>
+      <button (click)="sortAsc()">Sort Asc</button>
+      <button (click)="sortAsc()">Sort Asc</button>
+    </div>
+  }

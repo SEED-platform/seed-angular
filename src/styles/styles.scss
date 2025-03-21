@@ -116,6 +116,16 @@
 .even-row {
   @apply bg-gray-100
 }
+
 .dark .even-row {
-  @apply bg-zinc-800
+  @apply bg-slate-900
 }
+
+.inventory-grid {
+  .ag-header-cell {
+    .cell-menu {
+      overflow: visible !important
+    }
+  }
+}
+

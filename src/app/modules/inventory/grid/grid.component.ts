@@ -8,6 +8,7 @@ import { map, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
 import type { AgFilter, AgFilterModel, FiltersSorts, InventoryPagination } from '../inventory.types'
+import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -18,6 +19,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
   imports: [
     AgGridAngular,
     AgGridModule,
+    CellHeaderMenuComponent,
     CommonModule,
     InventoryGridControlsComponent,
   ],
@@ -177,7 +179,14 @@ export class InventoryGridComponent implements OnInit, OnChanges {
     }
   }
 
-  resetColumns = () => { this.gridApi?.resetColumnState() }
+  resetGrid = () => {
+    if (!this.gridApi) return
+
+    this.gridApi.setFilterModel(null)
+    this.gridApi.applyColumnState({ state: [], applyOrder: true })
+    this.gridApi.resetColumnState()
+    this.gridApi.refreshClientSideRowModel()
+  }
 
   /*
   * ascending sorts formatted as 'column_id'

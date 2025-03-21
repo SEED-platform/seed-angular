@@ -1,13 +1,13 @@
 <seed-inventory-grid-controls
   [pagination]="pagination"
-  [resetColumns]="resetColumns"
+  [resetGrid]="resetGrid"
   (pageChange)="onPageChange($event)"
   [selectedViewIds]="selectedViewIds"
 >
 </seed-inventory-grid-controls>
 
 <ag-grid-angular
-  class="h-[calc(100%-130px)] w-full"
+  class="inventory-grid h-[calc(100%-130px)] w-full"
   style="width: 100%; height: 100%"
   [columnDefs]="columnDefs"
   [defaultColDef]="defaultColDef"

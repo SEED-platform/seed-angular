@@ -62,14 +62,16 @@ export class ActionsComponent implements OnDestroy {
 
   selectAll() {
     this.gridApi.selectAll()
+    const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
       ids_only: 'true',
       include_related: 'true',
       organization_id: this.orgId.toString(),
+      inventory_type,
     })
     const paramString = params.toString()
-    this._inventoryService.getAgInventory(this.type, paramString, {}).subscribe(({ results }: { results: number[] }) => {
+    this._inventoryService.getAgInventory(paramString, {}).subscribe(({ results }: { results: number[] }) => {
       this.selectedViewIds = results
     })
   }
