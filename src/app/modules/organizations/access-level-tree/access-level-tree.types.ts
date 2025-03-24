@@ -23,3 +23,7 @@ export type DeleteInstanceData = {
   organizationId: number;
   warnings: string[];
 }
+
+export type UploadInstancesData = {
+  organizationId: number;
+}

@@ -8,55 +8,86 @@
 
     <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
       <div class="text-xl font-medium leading-6">Upload Access Level Instances</div>
-      <div class="text-secondary">
-        Upload your Organizational Structure in spreadsheet form. The file should include a column for each access level with its column
-        header equal to the custom access level name. Each row should contain an access level instance, with its ancestry fully defined
-        (parent node name, grand-parent node name, etc.)
-      </div>
-      <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
-        <input
-          id="instances-file-input"
-          class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
-          type="file"
-          [multiple]="false"
-          [accept]="allowedTypes"
-          (change)="selectFile(instancesFileInput.files)"
-          #instancesFileInput
-        />
-        <button
-          mat-flat-button
-          class="flex items-center gap-x-2"
-          color="primary"
-          (click)="instancesFileInput.click()"
-          [disabled]="submitted"
-        >
-          <mat-icon svgIcon="fa-solid:file-csv" class="text-white icon-size-5"></mat-icon>
-          <span>Choose file</span>
-        </button>
-        <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
-          {{ file?.name ?? 'No file selected' }}
+
+      @if (!inProgress && !completed) {
+        <div class="text-secondary">
+          Upload your Organizational Structure in spreadsheet form. The file should include a column for each access level with its column
+          header equal to the custom access level name. Each row should contain an access level instance, with its ancestry fully defined
+          (parent node name, grand-parent node name, etc.)
         </div>
-      </div>
-      @if (isExcelFile()) {
-        <div class="text-secondary text-sm"><strong>Note</strong>: only the first sheet of multi-sheet Excel files will be imported.</div>
+        <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
+          <input
+            id="instances-file-input"
+            class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+            type="file"
+            [multiple]="false"
+            [accept]="allowedTypes"
+            (change)="selectFile(instancesFileInput.files)"
+            #instancesFileInput
+          />
+          <button
+            mat-flat-button
+            class="flex items-center gap-x-2"
+            color="primary"
+            (click)="instancesFileInput.click()"
+            [disabled]="inProgress"
+          >
+            <mat-icon svgIcon="fa-solid:file-csv" class="text-white icon-size-5"></mat-icon>
+            <span>Choose file</span>
+          </button>
+          <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
+            {{ file?.name ?? 'No file selected' }}
+          </div>
+        </div>
+        @if (isExcelFile()) {
+          <div class="text-secondary text-sm"><strong>Note</strong>: only the first sheet of multi-sheet Excel files will be imported.</div>
+        }
+      } @else if (inProgress) {
+        <div class="w-full">
+          <mat-progress-bar
+            [mode]="(progress[0]?.value ?? 0) === 0 ? 'indeterminate' : 'determinate'"
+            [value]="progress[0]?.value"
+          ></mat-progress-bar>
+          <div class="text-secondary mt-2 grid grid-cols-1 gap-x-3 gap-y-1 text-sm font-medium sm:grid-cols-[minmax(0,1fr)_2.75rem]">
+            @for (p of progress; track p.message) {
+              <div>{{ p.message }}</div>
+              <div class="text-center font-mono sm:text-right">{{ p.value | number: '1.1-1' }}%</div>
+            }
+          </div>
+        </div>
+      } @else {
+        <seed-alert appearance="soft" class="w-full" [dismissible]="false" [type]="errors?.length ? 'warning' : 'success'">
+          @if (errors?.length > 0) {
+            <div>Errors occurred while importing access level instances:</div>
+            <div class="prose max-h-48 overflow-y-auto">
+              <ul class="my-0">
+                @for (error of errors; track $index) {
+                  <li>{{ error }}</li>
+                }
+              </ul>
+            </div>
+          } @else {
+            Successfully imported {{ totalAccessLevelInstances | number }} access level instances.
+          }
+        </seed-alert>
       }
     </div>
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">Cancel</button>
-    <button
-      mat-flat-button
-      class="flex w-24 items-center justify-center"
-      color="primary"
-      (click)="upload()"
-      [disabled]="submitted || !file"
-    >
-      @if (!submitted) {
+    @if (!inProgress && !completed) {
+      <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="inProgress">Cancel</button>
+      <button mat-flat-button class="flex w-24 items-center justify-center" color="primary" (click)="upload()" [disabled]="!file">
         Upload
-      } @else {
-        <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
-      }
-    </button>
+      </button>
+    } @else {
+      <button mat-flat-button class="flex w-20 items-center justify-center" color="primary" [disabled]="inProgress" (click)="close()">
+        @if (inProgress) {
+          <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+        } @else {
+          Close
+        }
+      </button>
+    }
   </div>
 </div>

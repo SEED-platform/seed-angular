@@ -6,6 +6,7 @@ import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, 
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { naturalSort } from '../../utils'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type {
   AccessLevelInstance,
@@ -23,8 +24,10 @@ import type {
   OrganizationsResponse,
   OrganizationUser,
   OrganizationUsersResponse,
+  StartSavingAccessLevelInstancesRequest,
   UpdateAccessLevelsRequest,
   UpdateAccessLevelsResponse,
+  UploadAccessLevelInstancesResponse,
 } from './organization.types'
 
 @Injectable({ providedIn: 'root' })
@@ -189,6 +192,22 @@ export class OrganizationService {
         return this._errorService.handleError(error, 'Failed to delete Access Level Instance')
       }),
     )
+  }
+
+  uploadAccessLevelInstances(organizationId: number, file: File) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/importer/`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    return this._httpClient.put<UploadAccessLevelInstancesResponse>(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    })
+  }
+
+  startSavingAccessLevelInstances(organizationId: number, filename: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/start_save_data/`
+    const data: StartSavingAccessLevelInstancesRequest = { filename }
+    return this._httpClient.post<ProgressResponse>(url, data)
   }
 
   // TODO add response type

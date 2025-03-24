@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
-import type { CheckProgressLoopParams, UpdateProgressBarObjParams, UploaderResponse } from './uploader.types'
+import type { ProgressResponse } from '@seed/api/progress'
+import type { CheckProgressLoopParams, UpdateProgressBarObjParams } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
@@ -18,7 +19,7 @@ export class UploaderService {
     successFn,
     failureFn,
     progressBarObj,
-  }: CheckProgressLoopParams): Observable<UploaderResponse> {
+  }: CheckProgressLoopParams): Observable<ProgressResponse> {
     return interval(750).pipe(
       // poll every 750ms
       switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
@@ -27,9 +28,11 @@ export class UploaderService {
       }),
       takeWhile((response) => response.progress < 100, true), // end stream
       finalize(() => {
+        // TODO Since this is in finalize, on error successFn is called after failureFn
         successFn()
       }),
       catchError(() => {
+        // TODO the interval needs to continue if the error was network-related
         failureFn()
         return throwError(() => new Error('Progress check failed'))
       }),
@@ -39,9 +42,9 @@ export class UploaderService {
   /*
    * Fetches progress for a given progress key
    */
-  checkProgress(progressKey: string): Observable<UploaderResponse> {
+  checkProgress(progressKey: string): Observable<ProgressResponse> {
     const url = `/api/v3/progress/${progressKey}/`
-    return this._httpClient.get<UploaderResponse>(url).pipe(
+    return this._httpClient.get<ProgressResponse>(url).pipe(
       catchError((error) => {
         console.error('Error fetching progress:', error)
         return of(null)

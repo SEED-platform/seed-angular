@@ -152,3 +152,12 @@ export type CanDeleteInstanceResponse = {
   can_delete: boolean;
   reasons?: string[];
 }
+
+export type UploadAccessLevelInstancesResponse = {
+  status: 'success';
+  tempfile: string;
+}
+
+export type StartSavingAccessLevelInstancesRequest = {
+  filename: string;
+}

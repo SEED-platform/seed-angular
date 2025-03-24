@@ -19,7 +19,13 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfirmationService, MediaWatcherService } from '@seed/services'
 import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
-import type { CreateInstanceData, DeleteInstanceData, EditAccessLevelsData, RenameInstanceData } from './access-level-tree.types'
+import type {
+  CreateInstanceData,
+  DeleteInstanceData,
+  EditAccessLevelsData,
+  RenameInstanceData,
+  UploadInstancesData,
+} from './access-level-tree.types'
 import { CreateInstanceDialogComponent } from './create-instance-dialog'
 import { DeleteInstanceDialogComponent } from './delete-instance-dialog'
 import { EditAccessLevelsDialogComponent } from './edit-access-levels-dialog'
@@ -196,6 +202,9 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     this._matDialog.open(UploadInstancesDialogComponent, {
       autoFocus: false,
       disableClose: true,
+      data: {
+        organizationId: this._organizationId,
+      } satisfies UploadInstancesData,
       panelClass: 'seed-dialog-panel',
       width: '640px',
     })
