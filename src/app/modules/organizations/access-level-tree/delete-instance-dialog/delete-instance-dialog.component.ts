@@ -6,13 +6,14 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { finalize } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
+import { SharedImports } from '@seed/directives'
 import type { DeleteInstanceData } from '..'
 
 @Component({
   selector: 'seed-delete-instance-dialog',
   templateUrl: './delete-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, NgClass],
+  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, NgClass, SharedImports],
 })
 export class DeleteInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as DeleteInstanceData

@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { finalize, Subject, takeUntil } from 'rxjs'
 import type { AccessLevelsByDepth } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import { SharedImports } from '@seed/directives'
 import { arraysEqual } from '@seed/utils'
 import type { EditAccessLevelsData } from '..'
 
@@ -28,6 +29,7 @@ import type { EditAccessLevelsData } from '..'
     MatProgressSpinnerModule,
     NgClass,
     ReactiveFormsModule,
+    SharedImports,
   ],
 })
 export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {

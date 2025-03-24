@@ -7,16 +7,17 @@
     actionIcon: 'heroicons-outline:bars-3',
     actionClasses: 'inline-flex md:hidden',
   }"
+  *transloco="let t"
 >
   <mat-drawer-container class="h-full flex-auto">
     <mat-drawer class="w-72 dark:bg-gray-900" [mode]="drawerMode" [(opened)]="drawerOpened">
       <div class="flex h-full w-full flex-col">
-        <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Levels</div>
+        <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">{{ t('Access Levels') }}</div>
 
         <div class="flex h-12 items-center">
           <button class="mx-6 w-full" mat-flat-button color="primary" (click)="editAccessLevels()">
             <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
-            <span class="ml-2">Edit</span>
+            <span class="ml-2">{{ t('Edit') }}</span>
           </button>
         </div>
 
@@ -27,14 +28,14 @@
         </ol>
         <button class="m-6 mt-auto flex" mat-flat-button color="primary" (click)="uploadInstances()">
           <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
-          <span class="ml-2">Upload</span>
+          <span class="ml-2">{{ t('Upload') }}</span>
         </button>
       </div>
     </mat-drawer>
 
     <mat-drawer-content class="flex flex-col overflow-hidden">
       <div class="relative flex flex-auto flex-col overflow-y-auto sm:max-h-[calc(100svh-14rem-1px)]">
-        <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">Access Level Instances</div>
+        <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">{{ t('Access Level Instances') }}</div>
         <div class="max-w-3xl px-6 pb-6">
           <div class="mb-4 flex h-12 flex-auto items-center">
             <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="dynamic">
@@ -42,7 +43,7 @@
               <input
                 matInput
                 autocomplete="off"
-                placeholder="Filter access level instances"
+                [placeholder]="t('Filter access level instances')"
                 spellcheck="false"
                 class="text-ellipsis"
                 (input)="onFilterChange(filterInput.value)"
@@ -58,7 +59,7 @@
               >
                 <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:magnifying-glass-minus"></mat-icon>
               </div>
-              <span class="ml-2">No matching instances</span>
+              <span class="ml-2">{{ t('No matching instances') }}</span>
             </div>
           } @else {
             <div class="flex h-6 items-center">
@@ -129,7 +130,7 @@
 </ng-template>
 
 <mat-menu #instanceMenu="matMenu" overlapTrigger xPosition="before">
-  <ng-template matMenuContent let-instance let-depth="depth">
+  <ng-template matMenuContent let-instance let-depth="depth" *transloco="let t">
     @let isMaximumDepth = depth === accessLevelNames.length - 1;
     <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
       <span class="flex flex-col leading-none">
@@ -144,17 +145,17 @@
     >
       <button mat-menu-item (click)="createInstance(instance)" [disabled]="isMaximumDepth">
         <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
-        <span>Create child instance</span>
+        <span>{{ t('Create child instances') }}</span>
       </button>
     </div>
     <button mat-menu-item (click)="renameInstance(instance)">
       <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
-      <span>Rename</span>
+      <span>{{ t('Rename') }}</span>
     </button>
     @if (depth > 0) {
       <button mat-menu-item (click)="deleteInstance(instance)">
         <mat-icon class="icon-size-5" svgIcon="fa-solid:trash-can"></mat-icon>
-        <span>Delete</span>
+        <span>{{ t('Delete') }}</span>
       </button>
     }
   </ng-template>

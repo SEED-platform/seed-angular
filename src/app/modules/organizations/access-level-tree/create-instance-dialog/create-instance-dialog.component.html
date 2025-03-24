@@ -1,4 +1,4 @@
-<div class="relative flex h-full w-full flex-col">
+<div class="relative flex h-full w-full flex-col" *transloco="let t">
   <div class="flex flex-auto flex-col items-center p-8 pb-3 sm:flex-row sm:items-start">
     <div
       class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 sm:mr-4 dark:bg-primary-600 dark:text-primary-50"
@@ -7,7 +7,7 @@
     </div>
 
     <div class="mt-4 flex w-full flex-col items-center text-left sm:mt-0 sm:items-start sm:pr-8">
-      <div class="text-xl font-medium leading-6">Create Child Access Level Instance</div>
+      <div class="text-xl font-medium leading-6">{{ t('Create Child Access Level Instance') }}</div>
       <div class="text-hint mb-3 mt-1 flex flex-wrap items-center gap-1 text-sm font-medium">
         @for (breadcrumb of breadcrumbs; track $index) {
           <span class="whitespace-nowrap">{{ breadcrumb }}</span>
@@ -34,7 +34,7 @@
             #nameInput
           />
           @if (nameValidator.hasError('siblingName')) {
-            <mat-error>Name must not match any of its siblings</mat-error>
+            <mat-error>{{ t('Name must not match any of its siblings') }}</mat-error>
           }
         </mat-form-field>
       </div>
@@ -42,7 +42,7 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button [matDialogClose]="false" class="w-24" [disabled]="submitted">Cancel</button>
+    <button mat-stroked-button [matDialogClose]="false" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
     <button
       mat-flat-button
       class="flex w-24 items-center justify-center"
@@ -51,7 +51,7 @@
       [disabled]="submitted || !isValid(nameInput.value)"
     >
       @if (!submitted) {
-        Create
+        {{ t('Create') }}
       } @else {
         <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
       }

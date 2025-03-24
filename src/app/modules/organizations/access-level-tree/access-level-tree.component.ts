@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common'
+import { DecimalPipe, NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -48,6 +48,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
     NgTemplateOutlet,
     PageComponent,
     SharedImports,
+    DecimalPipe,
   ],
   encapsulation: ViewEncapsulation.None,
 })

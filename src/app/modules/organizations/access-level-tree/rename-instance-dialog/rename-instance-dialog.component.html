@@ -1,4 +1,4 @@
-<div class="relative flex h-full w-full flex-col">
+<div class="relative flex h-full w-full flex-col" *transloco="let t">
   <div class="flex flex-auto flex-col items-center p-8 pb-3 sm:flex-row sm:items-start">
     <div
       class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 sm:mr-4 dark:bg-primary-600 dark:text-primary-50"
@@ -7,7 +7,7 @@
     </div>
 
     <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
-      <div class="text-xl font-medium leading-6">Rename Access Level Instance</div>
+      <div class="text-xl font-medium leading-6">{{ t('Rename Access Level Instance') }}</div>
       <div class="flex w-full flex-auto items-center">
         <mat-form-field
           class="seed-mat-rounded seed-mat-dense flex-auto"
@@ -27,7 +27,7 @@
             #renameInput
           />
           @if (nameValidator.hasError('siblingName')) {
-            <mat-error>Name must not match any of its siblings</mat-error>
+            <mat-error>{{ t('Name must not match any of its siblings') }}</mat-error>
           }
         </mat-form-field>
       </div>
@@ -35,7 +35,7 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">Cancel</button>
+    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
     <button
       mat-flat-button
       class="flex w-24 items-center justify-center"
@@ -44,7 +44,7 @@
       [disabled]="submitted || !isValid(renameInput.value)"
     >
       @if (!submitted) {
-        Rename
+        {{ t('Rename') }}
       } @else {
         <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
       }

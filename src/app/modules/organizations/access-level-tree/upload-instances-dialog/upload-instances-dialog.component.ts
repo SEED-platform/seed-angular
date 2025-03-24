@@ -7,6 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { TranslocoDirective } from '@jsverse/transloco'
 import { filter, last, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ProgressService } from '@seed/api/progress'
@@ -18,7 +19,16 @@ import type { UploadInstancesData } from '../access-level-tree.types'
   templateUrl: './upload-instances-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
   styleUrl: './upload-instances-dialog.component.scss',
-  imports: [AlertComponent, DecimalPipe, MatButtonModule, MatDialogModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule],
+  imports: [
+    AlertComponent,
+    DecimalPipe,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    TranslocoDirective,
+  ],
 })
 export class UploadInstancesDialogComponent implements OnDestroy {
   private _data = inject(MAT_DIALOG_DATA) as UploadInstancesData
@@ -61,14 +71,12 @@ export class UploadInstancesDialogComponent implements OnDestroy {
           return this._organizationService.startSavingAccessLevelInstances(this._data.organizationId, response.body.tempfile)
         }),
         switchMap((progress) => {
-          return this._progressService
-            .checkProgressLoop$(progress.progress_key)
-            .pipe(
-              tap((progress) => {
-                this.progress[0].value = progress.progress
-              }),
-              last(),
-            )
+          return this._progressService.checkProgressLoop$(progress.progress_key).pipe(
+            tap((progress) => {
+              this.progress[0].value = progress.progress
+            }),
+            last(),
+          )
         }),
       )
       .subscribe({

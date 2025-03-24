@@ -1,4 +1,4 @@
-<div class="relative flex h-full w-full flex-col">
+<div class="relative flex h-full w-full flex-col" *transloco="let t">
   <div class="flex flex-auto flex-col items-center p-8 pb-6 sm:flex-row sm:items-start">
     <div
       class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 sm:mr-4 dark:bg-primary-600 dark:text-primary-50"
@@ -7,13 +7,11 @@
     </div>
 
     <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
-      <div class="text-xl font-medium leading-6">Upload Access Level Instances</div>
+      <div class="text-xl font-medium leading-6">{{ t('Upload Access Level Instances') }}</div>
 
       @if (!inProgress && !completed) {
         <div class="text-secondary">
-          Upload your Organizational Structure in spreadsheet form. The file should include a column for each access level with its column
-          header equal to the custom access level name. Each row should contain an access level instance, with its ancestry fully defined
-          (parent node name, grand-parent node name, etc.)
+          {{ t('ACCESS_LEVEL_STRUCTURE_UPLOAD_TEXT') }}
         </div>
         <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
           <input
@@ -33,14 +31,14 @@
             [disabled]="inProgress"
           >
             <mat-icon svgIcon="fa-solid:file-csv" class="text-white icon-size-5"></mat-icon>
-            <span>Choose file</span>
+            <span>{{ t('Choose file') }}</span>
           </button>
           <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
-            {{ file?.name ?? 'No file selected' }}
+            {{ file?.name ?? t('No file selected') }}
           </div>
         </div>
         @if (isExcelFile()) {
-          <div class="text-secondary text-sm"><strong>Note</strong>: only the first sheet of multi-sheet Excel files will be imported.</div>
+          <div class="text-secondary text-sm" [innerHTML]="t('MULTI_FILE_EXCEL_NOT_SUPPORTED')"></div>
         }
       } @else if (inProgress) {
         <div class="w-full">
@@ -50,7 +48,7 @@
           ></mat-progress-bar>
           <div class="text-secondary mt-2 grid grid-cols-1 gap-x-3 gap-y-1 text-sm font-medium sm:grid-cols-[minmax(0,1fr)_2.75rem]">
             @for (p of progress; track p.message) {
-              <div>{{ p.message }}</div>
+              <div>{{ t(p.message) }}</div>
               <div class="text-center font-mono sm:text-right">{{ p.value | number: '1.1-1' }}%</div>
             }
           </div>
@@ -58,7 +56,7 @@
       } @else {
         <seed-alert appearance="soft" class="w-full" [dismissible]="false" [type]="errors?.length ? 'warning' : 'success'">
           @if (errors?.length > 0) {
-            <div>Errors occurred while importing access level instances:</div>
+            <div>{{ t('Errors occurred while importing access level instances:') }}</div>
             <div class="prose max-h-48 overflow-y-auto">
               <ul class="my-0">
                 @for (error of errors; track $index) {
@@ -67,7 +65,7 @@
               </ul>
             </div>
           } @else {
-            Successfully imported {{ totalAccessLevelInstances | number }} access level instances.
+            {{ t('ACCESS_LEVEL_IMPORT_SUCCESS', { total: totalAccessLevelInstances | number }) }}
           }
         </seed-alert>
       }
@@ -76,16 +74,16 @@
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
     @if (!inProgress && !completed) {
-      <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="inProgress">Cancel</button>
+      <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="inProgress">{{ t('Cancel') }}</button>
       <button mat-flat-button class="flex w-24 items-center justify-center" color="primary" (click)="upload()" [disabled]="!file">
-        Upload
+        {{ t('Upload') }}
       </button>
     } @else {
       <button mat-flat-button class="flex w-20 items-center justify-center" color="primary" [disabled]="inProgress" (click)="close()">
         @if (inProgress) {
           <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
         } @else {
-          Close
+          {{ t('Close') }}
         }
       </button>
     }

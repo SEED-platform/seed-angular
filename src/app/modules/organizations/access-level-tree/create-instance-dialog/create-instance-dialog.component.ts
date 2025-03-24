@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { finalize } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
+import { SharedImports } from '@seed/directives'
 import type { CreateInstanceData } from '..'
 
 @Component({
@@ -26,6 +27,7 @@ import type { CreateInstanceData } from '..'
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
+    SharedImports,
   ],
 })
 export class CreateInstanceDialogComponent {

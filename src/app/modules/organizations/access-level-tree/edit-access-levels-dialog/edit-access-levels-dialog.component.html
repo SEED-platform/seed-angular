@@ -1,4 +1,4 @@
-<div class="relative flex h-full w-full flex-col">
+<div class="relative flex h-full w-full flex-col" *transloco="let t">
   @let levelsRemoved = isLevelRemoved();
   <div class="flex flex-auto flex-col items-center p-8 pb-6 sm:flex-row sm:items-start">
     <div
@@ -13,7 +13,7 @@
     </div>
 
     <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start">
-      <div class="text-xl font-medium leading-6">Edit Access Levels</div>
+      <div class="text-xl font-medium leading-6">{{ t('Edit Access Levels') }}</div>
       <div class="flex w-full flex-auto flex-col">
         <form [formGroup]="form" class="w-full">
           <div formArrayName="levels" class="mt-2 flex max-h-160 flex-col space-y-1 overflow-y-auto sm:-mr-8 sm:mt-4 sm:pr-16">
@@ -26,7 +26,7 @@
                   <mat-icon class="icon-size-5" svgIcon="fa-solid:folder-tree" matPrefix></mat-icon>
                   <input matInput autocomplete="off" [formControlName]="$index" [readonly]="submitted" class="text-ellipsis" />
                   @if (control.hasError('duplicate')) {
-                    <mat-error>Name must be unique</mat-error>
+                    <mat-error>{{ t('Name must be unique') }}</mat-error>
                   }
                   @if (levels.length > 1) {
                     <mat-icon
@@ -46,7 +46,7 @@
           <mat-icon class="text-hint -ml-0.5 icon-size-5" svgIcon="fa-solid:plus"></mat-icon>
           <input
             class="ml-1.5 w-full px-1 py-0.5"
-            placeholder="Add level"
+            [placeholder]="t('Add level')"
             (keydown.enter)="newLevelInput.value.trim() !== '' && addLevel(newLevelInput.value); newLevelInput.value = ''"
             [disabled]="submitted"
             #newLevelInput
@@ -56,13 +56,17 @@
           @let instancesRemoved = instancesToBeRemoved();
           @if (instancesRemoved > 0) {
             <div class="prose mt-4 text-warn">
-              Deleting Access Levels will delete all data associated with that level:
+              {{ t('Deleting Access Levels will delete all data associated with that level:') }}
               <ul class="my-0">
                 @if (instancesRemoved === 1) {
-                  <li>{{ instancesRemoved }} access level instance will be removed, including all properties attached to that instance</li>
+                  <li>
+                    {{ instancesRemoved }}
+                    {{ t('access level instance will be removed, including all properties attached to that instance') }}
+                  </li>
                 } @else {
                   <li>
-                    {{ instancesRemoved }} access level instances will be removed, including all properties attached to those instances
+                    {{ instancesRemoved }}
+                    {{ t('access level instances will be removed, including all properties attached to those instances') }}
                   </li>
                 }
               </ul>
@@ -74,7 +78,7 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">Cancel</button>
+    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
     <button
       mat-flat-button
       class="flex w-24 items-center justify-center"
@@ -83,7 +87,7 @@
       [disabled]="submitted || !isValid()"
     >
       @if (!submitted) {
-        Save
+        {{ t('Save') }}
       } @else {
         <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
       }
