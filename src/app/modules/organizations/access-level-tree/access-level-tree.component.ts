@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass, NgTemplateOutlet } from '@angular/common'
+import { NgClass, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -13,12 +13,12 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs'
 import type { AccessLevelInstance, AccessLevelTree } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import type { DrawerMode } from '@seed/components'
 import { PageComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
-import { ConfirmationService, MediaWatcherService } from '@seed/services'
-import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
+import { ImageOverlayDirective, SharedImports } from '@seed/directives'
+import { MediaWatcherService } from '@seed/services'
 import type {
   CreateInstanceData,
   DeleteInstanceData,
@@ -36,6 +36,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
   selector: 'seed-organizations-access-level-tree',
   templateUrl: './access-level-tree.component.html',
   imports: [
+    ImageOverlayDirective,
     MatButtonModule,
     MatDividerModule,
     MatFormFieldModule,
@@ -48,27 +49,26 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
     NgTemplateOutlet,
     PageComponent,
     SharedImports,
-    DecimalPipe,
   ],
   encapsulation: ViewEncapsulation.None,
 })
 export class AccessLevelTreeComponent implements OnInit, OnDestroy {
-  private _confirmationService = inject(ConfirmationService)
   private _matDialog = inject(MatDialog)
   private _mediaWatcherService = inject(MediaWatcherService)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _organizationId: number
   private _filterValue = ''
   private _filterSubject$ = new Subject<string>()
+  currentUser: CurrentUser
   accessLevelNames: AccessLevelTree['accessLevelNames']
   accessLevelTree: AccessLevelTree['accessLevelTree']
   filteredAccessLevelTree?: AccessLevelTree['accessLevelTree']
   drawerMode: DrawerMode = 'side'
   drawerOpened = true
+  helpOpened = false
   expanded = new Set<number>()
 
   ngOnInit(): void {
@@ -92,6 +92,10 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
       this.filterAccessLevelTree(this._filterValue)
     })
 
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
+      this.currentUser = currentUser
+    })
+
     this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
       this._organizationId = organizationId
     })
@@ -99,6 +103,9 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
 
   toggleDrawer = (): void => {
     this.drawerOpened = !this.drawerOpened
+    if (this.drawerOpened) {
+      this.helpOpened = false
+    }
   }
 
   toggleExpand = (id: number): void => {
@@ -107,6 +114,10 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     } else {
       this.expanded.add(id)
     }
+  }
+
+  toggleHelp = () => {
+    this.helpOpened = !this.helpOpened
   }
 
   countChildren = (instance: AccessLevelInstance): number => {
