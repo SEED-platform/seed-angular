@@ -18,15 +18,21 @@ export class DeleteModalComponent implements OnDestroy {
 
   data = inject(MAT_DIALOG_DATA) as { rule: Rule; orgId: number; displayName: string }
 
-  dismiss() { this._dialogRef.close() }
-  close() { this._dialogRef.close() }
+  dismiss() {
+    this._dialogRef.close()
+  }
+  close() {
+    this._dialogRef.close()
+  }
 
   onSubmit() {
     this._dataQualityService
       .deleteRule({ id: this.data.rule.id, orgId: this.data.orgId })
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.close() }),
+        tap(() => {
+          this.close()
+        }),
       )
       .subscribe()
   }
