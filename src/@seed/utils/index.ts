@@ -1,3 +1,4 @@
+export * from './arrays-equal'
 export * from './exact-match-options'
 export * from './natural-sort'
 export * from './open-in-new-tab'

@@ -1,19 +1,4 @@
-export type UploaderStatus = 'not-started' | 'in-progress' | 'completed' | 'failed'
-
-export type UploaderResponse = {
-  func_name: string;
-  message: string | null;
-  progress: number;
-  progress_key: string;
-  stacktrace: string | null;
-  status: UploaderStatus;
-  status_message: string;
-  summary: string | null;
-  total: number;
-  unique_id: string;
-  total_records?: number;
-  completed_records?: number;
-}
+import type { ProgressResponse } from '@seed/api/progress'
 
 export type ProgressBarObj = {
   message: string;
@@ -36,7 +21,7 @@ export type CheckProgressLoopParams = {
 }
 
 export type UpdateProgressBarObjParams = {
-  data: UploaderResponse;
+  data: ProgressResponse;
   offset: number;
   multiplier: number;
   progressBarObj: ProgressBarObj;

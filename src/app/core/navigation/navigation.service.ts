@@ -34,11 +34,10 @@ export class NavigationService {
       children: [
         {
           id: 'organizations/settings',
-          link: '/organizations/settings/options',
+          link: '/organizations/settings',
           title: 'Settings',
           icon: 'fa-solid:gears',
           type: 'basic',
-          regexMatch: /^\/organizations\/settings\//,
         },
         {
           id: 'organizations/access-level-tree',

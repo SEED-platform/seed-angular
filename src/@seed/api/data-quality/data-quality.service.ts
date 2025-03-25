@@ -3,14 +3,14 @@ import { inject, Injectable } from '@angular/core'
 import { catchError, type Observable, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Rule } from './data-quality.types'
 
 @Injectable({ providedIn: 'root' })
 export class DataQualityService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _rules = new ReplaySubject<Rule[]>()
   private readonly _unsubscribeAll$ = new Subject<void>()

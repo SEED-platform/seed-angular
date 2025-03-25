@@ -5,7 +5,7 @@ import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import type { Label } from './label.types'
 
@@ -16,7 +16,7 @@ export class LabelService {
   private _labels = new ReplaySubject<Label[]>(1)
   private _errorService = inject(ErrorService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
 
   labels$ = this._labels.asObservable()
 
@@ -27,8 +27,8 @@ export class LabelService {
     })
   }
 
-  getByOrgId(org_id: number): Observable<Label[]> {
-    const url = `/api/v3/labels/?organization_id=${org_id}`
+  getByOrgId(organizationId: number): Observable<Label[]> {
+    const url = `/api/v3/labels/?organization_id=${organizationId}`
     return this._httpClient.get<Label[]>(url).pipe(
       map((response) => {
         const labels = response.sort((a, b) => naturalSort(a.name, b.name))
@@ -81,8 +81,8 @@ export class LabelService {
     )
   }
 
-  bulkUpdate(org_id: number, labels: Label[], show_in_list: boolean): Observable<HttpResponse<null>> {
-    const url = `/api/v3/labels/bulk_update/?organization_id=${org_id}`
+  bulkUpdate(organizationId: number, labels: Label[], show_in_list: boolean): Observable<HttpResponse<null>> {
+    const url = `/api/v3/labels/bulk_update/?organization_id=${organizationId}`
     return this._httpClient.put<HttpResponse<null>>(url, { data: { show_in_list }, label_ids: labels.map((l) => l.id) }).pipe(
       map((response) => {
         this._snackBar.success(`All labels ${show_in_list ? 'shown' : 'hidden'}`)

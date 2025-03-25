@@ -1,0 +1,96 @@
+<div class="relative flex h-full w-full flex-col" *transloco="let t">
+  @let levelsRemoved = isLevelRemoved();
+  <div class="flex flex-auto flex-col items-center p-8 pb-6 sm:flex-row sm:items-start">
+    <div
+      class="flex h-10 w-10 flex-0 items-center justify-center rounded-full sm:mr-4"
+      [ngClass]="
+        levelsRemoved && instancesToBeRemoved() > 0
+          ? 'bg-warn-100 text-warn-600 dark:bg-warn-600 dark:text-warn-50'
+          : 'bg-primary-100 text-primary-600 dark:bg-primary-600 dark:text-primary-50'
+      "
+    >
+      <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
+    </div>
+
+    <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start">
+      <div class="text-xl font-medium leading-6">{{ t('Edit Access Levels') }}</div>
+      <div class="flex w-full flex-auto flex-col">
+        <form [formGroup]="form" class="w-full">
+          <div formArrayName="levels" class="mt-2 flex max-h-160 flex-col space-y-1 overflow-y-auto sm:-mr-8 sm:mt-4 sm:pr-16">
+            @for (control of levels.controls; track $index) {
+              <div class="flex space-x-3">
+                <div class="text-hint flex h-10 w-10 select-none items-center justify-center rounded-full bg-gray-100">
+                  {{ $index + 1 }}
+                </div>
+                <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="fixed">
+                  <mat-icon class="icon-size-5" svgIcon="fa-solid:folder-tree" matPrefix></mat-icon>
+                  <input matInput autocomplete="off" [formControlName]="$index" [readonly]="submitted" class="text-ellipsis" />
+                  @if (control.hasError('duplicate')) {
+                    <mat-error>{{ t('Name must be unique') }}</mat-error>
+                  }
+                  @if (levels.length > 1) {
+                    <mat-icon
+                      class="icon-size-4"
+                      svgIcon="fa-solid:xmark"
+                      matSuffix
+                      [ngClass]="{ 'cursor-pointer hover:text-gray-500 dark:hover:text-gray-400': !submitted }"
+                      (click)="$event.stopPropagation(); !submitted && removeLevel($index)"
+                    ></mat-icon>
+                  }
+                </mat-form-field>
+              </div>
+            }
+          </div>
+        </form>
+        <div class="flex items-center">
+          <mat-icon class="text-hint -ml-0.5 icon-size-5" svgIcon="fa-solid:plus"></mat-icon>
+          <input
+            class="ml-1.5 w-full px-1 py-0.5"
+            [placeholder]="t('Add level')"
+            (keydown.enter)="newLevelInput.value.trim() !== '' && addLevel(newLevelInput.value); newLevelInput.value = ''"
+            [disabled]="submitted"
+            #newLevelInput
+          />
+        </div>
+        @if (levelsRemoved) {
+          @let instancesRemoved = instancesToBeRemoved();
+          @if (instancesRemoved > 0) {
+            <div class="prose mt-4 text-warn">
+              {{ t('Deleting Access Levels will delete all data associated with that level:') }}
+              <ul class="my-0">
+                @if (instancesRemoved === 1) {
+                  <li>
+                    {{ instancesRemoved }}
+                    {{ t('access level instance will be removed, including all properties attached to that instance') }}
+                  </li>
+                } @else {
+                  <li>
+                    {{ instancesRemoved }}
+                    {{ t('access level instances will be removed, including all properties attached to those instances') }}
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
+    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
+    <button
+      mat-flat-button
+      class="flex w-24 items-center justify-center"
+      [color]="levelsRemoved && instancesToBeRemoved() > 0 ? 'warn' : 'primary'"
+      (click)="updateAccessLevels()"
+      [disabled]="submitted || !isValid()"
+    >
+      @if (!submitted) {
+        {{ t('Save') }}
+      } @else {
+        <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+      }
+    </button>
+  </div>
+</div>

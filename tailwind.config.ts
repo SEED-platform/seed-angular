@@ -73,7 +73,7 @@ export default {
       },
       fontFamily: {
         sans: `"Inter Variable", ${defaultTheme.fontFamily.sans.join(',')}`,
-        mono: `Consolas, ${defaultTheme.fontFamily.mono.join(',')}`,
+        mono: `"Fira Code Variable", ${defaultTheme.fontFamily.mono.join(',')}`,
       },
       opacity: {
         12: '0.12',

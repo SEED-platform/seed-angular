@@ -9,10 +9,10 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, takeUntil, tap } from 'rxjs'
-import type { AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',
@@ -32,13 +32,14 @@ export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
-  private _snackBar = inject(SnackbarService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
-  accessLevelNames: string[]
-  accessLevelInstancesByDepth: AccessLevelsByDepth = {}
-  accessLevelInstances: { id: number; name: string }[] = []
-  roles = ['owner', 'member', 'viewer']
+  private _snackBar = inject(SnackBarService)
   data = inject(MAT_DIALOG_DATA) as { member: OrganizationUser | null; orgId: number }
+
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  accessLevelNames: AccessLevelInstancesByDepth['accessLevelNames']
+  accessLevelInstancesByDepth: AccessLevelsByDepth = {}
+  accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
+  roles = ['owner', 'member', 'viewer']
   form = new FormGroup({
     first_name: new FormControl<string | null>(''),
     last_name: new FormControl<string | null>(''),
@@ -62,23 +63,20 @@ export class FormModalComponent implements OnDestroy, OnInit {
         }),
       )
       .subscribe()
-    // prevent ExpressionChangedAfterItHasBeenCheckedError
-    setTimeout(() => {
-      this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelTree) => {
-        this.accessLevelNames = accessLevelTree.accessLevelNames
-        this.accessLevelInstancesByDepth = accessLevelTree.accessLevelInstancesByDepth
-        this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-      })
+
+    this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames }) => {
+      this.accessLevelNames = accessLevelNames
+    })
+
+    this._organizationService.accessLevelInstancesByDepth$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelsByDepth) => {
+      this.accessLevelInstancesByDepth = accessLevelsByDepth
+      this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
     })
   }
 
-  getAccessLevelTree(orgId: number): void {
-    this._organizationService.getOrganizationAccessLevelTree(orgId).subscribe()
-  }
-
   getPossibleAccessLevelInstances(accessLevelName: string): void {
-    const access_level_idx = this.accessLevelNames.findIndex((name) => name === accessLevelName)
-    this.accessLevelInstances = this.accessLevelInstancesByDepth[access_level_idx]
+    const depth = this.accessLevelNames.findIndex((name) => name === accessLevelName)
+    this.accessLevelInstances = this.accessLevelInstancesByDepth[depth]
   }
 
   onSubmit(): void {
