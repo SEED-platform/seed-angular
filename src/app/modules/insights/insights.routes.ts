@@ -7,9 +7,9 @@ import {
 } from '.'
 
 export default [
-  { path: 'custom', component: CustomReportsComponent },
-  { path: 'reports', component: DefaultReportsComponent },
-  { path: 'overview', component: ProgramOverviewComponent },
-  { path: 'property', component: PropertyInsightsComponent },
-  { path: 'portfolio_summary', component: PortfolioSummaryComponent },
+  { path: 'custom-reports', component: CustomReportsComponent },
+  { path: 'default-reports', component: DefaultReportsComponent },
+  { path: 'program-overview', component: ProgramOverviewComponent },
+  { path: 'property-insights', component: PropertyInsightsComponent },
+  { path: 'portfolio-summary', component: PortfolioSummaryComponent },
 ]

@@ -6,7 +6,6 @@ export default [
     path: '',
     title: 'Analyses',
     component: AnalysesComponent,
-    runGuardsAndResolvers: 'always',
   },
   {
     path: ':id',

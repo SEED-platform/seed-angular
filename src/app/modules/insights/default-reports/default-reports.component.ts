@@ -1,12 +1,11 @@
 import type { OnInit } from '@angular/core'
 import { Component } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import { PageComponent } from '@seed/components'
 
 @Component({
-  selector: 'seed-insights-default-reports',
+  selector: 'seed-default-reports',
   templateUrl: './default-reports.component.html',
-  imports: [MatIconModule, PageComponent],
+  imports: [PageComponent],
 })
 export class DefaultReportsComponent implements OnInit {
   ngOnInit(): void {
