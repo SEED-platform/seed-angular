@@ -23,12 +23,12 @@
             </div>
             <mat-form-field class="mb-6">
               <mat-label>Audit Template Organization Token</mat-label>
-              <input matInput [formControlName]="'at_organization_token'" />
+              <input [formControlName]="'at_organization_token'" matInput />
               <mat-hint> Note, do not prefix the token with "Token ", only include the token itself. </mat-hint>
             </mat-form-field>
             <mat-form-field class="mb-6">
               <mat-label>Audit Template Email</mat-label>
-              <input matInput [formControlName]="'audit_template_user'" />
+              <input [formControlName]="'audit_template_user'" matInput />
               <mat-hint>
                 Use the email associated with your account from the
                 <a class="text-blue-400" href="https://staging.labworks.org/">Building Energy Score Site</a>.
@@ -36,14 +36,14 @@
             </mat-form-field>
             <mat-form-field>
               <mat-label>Audit Template Password </mat-label>
-              <input matInput [formControlName]="'audit_template_password'" [type]="passwordHidden ? 'password' : 'text'" />
+              <input [formControlName]="'audit_template_password'" [type]="passwordHidden ? 'password' : 'text'" matInput />
               <button
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="passwordHidden"
+                (click)="togglePassword()"
                 mat-icon-button
                 matSuffix
                 type="button"
-                (click)="togglePassword()"
-                [attr.aria-label]="'Hide password'"
-                [attr.aria-pressed]="passwordHidden"
               >
                 <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
               </button>
@@ -53,7 +53,7 @@
               </mat-hint>
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Audit Template City ID') }}</div>
             <div class="text-secondary prose mb-6">
@@ -64,10 +64,10 @@
             </div>
             <mat-form-field class="mb-6">
               <mat-label>{{ t('Audit Template City ID') }}</mat-label>
-              <input matInput [formControlName]="'audit_template_city_id'" type="number" />
+              <input [formControlName]="'audit_template_city_id'" matInput type="number" />
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Audit Template Submission Status') }}</div>
             <div class="text-secondary prose mb-6">
@@ -80,7 +80,7 @@
               <mat-checkbox formControlName="status_rejected">Rejected</mat-checkbox>
             </div>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Conditional Import') }}</div>
             <div class="text-secondary prose mb-6">
@@ -94,17 +94,17 @@
               <mat-slide-toggle formControlName="audit_template_conditional_import">{{ t('Enable Conditional Import') }}</mat-slide-toggle>
             </div>
             <div class="my-6">
-              <button mat-flat-button color="accent" type="button" (click)="importSubmissions()" [attr.aria-label]="'Import Submissions'">
+              <button [attr.aria-label]="'Import Submissions'" (click)="importSubmissions()" mat-flat-button color="accent" type="button">
                 Import Submissions
               </button>
             </div>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Schedule Weekly Update') }}</div>
 
             <div class="mt-6 flex flex-row">
-              <mat-slide-toggle formControlName="audit_template_sync_enabled" (click)="updateScheduleInputs()">{{
+              <mat-slide-toggle (click)="updateScheduleInputs()" formControlName="audit_template_sync_enabled">{{
                 t('Enable Audit Template Auto Sync')
               }}</mat-slide-toggle>
             </div>
@@ -139,7 +139,7 @@
               </mat-form-field>
             </div>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">{{ t('Advanced Settings') }}</div>
             <div class="text-secondary prose mb-6">
@@ -163,7 +163,7 @@
             </mat-form-field>
           </div>
           <div>
-            <button mat-flat-button [disabled]="auditTemplateForm.invalid || auditTemplateForm.pending" color="primary">
+            <button [disabled]="auditTemplateForm.invalid || auditTemplateForm.pending" mat-flat-button color="primary">
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>

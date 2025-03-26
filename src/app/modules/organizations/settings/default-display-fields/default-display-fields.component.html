@@ -22,7 +22,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">TaxLot Display Field</div>
             <div class="text-secondary prose mb-6">
@@ -38,7 +38,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">Columns to Include in Reports x axis Options</div>
 
@@ -52,7 +52,7 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
           <div class="flex flex-col">
             <div class="text-lg font-medium">Columns to Include in Reports Y Axis Options</div>
 
@@ -66,10 +66,10 @@
               </mat-select>
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
 
           <div>
-            <button mat-flat-button [disabled]="defaultDisplayFieldsForm.invalid || defaultDisplayFieldsForm.pending" color="primary">
+            <button [disabled]="defaultDisplayFieldsForm.invalid || defaultDisplayFieldsForm.pending" mat-flat-button color="primary">
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>

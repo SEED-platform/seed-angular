@@ -15,22 +15,22 @@
         </div>
         <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
           <input
-            id="instances-file-input"
             class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
-            type="file"
+            id="instances-file-input"
+            #instancesFileInput
             [multiple]="false"
             [accept]="allowedTypes"
             (change)="selectFile(instancesFileInput.files)"
-            #instancesFileInput
+            type="file"
           />
           <button
-            mat-flat-button
             class="flex items-center gap-x-2"
-            color="primary"
-            (click)="instancesFileInput.click()"
             [disabled]="inProgress"
+            (click)="instancesFileInput.click()"
+            mat-flat-button
+            color="primary"
           >
-            <mat-icon svgIcon="fa-solid:file-csv" class="text-white icon-size-5"></mat-icon>
+            <mat-icon class="text-white icon-size-5" svgIcon="fa-solid:file-csv"></mat-icon>
             <span>{{ t('Choose file') }}</span>
           </button>
           <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
@@ -54,7 +54,7 @@
           </div>
         </div>
       } @else {
-        <seed-alert appearance="soft" class="w-full" [dismissible]="false" [type]="errors?.length ? 'warning' : 'success'">
+        <seed-alert class="w-full" [dismissible]="false" [type]="errors?.length ? 'warning' : 'success'" appearance="soft">
           @if (errors?.length > 0) {
             <div>{{ t('Errors occurred while importing access level instances:') }}</div>
             <div class="prose max-h-48 overflow-y-auto">
@@ -74,12 +74,12 @@
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
     @if (!inProgress && !completed) {
-      <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="inProgress">{{ t('Cancel') }}</button>
-      <button mat-flat-button class="flex w-24 items-center justify-center" color="primary" (click)="upload()" [disabled]="!file">
+      <button class="w-24" [disabled]="inProgress" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
+      <button class="flex w-24 items-center justify-center" [disabled]="!file" (click)="upload()" mat-flat-button color="primary">
         {{ t('Upload') }}
       </button>
     } @else {
-      <button mat-flat-button class="flex w-20 items-center justify-center" color="primary" [disabled]="inProgress" (click)="close()">
+      <button class="flex w-20 items-center justify-center" [disabled]="inProgress" (click)="close()" mat-flat-button color="primary">
         @if (inProgress) {
           <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
         } @else {

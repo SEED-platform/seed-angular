@@ -12,7 +12,7 @@
           <seed-clipboard [text]="user.api_key"></seed-clipboard>
         </div>
         <div class="pt-7">
-          <button mat-flat-button color="primary" (click)="generateKey()">
+          <button (click)="generateKey()" mat-flat-button color="primary">
             {{ t('Get a New API Key') }}
           </button>
         </div>

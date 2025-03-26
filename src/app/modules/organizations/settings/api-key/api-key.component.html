@@ -9,7 +9,7 @@
         >
           <mat-form-field appearance="outline">
             <mat-label>MapQuest API Key</mat-label>
-            <input matInput [formControlName]="'mapquest_api_key'" />
+            <input [formControlName]="'mapquest_api_key'" matInput />
           </mat-form-field>
 
           <div class="flex flex-col">
@@ -19,12 +19,12 @@
             </div>
             <mat-form-field appearance="outline">
               <mat-label>BETTER Analysis API Key</mat-label>
-              <input matInput [formControlName]="'better_analysis_api_key'" />
+              <input [formControlName]="'better_analysis_api_key'" matInput />
               @if (apiKeyForm.controls.better_analysis_api_key.touched && apiKeyForm.controls.better_analysis_api_key?.valid) {
-                <mat-icon class="icon-size-5" matSuffix color="primary" [svgIcon]="'check'"></mat-icon>
+                <mat-icon class="icon-size-5" [svgIcon]="'check'" matSuffix color="primary"></mat-icon>
               }
               @if (apiKeyForm.controls.better_analysis_api_key.touched && apiKeyForm.controls.better_analysis_api_key?.invalid) {
-                <mat-icon class="icon-size-5" matSuffix color="warn" [svgIcon]="'warning'"></mat-icon>
+                <mat-icon class="icon-size-5" [svgIcon]="'warning'" matSuffix color="warn"></mat-icon>
               }
               @if (apiKeyForm.controls.better_analysis_api_key.touched && apiKeyForm.controls.better_analysis_api_key?.invalid) {
                 <mat-error>API Key is Invalid</mat-error>
@@ -39,7 +39,7 @@
           </div>
 
           <div class="flex justify-center">
-            <button mat-flat-button [disabled]="apiKeyForm.invalid || apiKeyForm.pending" color="primary">
+            <button [disabled]="apiKeyForm.invalid || apiKeyForm.pending" mat-flat-button color="primary">
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>

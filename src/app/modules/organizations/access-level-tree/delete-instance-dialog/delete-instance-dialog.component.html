@@ -27,8 +27,8 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
-    <button mat-flat-button class="flex w-24 items-center justify-center" color="warn" (click)="delete()" [disabled]="submitted">
+    <button class="w-24" [disabled]="submitted" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
+    <button class="flex w-24 items-center justify-center" [disabled]="submitted" (click)="delete()" mat-flat-button color="warn">
       @if (!submitted) {
         {{ t('Delete') }}
       } @else {

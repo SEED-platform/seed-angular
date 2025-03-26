@@ -11,20 +11,20 @@
       <div class="flex w-full flex-auto items-center">
         <mat-form-field
           class="seed-mat-rounded seed-mat-dense flex-auto"
+          [cdkTrapFocusAutoCapture]="true"
           subscriptSizing="fixed"
           cdkTrapFocus
-          [cdkTrapFocusAutoCapture]="true"
         >
           <mat-icon class="icon-size-5" [svgIcon]="hasChildren ? 'fa-solid:folder-closed' : 'fa-solid:file'" matPrefix></mat-icon>
           <input
-            matInput
-            cdkFocusInitial
-            autocomplete="off"
             class="text-ellipsis"
+            #renameInput
             [formControl]="nameValidator"
             [placeholder]="originalName"
             (keydown.enter)="rename(renameInput.value)"
-            #renameInput
+            matInput
+            cdkFocusInitial
+            autocomplete="off"
           />
           @if (nameValidator.hasError('siblingName')) {
             <mat-error>{{ t('Name must not match any of its siblings') }}</mat-error>
@@ -35,13 +35,13 @@
   </div>
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button mat-stroked-button matDialogClose="canceled" class="w-24" [disabled]="submitted">{{ t('Cancel') }}</button>
+    <button class="w-24" [disabled]="submitted" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
     <button
-      mat-flat-button
       class="flex w-24 items-center justify-center"
-      color="primary"
-      (click)="rename(renameInput.value)"
       [disabled]="submitted || !isValid(renameInput.value)"
+      (click)="rename(renameInput.value)"
+      mat-flat-button
+      color="primary"
     >
       @if (!submitted) {
         {{ t('Rename') }}

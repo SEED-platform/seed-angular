@@ -4,7 +4,7 @@
       <mat-icon class="mr-2" svgIcon="fa-solid:user"></mat-icon>Profile Information
     </h2>
 
-    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+    <form class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <div class="flex flex-col gap-x-4 sm:flex-row">
         <mat-form-field class="flex-auto">
           <mat-label>{{ t('First Name') }}</mat-label>
@@ -34,14 +34,14 @@
         </mat-form-field>
       </div>
       <div class="flex justify-center">
-        <button mat-flat-button color="primary" [disabled]="profileForm.invalid">
+        <button [disabled]="profileForm.invalid" mat-flat-button color="primary">
           <span>{{ t('Update') }}</span>
         </button>
       </div>
       <!-- Alert -->
       @if (showAlert) {
         <div class="mb-4 mt-0">
-          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type">
+          <seed-alert class="-mb-4 mt-8" [showIcon]="false" [type]="alert.type" appearance="outline">
             {{ alert.message }}
           </seed-alert>
         </div>

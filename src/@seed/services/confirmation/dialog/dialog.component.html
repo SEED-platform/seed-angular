@@ -2,7 +2,7 @@
   <!-- Dismiss button -->
   @if (data.dismissible) {
     <div class="absolute right-0 top-0 pr-4 pt-4">
-      <button mat-icon-button [matDialogClose]="undefined">
+      <button [matDialogClose]="undefined" mat-icon-button>
         <mat-icon class="text-secondary" svgIcon="heroicons-outline:x-mark"></mat-icon>
       </button>
     </div>
@@ -56,7 +56,7 @@
 
       <!-- Confirm -->
       @if (data.actions.confirm.show) {
-        <button mat-flat-button [color]="data.actions.confirm.color" matDialogClose="confirmed">
+        <button [color]="data.actions.confirm.color" mat-flat-button matDialogClose="confirmed">
           {{ data.actions.confirm.label }}
         </button>
       }

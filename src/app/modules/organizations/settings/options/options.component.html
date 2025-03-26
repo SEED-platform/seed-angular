@@ -9,7 +9,7 @@
         >
           <mat-form-field appearance="outline">
             <mat-label>Organization Name</mat-label>
-            <input matInput [formControlName]="'name'" />
+            <input [formControlName]="'name'" matInput />
           </mat-form-field>
           <div class="flex">
             <mat-slide-toggle formControlName="geocoding_enabled">{{ t('Enable Geocoding') }}</mat-slide-toggle>

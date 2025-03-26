@@ -1,5 +1,5 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Member</h2>
-<form [formGroup]="form" class="flex flex-col gap-4">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Edit Member</h2>
+<form class="flex flex-col gap-4" [formGroup]="form">
   <!-- Display only -->
   <div class="flex flex-col">
     <div>Email</div>
@@ -42,9 +42,9 @@
 <!-- Actions -->
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

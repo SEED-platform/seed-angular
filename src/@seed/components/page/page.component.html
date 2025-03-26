@@ -15,11 +15,11 @@
       @if (config.action2) {
         <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
           @if (config.action2Icon && !config.action2Text) {
-            <button [class]="config.action2Classes" mat-icon-button (click)="config.action2()">
+            <button [class]="config.action2Classes" (click)="config.action2()" mat-icon-button>
               <mat-icon [svgIcon]="config.action2Icon"></mat-icon>
             </button>
           } @else {
-            <button [class]="config.action2Classes" mat-flat-button color="primary" (click)="config.action2()">
+            <button [class]="config.action2Classes" (click)="config.action2()" mat-flat-button color="primary">
               @if (config.action2Icon) {
                 <mat-icon class="icon-size-4" [svgIcon]="config.action2Icon"></mat-icon>
               }
@@ -33,11 +33,11 @@
       @if (config.action) {
         <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
           @if (config.actionIcon && !config.actionText) {
-            <button [class]="config.actionClasses" mat-icon-button (click)="config.action()">
+            <button [class]="config.actionClasses" (click)="config.action()" mat-icon-button>
               <mat-icon [svgIcon]="config.actionIcon"></mat-icon>
             </button>
           } @else {
-            <button [class]="config.actionClasses" mat-flat-button color="primary" (click)="config.action()">
+            <button [class]="config.actionClasses" (click)="config.action()" mat-flat-button color="primary">
               @if (config.actionIcon) {
                 <mat-icon class="icon-size-4" [svgIcon]="config.actionIcon"></mat-icon>
               }

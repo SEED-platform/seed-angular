@@ -9,7 +9,7 @@
 
 <!-- Alert -->
 @if (showAlert) {
-  <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type" [@shake]="alert.type === 'error'">
+  <seed-alert class="-mb-4 mt-8" [@shake]="alert.type === 'error'" [showIcon]="false" [type]="alert.type" appearance="outline">
     {{ alert.message }}
   </seed-alert>
 }
@@ -19,7 +19,7 @@
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput type="email" autocomplete="email" maxlength="254" formControlName="email" class="text-lg sm:text-base" />
+    <input class="text-lg sm:text-base" id="email" matInput type="email" autocomplete="email" maxlength="254" formControlName="email" />
     @if (signInForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     } @else if (signInForm.get('email').hasError('email')) {
@@ -31,18 +31,18 @@
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
     <input
+      class="text-lg sm:text-base"
       id="password"
+      #passwordField
       matInput
       type="password"
       autocomplete="current-password"
       formControlName="password"
-      #passwordField
-      class="text-lg sm:text-base"
     />
     <button
+      (click)="passwordField.type === 'password' ? (passwordField.type = 'text') : (passwordField.type = 'password')"
       mat-icon-button
       type="button"
-      (click)="passwordField.type === 'password' ? (passwordField.type = 'text') : (passwordField.type = 'password')"
       matSuffix
     >
       @if (passwordField.type === 'password') {
@@ -69,12 +69,12 @@
       >
     </mat-checkbox>
     @if (isTermsInvalid) {
-      <mat-error @fadeInTop class="h-5 text-sm font-medium">You must accept the NREL Data Terms.</mat-error>
+      <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the NREL Data Terms.</mat-error>
     }
   </div>
 
   <!-- Submit button -->
-  <button class="seed-mat-button-large mt-6 w-full" mat-flat-button color="primary" [disabled]="signInForm.disabled" (click)="signIn()">
+  <button class="seed-mat-button-large mt-6 w-full" [disabled]="signInForm.disabled" (click)="signIn()" mat-flat-button color="primary">
     @if (!signInForm.disabled) {
       <span>Sign in</span>
     } @else {
