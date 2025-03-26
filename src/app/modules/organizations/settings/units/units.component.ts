@@ -40,13 +40,13 @@ export class UnitsComponent implements OnDestroy, OnInit {
   organization: Organization
   options = UnitOptions
   unitsForm = new FormGroup({
-    display_units_eui: new FormControl('', [Validators.required]),
-    display_units_ghg: new FormControl('', [Validators.required]),
-    display_units_ghg_intensity: new FormControl('', [Validators.required]),
-    display_units_water_use: new FormControl('', [Validators.required]),
-    display_units_wui: new FormControl('', [Validators.required]),
-    display_units_area: new FormControl('', [Validators.required]),
-    display_decimal_places: new FormControl(0, [Validators.required]),
+    display_units_eui: new FormControl('', Validators.required),
+    display_units_ghg: new FormControl('', Validators.required),
+    display_units_ghg_intensity: new FormControl('', Validators.required),
+    display_units_water_use: new FormControl('', Validators.required),
+    display_units_wui: new FormControl('', Validators.required),
+    display_units_area: new FormControl('', Validators.required),
+    display_decimal_places: new FormControl(0, Validators.required),
     thermal_conversion_assumption: new FormControl(1, [Validators.min(1), Validators.max(2)]),
   })
   energyMeterForm = new FormGroup({})
@@ -61,10 +61,10 @@ export class UnitsComponent implements OnDestroy, OnInit {
         this.unitsForm.get(field).setValue(this.organization[field])
       }
       for (const emu of Object.keys(this.organization.display_meter_units)) {
-        this.energyMeterForm.addControl(emu, new FormControl(this.organization.display_meter_units[emu], [Validators.required]))
+        this.energyMeterForm.addControl(emu, new FormControl(this.organization.display_meter_units[emu], Validators.required))
       }
       for (const wmu of Object.keys(this.organization.display_meter_water_units)) {
-        this.waterMeterForm.addControl(wmu, new FormControl(this.organization.display_meter_water_units[wmu], [Validators.required]))
+        this.waterMeterForm.addControl(wmu, new FormControl(this.organization.display_meter_water_units[wmu], Validators.required))
       }
     })
     this._meterTypesService.energyMeters$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((energyMeters) => {

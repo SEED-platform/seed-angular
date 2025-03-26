@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -36,6 +36,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
   selector: 'seed-organizations-access-level-tree',
   templateUrl: './access-level-tree.component.html',
   imports: [
+    CommonModule,
     ImageOverlayDirective,
     MatButtonModule,
     MatDividerModule,
@@ -45,8 +46,6 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
     MatMenuModule,
     MatSidenavModule,
     MatTooltipModule,
-    NgClass,
-    NgTemplateOutlet,
     PageComponent,
     SharedImports,
   ],

@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import {
   booleanAttribute,
@@ -26,14 +26,13 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
   templateUrl: './branch.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
     HorizontalNavigationBasicItemComponent,
     forwardRef(() => HorizontalNavigationBranchItemComponent),
     HorizontalNavigationDividerItemComponent,
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
-    NgClass,
-    NgTemplateOutlet,
   ],
 })
 export class HorizontalNavigationBranchItemComponent implements OnInit, OnDestroy {

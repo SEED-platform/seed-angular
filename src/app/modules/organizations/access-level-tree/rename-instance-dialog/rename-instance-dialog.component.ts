@@ -38,7 +38,7 @@ export class RenameInstanceDialogComponent {
   private _siblingInstanceNames = new Set<string>()
   originalName = this._data.instance.name
   hasChildren = this._data.instance.children?.length > 0
-  nameValidator = new FormControl('', [this._siblingNameValidator()])
+  nameValidator = new FormControl('', this._siblingNameValidator())
   submitted = false
 
   constructor() {

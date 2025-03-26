@@ -34,8 +34,8 @@ export class EmailComponent implements OnDestroy, OnInit {
   organization: Organization
   emailForm = new FormGroup({
     new_user_email_from: new FormControl('', [Validators.required, Validators.email]),
-    new_user_email_subject: new FormControl('', [Validators.required]),
-    new_user_email_content: new FormControl('', [Validators.required]),
+    new_user_email_subject: new FormControl('', Validators.required),
+    new_user_email_content: new FormControl('', Validators.required),
     new_user_email_signature: new FormControl(''),
   })
 

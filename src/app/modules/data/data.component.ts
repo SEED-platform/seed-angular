@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject, viewChild, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -10,14 +10,13 @@ import { from, skip } from 'rxjs'
 import type { Dataset } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
 
 @Component({
   selector: 'seed-data',
   templateUrl: './data.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, PageComponent, SharedImports],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, PageComponent],
 })
 export class DataComponent implements OnInit, AfterViewInit {
   private _activatedRoute = inject(ActivatedRoute)
