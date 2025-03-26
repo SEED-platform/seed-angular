@@ -1,26 +1,39 @@
+import { DOCUMENT } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectorRef, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import type { Alert } from '@seed/components'
-import { AlertComponent } from '@seed/components'
+import { ClipboardComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
+
 @Component({
   selector: 'seed-profile-developer',
   templateUrl: './developer.component.html',
-  imports: [AlertComponent, FormsModule, MatButtonModule, MatFormFieldModule, MatIconModule, ReactiveFormsModule, SharedImports],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ClipboardComponent,
+    FormsModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    ReactiveFormsModule,
+    SharedImports,
+  ],
 })
 export class ProfileDeveloperComponent implements OnInit, OnDestroy {
-  private _userService = inject(UserService)
   private _changeDetectorRef = inject(ChangeDetectorRef)
+  private _document = inject(DOCUMENT)
+  private _snackBar = inject(SnackBarService)
+  private _userService = inject(UserService)
 
-  alert: Alert
-  showAlert = false
   user: CurrentUser
 
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -35,29 +48,36 @@ export class ProfileDeveloperComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnDestroy(): void {
-    this._unsubscribeAll$.next()
-    this._unsubscribeAll$.complete()
-  }
-
   generateKey(): void {
     // send request to generate a new key; refresh user
     this._userService.generateApiKey().subscribe({
       error: (error) => {
-        console.error('Error:', error)
-        this.alert = {
-          type: 'error',
-          message: 'Generate New Key Unsuccessful...',
-        }
-        this.showAlert = true
+        console.error('Error generating API key:', error)
+        this._snackBar.alert('Failed to generate new API key')
       },
       complete: () => {
-        this.alert = {
-          type: 'success',
-          message: 'New API Key Generated!',
-        }
-        this.showAlert = true
+        this._snackBar.success('New API Key Generated!')
       },
     })
+  }
+
+  getHost(): string {
+    const { hostname, protocol } = this._document.location
+    const port = Number(this._document.location.port)
+    const showPort = (protocol === 'http:' && port !== 80) || (protocol === 'https:' && port !== 443)
+
+    return `${protocol}//${hostname}${showPort ? `:${port}` : ''}`
+  }
+
+  getCurl(): string {
+    return `curl -s -X GET \\
+  '${this.getHost()}/api/version/' \\
+  -H 'Accept: application/json' \\
+  -u ${this.user.username}:${this.user.api_key}`
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }
