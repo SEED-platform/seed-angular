@@ -48,8 +48,8 @@ export type ProfileColumn = {
 }
 
 export type FiltersSorts = {
-  filters: string[][];
   sorts: string[];
+  agFilters?: Record<string, unknown>;
 }
 
 export type DeleteParams = {

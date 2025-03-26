@@ -24,7 +24,7 @@ import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
 import { ActionsComponent } from './grid/actions.component'
-import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
+// import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 
 @Component({
@@ -60,6 +60,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  agFilters: Record<string, unknown> = {}
   chunk = 100
   columnDefs: ColDef[]
   cycle: Cycle
@@ -67,7 +68,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   cycles: Cycle[]
   gridApi: GridApi
   labelLookup: Record<number, Label> = {}
-  filters: string[][] | [] = []
   inventory: Record<string, unknown>[]
   orgId: number = null
   page = 1
@@ -122,7 +122,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   setDependencies({ cycles, profiles, propertyColumns, labels }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[]; labels: Label[] }) {
     this.cycles = cycles
     // TEMP - remove when cycle is set in backend
-    this.cycle = cycles.at(2) ?? null
+    this.cycle = cycles.at(3) ?? null
     this.cycleId = this.cycle?.id
 
     // this.allProfiles = profiles
@@ -133,8 +133,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
     for (const label of labels) {
       this.labelLookup[label.id] = label
     }
-
-    const id = this.profiles.length ? this.profiles[0].id : null
+    // TEMP - remove when profile is se tin backend
+    const id = this.profiles.length ? this.profiles[3].id : null
     this.getProfile(id)
   }
   get profiles() {
@@ -185,23 +185,19 @@ export class InventoryComponent implements OnDestroy, OnInit {
       inventory_type,
     })
 
-    // Add multiple order_by params dynamically
-    for (const sort of this.sorts) params.append('order_by', sort)
-    // Add filters. Filters are represented as [[k, v], [k, v]]. No filters represented as []
-    if (this.filters.length && this.filters[0].length) {
-      for (const [k, v] of this.filters) params.append(k, v)
-    }
-
     const paramString = params.toString()
     const data = {
       include_property_ids: null,
       profile_id: this.profileId,
+      filters: this.agFilters,
+      sorts: this.sorts,
     }
     this._inventoryService.getAgInventory(paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
       this.pagination = pagination
       this.inventory = results
 
-      this.columnDefs = column_defs.map((colDef) => ({ ...colDef, headerComponent: CellHeaderMenuComponent }))
+      this.columnDefs = column_defs
+      // this.columnDefs = column_defs.map((colDef) => ({ ...colDef, headerComponent: CellHeaderMenuComponent }))
       this.rowData = results
     })
   }
@@ -211,8 +207,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.loadInventory()
   }
 
-  onFilterSortChange({ filters, sorts }: FiltersSorts) {
-    this.filters = filters
+  onFilterSortChange({ sorts, agFilters }: FiltersSorts) {
+    // this.filters = filters
+    console.log('onFilterSortChange')
+    this.agFilters = agFilters
     this.sorts = sorts
     this.page = 1
     this.loadInventory()
