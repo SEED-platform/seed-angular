@@ -12,12 +12,17 @@ import { UnitsComponent } from './units/units.component'
 
 export default [
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'options',
+  },
+  {
     path: 'options',
     title: 'Basic Organization Settings',
     component: OptionsComponent,
   },
   {
-    path: 'api-key',
+    path: 'api-keys',
     title: 'Organizations API Keys',
     component: APIKeyComponent,
   },

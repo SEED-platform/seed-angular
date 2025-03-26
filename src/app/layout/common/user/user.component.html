@@ -9,7 +9,7 @@
 </button>
 
 <mat-menu xPosition="before" #userActions="matMenu">
-  <div class="flex h-12 cursor-default items-center px-4">
+  <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
     <span class="flex flex-col leading-none">
       <span>Signed in as</span>
       <span class="mt-1.5 text-md font-medium">{{ user.email }}</span>

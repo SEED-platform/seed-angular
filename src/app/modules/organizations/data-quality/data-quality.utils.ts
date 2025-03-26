@@ -34,10 +34,10 @@ export class DataQualityUtils {
   }
 
   /*
-  * builds a readable string for the range criteria
-  * ex: "if greater than [ 100 ] ft²"
-  * ex: "if % change across cycles is less than [ 100 ] ft²"
-  */
+   * builds a readable string for the range criteria
+   * ex: "if greater than [ 100 ] ft²"
+   * ex: "if % change across cycles is less than [ 100 ] ft²"
+   */
   static getRangeText(rule: Rule): string {
     const { cross_cycle, min, max, data_type, severity, units } = rule
     const unitText = this._unitLookup[units as UnitSymbols] || ''

@@ -5,14 +5,14 @@ import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 
 @Injectable({ providedIn: 'root' })
 export class CycleService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _cycles = new BehaviorSubject<Cycle[]>([])
   private readonly _unsubscribeAll$ = new Subject<void>()

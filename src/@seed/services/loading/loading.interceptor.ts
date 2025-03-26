@@ -8,6 +8,11 @@ export const loadingInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerF
   const loadingService = inject(LoadingService)
   let handleRequestsAutomatically = false
 
+  // Ignore progress polling
+  if (req.url.startsWith('/api/v3/progress/')) {
+    return next(req)
+  }
+
   loadingService.auto$.pipe(take(1)).subscribe((value) => {
     handleRequestsAutomatically = value
   })

@@ -107,11 +107,17 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
     }
   }
 
-  getCriteria(rule: Rule) { return DataQualityUtils.getCriteria(rule) }
+  getCriteria(rule: Rule) {
+    return DataQualityUtils.getCriteria(rule)
+  }
 
-  getRangeText(rule: Rule) { return DataQualityUtils.getRangeText(rule) }
+  getRangeText(rule: Rule) {
+    return DataQualityUtils.getRangeText(rule)
+  }
 
-  formatDate(dateYMD: number) { return DataQualityUtils.formatDate(dateYMD) }
+  formatDate(dateYMD: number) {
+    return DataQualityUtils.formatDate(dateYMD)
+  }
 
   toggleEnable(index: number) {
     const rule = this.currentRules[index]
@@ -142,8 +148,11 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getRules.emit() }),
-      ).subscribe()
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(index: number) {

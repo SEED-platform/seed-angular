@@ -31,10 +31,10 @@ export class NavigationService {
       title: 'Organizations',
       type: 'collapsible',
       icon: 'fa-solid:users',
-      link: '/organizations',
       children: [
         {
-          link: 'organizations/settings/options',
+          id: 'organizations/settings',
+          link: '/organizations/settings',
           title: 'Settings',
           icon: 'fa-solid:gears',
           type: 'basic',
@@ -111,9 +111,45 @@ export class NavigationService {
     {
       id: 'insights',
       title: 'Insights',
-      type: 'basic',
+      type: 'collapsible',
       icon: 'fa-solid:gauge-high',
-      link: '/insights',
+      children: [
+        {
+          id: 'insights/program-overview',
+          link: '/insights/program-overview',
+          title: 'Program Overview',
+          icon: 'fa-solid:chart-simple',
+          type: 'basic',
+        },
+        {
+          id: 'insights/property-insights',
+          link: '/insights/property-insights',
+          title: 'Property Insights',
+          icon: 'fa-solid:chart-line',
+          type: 'basic',
+        },
+        {
+          id: 'insights/default-reports',
+          link: '/insights/default-reports',
+          title: 'Default Reports',
+          icon: 'fa-solid:chart-column',
+          type: 'basic',
+        },
+        {
+          id: 'insights/custom-reports',
+          link: '/insights/custom-reports',
+          title: 'Custom Reports',
+          icon: 'fa-solid:chart-area',
+          type: 'basic',
+        },
+        {
+          id: 'insights/portfolio-summary',
+          link: '/insights/portfolio-summary',
+          title: 'Portfolio Summary',
+          icon: 'fa-solid:square-poll-horizontal',
+          type: 'basic',
+        },
+      ],
     },
     {
       id: 'analyses',

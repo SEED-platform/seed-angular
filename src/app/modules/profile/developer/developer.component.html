@@ -2,39 +2,29 @@
   <div class="max-w-2xl">
     <h1 class="mb-6 flex items-center text-center text-2xl"><mat-icon class="mr-2" svgIcon="fa-solid:code"></mat-icon>Developer</h1>
 
-    <div class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
+    <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow">
       <h2 class="pb-5 text-xl">{{ t('Manage Your API Key') }}</h2>
 
-      <div class="gt-xs:flex-row flex flex-col pt-4 text-center">
-        <div>
-          <span class="font-bold">API Key: </span>
-          <span class="bg-slate-200 px-5 py-3">{{ user.api_key }}</span>
+      <div class="mb-10 mt-4 flex flex-col items-center">
+        <div class="flex flex-wrap items-center justify-center gap-x-2">
+          <span class="text-nowrap font-bold">{{ t('API Key:') }}</span>
+          <span class="bg-default rounded-full px-5 py-3 font-mono">{{ user.api_key }}</span>
+          <seed-clipboard [text]="user.api_key"></seed-clipboard>
         </div>
         <div class="pt-7">
           <button mat-flat-button color="primary" (click)="generateKey()">
-            <span class="ml-2">{{ t('Get a New API Key') }}</span>
+            {{ t('Get a New API Key') }}
           </button>
         </div>
       </div>
 
-      <!-- Alert -->
-      @if (showAlert) {
-        <div class="mb-4 mt-0">
-          <seed-alert class="-mb-4 mt-8" appearance="outline" [showIcon]="false" [type]="alert.type">
-            {{ alert.message }}
-          </seed-alert>
-        </div>
-      }
+      <mat-divider></mat-divider>
 
-      <!-- Divider -->
-      <div class="mb-5 mt-10 border-t"></div>
-      <h3 class="text-l mb-5">{{ t('Example Usage') }}</h3>
-      <pre class="border-2 bg-slate-100 p-5">
-        curl -X GET \
-        'URL/api/version/' \
-        -H 'Accept: application/json' \
-        -u  USEREMAIL + ':' + APIKEY
-      </pre>
+      <div class="my-3 flex items-center justify-between">
+        <div class="font-medium">{{ t('Example Usage') }}</div>
+        <seed-clipboard [text]="getCurl()"></seed-clipboard>
+      </div>
+      <pre class="bg-default overflow-y-auto rounded-md border p-4">{{ getCurl() }}</pre>
     </div>
   </div>
 </div>

@@ -1,5 +1,6 @@
 export * from './alert'
 export * from './card'
+export * from './clipboard'
 export * from './drawer'
 export * from './label'
 export * from './loading-bar'
