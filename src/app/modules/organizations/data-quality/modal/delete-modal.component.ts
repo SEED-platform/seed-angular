@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -9,7 +8,7 @@ import { DataQualityService, type Rule } from '@seed/api/data-quality'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [CommonModule, MatButtonModule, MatDialogModule],
+  imports: [MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _dataQualityService = inject(DataQualityService)

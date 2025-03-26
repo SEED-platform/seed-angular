@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -22,7 +21,6 @@ import { DataQualityValidator } from '../../data-quality.validator'
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatDatepickerModule,

@@ -19,7 +19,7 @@
   <!-- Email field -->
   <mat-form-field class="w-full">
     <mat-label>Email address</mat-label>
-    <input id="email" matInput type="email" formControlName="email" class="text-lg sm:text-base" />
+    <input id="email" matInput type="email" autocomplete="email" maxlength="254" formControlName="email" class="text-lg sm:text-base" />
     @if (signInForm.get('email').hasError('required')) {
       <mat-error>Email address is required</mat-error>
     } @else if (signInForm.get('email').hasError('email')) {
@@ -30,7 +30,15 @@
   <!-- Password field -->
   <mat-form-field class="w-full">
     <mat-label>Password</mat-label>
-    <input id="password" matInput type="password" formControlName="password" #passwordField class="text-lg sm:text-base" />
+    <input
+      id="password"
+      matInput
+      type="password"
+      autocomplete="current-password"
+      formControlName="password"
+      #passwordField
+      class="text-lg sm:text-base"
+    />
     <button
       mat-icon-button
       type="button"

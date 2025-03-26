@@ -6,7 +6,13 @@
       <div class="gt-xs:flex-row flex flex-col">
         <mat-form-field class="gt-xs:pr-3 flex-auto">
           <mat-label>{{ t('Current Password') }} </mat-label>
-          <input [formControlName]="'currentPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <input
+            [formControlName]="'currentPassword'"
+            type="password"
+            autocomplete="current-password"
+            matInput
+            [type]="hide() ? 'password' : 'text'"
+          />
           <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
             <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
           </button>
@@ -14,7 +20,13 @@
 
         <mat-form-field class="gt-xs:pl-3 mb-6 flex-auto">
           <mat-label>{{ t('New Password') }}</mat-label>
-          <input [formControlName]="'newPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <input
+            [formControlName]="'newPassword'"
+            type="password"
+            autocomplete="new-password"
+            matInput
+            [type]="hide() ? 'password' : 'text'"
+          />
           <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
             <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
           </button>
@@ -31,7 +43,13 @@
       <div class="flex">
         <mat-form-field class="flex-auto">
           <mat-label>{{ t('Confirm New Password') }}</mat-label>
-          <input [formControlName]="'confirmNewPassword'" type="password" matInput [type]="hide() ? 'password' : 'text'" />
+          <input
+            [formControlName]="'confirmNewPassword'"
+            type="password"
+            autocomplete="new-password"
+            matInput
+            [type]="hide() ? 'password' : 'text'"
+          />
           <button mat-icon-button matSuffix (click)="clickEvent($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide()">
             <mat-icon class="icon-size-5" [svgIcon]="hide() ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
           </button>

@@ -11,7 +11,7 @@ import { TranslocoDirective } from '@jsverse/transloco'
 import { filter, last, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ProgressService } from '@seed/api/progress'
-import { AlertComponent } from '../../../../../@seed/components'
+import { AlertComponent } from '@seed/components'
 import type { UploadInstancesData } from '../access-level-tree.types'
 
 @Component({

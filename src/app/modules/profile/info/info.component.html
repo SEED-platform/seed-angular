@@ -5,29 +5,29 @@
     </h2>
 
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow">
-      <div class="gt-xs:flex-row flex flex-col">
-        <mat-form-field class="gt-xs:pr-3 flex-auto">
+      <div class="flex flex-col gap-x-4 sm:flex-row">
+        <mat-form-field class="flex-auto">
           <mat-label>{{ t('First Name') }}</mat-label>
-          <input matInput [formControlName]="'firstName'" />
-          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
+          <input matInput formControlName="firstName" autocomplete="given-name" maxlength="30" />
+          <mat-icon class="icon-size-5" matPrefix svgIcon="fa-solid:circle-user"></mat-icon>
           @if (profileForm.controls['firstName']?.invalid) {
-            <mat-error>{{ t('Last Name required') }}</mat-error>
+            <mat-error>{{ t('First Name required') }}</mat-error>
           }
         </mat-form-field>
-        <mat-form-field class="gt-xs:pl-3 flex-auto">
+        <mat-form-field class="flex-auto">
           <mat-label>{{ t('Last Name') }}</mat-label>
-          <input matInput [formControlName]="'lastName'" />
-          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'fa-solid:circle-user'"></mat-icon>
+          <input matInput formControlName="lastName" autocomplete="family-name" maxlength="30" />
+          <mat-icon class="icon-size-5" matPrefix svgIcon="fa-solid:circle-user"></mat-icon>
           @if (profileForm.controls['lastName']?.invalid) {
             <mat-error>{{ t('Last Name required') }}</mat-error>
           }
         </mat-form-field>
       </div>
       <div class="flex">
-        <mat-form-field class="w-full">
+        <mat-form-field class="flex-auto">
           <mat-label>Email</mat-label>
-          <mat-icon class="icon-size-5" [svgIcon]="'fa-solid:envelope'" matPrefix></mat-icon>
-          <input [formControlName]="'email'" matInput />
+          <mat-icon class="icon-size-5" svgIcon="fa-solid:envelope" matPrefix></mat-icon>
+          <input formControlName="email" matInput autocomplete="email" maxlength="254" type="email" />
           @if (profileForm.controls['email']?.invalid) {
             <mat-error>{{ t('Invalid email address') }}</mat-error>
           }

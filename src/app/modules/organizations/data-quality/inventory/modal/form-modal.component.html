@@ -49,7 +49,7 @@
             <mat-label>Min</mat-label>
             @if (form.value.data_type === 2) {
               <input matInput formControlName="min" [matDatepicker]="min" />
-              <mat-datepicker-toggle matIconSuffix [for]="min"></mat-datepicker-toggle>
+              <mat-datepicker-toggle [for]="min"></mat-datepicker-toggle>
               <mat-datepicker #min></mat-datepicker>
             } @else {
               <input matInput formControlName="min" type="number" />
@@ -64,7 +64,7 @@
             <mat-label>Max</mat-label>
             @if (form.value.data_type === 2) {
               <input matInput formControlName="max" [matDatepicker]="max" />
-              <mat-datepicker-toggle matIconSuffix [for]="max"></mat-datepicker-toggle>
+              <mat-datepicker-toggle [for]="max"></mat-datepicker-toggle>
               <mat-datepicker #max></mat-datepicker>
             } @else {
               <input matInput formControlName="max" type="number" />
