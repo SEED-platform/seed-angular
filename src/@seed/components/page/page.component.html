@@ -3,12 +3,26 @@
     class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
   >
     <div class="min-w-0 flex-1">
-      <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-        @if (config.titleIcon) {
-          <mat-icon class="icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
-        }
-        {{ t(config.title) }}
-      </h2>
+      @if (config.breadcrumbs?.length > 0) {
+        <div class="flex flex-wrap items-center gap-x-1 font-medium">
+          @for (breadcrumb of config.breadcrumbs; track $index) {
+            <div class="flex items-center gap-x-1 whitespace-nowrap">
+              @if (!$first) {
+                <mat-icon class="text-secondary icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon>
+              }
+              <span class="text-secondary">{{ breadcrumb }}</span>
+            </div>
+          }
+        </div>
+      }
+      <div [ngClass]="{ 'mt-2': config.breadcrumbs?.length > 0 }">
+        <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+          @if (config.titleIcon) {
+            <mat-icon class="icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
+          }
+          {{ t(config.title) }}
+        </h2>
+      </div>
     </div>
     <!-- Actions -->
     <div class="flex justify-end">

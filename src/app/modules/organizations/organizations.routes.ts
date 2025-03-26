@@ -1,5 +1,5 @@
 import { inject } from '@angular/core'
-import type { UrlSegment } from '@angular/router'
+import type { Routes, UrlSegment } from '@angular/router'
 import { switchMap, take } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
@@ -62,12 +62,44 @@ export default [
       },
     },
   },
-  { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
-  { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },
-  { matcher: dataQualityTypeMatcher, component: DataQualityComponent },
-  { matcher: derivedColumnsTypeMatcher, component: DerivedColumnsComponent },
-  { path: 'cycles', component: CyclesComponent },
-  { path: 'email-templates', component: EmailTemplatesComponent },
-  { path: 'labels', component: LabelsComponent },
-  { path: 'members', component: MembersComponent },
-]
+  {
+    matcher: columnMappingTypeMatcher,
+    title: 'Column Mappings',
+    component: ColumnMappingsComponent,
+  },
+  {
+    matcher: columnSettingsTypeMatcher,
+    title: 'Column Settings',
+    component: ColumnSettingsComponent,
+  },
+  {
+    matcher: dataQualityTypeMatcher,
+    title: 'Data Quality',
+    component: DataQualityComponent,
+  },
+  {
+    matcher: derivedColumnsTypeMatcher,
+    title: 'Derived Columns',
+    component: DerivedColumnsComponent,
+  },
+  {
+    path: 'cycles',
+    title: 'Cycles',
+    component: CyclesComponent,
+  },
+  {
+    path: 'email-templates',
+    title: 'Email Templates',
+    component: EmailTemplatesComponent,
+  },
+  {
+    path: 'labels',
+    title: 'Labels',
+    component: LabelsComponent,
+  },
+  {
+    path: 'members',
+    title: 'Members',
+    component: MembersComponent,
+  },
+] satisfies Routes

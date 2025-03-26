@@ -38,9 +38,15 @@ export class SettingsComponent {
           type: 'basic',
         },
         {
-          id: 'organizations/settings/default-display-fields',
-          link: '/organizations/settings/default-display-fields',
-          title: 'Default Display Fields',
+          id: 'organizations/settings/display-fields',
+          link: '/organizations/settings/display-fields',
+          title: 'Display Fields',
+          type: 'basic',
+        },
+        {
+          id: 'organizations/settings/display-units',
+          link: '/organizations/settings/display-units',
+          title: 'Display Units',
           type: 'basic',
         },
         {
@@ -58,25 +64,19 @@ export class SettingsComponent {
         {
           id: 'organizations/settings/salesforce',
           link: '/organizations/settings/salesforce',
-          title: 'Salesforce',
+          title: 'Salesforce Integration',
           type: 'basic',
         },
         {
           id: 'organizations/settings/two-factor',
           link: '/organizations/settings/two-factor',
-          title: 'Two Factor Authentication',
+          title: 'Two-Factor Authentication',
           type: 'basic',
         },
         {
           id: 'organizations/settings/ubid',
           link: '/organizations/settings/ubid',
           title: 'UBID',
-          type: 'basic',
-        },
-        {
-          id: 'organizations/settings/units',
-          link: '/organizations/settings/units',
-          title: 'Units',
           type: 'basic',
         },
       ],

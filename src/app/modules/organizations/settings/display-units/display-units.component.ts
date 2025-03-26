@@ -17,8 +17,8 @@ import { SharedImports } from '@seed/directives'
 import * as UnitOptions from './units.types'
 
 @Component({
-  selector: 'seed-organizations-settings-units',
-  templateUrl: './units.component.html',
+  selector: 'seed-organizations-settings-display-units',
+  templateUrl: './display-units.component.html',
   imports: [
     MatButtonModule,
     MatDividerModule,
@@ -31,7 +31,7 @@ import * as UnitOptions from './units.types'
     SharedImports,
   ],
 })
-export class UnitsComponent implements OnDestroy, OnInit {
+export class DisplayUnitsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _meterTypesService = inject(MeterTypesService)
   private readonly _unsubscribeAll$ = new Subject<void>()
