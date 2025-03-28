@@ -1,10 +1,10 @@
 <div class="flex-auto p-6 sm:p-10" *transloco="let t">
   <div class="max-w-2xl">
     <h2 class="mb-6 flex items-center text-center text-2xl">
-      <mat-icon class="mr-2" svgIcon="fa-solid:user"></mat-icon>Profile Information
+      <mat-icon class="mr-2 text-primary-900" svgIcon="fa-solid:user"></mat-icon>Profile Information
     </h2>
 
-    <form class="bg-card mt-8 flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <form class="bg-card flex flex-col overflow-hidden rounded-2xl p-8 pb-4 shadow" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <div class="flex flex-col gap-x-4 sm:flex-row">
         <mat-form-field class="flex-auto">
           <mat-label>{{ t('First Name') }}</mat-label>

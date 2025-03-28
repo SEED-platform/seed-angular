@@ -56,12 +56,6 @@ export class SettingsComponent {
           type: 'basic',
         },
         {
-          id: 'organizations/settings/maintenance',
-          link: '/organizations/settings/maintenance',
-          title: 'Maintenance',
-          type: 'basic',
-        },
-        {
           id: 'organizations/settings/salesforce',
           link: '/organizations/settings/salesforce',
           title: 'Salesforce Integration',
@@ -78,6 +72,18 @@ export class SettingsComponent {
           link: '/organizations/settings/ubid',
           title: 'UBID',
           type: 'basic',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          id: 'organizations/settings/maintenance',
+          link: '/organizations/settings/maintenance',
+          title: 'Maintenance',
+          type: 'basic',
+          classes: {
+            title: 'text-warn-600 dark:text-warn-400',
+          },
         },
       ],
     },
