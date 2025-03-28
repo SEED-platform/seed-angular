@@ -19,7 +19,7 @@ import { PageComponent } from '@seed/components'
   imports: [CommonModule, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, PageComponent],
 })
 export class DataComponent implements OnInit, AfterViewInit {
-  private _activatedRoute = inject(ActivatedRoute)
+  private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _userService = inject(UserService)
 
@@ -51,6 +51,6 @@ export class DataComponent implements OnInit, AfterViewInit {
   }
 
   private _init() {
-    this.datasetsDataSource.data = this._activatedRoute.snapshot.data.datasets as Dataset[]
+    this.datasetsDataSource.data = this._route.snapshot.data.datasets as Dataset[]
   }
 }

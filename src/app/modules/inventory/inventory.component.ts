@@ -11,14 +11,14 @@ import type { InventoryType } from './inventory.types'
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [MatButtonModule, MatIconModule, MatTabsModule, SharedImports, InventoryTabComponent],
+  imports: [InventoryTabComponent, MatButtonModule, MatIconModule, MatTabsModule, SharedImports],
 })
 export class InventoryComponent {
-  private _activatedRoute = inject(ActivatedRoute)
+  private _route = inject(ActivatedRoute)
   private _router = inject(Router)
 
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
-  readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  readonly type = this._route.snapshot.paramMap.get('type') as InventoryType
 
   async toggleInventoryType(type: InventoryType) {
     if (type !== this.type) {
