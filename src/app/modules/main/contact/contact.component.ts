@@ -1,10 +1,10 @@
 import { Component, ViewEncapsulation } from '@angular/core'
-import { SharedImports } from '@seed/directives'
+import { PageComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-contact',
   templateUrl: './contact.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports],
+  imports: [PageComponent],
 })
 export class ContactComponent {}

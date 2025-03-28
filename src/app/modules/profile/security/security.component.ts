@@ -12,9 +12,9 @@ import { UserService } from '@seed/api/user'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import type { SEEDConfig } from '../../../../@seed/services'
-import { ConfigService } from '../../../../@seed/services'
-import { SEEDValidators } from '../../../../@seed/validators'
+import type { SEEDConfig } from '@seed/services'
+import { ConfigService } from '@seed/services'
+import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '../../../../../@seed/components'
+import { PageComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-organizations-settings-maintenance',

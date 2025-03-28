@@ -2,6 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { TermsService } from '@seed/services'
 
@@ -9,7 +10,7 @@ import { TermsService } from '@seed/services'
   selector: 'seed-about',
   templateUrl: './about.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports],
+  imports: [PageComponent, SharedImports],
 })
 export class AboutComponent implements OnInit, OnDestroy {
   private _termsService = inject(TermsService)

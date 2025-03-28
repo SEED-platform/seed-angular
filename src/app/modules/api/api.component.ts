@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@
 import { ActivatedRoute } from '@angular/router'
 import { lastValueFrom, map } from 'rxjs'
 import SwaggerUI from 'swagger-ui'
+import { PageComponent } from '@seed/components'
 import { AuthService } from '../../core/auth'
 
 @Component({
@@ -11,6 +12,7 @@ import { AuthService } from '../../core/auth'
   styleUrl: './api.component.scss',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PageComponent],
 })
 export class ApiComponent implements AfterViewInit {
   private _activatedRoute = inject(ActivatedRoute)
