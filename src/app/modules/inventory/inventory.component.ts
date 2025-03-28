@@ -22,8 +22,7 @@ import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { InventoryGridComponent, InventoryGridControlsComponent } from './grid'
-import { ActionsComponent } from './grid/actions.component'
+import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 
@@ -34,6 +33,8 @@ import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType
   imports: [
     ActionsComponent,
     CommonModule,
+    ConfigSelectorComponent,
+    FilterSortChipsComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
@@ -46,7 +47,6 @@ import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType
     SharedImports,
     InventoryTabComponent,
     InventoryGridComponent,
-    InventoryGridControlsComponent,
   ],
 })
 export class InventoryComponent implements OnDestroy, OnInit {
@@ -60,7 +60,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  agFilters: Record<string, unknown> = {}
+  filters: Record<string, unknown> = {}
   chunk = 100
   columnDefs: ColDef[]
   cycle: Cycle
@@ -82,6 +82,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   selectedViewIds: number[] = []
   sorts: string[] = []
   taxlotColumns: Column[]
+
+  chipList = ['chip1', 'chip2', 'chip3', 'chip4', 'chip5', 'chip6', 'chip7', 'chip8', 'chip9', 'chip10']
 
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(
@@ -189,7 +191,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const data = {
       include_property_ids: null,
       profile_id: this.profileId,
-      filters: this.agFilters,
+      filters: this.filters,
       sorts: this.sorts,
     }
     this._inventoryService.getAgInventory(paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
@@ -207,10 +209,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.loadInventory()
   }
 
-  onFilterSortChange({ sorts, agFilters }: FiltersSorts) {
-    // this.filters = filters
+  onFilterSortChange({ sorts, filters }: FiltersSorts) {
     console.log('onFilterSortChange')
-    this.agFilters = agFilters
+    this.filters = filters
     this.sorts = sorts
     this.page = 1
     this.loadInventory()

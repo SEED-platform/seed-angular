@@ -1,9 +1,9 @@
-<mat-form-field class="thin-field mr-2 w-60" appearance="outline">
-  <mat-label>Actions</mat-label>
+<div class="flex flex-col mr-1">
+  <mat-label class="text-sm text-gray-400">Actions</mat-label>
   <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)"
-    class="inventory-actions-dropdown text-sm">
+    class="text-sm border border-gray-500 rounded h-6 w-60 p-3" placeholder="Select Action">
     @for (item of actions; track $index) {
     <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
     }
   </mat-select>
-</mat-form-field>
+</div>

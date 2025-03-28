@@ -4,12 +4,11 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
-import { AlertComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-inventory-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, MatButtonModule, MatDialogModule],
+  imports: [MatButtonModule, MatDialogModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _inventoryService = inject(InventoryService)

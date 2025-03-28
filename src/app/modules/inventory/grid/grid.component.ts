@@ -7,8 +7,8 @@ import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegist
 import { map, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { AgFilter, AgFilterModel, FiltersSorts, InventoryPagination } from '../inventory.types'
-import { CellHeaderMenuComponent } from './cell-header-menu.component'
+import type { FiltersSorts, InventoryPagination } from '../inventory.types'
+// import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -19,7 +19,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
   imports: [
     AgGridAngular,
     AgGridModule,
-    CellHeaderMenuComponent,
+    // CellHeaderMenuComponent,
     CommonModule,
     InventoryGridControlsComponent,
   ],
@@ -199,14 +199,10 @@ export class InventoryGridComponent implements OnInit, OnChanges {
     return sorts
   }
 
-  getAgFilters() {
-    return this.gridApi.getFilterModel()
-  }
-
   onFilterSortChange() {
-    const agFilters = this.gridApi.getFilterModel()
+    const filters = this.gridApi.getFilterModel()
     const sorts = this.getSorts()
-    this.filterSortChange.emit({ sorts, agFilters })
+    this.filterSortChange.emit({ sorts, filters })
   }
 
   onPageChange(page: number) {

@@ -1,0 +1,9 @@
+<div class="flex flex-col mr-1">
+  <mat-label class="text-sm text-gray-400">{{ label }}</mat-label>
+  <mat-select [(value)]="selectedId" (selectionChange)="onSelectionChange($event.value)"
+    class="text-sm border border-gray-500 rounded h-6 w-50 p-3">
+    @for (item of items; track item) {
+      <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
+    }
+  </mat-select>
+</div>

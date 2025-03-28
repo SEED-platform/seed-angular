@@ -49,7 +49,7 @@ export type ProfileColumn = {
 
 export type FiltersSorts = {
   sorts: string[];
-  agFilters?: Record<string, unknown>;
+  filters?: Record<string, unknown>;
 }
 
 export type DeleteParams = {
@@ -69,4 +69,10 @@ export type AgFilter = {
   filterType: string;
   filter: string | number;
   type: string;
+}
+
+export type FilterSortChip = {
+  displayName: string;
+  field: string;
+  original: string;
 }

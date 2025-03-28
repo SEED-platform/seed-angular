@@ -53,26 +53,33 @@
         [selectedViewIds]="selectedViewIds"
       ></seed-inventory-grid-actions>
 
-      <mat-form-field class="mr-2 w-60" appearance="outline">
-        <mat-label>Cycle</mat-label>
-        <mat-select [(value)]="cycleId" (selectionChange)="onCycleChange($event.value)" class="text-sm">
-          @for (item of cycles; track item) {
-            <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <seed-inventory-grid-config-selector
+        label="Cycle"
+        [items]="cycles"
+        [selectedId]="cycleId"
+        (selectionChange)="onCycleChange($event)"
+      >
+      </seed-inventory-grid-config-selector>
 
-      <mat-form-field class="mr-1" appearance="outline">
-        <mat-label>Profile</mat-label>
-        <mat-select [(value)]="profileId" (selectionChange)="onProfileChange($event.value)" class="text-sm">
-          @for (item of profiles; track item) {
-            <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <seed-inventory-grid-config-selector
+        label="Profile"
+        [items]="profiles"
+        [selectedId]="profileId"
+        (selectionChange)="onProfileChange($event)"
+      >
+      </seed-inventory-grid-config-selector>
 
-      <button mat-stroked-button (click)="openFilterSortModal()" class="mt-2">Filters / Sorts</button>
+      <!-- <button mat-stroked-button (click)="openFilterSortModal()" class="mt-2">Filters / Sorts</button> -->
     </div>
+    @if (gridApi && columnDefs) {
+      <seed-inventory-filter-sort-chips
+        [gridApi]="gridApi"
+        [columnDefs]="columnDefs"
+        [filters]="filters"
+        [sorts]="sorts"
+      ></seed-inventory-filter-sort-chips>
+    }
+
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid

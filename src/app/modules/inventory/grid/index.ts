@@ -1,2 +1,6 @@
-export * from './grid.component'
+export * from './actions.component'
+// export * from './cell-header-menu.component'
+export * from './filter-sort-chips.component'
 export * from './grid-controls.component'
+export * from './grid.component'
+export * from './config-selector.component'

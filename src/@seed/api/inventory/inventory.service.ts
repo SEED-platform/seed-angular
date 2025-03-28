@@ -5,14 +5,14 @@ import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { DeleteParams, FilterResponse, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
   private _columnListProfiles = new BehaviorSubject<unknown>([])
