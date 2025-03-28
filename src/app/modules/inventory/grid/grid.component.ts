@@ -202,6 +202,7 @@ export class InventoryGridComponent implements OnInit, OnChanges {
   onFilterSortChange() {
     const filters = this.gridApi.getFilterModel()
     const sorts = this.getSorts()
+    console.log(filters)
     this.filterSortChange.emit({ sorts, filters })
   }
 

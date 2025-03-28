@@ -1,34 +1,27 @@
-import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
-import type { ColDef, GridApi, SortModelItem } from 'ag-grid-community'
-import { Subject } from 'rxjs'
-import type { FilterSortChip } from '../inventory.types'
+import type { ColDef, GridApi } from 'ag-grid-community'
+import type { AgFilter, AgFilterModel, FilterSortChip, FilterType } from '../inventory.types'
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
   imports: [
+    CommonModule,
     MatChipsModule,
     MatIconModule,
   ],
 })
-export class FilterSortChipsComponent implements OnChanges, OnDestroy, OnInit {
+export class FilterSortChipsComponent implements OnChanges {
   @Input() gridApi: GridApi
   @Input() columnDefs: ColDef[]
-  @Input() filters: Record<string, unknown>
+  @Input() filters: AgFilterModel
   @Input() sorts: string[]
   filterChips: FilterSortChip[] = []
   sortChips: FilterSortChip[] = []
-  private readonly _unsubscribeAll$ = new Subject<void>()
-  // private _columnMap: Record<string, string> = {}
-  // private _filterMap: Record<string, string> = {}
-
-  ngOnInit() {
-    console.log('init')
-    // this._columnMap = Object.fromEntries(this.columnDefs.map(({ field, headerName }) => [field, headerName]))
-  }
 
   ngOnChanges({ filters, sorts }: SimpleChanges) {
     if (filters?.currentValue) this.getFilterChips()
@@ -39,7 +32,8 @@ export class FilterSortChipsComponent implements OnChanges, OnDestroy, OnInit {
     this.filterChips = []
     for (const columnName of Object.keys(this.filters)) {
       const colDef = this.columnDefs.find(({ field }) => field === columnName)
-      const chip = { field: colDef.field, displayName: colDef.headerName, original: columnName }
+      const displayName = this.buildFilterDisplayName(colDef, this.filters[columnName])
+      const chip = { field: colDef.field, displayName, original: columnName }
       this.filterChips.push(chip)
     }
   }
@@ -55,6 +49,38 @@ export class FilterSortChipsComponent implements OnChanges, OnDestroy, OnInit {
     }
   }
 
+  buildFilterDisplayName(colDef: ColDef, filterModel: AgFilter): string {
+    type FilterArgs = { filter?: string | number; filterTo?: string | number }
+    const filterMap: Record<FilterType, (args: FilterArgs) => string> = {
+      contains: ({ filter }) => `contains ${filter}`,
+      notContains: ({ filter }) => `does not contain ${filter}`,
+      equals: ({ filter }) => `= ${filter}`,
+      notEqual: ({ filter }) => `!= ${filter}`,
+      startsWith: ({ filter }) => `starts with ${filter}`,
+      endsWith: ({ filter }) => `ends with ${filter}`,
+      blank: () => 'is blank',
+      notBlank: () => 'is not blank',
+      greaterThan: ({ filter }) => `> ${filter}`,
+      greaterThanOrEqual: ({ filter }) => `>= ${filter}`,
+      lessThan: ({ filter }) => `< ${filter}`,
+      lessThanOrEqual: ({ filter }) => `<= ${filter}`,
+      between: ({ filter, filterTo }) => `is between ${filter} and ${filterTo}`,
+    }
+
+    const { conditions, type, operator } = filterModel
+    const header = colDef.headerName
+
+    if (conditions) {
+      const [c1, c2] = conditions
+      const str1 = filterMap[c1.type](c1)
+      const str2 = filterMap[c2.type](c2)
+      return `${header} ${str1} ${operator.toLowerCase()} ${str2}`
+    }
+
+    const str1 = filterMap[type](filterModel)
+    return `${header} ${str1}`
+  }
+
   removeFilter(columnName: string): void {
     const currentFilters = this.gridApi.getFilterModel()
     Reflect.deleteProperty(currentFilters, columnName)
@@ -67,10 +93,5 @@ export class FilterSortChipsComponent implements OnChanges, OnDestroy, OnInit {
       return col.colId === sortToRemove ? { ...col, sort: null } : col
     })
     this.gridApi.applyColumnState({ state: updatedState })
-  }
-
-  ngOnDestroy(): void {
-    this._unsubscribeAll$.next()
-    this._unsubscribeAll$.complete()
   }
 }

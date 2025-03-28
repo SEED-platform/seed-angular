@@ -65,10 +65,16 @@ export type AgFilterResponse = {
 
 export type AgFilterModel = Record<string, AgFilter>
 
+export type FilterType = 'contains' | 'notContains' | 'equals' | 'notEqual' | 'startsWith' | 'endsWith' | 'blank' | 'notBlank' | 'greaterThan' | 'greaterThanOrEqual' | 'lessThan' | 'lessThanOrEqual' | 'between'
+
 export type AgFilter = {
-  filterType: string;
-  filter: string | number;
-  type: string;
+  filterType?: string;
+  filter?: string | number;
+  filterTo?: string | number;
+  type?: FilterType;
+  contains?: AgFilter;
+  operator?: 'OR' | 'AND';
+  conditions?: AgFilter[];
 }
 
 export type FilterSortChip = {

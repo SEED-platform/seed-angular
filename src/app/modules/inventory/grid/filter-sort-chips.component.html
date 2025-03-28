@@ -1,28 +1,32 @@
 <div class="ml-2">
-  <div class="flex">
-    <div class="text-sm text-gray-400 my-auto mr-2 w-10">
-      Filters
+  @if ((filters | keyvalue).length) {
+    <div class="flex">
+      <div class="text-sm text-gray-400 my-auto mr-2 w-10">
+        Filters
+      </div>
+      <mat-chip-set>
+        @for (item of filterChips; track $index) {
+        <mat-chip class="filter-sort-chip">{{item.displayName}}
+          <mat-icon matChipRemove (click)="removeFilter(item.original)">close</mat-icon>
+        </mat-chip>
+        }
+      </mat-chip-set>
     </div>
-    <mat-chip-set>
-      @for (item of filterChips; track $index) {
-      <mat-chip class="filter-sort-chip">{{item.displayName}}
-        <mat-icon matChipRemove (click)="removeFilter(item.original)">close</mat-icon>
-      </mat-chip>
-      }
-    </mat-chip-set>
-  </div>
+  }
 
-  <div class="flex">
-    <div class="text-sm text-gray-400 my-auto mr-2 w-10">
-      Sorts
+  @if (sorts.length) {
+    <div class="flex">
+      <div class="text-sm text-gray-400 my-auto mr-2 w-10">
+        Sorts
+      </div>
+      <mat-chip-set>
+        @for (item of sortChips; track $index) {
+        <mat-chip class="filter-sort-chip">{{item.displayName}}
+          <mat-icon matChipRemove (click)="removeSort(item.original)">close</mat-icon>
+        </mat-chip>
+        }
+      </mat-chip-set>
     </div>
-    <mat-chip-set>
-      @for (item of sortChips; track $index) {
-      <mat-chip class="filter-sort-chip">{{item.displayName}}
-        <mat-icon matChipRemove (click)="removeSort(item.original)">close</mat-icon>
-      </mat-chip>
-      }
-    </mat-chip-set>
-  </div>
+  }
 
 </div>

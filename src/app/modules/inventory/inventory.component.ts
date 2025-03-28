@@ -24,7 +24,7 @@ import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
-import type { AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import type { AgFilterModel, AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
 
 @Component({
   selector: 'seed-inventory',
@@ -60,7 +60,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  filters: Record<string, unknown> = {}
+  filters: AgFilterModel = {}
   chunk = 100
   columnDefs: ColDef[]
   cycle: Cycle
@@ -194,6 +194,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       filters: this.filters,
       sorts: this.sorts,
     }
+
     this._inventoryService.getAgInventory(paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
       this.pagination = pagination
       this.inventory = results
