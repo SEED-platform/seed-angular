@@ -1,0 +1,43 @@
+<div class="flex w-full flex-row items-center gap-x-2">
+  <form [formGroup]="selectedProfileForm" (ngSubmit)="selectProfile()" class="flex w-1/3">
+    <mat-form-field class="mt-4 w-full">
+      <mat-select formControlName="selectedProfile" (selectionChange)="selectProfile()">
+        @for (profile of profiles; track profile.id) {
+          <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+  <a mat-stroked-button class="flex" matTooltip="Rename Profile" (click)="rename()">
+    <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
+  </a>
+  <a mat-stroked-button class="flex" matTooltip="Delete This Profile" (click)="delete()">
+    <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+  </a>
+  <a mat-stroked-button class="flex" matTooltip="Copy This Profile" (click)="create()">
+    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
+  </a>
+  <a mat-stroked-button class="flex" matTooltip="Download as CSV" (click)="export()">
+    <mat-icon class="fill-green-700 icon-size-4" svgIcon="fa-solid:download"></mat-icon>
+  </a>
+</div>
+
+<div class="mx-auto w-full max-w-screen-xl h-screen">
+<ag-grid-angular
+  style="width: 100%; height: 100%"
+  [rowData]="rowData"
+  [gridOptions]="gridOptions"
+  (gridReady)="onGridReady($event)"
+  class="ag-theme-alpine">
+</ag-grid-angular>
+</div> 
+
+@if (selectedProfile && mappablePropertyColumns && mappableTaxlotColumns) {
+  <div class="prose">
+  <button mat-flat-button [disabled]="profileReadOnly()" color="accent" (click)="suggest()">
+    <span class="">Populate SEED Headers with best known matches</span>
+  </button>
+  </div>
+
+
+}

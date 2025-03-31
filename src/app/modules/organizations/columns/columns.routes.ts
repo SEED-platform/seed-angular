@@ -7,6 +7,7 @@ import { ImportSettingsPropertiesComponent } from './import-settings/import-sett
 import { ImportSettingsTaxLotsComponent } from './import-settings/import-settings-taxlots.component'
 import { ListPropertiesComponent } from './list/list-properties.component'
 import { ListTaxLotComponent } from './list/list-taxlots.component'
+import { MappingsComponent } from './mappings/mappings.component'
 
 export default [
   {
@@ -68,5 +69,10 @@ export default [
     path: 'import-settings/taxlots',
     title: 'Import Settings',
     component: ImportSettingsTaxLotsComponent,
+  },
+  {
+    path: 'mappings',
+    title: 'Column Mappings',
+    component: MappingsComponent,
   },
 ] satisfies Routes

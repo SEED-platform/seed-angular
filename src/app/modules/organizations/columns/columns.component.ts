@@ -9,6 +9,7 @@ import { type NavigationItem, VerticalNavigationComponent } from '@seed/componen
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
+type ColumnNavigationItem = NavigationItem & { useTabs: boolean }
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
@@ -38,43 +39,48 @@ export class ColumnsComponent implements OnInit {
     },
   ]
   pageTitle: string
-  columnsNavigationMenu: NavigationItem[] = [
+  useTabs = false
+  columnsNavigationMenu: ColumnNavigationItem[] = [
     {
       id: 'organizations/columns/list',
       exactMatch: false,
       title: 'Column List',
       link: '/organizations/columns/list',
       type: 'basic',
-      fn: (n: NavigationItem) => {
-        this.setNavTitle(n)
-      },
+      useTabs: true,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
     },
     {
       id: 'organizations/columns/geocoding',
       link: '/organizations/columns/geocoding',
       title: 'Geocoding',
       type: 'basic',
-      fn: (n: NavigationItem) => {
-        this.setNavTitle(n)
-      },
+      useTabs: true,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
     },
     {
       id: 'organization/columns/data-type',
       link: '/organizations/columns/data-types',
       title: 'Data Types',
       type: 'basic',
-      fn: (n: NavigationItem) => {
-        this.setNavTitle(n)
-      },
+      useTabs: true,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
     },
     {
       id: 'organizations/columns/import-settings',
       link: '/organizations/columns/import-settings',
       title: 'Import Settings',
       type: 'basic',
-      fn: (n: NavigationItem) => {
-        this.setNavTitle(n)
-      },
+      useTabs: true,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+    },
+    {
+      id: 'organizations/columns/mappings',
+      link: '/organizations/columns/mappings',
+      title: 'Column Mappings',
+      type: 'basic',
+      useTabs: false,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
     },
   ]
 
@@ -101,12 +107,16 @@ export class ColumnsComponent implements OnInit {
     return type === 'properties' ? 'taxlots' : 'properties'
   }
 
-  setNavTitle(n: NavigationItem) {
+  setPageInfo(n: ColumnNavigationItem) {
     this.pageTitle = n.title
+    this.useTabs = n.useTabs
   }
 
   setTitle() {
-    const basePath = `${this._location.path().split('/').slice(0, -1).join('/')}/properties`
-    this.pageTitle = this.columnsNavigationMenu.find((n) => basePath.includes(n.link)).title
+    let basePath = this._location.path()
+    if (basePath.includes('properties')) {
+      basePath = `${this._location.path().split('/').slice(0, -1).join('/')}/properties`
+    }
+    this.setPageInfo(this.columnsNavigationMenu.find((n) => basePath.includes(n.link)))
   }
 }

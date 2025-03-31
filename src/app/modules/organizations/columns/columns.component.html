@@ -22,11 +22,13 @@
   </mat-drawer>
   <mat-drawer-content class="h-full bg-white p-4">
     <seed-page [config]="{ title: pageTitle }">
-      <nav [tabPanel]="tabPanel" mat-tab-nav-bar>
-        @for (tab of tabs; track tab.label) {
-          <a [active]="tab.route === currentType()" (click)="navigateTo(tab.route)" mat-tab-link>{{ tab.label }}</a>
-        }
-      </nav>
+      @if (useTabs) {
+        <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+          @for (tab of tabs; track tab.label) {
+            <a mat-tab-link (click)="navigateTo(tab.route)" [active]="tab.route === currentType()">{{ tab.label }}</a>
+          }
+        </nav>
+      }
       <mat-tab-nav-panel #tabPanel>
         <router-outlet></router-outlet>
       </mat-tab-nav-panel>

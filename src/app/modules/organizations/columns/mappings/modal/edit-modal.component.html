@@ -1,0 +1,40 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  {{ profile.name }} - Edit Mapping
+</h2>
+<form [formGroup]="form" class="flex flex-col gap-4">
+
+  <mat-form-field>
+    <mat-label>Inventory Type</mat-label>
+    <mat-select formControlName="to_table_name">
+      <mat-option value="PropertyState">Property</mat-option>
+      <mat-option value="TaxlotState">Taxlot</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="flex">
+    <seed-header-autocomplete [formControl]="form.controls['to_field']" [columns]="columns" label="SEED Header" class="w-full"/>
+  </div>
+
+  <mat-form-field>
+    <mat-label>From Field</mat-label>
+    <input matInput formControlName="from_field"  />
+    @if (form.controls.from_field?.hasError('required')) {
+      <mat-error>From Field is a required field</mat-error>
+    }
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Measurement Units</mat-label>
+    <input matInput formControlName="from_units"  />
+
+  </mat-form-field>
+</form>
+
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Finish Editing</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button mat-stroked-button (click)="close()">Cancel</button>
+  </mat-dialog-actions>
+</div>

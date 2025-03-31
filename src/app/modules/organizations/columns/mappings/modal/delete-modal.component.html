@@ -1,0 +1,18 @@
+<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  Delete Column Mapping Profile {{ data.profile.name }}?
+</h2>
+
+<div class="mb-4 mt-4">
+  @if (errorMessage) {
+    <seed-alert type="error">{{ errorMessage }}</seed-alert>
+  }
+</div>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button mat-raised-button color="warn" (click)="onSubmit()" [disabled]="errorMessage">Delete</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button mat-stroked-button (click)="close()">Dismiss</button>
+  </mat-dialog-actions>
+</div>
