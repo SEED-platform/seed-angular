@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
@@ -17,7 +17,7 @@ import {
   templateUrl: './group.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    CommonModule,
     MatIconModule,
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,

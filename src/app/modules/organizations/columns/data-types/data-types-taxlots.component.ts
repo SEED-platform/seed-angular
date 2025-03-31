@@ -17,20 +17,34 @@ import { DataTypesComponent } from './data-types.component'
   selector: 'seed-organizations-column-data-types-taxlots',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, SharedImports, TableContainerComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatPaginator, MatSelectModule, MatTableModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    SharedImports,
+    TableContainerComponent,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginator,
+    MatSelectModule,
+    MatTableModule,
+    ReactiveFormsModule,
+  ],
 })
 export class DataTypesTaxLotsComponent extends DataTypesComponent implements AfterViewInit, OnInit {
   type = 'TaxLotState'
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
-      map((columns) => {
-        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-        this.initializeFormControls()
-        this.columnTableDataSource.data = this.columns
-      }),
-    ).subscribe()
+    this._columnService.taxLotColumns$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .pipe(
+        map((columns) => {
+          this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+          this.initializeFormControls()
+          this.columnTableDataSource.data = this.columns
+        }),
+      )
+      .subscribe()
   }
 
   ngAfterViewInit() {

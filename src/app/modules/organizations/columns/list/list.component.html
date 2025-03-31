@@ -1,51 +1,51 @@
 <seed-page-table-container>
   <mat-form-field class="w-full">
     <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
+    <input #input (keyup)="applyFilter($event)" matInput placeholder="Ex. ium" />
   </mat-form-field>
-  <table mat-table [dataSource]="columnTableDataSource">
+  <table [dataSource]="columnTableDataSource" mat-table>
     <ng-container matColumnDef="canonical">
-      <th mat-header-cell *matHeaderCellDef>Canonical?</th>
-      <td mat-cell *matCellDef="let c">
+      <th *matHeaderCellDef mat-header-cell>Canonical?</th>
+      <td *matCellDef="let c" mat-cell>
         @if (!c.is_extra_data && !c.derived_column) {
           <mat-icon class="icon-size-4" svgIcon="fa-solid:check" matTooltip="Canonical Column"></mat-icon>
         }
       </td>
     </ng-container>
     <ng-container matColumnDef="display_name">
-      <th mat-header-cell *matHeaderCellDef>Display Name</th>
-      <td mat-cell *matCellDef="let c">{{ c.display_name }}</td>
+      <th *matHeaderCellDef mat-header-cell>Display Name</th>
+      <td *matCellDef="let c" mat-cell>{{ c.display_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="column_name">
-      <th mat-header-cell *matHeaderCellDef>Column Name</th>
-      <td mat-cell *matCellDef="let c">{{ c.column_name }}</td>
+      <th *matHeaderCellDef mat-header-cell>Column Name</th>
+      <td *matCellDef="let c" mat-cell>{{ c.column_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="column_description">
-      <th mat-header-cell *matHeaderCellDef>Description</th>
-      <td mat-cell *matCellDef="let c">{{ c.column_description }}</td>
+      <th *matHeaderCellDef mat-header-cell>Description</th>
+      <td *matCellDef="let c" mat-cell>{{ c.column_description }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef class="select-none">Actions</th>
-      <td mat-cell *matCellDef="let c" class="w-50 py-2">
-        <a mat-stroked-button (click)="edit(c)" class="mr-2">
+      <th class="select-none" *matHeaderCellDef mat-header-cell>Actions</th>
+      <td class="w-50 py-2" *matCellDef="let c" mat-cell>
+        <a class="mr-2" (click)="edit(c)" mat-stroked-button>
           <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil" matTooltip="Edit Column"></mat-icon>
         </a>
-        <a mat-stroked-button (click)="rename(c)" class="mr-2">
+        <a class="mr-2" (click)="rename(c)" mat-stroked-button>
           <mat-icon class="icon-size-4" svgIcon="fa-solid:copy" matTooltip="Rename Column"></mat-icon>
         </a>
         @if (c.is_extra_data) {
-          <a mat-stroked-button color="warn" (click)="delete(c)">
+          <a (click)="delete(c)" mat-stroked-button color="warn">
             <mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Delete Column"></mat-icon>
           </a>
         }
       </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="columnTableColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnTableColumns"></tr>
+    <tr *matHeaderRowDef="columnTableColumns" mat-header-row></tr>
+    <tr *matRowDef="let row; columns: columnTableColumns" mat-row></tr>
   </table>
 </seed-page-table-container>
 <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons aria-label="Select page"> </mat-paginator>

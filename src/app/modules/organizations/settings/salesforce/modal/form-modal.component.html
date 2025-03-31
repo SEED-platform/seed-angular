@@ -1,7 +1,7 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   {{ create ? 'Create' : 'Edit' }} a Salesforce Field Mapping
 </h2>
-<form [formGroup]="form" class="flex flex-col gap-4">
+<form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Salesforce Field Name</mat-label>
     <input matInput formControlName="salesforce_fieldname" placeholder="address_c" />
@@ -25,9 +25,9 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="close()">Dismiss</button>
+    <button (click)="close()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

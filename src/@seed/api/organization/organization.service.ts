@@ -4,40 +4,51 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { naturalSort } from '../../utils'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type {
-  AccessLevelNode,
+  AccessLevelInstance,
   AccessLevelsByDepth,
   AccessLevelTree,
   AccessLevelTreeResponse,
   BriefOrganization,
+  CanDeleteInstanceResponse,
+  CreateAccessLevelInstanceRequest,
+  EditAccessLevelInstanceRequest,
+  EditAccessLevelInstanceResponse,
   Organization,
   OrganizationResponse,
   OrganizationSettings,
   OrganizationsResponse,
   OrganizationUser,
   OrganizationUsersResponse,
+  StartSavingAccessLevelInstancesRequest,
+  UpdateAccessLevelsRequest,
+  UpdateAccessLevelsResponse,
+  UploadAccessLevelInstancesResponse,
 } from './organization.types'
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationService {
   private _httpClient = inject(HttpClient)
+  private _errorService = inject(ErrorService)
+  private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
+
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
-  private _accessLevelInstancesByDepth: AccessLevelsByDepth = {}
-  private _errorService = inject(ErrorService)
+  private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _snackBar = inject(SnackbarService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
   organizationUsers$ = this._organizationUsers.asObservable()
   accessLevelTree$ = this._accessLevelTree.asObservable()
+  accessLevelInstancesByDepth$ = this._accessLevelInstancesByDepth.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
@@ -48,16 +59,16 @@ export class OrganizationService {
           return combineLatest([
             this.getById(organizationId),
             this.getOrganizationUsers(organizationId),
-            this.getOrganizationAccessLevelTree(organizationId),
+            this.getAccessLevelTree(organizationId),
           ])
         }),
       )
       .subscribe()
   }
 
-  get(org_id?: number): Observable<Organization[]> | Observable<Organization> {
-    if (org_id) {
-      return this.getById(org_id)
+  get(organizationId?: number): Observable<Organization[]> | Observable<Organization> {
+    if (organizationId) {
+      return this.getById(organizationId)
     } else {
       return this._get(false) as Observable<Organization[]>
     }
@@ -67,8 +78,8 @@ export class OrganizationService {
     return this._get(true)
   }
 
-  getById(org_id: number): Observable<Organization> {
-    const url = `/api/v3/organizations/${org_id}/`
+  getById(organizationId: number): Observable<Organization> {
+    const url = `/api/v3/organizations/${organizationId}/`
     return this._httpClient.get<OrganizationResponse>(url).pipe(
       map((or) => {
         this._currentOrganization.next(or.organization)
@@ -81,8 +92,8 @@ export class OrganizationService {
     )
   }
 
-  getOrganizationUsers(orgId: number): Observable<OrganizationUser[]> {
-    const url = `/api/v3/organizations/${orgId}/users/`
+  getOrganizationUsers(organizationId: number): Observable<OrganizationUser[]> {
+    const url = `/api/v3/organizations/${organizationId}/users/`
     return this._httpClient.get<OrganizationUsersResponse>(url).pipe(
       map((response) => response.users.sort((a, b) => naturalSort(a.last_name, b.last_name))),
       tap((users) => {
@@ -94,19 +105,16 @@ export class OrganizationService {
     )
   }
 
-  getOrganizationAccessLevelTree(orgId: number): Observable<AccessLevelTree> {
-    const url = `/api/v3/organizations/${orgId}/access_levels/tree`
+  getAccessLevelTree(organizationId: number): Observable<AccessLevelTree> {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/tree/`
     return this._httpClient.get<AccessLevelTreeResponse>(url).pipe(
-      map((response) => {
-        // update response to include more usable accessLevelInstancesByDepth
-        this._accessLevelInstancesByDepth = this._calculateAccessLevelInstancesByDepth(response.access_level_tree, 0)
-        return {
-          accessLevelNames: response.access_level_names,
-          accessLevelInstancesByDepth: this._accessLevelInstancesByDepth,
-        }
-      }),
+      map(({ access_level_names, access_level_tree }) => ({
+        accessLevelNames: access_level_names,
+        accessLevelTree: this._sortAccessLevelInstances(access_level_tree),
+      })),
       tap((accessLevelTree) => {
         this._accessLevelTree.next(accessLevelTree)
+        this._accessLevelInstancesByDepth.next(this._calculateAccessLevelInstancesByDepth(accessLevelTree.accessLevelTree))
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching organization access level tree')
@@ -114,8 +122,97 @@ export class OrganizationService {
     )
   }
 
-  deleteOrganizationUser(userId: number, orgId: number) {
-    const url = `/api/v3/organizations/${orgId}/users/${userId}/remove/`
+  updateAccessLevels(organizationId: number, accessLevelNames: string[]) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/access_level_names/`
+    const data: UpdateAccessLevelsRequest = { access_level_names: accessLevelNames }
+    return this._httpClient.post<UpdateAccessLevelsResponse>(url, data).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  createAccessLevelInstance(organizationId: number, parentAccessLevelInstanceId: number, name: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/add_instance/`
+    const data: CreateAccessLevelInstanceRequest = {
+      name,
+      parent_id: parentAccessLevelInstanceId,
+    }
+    return this._httpClient.post<AccessLevelTreeResponse>(url, data).pipe(
+      map(({ access_level_names, access_level_tree }) => ({
+        accessLevelNames: access_level_names,
+        accessLevelTree: this._sortAccessLevelInstances(access_level_tree),
+      })),
+      tap((accessLevelTree) => {
+        this._accessLevelTree.next(accessLevelTree)
+        this._accessLevelInstancesByDepth.next(this._calculateAccessLevelInstancesByDepth(accessLevelTree.accessLevelTree))
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  editAccessLevelInstance(organizationId: number, accessLevelInstanceId: number, name: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/edit_instance/`
+    const data: EditAccessLevelInstanceRequest = { name }
+    return this._httpClient.put<EditAccessLevelInstanceResponse>(url, data).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  canDeleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/can_delete_instance/`
+    return this._httpClient.get<CanDeleteInstanceResponse>(url).pipe(
+      map(({ can_delete, reasons }) => (can_delete ? { canDelete: can_delete } : { canDelete: can_delete, reasons })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching access level instance delete status')
+      }),
+    )
+  }
+
+  deleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/delete_instance/`
+    return this._httpClient.delete<null>(url).pipe(
+      tap(() => {
+        // Update accessLevelTree
+        this.getAccessLevelTree(organizationId).subscribe()
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Failed to delete Access Level Instance')
+      }),
+    )
+  }
+
+  uploadAccessLevelInstances(organizationId: number, file: File) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/importer/`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    return this._httpClient.put<UploadAccessLevelInstancesResponse>(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    })
+  }
+
+  startSavingAccessLevelInstances(organizationId: number, filename: string) {
+    const url = `/api/v3/organizations/${organizationId}/access_levels/start_save_data/`
+    const data: StartSavingAccessLevelInstancesRequest = { filename }
+    return this._httpClient.post<ProgressResponse>(url, data)
+  }
+
+  // TODO add response type
+  deleteOrganizationUser(userId: number, organizationId: number) {
+    const url = `/api/v3/organizations/${organizationId}/users/${userId}/remove/`
     return this._httpClient.delete(url).pipe(
       tap(() => {
         this._snackBar.success('Member removed from organization')
@@ -127,6 +224,7 @@ export class OrganizationService {
   }
 
   copyOrgForUpdate(org: Organization): OrganizationSettings {
+    // TODO bad deep copy
     const o = JSON.parse(JSON.stringify(org)) as OrganizationSettings
     o.default_reports_x_axis_options = org.default_reports_x_axis_options.map((option) => option.id)
     o.default_reports_y_axis_options = org.default_reports_y_axis_options.map((option) => option.id)
@@ -152,19 +250,32 @@ export class OrganizationService {
     )
   }
 
+  private _sortAccessLevelInstances(tree: AccessLevelInstance[]): AccessLevelInstance[] {
+    return tree
+      .map((instance) => ({
+        ...instance,
+        ...(instance.children ? { children: this._sortAccessLevelInstances(instance.children) } : {}),
+      }))
+      .sort((a, b) => naturalSort(a.name, b.name))
+  }
+
   /*
    * Transform access level tree into a more usable format
    */
   private _calculateAccessLevelInstancesByDepth(
-    tree: AccessLevelNode[],
-    depth: number,
+    tree: AccessLevelInstance[],
+    depth = 0,
     result: AccessLevelsByDepth = {},
   ): AccessLevelsByDepth {
     if (!tree) return result
     if (!result[depth]) result[depth] = []
-    for (const ali of tree) {
-      result[depth].push({ id: ali.id, name: ali.name })
-      this._calculateAccessLevelInstancesByDepth(ali.children, depth + 1, result)
+    for (const { children, id, name } of tree) {
+      result[depth].push({ id, name })
+      this._calculateAccessLevelInstancesByDepth(children, depth + 1, result)
+    }
+    // Sort each depth by name
+    for (const depth in result) {
+      result[depth].sort((a, b) => naturalSort(a.name, b.name))
     }
     return result
   }

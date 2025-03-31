@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
@@ -16,7 +16,7 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   selector: 'seed-horizontal-navigation-basic-item',
   templateUrl: './basic.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, RouterLink, RouterLinkActive, MatTooltipModule, NgTemplateOutlet, MatMenuModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, MatMenuModule, MatTooltipModule, RouterLink, RouterLinkActive],
 })
 export class HorizontalNavigationBasicItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

@@ -9,7 +9,7 @@ import { CycleService } from '@seed/api/cycle/cycle.service'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
@@ -20,7 +20,7 @@ export class DeleteModalComponent implements OnDestroy {
   private _cycleService = inject(CycleService)
   private _uploaderService = inject(UploaderService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
   inProgress = false

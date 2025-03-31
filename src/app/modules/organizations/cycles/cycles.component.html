@@ -10,43 +10,43 @@
 >
   <!-- Cycles Table -->
   <seed-page-table-container>
-    <table class="mat-elevation-z8 w-full bg-transparent" mat-table matSort [dataSource]="cyclesDataSource" [trackBy]="trackByFn">
+    <table class="mat-elevation-z8 w-full bg-transparent" [dataSource]="cyclesDataSource" [trackBy]="trackByFn" mat-table matSort>
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let cycle">{{ cycle.id }}</td>
+        <th *matHeaderCellDef mat-header-cell>ID</th>
+        <td *matCellDef="let cycle" mat-cell>{{ cycle.id }}</td>
       </ng-container>
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let cycle">{{ cycle.name }}</td>
+        <th *matHeaderCellDef mat-header-cell>Name</th>
+        <td *matCellDef="let cycle" mat-cell>{{ cycle.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="start">
-        <th mat-header-cell *matHeaderCellDef>Start Date</th>
-        <td mat-cell *matCellDef="let cycle">{{ cycle.start }}</td>
+        <th *matHeaderCellDef mat-header-cell>Start Date</th>
+        <td *matCellDef="let cycle" mat-cell>{{ cycle.start }}</td>
       </ng-container>
 
       <ng-container matColumnDef="end">
-        <th mat-header-cell *matHeaderCellDef>End Date</th>
-        <td mat-cell *matCellDef="let cycle">{{ cycle.end }}</td>
+        <th *matHeaderCellDef mat-header-cell>End Date</th>
+        <td *matCellDef="let cycle" mat-cell>{{ cycle.end }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="select-none pr-24 text-right">Actions</th>
-        <td mat-cell *matCellDef="let cycle" class="w-50 text-right">
-          <a mat-stroked-button (click)="editCycle(cycle)" class="mr-2">
+        <th class="select-none pr-24 text-right" *matHeaderCellDef mat-header-cell>Actions</th>
+        <td class="w-50 text-right" *matCellDef="let cycle" mat-cell>
+          <a class="mr-2" (click)="editCycle(cycle)" mat-stroked-button>
             <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
           </a>
-          <a mat-stroked-button color="warn" (click)="deleteCycle(cycle)">
+          <a (click)="deleteCycle(cycle)" mat-stroked-button color="warn">
             <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
           </a>
         </td>
       </ng-container>
 
       <thead>
-        <tr mat-header-row *matHeaderRowDef="cyclesColumns"></tr>
+        <tr *matHeaderRowDef="cyclesColumns" mat-header-row></tr>
       </thead>
       <tbody>
-        <tr mat-row *matRowDef="let row; columns: cyclesColumns"></tr>
+        <tr *matRowDef="let row; columns: cyclesColumns" mat-row></tr>
       </tbody>
     </table>
   </seed-page-table-container>

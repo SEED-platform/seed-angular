@@ -4,8 +4,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ProgressResponse } from '@seed/api/progress'
 import { SharedImports } from '@seed/directives'
-import { type UploaderResponse } from '@seed/services/uploader'
 import { UpdateModalComponent } from '../modal/update-modal.component'
 import { DataTypes } from './data-types.constants'
 
@@ -15,17 +15,13 @@ import { DataTypes } from './data-types.constants'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports],
 })
-
 export class DataTypesComponent implements OnDestroy {
   protected _columnService = inject(ColumnService)
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columns: Column[]
   columnTableDataSource = new MatTableDataSource<Column>([])
-  columnTableColumns = [
-    'display_name',
-    'data_type',
-  ]
+  columnTableColumns = ['display_name', 'data_type']
   type: string
   dataTypesForm = new FormGroup({})
   dataTypes = DataTypes
@@ -50,25 +46,22 @@ export class DataTypesComponent implements OnDestroy {
       }
     }
     if (Object.keys(changes).length > 0) {
-      this._columnService.updateMultipleColumns(this.columns[0].organization_id, this.type, changes).subscribe((response: UploaderResponse) => {
-        const dialogRef = this._dialog.open(UpdateModalComponent, {
-          width: '40rem',
-          data: { progressResponse: response },
+      this._columnService
+        .updateMultipleColumns(this.columns[0].organization_id, this.type, changes)
+        .subscribe((response: ProgressResponse) => {
+          const dialogRef = this._dialog.open(UpdateModalComponent, {
+            width: '40rem',
+            data: { progressResponse: response },
+          })
+          dialogRef.afterClosed().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
         })
-        dialogRef
-          .afterClosed()
-          .pipe(
-            takeUntil(this._unsubscribeAll$),
-          )
-          .subscribe()
-      })
     }
   }
 
   initializeFormControls() {
     for (const c of this.columns) {
       const stringId = `${c.id}`
-      this.dataTypesForm.addControl(stringId, new FormControl((c.data_type), [Validators.required]))
+      this.dataTypesForm.addControl(stringId, new FormControl(c.data_type, [Validators.required]))
       if (!c.is_extra_data) {
         this.dataTypesForm.get(stringId)?.disable()
       }

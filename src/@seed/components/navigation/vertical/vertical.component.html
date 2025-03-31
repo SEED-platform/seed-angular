@@ -7,12 +7,12 @@
   <!-- Content -->
   <div
     class="seed-vertical-navigation-content"
+    #navigationContent
     [seedScrollbar]="true"
     [seedScrollbarOptions]="{
       wheelPropagation: inner(),
       suppressScrollX: true,
     }"
-    #navigationContent
   >
     <!-- Content header -->
     <div class="seed-vertical-navigation-content-header">
@@ -70,15 +70,15 @@
 @if (activeAsideItemId) {
   <div
     class="seed-vertical-navigation-aside-wrapper"
+    [@fadeInLeft]="position() === 'left'"
+    [@fadeInRight]="position() === 'right'"
+    [@fadeOutLeft]="position() === 'left'"
+    [@fadeOutRight]="position() === 'right'"
     [seedScrollbar]="true"
     [seedScrollbarOptions]="{
       wheelPropagation: false,
       suppressScrollX: true,
     }"
-    [@fadeInLeft]="position() === 'left'"
-    [@fadeInRight]="position() === 'right'"
-    [@fadeOutLeft]="position() === 'left'"
-    [@fadeOutRight]="position() === 'right'"
   >
     <!-- Items -->
     @for (item of navigation(); track item.id || $index) {

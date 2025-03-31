@@ -4,8 +4,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ProgressResponse } from '@seed/api/progress'
 import { SharedImports } from '@seed/directives'
-import { type UploaderResponse } from '@seed/services/uploader'
 import { naturalSort } from '@seed/utils'
 import { UpdateModalComponent } from '../modal/update-modal.component'
 
@@ -63,23 +63,24 @@ export class ImportSettingsComponent implements OnDestroy {
       changes[column.id] = this.columnChangeset(column)
     }
     if (Object.keys(changes).length > 0) {
-      this._columnService.updateMultipleColumns(this.columns[0].organization_id, this.type, changes).subscribe((response: UploaderResponse) => {
-        const dialogRef = this._dialog.open(UpdateModalComponent, {
-          width: '40rem',
-          data: { progressResponse: response },
+      this._columnService
+        .updateMultipleColumns(this.columns[0].organization_id, this.type, changes)
+        .subscribe((response: ProgressResponse) => {
+          const dialogRef = this._dialog.open(UpdateModalComponent, {
+            width: '40rem',
+            data: { progressResponse: response },
+          })
+          dialogRef.afterClosed().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
         })
-        dialogRef
-          .afterClosed()
-          .pipe(
-            takeUntil(this._unsubscribeAll$),
-          )
-          .subscribe()
-      })
     }
   }
 
   columnChanged(column: Column): boolean {
-    if (this.removedEmptyColumns.includes(column) || this.removedExcludedColumns.includes(column) || this.removedMergeProtectedColumns.includes(column)) {
+    if (
+      this.removedEmptyColumns.includes(column)
+      || this.removedExcludedColumns.includes(column)
+      || this.removedMergeProtectedColumns.includes(column)
+    ) {
       return true
     }
     if (this.excludedColumns.includes(column) && !column.is_excluded_from_hash) {

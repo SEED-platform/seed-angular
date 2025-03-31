@@ -11,7 +11,7 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a mat-stroked-button color="warn" (click)="removeExcluded(c)">
+            <a (click)="removeExcluded(c)" mat-stroked-button color="warn">
               <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
             </a>
           </div>
@@ -19,7 +19,7 @@
       }
     </ul>
     @if (columns && availableExcludedColumns) {
-      <form [formGroup]="addExcludeForm" (ngSubmit)="addExcluded()" class="flex w-1/2 flex-col">
+      <form class="flex w-1/2 flex-col" [formGroup]="addExcludeForm" (ngSubmit)="addExcluded()">
         <mat-form-field>
           <mat-label>Add Column</mat-label>
           <mat-select formControlName="column">
@@ -29,7 +29,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button mat-flat-button [disabled]="addExcludeForm.invalid || addExcludeForm.pending" color="accent">
+          <button [disabled]="addExcludeForm.invalid || addExcludeForm.pending" mat-flat-button color="accent">
             <span class="">Exclude Column</span>
           </button>
         </div>
@@ -48,7 +48,7 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a mat-stroked-button color="warn" (click)="removeEmpty(c)">
+            <a (click)="removeEmpty(c)" mat-stroked-button color="warn">
               <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
             </a>
           </div>
@@ -56,7 +56,7 @@
       }
     </ul>
     @if (columns && availableEmptyColumns) {
-      <form [formGroup]="addEmptyForm" (ngSubmit)="addEmpty()" class="flex w-1/2 flex-col">
+      <form class="flex w-1/2 flex-col" [formGroup]="addEmptyForm" (ngSubmit)="addEmpty()">
         <mat-form-field>
           <mat-label>Add Column</mat-label>
           <mat-select formControlName="column">
@@ -66,7 +66,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button mat-flat-button [disabled]="addEmptyForm.invalid || addEmptyForm.pending" color="accent">
+          <button [disabled]="addEmptyForm.invalid || addEmptyForm.pending" mat-flat-button color="accent">
             <span class="">Recognize Column as Empty</span>
           </button>
         </div>
@@ -86,7 +86,7 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a mat-stroked-button color="warn" (click)="removeMergeProtected(c)">
+            <a (click)="removeMergeProtected(c)" mat-stroked-button color="warn">
               <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
             </a>
           </div>
@@ -94,7 +94,7 @@
       }
     </ul>
     @if (columns && removeMergeProtected) {
-      <form [formGroup]="addMergeProtectedForm" (ngSubmit)="addMerge()" class="flex w-1/2 flex-col">
+      <form class="flex w-1/2 flex-col" [formGroup]="addMergeProtectedForm" (ngSubmit)="addMerge()">
         <mat-form-field>
           <mat-label>Add Column</mat-label>
           <mat-select formControlName="column">
@@ -104,7 +104,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button mat-flat-button [disabled]="addMergeProtectedForm.invalid || addMergeProtectedForm.pending" color="accent">
+          <button [disabled]="addMergeProtectedForm.invalid || addMergeProtectedForm.pending" mat-flat-button color="accent">
             <span class="">Add Merge Protection</span>
           </button>
         </div>
@@ -114,10 +114,10 @@
 </div>
 
 <div>
-  <button mat-flat-button (click)="save()" color="primary">
+  <button (click)="save()" mat-flat-button color="primary">
     <span class="">Save Changes</span>
   </button>
-  <button mat-flat-button (click)="cancel()" color="accent">
+  <button (click)="cancel()" mat-flat-button color="accent">
     <span class="">Cancel</span>
   </button>
 </div>

@@ -5,10 +5,11 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { Subject, takeUntil } from 'rxjs'
+import type { ProgressResponse } from '@seed/api/progress'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj, UploaderResponse } from '@seed/services/uploader/uploader.types'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-columns-update-modal',
@@ -18,7 +19,7 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class UpdateModalComponent implements OnDestroy, OnInit {
   private _uploaderService = inject(UploaderService)
   private _dialogRef = inject(MatDialogRef<UpdateModalComponent>)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
   inProgress = false
@@ -31,7 +32,7 @@ export class UpdateModalComponent implements OnDestroy, OnInit {
     progressLastChecked: null,
   }
 
-  data = inject(MAT_DIALOG_DATA) as { progressResponse: UploaderResponse }
+  data = inject(MAT_DIALOG_DATA) as { progressResponse: ProgressResponse }
 
   ngOnInit(): void {
     this.inProgress = true
@@ -46,14 +47,17 @@ export class UpdateModalComponent implements OnDestroy, OnInit {
       this.close()
     }
 
-    this._uploaderService.checkProgressLoop({
-      progressKey: this.data.progressResponse.progress_key,
-      offset: 0,
-      multiplier: 1,
-      successFn,
-      failureFn,
-      progressBarObj: this.progressBarObj,
-    }).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
+    this._uploaderService
+      .checkProgressLoop({
+        progressKey: this.data.progressResponse.progress_key,
+        offset: 0,
+        multiplier: 1,
+        successFn,
+        failureFn,
+        progressBarObj: this.progressBarObj,
+      })
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe()
   }
 
   close() {

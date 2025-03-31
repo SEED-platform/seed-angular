@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
@@ -13,7 +13,7 @@ import { Subject, takeUntil } from 'rxjs'
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'languages',
-  imports: [MatButtonModule, MatMenuModule, NgTemplateOutlet],
+  imports: [CommonModule, MatButtonModule, MatMenuModule],
 })
 export class LanguagesComponent implements OnInit, OnDestroy {
   private _translocoService = inject(TranslocoService)

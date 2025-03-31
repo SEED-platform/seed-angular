@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import {
   type SalesforceConfig,
@@ -20,12 +20,13 @@ import {
 @Injectable({ providedIn: 'root' })
 export class SalesforceService {
   private _httpClient = inject(HttpClient)
+  private _errorService = inject(ErrorService)
+  private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
+
   private _config = new ReplaySubject<SalesforceConfig>(1)
   private _mappings = new ReplaySubject<SalesforceMapping[]>(1)
-  private _errorService = inject(ErrorService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _snackBar = inject(SnackbarService)
 
   config$ = this._config.asObservable()
   mappings$ = this._mappings.asObservable()
@@ -38,8 +39,8 @@ export class SalesforceService {
     })
   }
 
-  getConfig(org_id: number): Observable<SalesforceConfigsResponse> {
-    const url = `/api/v3/salesforce_configs/?organization_id=${org_id}`
+  getConfig(organizationId: number): Observable<SalesforceConfigsResponse> {
+    const url = `/api/v3/salesforce_configs/?organization_id=${organizationId}`
     return this._httpClient.get<SalesforceConfigsResponse>(url).pipe(
       map((response) => {
         if (response.salesforce_configs.length == 0) {
@@ -56,8 +57,8 @@ export class SalesforceService {
     )
   }
 
-  getMappings(org_id: number): Observable<SalesforceMappingsResponse> {
-    const url = `/api/v3/salesforce_mappings/?organization_id=${org_id}`
+  getMappings(organizationId: number): Observable<SalesforceMappingsResponse> {
+    const url = `/api/v3/salesforce_mappings/?organization_id=${organizationId}`
     return this._httpClient.get<SalesforceMappingsResponse>(url).pipe(
       map((response) => {
         this._mappings.next(response.salesforce_mappings)
@@ -70,9 +71,9 @@ export class SalesforceService {
     )
   }
 
-  create(org_id: number, config: SalesforceConfig): Observable<SalesforceConfig> {
+  create(organizationId: number, config: SalesforceConfig): Observable<SalesforceConfig> {
     console.log('Creating: ', config)
-    const url = `/api/v3/salesforce_configs/?organization_id=${org_id}`
+    const url = `/api/v3/salesforce_configs/?organization_id=${organizationId}`
     return this._httpClient.post<SalesforceConfigResponse>(url, { ...config }).pipe(
       map((response) => {
         this._config.next(response.salesforce_config)
@@ -84,8 +85,8 @@ export class SalesforceService {
     )
   }
 
-  update(org_id: number, config: SalesforceConfig, message?: string): Observable<SalesforceConfig> {
-    const url = `/api/v3/salesforce_configs/${config.id}/?organization_id=${org_id}`
+  update(organizationId: number, config: SalesforceConfig, message?: string): Observable<SalesforceConfig> {
+    const url = `/api/v3/salesforce_configs/${config.id}/?organization_id=${organizationId}`
     return this._httpClient.put<SalesforceConfigResponse>(url, { ...config }).pipe(
       map((response) => {
         this._snackBar.success(message || 'Salesforce configuration updated')
@@ -98,8 +99,8 @@ export class SalesforceService {
     )
   }
 
-  test_connection(org_id: number, config: SalesforceConfig): Observable<SalesforceConnectionTestResponse> {
-    const url = `/api/v3/salesforce_configs/salesforce_connection/?organization_id=${org_id}`
+  test_connection(organizationId: number, config: SalesforceConfig): Observable<SalesforceConnectionTestResponse> {
+    const url = `/api/v3/salesforce_configs/salesforce_connection/?organization_id=${organizationId}`
     return this._httpClient.post<SalesforceConnectionTestResponse>(url, { salesforce_config: config }).pipe(
       map((response) => {
         this._snackBar.success('Salesforce Connection: Success')
@@ -111,8 +112,8 @@ export class SalesforceService {
     )
   }
 
-  createMapping(organization_id: number, mapping: Omit<SalesforceMapping, 'id'>): Observable<SalesforceMappingResponse> {
-    const url = `/api/v3/salesforce_mappings/?organization_id=${organization_id}`
+  createMapping(organizationId: number, mapping: Omit<SalesforceMapping, 'id'>): Observable<SalesforceMappingResponse> {
+    const url = `/api/v3/salesforce_mappings/?organization_id=${organizationId}`
     return this._httpClient.post<SalesforceMappingResponse>(url, { ...mapping }).pipe(
       map((response) => {
         this._snackBar.success('Salesforce Mapping Created')
@@ -123,8 +124,8 @@ export class SalesforceService {
       }),
     )
   }
-  updateMapping(organization_id: number, mapping: SalesforceMapping): Observable<SalesforceMappingResponse> {
-    const url = `/api/v3/salesforce_mappings/${mapping.id}/?organization_id=${organization_id}`
+  updateMapping(organizationId: number, mapping: SalesforceMapping): Observable<SalesforceMappingResponse> {
+    const url = `/api/v3/salesforce_mappings/${mapping.id}/?organization_id=${organizationId}`
     return this._httpClient.put<SalesforceMappingResponse>(url, { ...mapping }).pipe(
       map((response) => {
         this._snackBar.success('Salesforce Mapping Updated')

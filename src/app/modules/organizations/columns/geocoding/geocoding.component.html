@@ -1,12 +1,12 @@
 <div class="prose my-6">Drag columns to reorder them. Add columns with the selector below.</div>
 <div class="prose my-4">When all your changes have been made, make sure to save them.</div>
 <div>
-  <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
+  <button [disabled]="!dirty" (click)="save()" mat-flat-button color="primary">
     <span class="">Save Changes</span>
   </button>
 </div>
 
-<div cdkDropList class="" (cdkDropListDropped)="drop($event)">
+<div class="" (cdkDropListDropped)="drop($event)" cdkDropList>
   @for (column of columns; track column.id) {
     <div
       class="w-75 my-2 flex flex-row items-center justify-between space-x-2 rounded-md border border-solid border-slate-600 bg-slate-100 p-2 drop-shadow-md"
@@ -17,7 +17,7 @@
         <div>{{ column.display_name }}</div>
       </div>
       <div class="ml-auto flex">
-        <a mat-stroked-button (click)="delete(column)"
+        <a (click)="delete(column)" mat-stroked-button
           ><mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Remove from geocoding"></mat-icon
         ></a>
       </div>
@@ -26,7 +26,7 @@
 </div>
 
 <div class="text-xl font-bold">Add A GeoCoding Column</div>
-<form [formGroup]="addForm" (ngSubmit)="add()" class="flex flex-col">
+<form class="flex flex-col" [formGroup]="addForm" (ngSubmit)="add()">
   <mat-form-field>
     <mat-label>Add Column</mat-label>
     <mat-select formControlName="addGeocoder">
@@ -36,7 +36,7 @@
     </mat-select>
   </mat-form-field>
   <div>
-    <button mat-flat-button [disabled]="addForm.invalid || addForm.pending" color="accent">
+    <button [disabled]="addForm.invalid || addForm.pending" mat-flat-button color="accent">
       <span class="">Add Geocoding Column</span>
     </button>
   </div>
@@ -44,7 +44,7 @@
 
 <div class="prose my-4">When all your changes have been made, make sure to save them.</div>
 <div>
-  <button mat-flat-button color="primary" [disabled]="!dirty" (click)="save()">
+  <button [disabled]="!dirty" (click)="save()" mat-flat-button color="primary">
     <span class="">Save Changes</span>
   </button>
 </div>

@@ -1,4 +1,4 @@
-<button mat-icon-button [matMenuTriggerFor]="userActions">
+<button [matMenuTriggerFor]="userActions" mat-icon-button>
   <span class="relative flex items-center justify-center">
     @if (showAvatar() && avatarUrl) {
       <img class="h-7 w-7 rounded-full" [src]="avatarUrl" alt="User avatar" />
@@ -8,15 +8,15 @@
   </span>
 </button>
 
-<mat-menu xPosition="before" #userActions="matMenu">
-  <div class="flex h-12 cursor-default items-center px-4">
+<mat-menu #userActions="matMenu" xPosition="before">
+  <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
     <span class="flex flex-col leading-none">
       <span>Signed in as</span>
       <span class="mt-1.5 text-md font-medium">{{ user.email }}</span>
     </span>
   </div>
   <mat-divider class="my-2"></mat-divider>
-  <button mat-menu-item (click)="goToProfile()">
+  <button (click)="goToProfile()" mat-menu-item>
     <mat-icon svgIcon="fa-solid:circle-user"></mat-icon>
     <span>Profile</span>
   </button>
@@ -25,7 +25,7 @@
     <span>Settings</span>
   </button>
   <mat-divider class="my-2"></mat-divider>
-  <button mat-menu-item (click)="signOut()">
+  <button (click)="signOut()" mat-menu-item>
     <mat-icon svgIcon="fa-solid:right-from-bracket"></mat-icon>
     <span>Sign out</span>
   </button>

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -25,11 +24,10 @@ import { FormModalComponent } from './inventory/modal/form-modal.component'
   selector: 'seed-organizations-data-quality',
   templateUrl: './data-quality.component.html',
   imports: [
-    CommonModule,
     DataQualityGoalTableComponent,
     DataQualityInventoryTableComponent,
-    InventoryTabComponent,
     FormsModule,
+    InventoryTabComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
@@ -86,7 +84,9 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     }
   }
 
-  getRules() { this._dataQualityService.getRules(this._orgId).subscribe() }
+  getRules() {
+    this._dataQualityService.getRules(this._orgId).subscribe()
+  }
 
   setRules() {
     this._propertyRules = this.rules.filter((rule) => rule.table_name === 'PropertyState')
@@ -106,10 +106,9 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   }
 
   resetRules = () => {
-    this._dataQualityService.resetRules(this._orgId)
-      .subscribe(() => {
-        this.getRules()
-      })
+    this._dataQualityService.resetRules(this._orgId).subscribe(() => {
+      this.getRules()
+    })
   }
 
   createRule = () => {
@@ -124,8 +123,11 @@ export class DataQualityComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getRules() }),
-      ).subscribe()
+        tap(() => {
+          this.getRules()
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

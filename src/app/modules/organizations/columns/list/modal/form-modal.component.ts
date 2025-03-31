@@ -9,9 +9,10 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ProgressResponse } from '@seed/api/progress'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj, UploaderResponse } from '@seed/services/uploader/uploader.types'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-labels-form-modal',
@@ -30,7 +31,7 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
   private _columnService = inject(ColumnService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _uploaderService = inject(UploaderService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   column: Column
@@ -78,22 +79,25 @@ export class FormModalComponent implements OnDestroy, OnInit {
     const changes = {}
     this.inProgress = true
     changes[`${c.id}`] = { display_name: c.display_name, column_description: c.column_description }
-    this._columnService.updateMultipleColumns(c.organization_id, c.table_name, changes).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((response: UploaderResponse) => {
-        this.progressBarObj.progress = response.progress
-      }),
-      switchMap(({ progress_key }) => {
-        return this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          offset: 0,
-          multiplier: 1,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })
-      }),
-    ).subscribe()
+    this._columnService
+      .updateMultipleColumns(c.organization_id, c.table_name, changes)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((response: ProgressResponse) => {
+          this.progressBarObj.progress = response.progress
+        }),
+        switchMap(({ progress_key }) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+      )
+      .subscribe()
   }
 
   close() {

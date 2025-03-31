@@ -6,10 +6,11 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ProgressResponse } from '@seed/api/progress'
 import { AlertComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj, UploaderResponse } from '@seed/services/uploader/uploader.types'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
@@ -20,7 +21,7 @@ export class DeleteModalComponent implements OnDestroy {
   private _columnService = inject(ColumnService)
   private _uploaderService = inject(UploaderService)
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
   inProgress = false
@@ -49,22 +50,24 @@ export class DeleteModalComponent implements OnDestroy {
     }
 
     // initiate delete cycle task
-    this._columnService.deleteColumn(this.data.column).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((response: UploaderResponse) => {
-        this.progressBarObj.progress = response.progress
-      }),
-      switchMap(({ progress_key }) => {
-        return this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          offset: 0,
-          multiplier: 1,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })
-      }),
-    )
+    this._columnService
+      .deleteColumn(this.data.column)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((response: ProgressResponse) => {
+          this.progressBarObj.progress = response.progress
+        }),
+        switchMap(({ progress_key }) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+      )
       .subscribe()
   }
 

@@ -1,4 +1,8 @@
-import type { UrlSegment } from '@angular/router'
+import { inject } from '@angular/core'
+import type { Routes, UrlSegment } from '@angular/router'
+import { switchMap, take } from 'rxjs'
+import { OrganizationService } from '@seed/api/organization'
+import { UserService } from '@seed/api/user'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
   AccessLevelTreeComponent,
@@ -30,12 +34,56 @@ const derivedColumnsTypeMatcher = (segments: UrlSegment[]) => {
 
 export default [
   { path: 'settings', component: SettingsComponent, loadChildren: () => import('app/modules/organizations/settings/settings.routes') },
-  { path: 'access-level-tree', component: AccessLevelTreeComponent },
-  { path: 'columns', component: ColumnsComponent, loadChildren: () => import('app/modules/organizations/columns/columns.routes') },
-  { matcher: dataQualityTypeMatcher, component: DataQualityComponent },
-  { matcher: derivedColumnsTypeMatcher, component: DerivedColumnsComponent },
-  { path: 'cycles', component: CyclesComponent },
-  { path: 'email-templates', component: EmailTemplatesComponent },
-  { path: 'labels', component: LabelsComponent },
-  { path: 'members', component: MembersComponent },
-]
+  {
+    path: 'access-level-tree',
+    title: 'Access Level Tree',
+    component: AccessLevelTreeComponent,
+    resolve: {
+      accessLevelTree: () => {
+        const organizationService = inject(OrganizationService)
+        const userService = inject(UserService)
+        return userService.currentOrganizationId$.pipe(
+          take(1),
+          switchMap(() => {
+            return organizationService.accessLevelTree$
+          }),
+        )
+      },
+    },
+  },
+  {
+    path: 'columns',
+    component: ColumnsComponent,
+    loadChildren: () => import('app/modules/organizations/columns/columns.routes'),
+  },
+  {
+    matcher: dataQualityTypeMatcher,
+    title: 'Data Quality',
+    component: DataQualityComponent,
+  },
+  {
+    matcher: derivedColumnsTypeMatcher,
+    title: 'Derived Columns',
+    component: DerivedColumnsComponent,
+  },
+  {
+    path: 'cycles',
+    title: 'Cycles',
+    component: CyclesComponent,
+  },
+  {
+    path: 'email-templates',
+    title: 'Email Templates',
+    component: EmailTemplatesComponent,
+  },
+  {
+    path: 'labels',
+    title: 'Labels',
+    component: LabelsComponent,
+  },
+  {
+    path: 'members',
+    title: 'Members',
+    component: MembersComponent,
+  },
+] satisfies Routes

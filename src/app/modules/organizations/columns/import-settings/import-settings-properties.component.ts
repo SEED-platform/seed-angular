@@ -13,15 +13,17 @@ import { ImportSettingsComponent } from './import-settings.component'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports, MatButtonModule, MatIconModule, MatSelectModule, ReactiveFormsModule],
 })
-
 export class ImportSettingsPropertiesComponent extends ImportSettingsComponent implements OnInit {
   type = 'PropertyState'
 
   ngOnInit(): void {
-    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
-      map((columns) => {
-        this.prepareColumns(columns)
-      }),
-    ).subscribe()
+    this._columnService.propertyColumns$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .pipe(
+        map((columns) => {
+          this.prepareColumns(columns)
+        }),
+      )
+      .subscribe()
   }
 }

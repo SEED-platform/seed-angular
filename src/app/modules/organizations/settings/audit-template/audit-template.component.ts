@@ -17,7 +17,7 @@ import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-organizations-settings-audit-template',
@@ -39,7 +39,7 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class AuditTemplateComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _auditTemplateService = inject(AuditTemplateService)
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   organization: Organization
   auditTemplateConfig: AuditTemplateConfig = {
@@ -52,7 +52,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
   auditTemplateReportTypes: AuditTemplateReportType[]
   auditTemplateForm = new FormGroup({
     at_organization_token: new FormControl(''),
-    audit_template_user: new FormControl('', [Validators.email]),
+    audit_template_user: new FormControl('', Validators.email),
     audit_template_password: new FormControl(''),
     audit_template_city_id: new FormControl(),
     status_complies: new FormControl(false),

@@ -17,10 +17,13 @@ export class ImportSettingsTaxLotsComponent extends ImportSettingsComponent impl
   type = 'TaxLotState'
 
   ngOnInit(): void {
-    this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
-      map((columns) => {
-        this.prepareColumns(columns)
-      }),
-    ).subscribe()
+    this._columnService.taxLotColumns$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .pipe(
+        map((columns) => {
+          this.prepareColumns(columns)
+        }),
+      )
+      .subscribe()
   }
 }

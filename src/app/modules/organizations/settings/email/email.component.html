@@ -1,4 +1,4 @@
-<seed-page [config]="{ titleIcon: 'fa-solid:gears', title: 'Organization Settings: New User Email' }">
+<seed-page [config]="{ titleIcon: 'fa-solid:gears', title: 'Email', breadcrumbs: ['Organization Settings'] }">
   @if (organization) {
     <div class="flex-auto p-6 sm:p-10" *transloco="let t">
       <div class="max-w-2xl">
@@ -46,10 +46,10 @@
               <input type="text" matInput formControlName="new_user_email_signature" placeholder="The SEED Team" />
             </mat-form-field>
           </div>
-          <mat-divider role="separator" class="mat-divider mat-divider-horizontal mb-6 mt-4" aria-orientation="horizontal"></mat-divider>
+          <mat-divider class="mat-divider mat-divider-horizontal mb-6 mt-4" role="separator" aria-orientation="horizontal"></mat-divider>
 
           <div>
-            <button mat-flat-button [disabled]="emailForm.invalid || emailForm.pending" color="primary">
+            <button [disabled]="emailForm.invalid || emailForm.pending" mat-flat-button color="primary">
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>

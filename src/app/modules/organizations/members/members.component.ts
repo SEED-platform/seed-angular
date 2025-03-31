@@ -20,6 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 export class MembersComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _dialog = inject(MatDialog)
+
   private _orgId: number
   private readonly _unsubscribeAll$ = new Subject<void>()
 

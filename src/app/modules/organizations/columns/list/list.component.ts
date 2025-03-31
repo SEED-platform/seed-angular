@@ -18,13 +18,7 @@ export class ListComponent implements OnDestroy {
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columnTableDataSource = new MatTableDataSource<Column>([])
-  columnTableColumns = [
-    'canonical',
-    'display_name',
-    'column_name',
-    'column_description',
-    'actions',
-  ]
+  columnTableColumns = ['canonical', 'display_name', 'column_name', 'column_description', 'actions']
   type: string
 
   ngOnDestroy(): void {
@@ -63,12 +57,7 @@ export class ListComponent implements OnDestroy {
       data: { column },
     })
 
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
   }
 
   applyFilter(event: Event): void {

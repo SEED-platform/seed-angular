@@ -34,8 +34,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
   create = true
   data = inject(MAT_DIALOG_DATA) as { label: Label | null; organization_id: number }
   form = new FormGroup({
-    name: new FormControl<string | null>('', [Validators.required]),
-    color: new FormControl<string | null>(null, [Validators.required]),
+    name: new FormControl<string | null>('', Validators.required),
+    color: new FormControl<string | null>(null, Validators.required),
     organization_id: new FormControl<number | null>(null),
     show_in_list: new FormControl<boolean>(false),
     id: new FormControl<number | null>(null),

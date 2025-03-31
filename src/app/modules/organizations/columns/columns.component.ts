@@ -12,7 +12,16 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
-  imports: [CommonModule, SharedImports, MatIconModule, MatSidenavModule, MatTabsModule, PageComponent, VerticalNavigationComponent, RouterOutlet],
+  imports: [
+    CommonModule,
+    SharedImports,
+    MatIconModule,
+    MatSidenavModule,
+    MatTabsModule,
+    PageComponent,
+    VerticalNavigationComponent,
+    RouterOutlet,
+  ],
 })
 export class ColumnsComponent implements OnInit {
   private _title = inject(Title)
@@ -36,28 +45,36 @@ export class ColumnsComponent implements OnInit {
       title: 'Column List',
       link: '/organizations/columns/list',
       type: 'basic',
-      fn: (n: NavigationItem) => { this.setNavTitle(n) },
+      fn: (n: NavigationItem) => {
+        this.setNavTitle(n)
+      },
     },
     {
       id: 'organizations/columns/geocoding',
       link: '/organizations/columns/geocoding',
       title: 'Geocoding',
       type: 'basic',
-      fn: (n: NavigationItem) => { this.setNavTitle(n) },
+      fn: (n: NavigationItem) => {
+        this.setNavTitle(n)
+      },
     },
     {
       id: 'organization/columns/data-type',
       link: '/organizations/columns/data-types',
       title: 'Data Types',
       type: 'basic',
-      fn: (n: NavigationItem) => { this.setNavTitle(n) },
+      fn: (n: NavigationItem) => {
+        this.setNavTitle(n)
+      },
     },
     {
       id: 'organizations/columns/import-settings',
       link: '/organizations/columns/import-settings',
       title: 'Import Settings',
       type: 'basic',
-      fn: (n: NavigationItem) => { this.setNavTitle(n) },
+      fn: (n: NavigationItem) => {
+        this.setNavTitle(n)
+      },
     },
   ]
 

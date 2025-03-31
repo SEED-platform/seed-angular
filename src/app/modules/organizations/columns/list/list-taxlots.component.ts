@@ -22,11 +22,14 @@ export class ListTaxLotComponent extends ListComponent implements AfterViewInit,
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    this._columnService.taxLotColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
-      map((columns) => {
-        this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-      }),
-    ).subscribe()
+    this._columnService.taxLotColumns$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .pipe(
+        map((columns) => {
+          this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+        }),
+      )
+      .subscribe()
   }
 
   ngAfterViewInit() {

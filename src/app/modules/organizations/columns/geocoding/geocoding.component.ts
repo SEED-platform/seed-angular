@@ -8,8 +8,8 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatTooltip } from '@angular/material/tooltip'
 import { Subject, takeUntil } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ProgressResponse } from '@seed/api/progress'
 import { SharedImports } from '@seed/directives'
-import { type UploaderResponse } from '@seed/services/uploader/uploader.types'
 import { naturalSort } from '@seed/utils'
 import { UpdateModalComponent } from '../modal/update-modal.component'
 
@@ -61,22 +61,19 @@ export class GeocodingComponent implements OnDestroy {
   save() {
     const changes = {}
     for (const [i, column] of this.columns.entries()) {
-      changes[column.id] = { geocoding_order: (i + 1) }
+      changes[column.id] = { geocoding_order: i + 1 }
     }
     for (const c of this.removedColumns) {
       changes[c.id] = { geocoding_order: 0 }
     }
-    this._columnService.updateMultipleColumns(this.columns[0].organization_id, this.type, changes).subscribe((response: UploaderResponse) => {
-      const dialogRef = this._dialog.open(UpdateModalComponent, {
-        width: '40rem',
-        data: { progressResponse: response },
+    this._columnService
+      .updateMultipleColumns(this.columns[0].organization_id, this.type, changes)
+      .subscribe((response: ProgressResponse) => {
+        const dialogRef = this._dialog.open(UpdateModalComponent, {
+          width: '40rem',
+          data: { progressResponse: response },
+        })
+        dialogRef.afterClosed().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
       })
-      dialogRef
-        .afterClosed()
-        .pipe(
-          takeUntil(this._unsubscribeAll$),
-        )
-        .subscribe()
-    })
   }
 }

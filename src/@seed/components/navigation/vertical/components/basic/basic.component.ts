@@ -1,4 +1,4 @@
-import { NgClass, NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
@@ -14,7 +14,7 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   selector: 'seed-vertical-navigation-basic-item',
   templateUrl: './basic.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, MatTooltipModule, NgClass, NgTemplateOutlet, RouterLink, RouterLinkActive, SharedImports],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, RouterLink, RouterLinkActive, SharedImports],
 })
 export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

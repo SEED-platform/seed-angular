@@ -122,7 +122,7 @@ seed-vertical-navigation {
 
   // Wrapper
   .seed-vertical-navigation-wrapper {
-    @apply h-svh max-h-svh min-h-svh;
+    @apply h-svh max-h-svh;
 
     position: absolute;
     display: flex;
@@ -258,6 +258,11 @@ seed-vertical-navigation {
   seed-vertical-navigation-basic-item,
   seed-vertical-navigation-collapsible-item {
     margin-bottom: 4px;
+
+    // Remove margin if the next sibling is seed-vertical-navigation-divider-item
+    &:has(+ seed-vertical-navigation-divider-item) {
+      margin-bottom: 0;
+    }
 
     .seed-vertical-navigation-item {
       cursor: pointer;

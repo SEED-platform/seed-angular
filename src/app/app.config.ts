@@ -93,6 +93,8 @@ export const appConfig: ApplicationConfig = {
         : {}),
       seed: {
         layout: 'main',
+        // At least 8 characters, one uppercase letter, one lowercase letter, and one number
+        passwordPattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/,
         scheme: 'light',
         theme: 'theme-default',
         themes: [

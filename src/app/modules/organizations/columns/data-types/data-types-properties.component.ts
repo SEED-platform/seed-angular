@@ -17,7 +17,18 @@ import { DataTypesComponent } from './data-types.component'
   selector: 'seed-organizations-column-data-types-properties',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, SharedImports, TableContainerComponent, MatButtonModule, MatFormFieldModule, MatInputModule, MatPaginator, MatSelectModule, MatTableModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    SharedImports,
+    TableContainerComponent,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginator,
+    MatSelectModule,
+    MatTableModule,
+    ReactiveFormsModule,
+  ],
 })
 export class DataTypesPropertiesComponent extends DataTypesComponent implements AfterViewInit, OnInit {
   type = 'PropertyState'
@@ -25,16 +36,19 @@ export class DataTypesPropertiesComponent extends DataTypesComponent implements 
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).pipe(
-      map((columns) => {
-        this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-        this.initializeFormControls()
-        if (this.columns.length > 0) {
-          this.isLoading = false
-        }
-        this.columnTableDataSource.data = this.columns
-      }),
-    ).subscribe()
+    this._columnService.propertyColumns$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .pipe(
+        map((columns) => {
+          this.columns = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+          this.initializeFormControls()
+          if (this.columns.length > 0) {
+            this.isLoading = false
+          }
+          this.columnTableDataSource.data = this.columns
+        }),
+      )
+      .subscribe()
   }
 
   ngAfterViewInit(): void {

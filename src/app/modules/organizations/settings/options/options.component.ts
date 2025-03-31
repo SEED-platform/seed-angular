@@ -32,10 +32,10 @@ export class OptionsComponent implements OnInit, OnDestroy {
   organization: Organization
   fields: string[] = ['name', 'geocoding_enabled', 'comstock_enabled', 'public_feed_enabled']
   optionsForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    geocoding_enabled: new FormControl(false, []),
-    comstock_enabled: new FormControl(false, []),
-    public_feed_enabled: new FormControl(false, []),
+    name: new FormControl('', Validators.required),
+    geocoding_enabled: new FormControl(false),
+    comstock_enabled: new FormControl(false),
+    public_feed_enabled: new FormControl(false),
   })
 
   ngOnInit(): void {

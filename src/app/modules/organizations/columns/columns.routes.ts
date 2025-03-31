@@ -11,7 +11,6 @@ import { ListTaxLotComponent } from './list/list-taxlots.component'
 export default [
   {
     path: 'list',
-    title: 'Column List',
     pathMatch: 'full',
     redirectTo: 'list/properties',
   },
@@ -27,7 +26,6 @@ export default [
   },
   {
     path: 'geocoding',
-    title: 'Geocoding Order',
     pathMatch: 'full',
     redirectTo: 'geocoding/properties',
   },
@@ -43,7 +41,6 @@ export default [
   },
   {
     path: 'data-types',
-    title: 'Data Types',
     pathMatch: 'full',
     redirectTo: 'data-types/properties',
   },
@@ -59,7 +56,6 @@ export default [
   },
   {
     path: 'import-settings',
-    title: 'Import Settings',
     pathMatch: 'full',
     redirectTo: 'import-settings/properties',
   },
