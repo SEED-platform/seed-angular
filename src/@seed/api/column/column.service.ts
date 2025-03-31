@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
 import type { Column, ColumnsResponse } from './column.types'
@@ -54,6 +55,24 @@ export class ColumnService {
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching columns')
+      }),
+    )
+  }
+
+  updateMultipleColumns(organization_id: number, table_name: string, changes: object): Observable<ProgressResponse> {
+    const url = '/api/v3/columns/update_multiple/'
+    return this._httpClient.post<ProgressResponse>(url, { organization_id, table_name, changes }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating columns')
+      }),
+    )
+  }
+
+  deleteColumn(column: Column): Observable<ProgressResponse> {
+    const url = `/api/v3/columns/${column.id}/?organization_id=${column.organization_id}`
+    return this._httpClient.delete<ProgressResponse>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting column')
       }),
     )
   }

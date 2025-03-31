@@ -6,8 +6,7 @@ import { UserService } from '@seed/api/user'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
   AccessLevelTreeComponent,
-  ColumnMappingsComponent,
-  ColumnSettingsComponent,
+  ColumnsComponent,
   CyclesComponent,
   DataQualityComponent,
   DerivedColumnsComponent,
@@ -23,18 +22,8 @@ const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: 
   }
 }
 
-const columnMappingTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'column-mappings' }
-  return genericTypeMatcher(args)(segments)
-}
-
 const dataQualityTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'data-quality' }
-  return genericTypeMatcher(args)(segments)
-}
-
-const columnSettingsTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'column-settings' }
   return genericTypeMatcher(args)(segments)
 }
 
@@ -63,14 +52,9 @@ export default [
     },
   },
   {
-    matcher: columnMappingTypeMatcher,
-    title: 'Column Mappings',
-    component: ColumnMappingsComponent,
-  },
-  {
-    matcher: columnSettingsTypeMatcher,
-    title: 'Column Settings',
-    component: ColumnSettingsComponent,
+    path: 'columns',
+    component: ColumnsComponent,
+    loadChildren: () => import('app/modules/organizations/columns/columns.routes'),
   },
   {
     matcher: dataQualityTypeMatcher,
