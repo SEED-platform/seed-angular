@@ -11,6 +11,7 @@ import type { Observable } from 'rxjs'
 import { forkJoin, Subject, takeUntil, tap } from 'rxjs'
 import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CreateUserRequest, UserRole } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -41,16 +42,24 @@ export class FormModalComponent implements OnDestroy, OnInit {
   accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
   roles = ['owner', 'member', 'viewer']
   form = new FormGroup({
-    first_name: new FormControl<string | null>(''),
-    last_name: new FormControl<string | null>(''),
-    email: new FormControl<string | null>('', Validators.required),
+    first_name: new FormControl<string | null>('', Validators.required),
+    last_name: new FormControl<string | null>('', Validators.required),
+    email: new FormControl<string | null>('', [Validators.required, Validators.email]),
     access_level: new FormControl<string | null>('', Validators.required),
     access_level_instance_id: new FormControl<number | null>(null, Validators.required),
-    role: new FormControl<string | null>('', Validators.required),
+    role: new FormControl<UserRole | null>('member', Validators.required),
   })
+  create = true
 
   ngOnInit(): void {
     this.form.patchValue(this.data.member)
+    // disable name and email if editing existing member
+    if (this.data.member) {
+      this.create = false
+      this.form.get('first_name')?.disable()
+      this.form.get('last_name')?.disable()
+      this.form.get('email')?.disable()
+    }
     // watch for changes to access level and repopulate access level instances
     this.form
       .get('access_level')
@@ -80,6 +89,30 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   onSubmit(): void {
+    if (this.create) {
+      this.createMember()
+    } else {
+      this.editMember()
+    }
+  }
+
+  createMember() {
+    const { first_name, last_name, email, access_level_instance_id, role } = this.form.value
+    const userDetails: CreateUserRequest = {
+      first_name,
+      last_name,
+      email,
+      access_level_instance_id,
+      role,
+      org_name: null,
+    }
+    this._userService.createUser(this.data.orgId, userDetails).subscribe(() => {
+      this._snackBar.success('User created')
+      this._dialogRef.close()
+    })
+  }
+
+  editMember() {
     const { member, orgId } = this.data
     const { role, access_level, access_level_instance_id } = this.form.value
     const requests: Observable<{ status: string }>[] = []
