@@ -5,8 +5,8 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
-import type { Column } from '@seed/api/column'
 import { Subject } from 'rxjs'
+import type { Column } from '@seed/api/column'
 import type { InventoryType, Profile } from '../inventory.types'
 
 @Component({
