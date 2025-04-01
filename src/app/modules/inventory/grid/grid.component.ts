@@ -172,7 +172,13 @@ export class InventoryGridComponent implements OnInit, OnChanges {
       cellRenderer: ({ value }: { value: number[] }) => {
         const labels = value
         if (!labels.length) return ''
-        const eLabels = labels.map((id: number) => `<div class="label ${this.labelLookup[id].color} whitespace-nowrap px-2">${this.labelLookup[id].name}</div>`).join(' ')
+
+        const eLabels = labels.map((id: number) => {
+          return this.labelLookup[id]
+            ? `<div class="label ${this.labelLookup[labels[0]]?.color} whitespace-nowrap px-2">${this.labelLookup[id].name}</div>`
+            : ''
+        }).join(' ')
+
         const eGui = `<div>${eLabels}</div>`
         return value ? eGui : ''
       },
@@ -202,7 +208,6 @@ export class InventoryGridComponent implements OnInit, OnChanges {
   onFilterSortChange() {
     const filters = this.gridApi.getFilterModel()
     const sorts = this.getSorts()
-    console.log(filters)
     this.filterSortChange.emit({ sorts, filters })
   }
 

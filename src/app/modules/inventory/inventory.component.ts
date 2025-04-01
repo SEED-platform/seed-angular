@@ -11,7 +11,8 @@ import { MatTabsModule } from '@angular/material/tabs'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute, Router } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import { forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { forkJoin, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
@@ -19,12 +20,15 @@ import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
+import type { OrganizationUser, OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
+import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
-import type { AgFilterModel, AgFilterResponse, FiltersSorts, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from './inventory.types'
 
 @Component({
   selector: 'seed-inventory',
@@ -57,15 +61,18 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _columnService = inject(ColumnService)
   private _labelService = inject(LabelService)
+  private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  filters: AgFilterModel = {}
   chunk = 100
   columnDefs: ColDef[]
+  currentUser: CurrentUser
+  orgUserId: number
   cycle: Cycle
   cycleId: number
   cycles: Cycle[]
+  firstLoad = true
   gridApi: GridApi
   labelLookup: Record<number, Label> = {}
   inventory: Record<string, unknown>[]
@@ -80,30 +87,31 @@ export class InventoryComponent implements OnDestroy, OnInit {
   taxlotProfiles: Profile[]
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
-  sorts: string[] = []
   taxlotColumns: Column[]
+  userSettings: OrganizationUserSettings = {}
 
   chipList = ['chip1', 'chip2', 'chip3', 'chip4', 'chip5', 'chip6', 'chip7', 'chip8', 'chip9', 'chip10']
 
+  /*
+  * 1. get org
+  * 2. get dependencies: cycles, profiles, columns, labels, current user
+  * 3. set dependencies & get profile
+  * 4. load inventory
+  * 5. set filters and sorts from user settings
+  */
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap(({ org_id }) => {
-        return this.getDependencies(org_id)
-      }),
+      switchMap(({ org_id }) => this.getDependencies(org_id)),
+      map((results) => this.setDependencies(results)),
+      switchMap((profile_id) => this.getProfile(profile_id)),
+      switchMap(() => this.loadInventory()),
+      tap(() => { this.setFilterSorts() }),
     ).subscribe()
   }
 
-  onGridReady(gridApi: GridApi) {
-    this.gridApi = gridApi
-  }
-
-  onSelectionChanged() {
-    this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
-  }
-
   /*
-  * get cycles, profiles, columns, inventory
+  * get cycles, profiles, columns, inventory, current user
   */
   getDependencies(org_id: number) {
     this.orgId = org_id
@@ -113,21 +121,27 @@ export class InventoryComponent implements OnDestroy, OnInit {
       profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
       propertyColumns: this._columnService.propertyColumns$.pipe(take(1)),
       labels: this._labelService.labels$.pipe(take(1)),
-    }).pipe(
-      tap((results) => { this.setDependencies(results) }),
-    )
+      currentUser: this._userService.currentUser$.pipe(take(1)),
+    })
   }
 
   /*
-  * set class variables: cycles, profiles, columns, inventory
+  * set class variables: cycles, profiles, columns, inventory. returns profile id
   */
-  setDependencies({ cycles, profiles, propertyColumns, labels }: { cycles: Cycle[]; profiles: Profile[]; propertyColumns: Column[]; labels: Label[] }) {
-    this.cycles = cycles
-    // TEMP - remove when cycle is set in backend
-    this.cycle = cycles.at(3) ?? null
-    this.cycleId = this.cycle?.id
+  setDependencies({ cycles, profiles, propertyColumns, labels, currentUser }: InventoryDependencies) {
+    if (!cycles) {
+      return null
+    }
 
-    // this.allProfiles = profiles
+    const { org_user_id, settings } = currentUser
+    this.currentUser = currentUser
+    this.orgUserId = org_user_id
+    this.userSettings = settings
+
+    this.cycles = cycles
+    this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycle_id) ?? this.cycles[0]
+    this.cycleId = this.cycle.id
+
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
     this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
     this.propertyColumns = propertyColumns
@@ -135,47 +149,41 @@ export class InventoryComponent implements OnDestroy, OnInit {
     for (const label of labels) {
       this.labelLookup[label.id] = label
     }
-    // TEMP - remove when profile is se tin backend
-    const id = this.profiles.length ? this.profiles[3].id : null
-    this.getProfile(id)
+
+    const profile_id = this.profiles.find((p) => p.id === this.userSettings.profile_id)?.id ?? this.profiles[0]?.id
+    return profile_id
   }
+
   get profiles() {
     return this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
   }
 
   /*
   * get profile and reload inventory
+  * retrieve profile returns a more detailed Profile object than list profiles
   */
-  getProfile(id: number) {
+  getProfile(id: number): Observable<Profile | null> {
     if (!id) {
-      this.loadInventory()
-      return
+      return of(null)
     }
 
-    const profileRequest = id ? this._inventoryService.getColumnListProfile(id) : of(null)
-    profileRequest.subscribe((profile) => {
-      this.profile = profile
-      this.profileId = profile.id
-      this.loadInventory()
-    })
-  }
-
-  onProfileChange(id: number) {
-    this.getProfile(id)
-  }
-
-  onCycleChange(id: number) {
-    this.cycleId = id
-    this.cycle = this.cycles.find((cycle) => cycle.id === id)
-    this.page = 1
-    this.loadInventory()
+    return this._inventoryService.getColumnListProfile(id)
+      .pipe(
+        tap((profile) => {
+          this.profile = profile
+          this.profileId = profile.id
+          this.userSettings.profile_id = profile.id
+        }),
+      )
   }
 
   /*
-  * Loads inventory for the grid
+  * Loads inventory for the grid.
+  * returns a null observable to track completion
   */
-  loadInventory() {
-    if (!this.cycleId) return
+  loadInventory(): Observable<null> {
+    if (!this.cycleId) return of(null)
+    console.log('load inventory')
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
@@ -187,22 +195,63 @@ export class InventoryComponent implements OnDestroy, OnInit {
       inventory_type,
     })
 
-    const paramString = params.toString()
     const data = {
       include_property_ids: null,
       profile_id: this.profileId,
-      filters: this.filters,
-      sorts: this.sorts,
+      filters: this.userSettings.filters,
+      sorts: this.userSettings.sorts,
     }
 
-    this._inventoryService.getAgInventory(paramString, data).subscribe(({ pagination, results, column_defs }: AgFilterResponse) => {
-      this.pagination = pagination
-      this.inventory = results
+    return this._inventoryService.getAgInventory(params.toString(), data).pipe(
+      tap(({ pagination, results, column_defs }: AgFilterResponse) => {
+        this.pagination = pagination
+        this.inventory = results
 
-      this.columnDefs = column_defs
-      // this.columnDefs = column_defs.map((colDef) => ({ ...colDef, headerComponent: CellHeaderMenuComponent }))
-      this.rowData = results
-    })
+        this.columnDefs = column_defs
+        this.rowData = results
+      }),
+      map(() => null),
+    ) as Observable<null>
+  }
+
+  /*
+  * on initial page load, set any filters and sorts from the user settings
+  */
+  setFilterSorts() {
+    this.setFilters()
+    this.setSorts()
+  }
+
+  onGridReady(gridApi: GridApi) {
+    this.gridApi = gridApi
+  }
+
+  onSelectionChanged() {
+    this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+  }
+
+  onProfileChange(id: number) {
+    this.getProfile(id).pipe(
+      switchMap(() => this.loadInventory()),
+      switchMap(() => this.updateOrgUserSettings()),
+    ).subscribe()
+  }
+
+  onCycleChange(id: number) {
+    this.cycleId = id
+    this.cycle = this.cycles.find((cycle) => cycle.id === id)
+    this.page = 1
+    this.userSettings.cycle_id = id
+    this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
+  }
+
+  updateOrgUserSettings(): Observable<OrganizationUser> {
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).pipe(
+      map((response) => response.data),
+      tap(({ settings }) => {
+        this.userSettings = settings
+      }),
+    )
   }
 
   onPageChange(page: number) {
@@ -210,12 +259,35 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.loadInventory()
   }
 
+  setFilters() {
+    if (Object.keys(this.userSettings.filters).length == 0) return
+    const filters = this.userSettings.filters
+    this.gridApi.setFilterModel(filters)
+  }
+
+  setSorts() {
+    if (!this.userSettings.sorts.length) return
+
+    for (const sort of this.userSettings.sorts) {
+      const colId = sort.replace(/^-/, '')
+      const direction = sort.startsWith('-') ? 'desc' : 'asc'
+      const colDef = this.columnDefs.find((col) => col.field === colId)
+      if (colDef) colDef.sort = direction
+    }
+    this.gridApi.onSortChanged()
+  }
+
   onFilterSortChange({ sorts, filters }: FiltersSorts) {
-    console.log('onFilterSortChange')
-    this.filters = filters
-    this.sorts = sorts
     this.page = 1
-    this.loadInventory()
+    this.userSettings.filters = filters
+    this.userSettings.sorts = sorts
+
+    if (this.firstLoad) {
+      this.firstLoad = false
+      return
+    }
+
+    this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
   }
 
   async toggleInventoryType(type: InventoryType) {

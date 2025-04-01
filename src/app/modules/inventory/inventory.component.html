@@ -42,7 +42,7 @@
 
     <!-- GRID CONFIG -->
     <div class="m-2 flex">
-
+      <!-- Actions -->
       <seed-inventory-grid-actions
         [cycleId]="cycleId"
         [gridApi]="gridApi"
@@ -53,6 +53,7 @@
         [selectedViewIds]="selectedViewIds"
       ></seed-inventory-grid-actions>
 
+      <!-- Cycles -->
       <seed-inventory-grid-config-selector
         label="Cycle"
         [items]="cycles"
@@ -61,6 +62,7 @@
       >
       </seed-inventory-grid-config-selector>
 
+      <!-- Profiles -->
       <seed-inventory-grid-config-selector
         label="Profile"
         [items]="profiles"
@@ -75,8 +77,8 @@
       <seed-inventory-filter-sort-chips
         [gridApi]="gridApi"
         [columnDefs]="columnDefs"
-        [filters]="filters"
-        [sorts]="sorts"
+        [filters]="userSettings.filters"
+        [sorts]="userSettings.sorts"
       ></seed-inventory-filter-sort-chips>
     }
 
