@@ -2,10 +2,10 @@ import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { AuthService } from 'app/core/auth'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-member-reset-passwords-modal',

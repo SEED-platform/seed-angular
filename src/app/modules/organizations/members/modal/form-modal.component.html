@@ -1,5 +1,5 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Member</h2>
-<form [formGroup]="form" class="flex flex-col gap-4">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Edit Member</h2>
+<form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Email</mat-label>
     <input matInput formControlName="email" />
