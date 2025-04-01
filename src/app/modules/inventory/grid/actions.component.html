@@ -1,9 +1,13 @@
-<div class="flex flex-col mr-1">
+<div class="mr-1 flex flex-col">
   <mat-label class="text-sm text-gray-400">Actions</mat-label>
-  <mat-select #actionSelect (selectionChange)="onAction($event.value.action, actionSelect)"
-    class="text-sm border border-gray-500 rounded h-6 w-60 p-3" placeholder="Select Action">
+  <mat-select
+    #actionSelect
+    (selectionChange)="onAction($event.value.action, actionSelect)"
+    class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
+    placeholder="Select Action"
+  >
     @for (item of actions; track $index) {
-    <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
+      <mat-option [value]="item" class="!h-3 text-sm" [disabled]="item.disabled">{{ item.name }}</mat-option>
     }
   </mat-select>
 </div>
