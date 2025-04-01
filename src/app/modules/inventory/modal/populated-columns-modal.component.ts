@@ -45,7 +45,6 @@ export class PopulatedColumnsModalComponent implements OnDestroy {
   }
 
   dismiss() {
-    console.log('dismiss')
     this._dialogRef.close()
   }
 

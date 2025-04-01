@@ -2,11 +2,9 @@
   <span class="my-auto">{{ params.displayName }}</span>
   <mat-icon svgIcon="fa-solid:chevron-down" class="scale-50 cursor-pointer" (click)="toggleMenu($event)"></mat-icon>
 </div>
+<!-- THIS IS IN DEVELOPMENT -->
 @if (menuVisible) {
   <div class="cell-menu absolute z-[1000] w-48 rounded-md border border-gray-300 bg-white p-2 shadow-lg">
-    <button (click)="sortAsc()">Sort Asc</button>
-    <button (click)="sortAsc()">Sort Asc</button>
-    <button (click)="sortAsc()">Sort Asc</button>
     <button (click)="sortAsc()">Sort Asc</button>
   </div>
 }

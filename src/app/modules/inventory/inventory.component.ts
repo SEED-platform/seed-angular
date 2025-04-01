@@ -90,8 +90,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   taxlotColumns: Column[]
   userSettings: OrganizationUserSettings = {}
 
-  chipList = ['chip1', 'chip2', 'chip3', 'chip4', 'chip5', 'chip6', 'chip7', 'chip8', 'chip9', 'chip10']
-
   /*
   * 1. get org
   * 2. get dependencies: cycles, profiles, columns, labels, current user
@@ -183,7 +181,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   loadInventory(): Observable<null> {
     if (!this.cycleId) return of(null)
-    console.log('load inventory')
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
@@ -296,10 +293,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
       await this._router.navigateByUrl('/', { skipLocationChange: true })
       await this._router.navigate([this.type === 'properties' ? 'taxlots' : 'properties'])
     }
-  }
-
-  openFilterSortModal() {
-    console.log('open filter sort label')
   }
 
   ngOnDestroy(): void {

@@ -50,7 +50,6 @@ export class MoreActionsModalComponent implements OnDestroy {
   }
 
   dismiss() {
-    console.log('dismiss')
     this._dialogRef.close()
   }
 

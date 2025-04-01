@@ -11,6 +11,7 @@ import type { IHeaderParams } from 'ag-grid-community'
   ],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp {
+  // THIS COMPONENT IS STILL IN DEVELOPMENT
   public params: IHeaderParams
   public menuVisible = false
 
@@ -25,10 +26,6 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp {
 
   sortAsc(): void {
     console.log('sort asc')
-    // this.params.columnApi.applyColumnState({
-    //   state: [{ colId: this.params.column.getId(), sort: 'asc' }],
-    //   applyOrder: true,
-    // })
     this.menuVisible = false
   }
 

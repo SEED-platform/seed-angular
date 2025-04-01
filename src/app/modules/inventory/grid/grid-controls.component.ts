@@ -21,7 +21,6 @@ export class InventoryGridControlsComponent {
     const newPage = pageLookup[direction]
     if (newPage < 1 || newPage > num_pages) return
 
-    console.log('this.loadInventory(pageLookup[direction])')
     this.pageChange.emit(newPage)
   }
 }

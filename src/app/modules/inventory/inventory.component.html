@@ -17,29 +17,6 @@
 
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-2">
-    <!-- config -->
-    <!-- <mat-expansion-panel #panel [hideToggle]="true">
-      <mat-expansion-panel-header class="flex flex-row-reverse gap-2">
-          <mat-icon 
-            svgIcon="fa-solid:chevron-down"
-            class="chevron transition-transform duration-300 scale-50"
-            [class.rotate-180]="panel.expanded"
-            ></mat-icon>
-          @if (!panel.expanded) {
-            <div class="flex p-2 font-normal">
-              <div>
-                Cycle: <span [ngClass]="{ 'border border-gray-500 rounded px-4 py-2 mr-4': cycle }">{{ cycle ? cycle.name : '' }}</span> 
-              </div>
-              <div>
-                Profile: <span [ngClass]="{ 'border border-gray-500 rounded px-4 py-2': profile }">{{ profile ? profile.name : '' }}</span>
-              </div>
-            </div>
-          }
-
-      </mat-expansion-panel-header> 
-      expanded stuff here
-    </mat-expansion-panel> -->
-
     <!-- GRID CONFIG -->
     <div class="m-2 flex">
       <!-- Actions -->
@@ -65,9 +42,9 @@
         (selectionChange)="onProfileChange($event)"
       >
       </seed-inventory-grid-config-selector>
-
-      <!-- <button mat-stroked-button (click)="openFilterSortModal()" class="mt-2">Filters / Sorts</button> -->
     </div>
+
+    <!-- Filter and Sort chips -->
     @if (gridApi && columnDefs) {
       <seed-inventory-filter-sort-chips
         [gridApi]="gridApi"

@@ -31,7 +31,6 @@ export class ActionsComponent implements OnDestroy {
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
-  // SHOULD ACTIONS BE ITS OWN COMPONENT?
   get actions() {
     return [
       { name: 'Select All', action: () => { this.selectAll() }, disabled: false },
@@ -94,14 +93,6 @@ export class ActionsComponent implements OnDestroy {
       )
       .subscribe()
   }
-
-  // openShowPopulatedColumnsModal() {
-  //   // if (!this.profiles.length) {
-  //   //   this.newProfile().subscribe(() => this.openPopulatedColumnsModal());
-  //   // } else {
-  //   //   this.openPopulatedColumnsModal();
-  //   // }
-  // }
 
   openShowPopulatedColumnsModal() {
     this._dialog.open(PopulatedColumnsModalComponent, {

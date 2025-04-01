@@ -34,7 +34,6 @@ export class DeleteModalComponent implements OnDestroy {
   }
 
   dismiss() {
-    console.log('dismiss')
     this._dialogRef.close()
   }
 
