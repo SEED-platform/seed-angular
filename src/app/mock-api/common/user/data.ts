@@ -17,4 +17,6 @@ export const user: CurrentUser = {
   ali_id: 1,
   is_ali_root: true,
   is_ali_leaf: true,
+  org_user_id: 1,
+  settings: {},
 }

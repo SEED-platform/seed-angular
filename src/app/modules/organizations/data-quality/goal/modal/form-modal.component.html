@@ -65,7 +65,6 @@
           <mat-label>Labels</mat-label>
           <mat-select formControlName="status_label">
             <mat-select-trigger>
-              <!-- {{form.value.status_label}} -->
               @if (form.value.status_label) {
                 <seed-label [label]="labelLookup[form.value.status_label]"></seed-label>
               }

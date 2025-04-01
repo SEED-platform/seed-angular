@@ -17,6 +17,8 @@ export type CurrentUser = {
   ali_id: number;
   is_ali_root: boolean;
   is_ali_leaf: boolean;
+  org_user_id: number;
+  settings: Record<string, unknown>;
 }
 
 export type UserUpdateRequest = {
