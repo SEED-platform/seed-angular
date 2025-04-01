@@ -8,7 +8,7 @@ export default [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'info', // Default tab (first tab)
+    redirectTo: 'info',
   },
   {
     path: 'info',

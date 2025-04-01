@@ -13,11 +13,11 @@ import { SharedImports } from '@seed/directives'
 import { BetterApiKeyValidator } from './better-api-key.validator'
 
 @Component({
-  selector: 'seed-organizations-settings-api-key',
-  templateUrl: './api-key.component.html',
+  selector: 'seed-organizations-settings-api-keys',
+  templateUrl: './api-keys.component.html',
   imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, PageComponent, ReactiveFormsModule, SharedImports],
 })
-export class APIKeyComponent implements OnDestroy, OnInit {
+export class ApiKeysComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _betterApiKeyValidator = inject(BetterApiKeyValidator)
   private readonly _unsubscribeAll$ = new Subject<void>()

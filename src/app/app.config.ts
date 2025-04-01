@@ -95,6 +95,9 @@ export const appConfig: ApplicationConfig = {
         layout: 'main',
         scheme: 'auto',
         // scheme: 'light',
+        // At least 8 characters, one uppercase letter, one lowercase letter, and one number
+        passwordPattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/,
+
         theme: 'theme-default',
         themes: [
           {

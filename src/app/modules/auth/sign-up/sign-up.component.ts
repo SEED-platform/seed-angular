@@ -9,10 +9,12 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { Router, RouterLink } from '@angular/router'
+import { take } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
-import { TermsService } from '@seed/services'
+import { type SEEDConfig, TermsService } from '@seed/services'
+import { ConfigService } from '@seed/services/config'
 import { AuthService } from 'app/core/auth/auth.service'
 
 @Component({
@@ -35,12 +37,10 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthSignUpComponent implements OnInit {
   private _authService = inject(AuthService)
+  private _configService = inject(ConfigService)
   private _formBuilder = inject(FormBuilder)
   private _router = inject(Router)
   private _termsOfServiceService = inject(TermsService)
-
-  // At least 8 characters, one uppercase letter, one lowercase letter, and one number
-  private readonly _passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/
 
   alert: Alert
   signUpForm: FormGroup<{
@@ -55,10 +55,12 @@ export class AuthSignUpComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.signUpForm = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(this._passwordPattern)]],
-      terms: [false, Validators.requiredTrue],
+    this._configService.config$.pipe(take(1)).subscribe((config: SEEDConfig) => {
+      this.signUpForm = this._formBuilder.group({
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(config.passwordPattern)]],
+        terms: [false, Validators.requiredTrue],
+      })
     })
   }
 

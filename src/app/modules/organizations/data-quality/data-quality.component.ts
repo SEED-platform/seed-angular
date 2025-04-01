@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -25,11 +24,10 @@ import { FormModalComponent } from './inventory/modal/form-modal.component'
   selector: 'seed-organizations-data-quality',
   templateUrl: './data-quality.component.html',
   imports: [
-    CommonModule,
     DataQualityGoalTableComponent,
     DataQualityInventoryTableComponent,
-    InventoryTabComponent,
     FormsModule,
+    InventoryTabComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule,

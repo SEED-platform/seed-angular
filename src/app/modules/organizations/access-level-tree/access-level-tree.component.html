@@ -1,5 +1,6 @@
 <seed-page
   class="flex flex-auto flex-col"
+  *transloco="let t"
   [config]="{
     title: 'Access Level Tree',
     titleIcon: 'fa-solid:sitemap',
@@ -9,18 +10,17 @@
     action2Icon: 'heroicons-outline:bars-3',
     action2Classes: 'inline-flex md:hidden',
   }"
-  *transloco="let t"
 >
   <mat-drawer-container class="h-full">
     <mat-drawer-content>
       <mat-drawer-container class="h-full">
-        <mat-drawer class="w-72 dark:bg-gray-900" [mode]="drawerMode" [(opened)]="drawerOpened">
+        <mat-drawer class="w-72 dark:bg-gray-900" [(opened)]="drawerOpened" [mode]="drawerMode">
           <div class="flex h-full w-full flex-col">
             <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">{{ t('Access Levels') }}</div>
 
             @if (currentUser.is_ali_root) {
               <div class="mb-8 flex h-12 items-center">
-                <button class="mx-6 w-full" mat-flat-button color="primary" (click)="editAccessLevels()">
+                <button class="mx-6 w-full" (click)="editAccessLevels()" mat-flat-button color="primary">
                   <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
                   <span class="ml-2">{{ t('Edit') }}</span>
                 </button>
@@ -34,7 +34,7 @@
             </ol>
 
             @if (currentUser.is_ali_root) {
-              <button class="m-6 mt-auto flex" mat-flat-button color="primary" (click)="uploadInstances()">
+              <button class="m-6 mt-auto flex" (click)="uploadInstances()" mat-flat-button color="primary">
                 <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
                 <span class="ml-2">{{ t('Upload') }}</span>
               </button>
@@ -50,13 +50,13 @@
                 <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="dynamic">
                   <mat-icon class="icon-size-5" svgIcon="fa-solid:magnifying-glass" matPrefix></mat-icon>
                   <input
+                    class="text-ellipsis"
+                    #filterInput
+                    [placeholder]="t('Filter access level instances')"
+                    (input)="onFilterChange(filterInput.value)"
                     matInput
                     autocomplete="off"
-                    [placeholder]="t('Filter access level instances')"
                     spellcheck="false"
-                    class="text-ellipsis"
-                    (input)="onFilterChange(filterInput.value)"
-                    #filterInput
                   />
                 </mat-form-field>
               </div>
@@ -85,13 +85,13 @@
         </mat-drawer-content>
       </mat-drawer-container>
     </mat-drawer-content>
-    <mat-drawer mode="over" [(opened)]="helpOpened" position="end">
+    <mat-drawer [(opened)]="helpOpened" mode="over" position="end">
       <ng-container *ngTemplateOutlet="helpTemplate"></ng-container>
     </mat-drawer>
   </mat-drawer-container>
 </seed-page>
 
-<ng-template let-tree let-depth="depth" #instanceTemplate>
+<ng-template #instanceTemplate let-tree let-depth="depth">
   @for (instance of tree; track instance.id) {
     @let isExpanded = expanded.has(instance.id);
     @let hasChildren = instance.children?.length > 0;
@@ -144,7 +144,7 @@
 </ng-template>
 
 <mat-menu #instanceMenu="matMenu" overlapTrigger xPosition="before">
-  <ng-template matMenuContent let-instance let-depth="depth" *transloco="let t">
+  <ng-template *transloco="let t" matMenuContent let-instance let-depth="depth">
     @let isMaximumDepth = depth === accessLevelNames.length - 1;
     <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
       <span class="flex flex-col leading-none">
@@ -153,21 +153,21 @@
     </div>
     <mat-divider class="my-2"></mat-divider>
     <div
-      matTooltip="Create an additional access level before creating new instances here"
       [matTooltipDisabled]="!isMaximumDepth"
+      matTooltip="Create an additional access level before creating new instances here"
       matTooltipPosition="before"
     >
-      <button mat-menu-item (click)="createInstance(instance)" [disabled]="isMaximumDepth">
+      <button [disabled]="isMaximumDepth" (click)="createInstance(instance)" mat-menu-item>
         <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
         <span>{{ t('Create child instances') }}</span>
       </button>
     </div>
-    <button mat-menu-item (click)="renameInstance(instance)">
+    <button (click)="renameInstance(instance)" mat-menu-item>
       <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
       <span>{{ t('Rename') }}</span>
     </button>
     @if (depth > 0) {
-      <button mat-menu-item (click)="deleteInstance(instance)">
+      <button (click)="deleteInstance(instance)" mat-menu-item>
         <mat-icon class="icon-size-5" svgIcon="fa-solid:trash-can"></mat-icon>
         <span>{{ t('Delete') }}</span>
       </button>
@@ -191,10 +191,10 @@
 
     <h3>{{ t('Example Access Level Tree') }}</h3>
     <img
-      imageOverlay
       class="drop-shadow-lg"
-      src="/images/documentation/access-level-tree/ali-tree-example-lg.webp"
       [alt]="t('Example Access Level Tree')"
+      imageOverlay
+      src="/images/documentation/access-level-tree/ali-tree-example-lg.webp"
     />
 
     @if (currentUser.is_ali_root) {

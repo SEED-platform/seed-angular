@@ -36,7 +36,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   ],
 })
 export class AuthSignInComponent implements OnInit, OnDestroy {
-  private _activatedRoute = inject(ActivatedRoute)
+  private _route = inject(ActivatedRoute)
   private _authService = inject(AuthService)
   private _configService = inject(ConfigService)
   private _formBuilder = inject(FormBuilder)
@@ -102,7 +102,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
         // to the correct page after a successful sign in. This way, that url can be set via
         // routing file and we don't have to touch here.
 
-        const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
+        const redirectURL = this._route.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
 
         // Navigate to the redirect url
         void this._router.navigateByUrl(redirectURL)

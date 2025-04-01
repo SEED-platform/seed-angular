@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
@@ -13,7 +13,7 @@ import type { DeleteInstanceData } from '..'
   selector: 'seed-delete-instance-dialog',
   templateUrl: './delete-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, NgClass, SharedImports],
+  imports: [CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, SharedImports],
 })
 export class DeleteInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as DeleteInstanceData

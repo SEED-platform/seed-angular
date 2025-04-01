@@ -1,13 +1,12 @@
 import { inject } from '@angular/core'
-import type { UrlSegment } from '@angular/router'
+import type { Routes, UrlSegment } from '@angular/router'
 import { switchMap, take } from 'rxjs'
-import { OrganizationService } from '../../../@seed/api/organization'
-import { UserService } from '../../../@seed/api/user'
+import { OrganizationService } from '@seed/api/organization'
+import { UserService } from '@seed/api/user'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
   AccessLevelTreeComponent,
-  ColumnMappingsComponent,
-  ColumnSettingsComponent,
+  ColumnsComponent,
   CyclesComponent,
   DataQualityComponent,
   DerivedColumnsComponent,
@@ -23,18 +22,8 @@ const genericTypeMatcher = (args: OrganizationGenericTypeMatcher) => (segments: 
   }
 }
 
-const columnMappingTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'column-mappings' }
-  return genericTypeMatcher(args)(segments)
-}
-
 const dataQualityTypeMatcher = (segments: UrlSegment[]) => {
   const args = { segments, validTypes: ['goal', 'properties', 'taxlots'], validPage: 'data-quality' }
-  return genericTypeMatcher(args)(segments)
-}
-
-const columnSettingsTypeMatcher = (segments: UrlSegment[]) => {
-  const args = { segments, validTypes: ['properties', 'taxlots'], validPage: 'column-settings' }
   return genericTypeMatcher(args)(segments)
 }
 
@@ -62,12 +51,39 @@ export default [
       },
     },
   },
-  { matcher: columnMappingTypeMatcher, component: ColumnMappingsComponent },
-  { matcher: columnSettingsTypeMatcher, component: ColumnSettingsComponent },
-  { matcher: dataQualityTypeMatcher, component: DataQualityComponent },
-  { matcher: derivedColumnsTypeMatcher, component: DerivedColumnsComponent },
-  { path: 'cycles', component: CyclesComponent },
-  { path: 'email-templates', component: EmailTemplatesComponent },
-  { path: 'labels', component: LabelsComponent },
-  { path: 'members', component: MembersComponent },
-]
+  {
+    path: 'columns',
+    component: ColumnsComponent,
+    loadChildren: () => import('app/modules/organizations/columns/columns.routes'),
+  },
+  {
+    matcher: dataQualityTypeMatcher,
+    title: 'Data Quality',
+    component: DataQualityComponent,
+  },
+  {
+    matcher: derivedColumnsTypeMatcher,
+    title: 'Derived Columns',
+    component: DerivedColumnsComponent,
+  },
+  {
+    path: 'cycles',
+    title: 'Cycles',
+    component: CyclesComponent,
+  },
+  {
+    path: 'email-templates',
+    title: 'Email Templates',
+    component: EmailTemplatesComponent,
+  },
+  {
+    path: 'labels',
+    title: 'Labels',
+    component: LabelsComponent,
+  },
+  {
+    path: 'members',
+    title: 'Members',
+    component: MembersComponent,
+  },
+] satisfies Routes

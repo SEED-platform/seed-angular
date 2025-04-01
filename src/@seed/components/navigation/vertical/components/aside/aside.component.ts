@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
@@ -21,9 +21,9 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   templateUrl: './aside.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
     MatIconModule,
     MatTooltipModule,
-    NgClass,
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,

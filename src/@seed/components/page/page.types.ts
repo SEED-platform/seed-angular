@@ -7,6 +7,7 @@ export type Config = {
   action2Classes?: string;
   action2Icon?: string;
   action2Text?: string;
+  breadcrumbs?: string[];
   title: string;
   titleIcon?: string;
 }

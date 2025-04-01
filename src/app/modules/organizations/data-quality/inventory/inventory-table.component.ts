@@ -17,7 +17,6 @@ import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
 import { DeleteModalComponent } from '../modal/delete-modal.component'
@@ -37,7 +36,6 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatSlideToggleModule,
     MatTableModule,
     MatTooltipModule,
-    SharedImports,
   ],
 })
 export class DataQualityInventoryTableComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {

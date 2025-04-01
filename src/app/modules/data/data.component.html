@@ -13,10 +13,10 @@
       <div class="grid w-full min-w-0 grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
         <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow sm:col-span-2 md:col-span-4">
           <div class="mx-6 overflow-x-auto">
-            <table class="w-full bg-transparent" mat-table matSort [dataSource]="datasetsDataSource" [trackBy]="trackByFn">
+            <table class="w-full bg-transparent" [dataSource]="datasetsDataSource" [trackBy]="trackByFn" mat-table matSort>
               <ng-container matColumnDef="name">
-                <th mat-header-cell mat-sort-header *matHeaderCellDef class="select-none">Dataset</th>
-                <td mat-cell *matCellDef="let dataset">
+                <th class="select-none" *matHeaderCellDef mat-header-cell mat-sort-header>Dataset</th>
+                <td *matCellDef="let dataset" mat-cell>
                   <span class="whitespace-nowrap pr-6">
                     {{ dataset.name }}
                   </span>
@@ -24,8 +24,8 @@
               </ng-container>
 
               <ng-container matColumnDef="importfiles">
-                <th mat-header-cell mat-sort-header *matHeaderCellDef class="select-none">Files</th>
-                <td mat-cell *matCellDef="let dataset">
+                <th class="select-none" *matHeaderCellDef mat-header-cell mat-sort-header>Files</th>
+                <td *matCellDef="let dataset" mat-cell>
                   <span class="whitespace-nowrap pr-6">
                     {{ dataset.importfiles.length }}
                   </span>
@@ -33,8 +33,8 @@
               </ng-container>
 
               <ng-container matColumnDef="updated_at">
-                <th mat-header-cell mat-sort-header *matHeaderCellDef class="select-none whitespace-nowrap">Last Changed</th>
-                <td mat-cell *matCellDef="let dataset">
+                <th class="select-none whitespace-nowrap" *matHeaderCellDef mat-header-cell mat-sort-header>Last Changed</th>
+                <td *matCellDef="let dataset" mat-cell>
                   <span class="whitespace-nowrap pr-6">
                     {{ dataset.updated_at | date: 'MMM dd, y' }}
                   </span>
@@ -42,8 +42,8 @@
               </ng-container>
 
               <ng-container matColumnDef="last_modified_by">
-                <th mat-header-cell mat-sort-header *matHeaderCellDef class="select-none">Changed By</th>
-                <td mat-cell *matCellDef="let dataset">
+                <th class="select-none" *matHeaderCellDef mat-header-cell mat-sort-header>Changed By</th>
+                <td *matCellDef="let dataset" mat-cell>
                   <span class="whitespace-nowrap pr-6 font-medium">
                     {{ dataset.last_modified_by }}
                   </span>
@@ -51,14 +51,14 @@
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="select-none">Actions</th>
-                <td mat-cell *matCellDef="let transaction">
+                <th class="select-none" *matHeaderCellDef mat-header-cell>Actions</th>
+                <td *matCellDef="let transaction" mat-cell>
                   <span class="whitespace-nowrap pr-6 font-medium">Actions here</span>
                 </td>
               </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="datasetsColumns"></tr>
-              <tr class="order-row h-16" mat-row *matRowDef="let row; columns: datasetsColumns"></tr>
+              <tr *matHeaderRowDef="datasetsColumns" mat-header-row></tr>
+              <tr class="order-row h-16" *matRowDef="let row; columns: datasetsColumns" mat-row></tr>
             </table>
           </div>
         </div>

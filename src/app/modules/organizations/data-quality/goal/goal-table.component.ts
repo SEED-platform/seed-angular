@@ -8,13 +8,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { ActivatedRoute } from '@angular/router'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
 import { DataQualityUtils } from '../data-quality.utils'
 import { DeleteModalComponent } from '../modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -31,13 +29,11 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatIconModule,
     MatSlideToggleModule,
     MatTableModule,
-    SharedImports,
   ],
 })
 export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]
   @Output() getRules = new EventEmitter<void>()
-  private _route = inject(ActivatedRoute)
   private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
   private _labelsService = inject(LabelService)

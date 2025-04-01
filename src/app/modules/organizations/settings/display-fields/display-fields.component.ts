@@ -17,8 +17,8 @@ import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 
 @Component({
-  selector: 'seed-organizations-settings-default-display-fields',
-  templateUrl: './default-display-fields.component.html',
+  selector: 'seed-organizations-settings-display-fields',
+  templateUrl: './display-fields.component.html',
   imports: [
     MatButtonModule,
     MatDividerModule,
@@ -31,7 +31,7 @@ import { naturalSort } from '@seed/utils'
     SharedImports,
   ],
 })
-export class DefaultDisplayFieldComponent implements OnDestroy, OnInit {
+export class DisplayFieldsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _columnService = inject(ColumnService)
 

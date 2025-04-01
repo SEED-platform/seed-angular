@@ -8,6 +8,7 @@ export type Themes = { id: string; name: string }[]
  */
 export type SEEDConfig = {
   layout: string;
+  passwordPattern: RegExp;
   scheme: Scheme;
   theme: 'theme-default';
   themes: Themes;

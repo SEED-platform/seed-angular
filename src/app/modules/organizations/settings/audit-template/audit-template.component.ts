@@ -52,7 +52,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
   auditTemplateReportTypes: AuditTemplateReportType[]
   auditTemplateForm = new FormGroup({
     at_organization_token: new FormControl(''),
-    audit_template_user: new FormControl('', [Validators.email]),
+    audit_template_user: new FormControl('', Validators.email),
     audit_template_password: new FormControl(''),
     audit_template_city_id: new FormControl(),
     status_complies: new FormControl(false),

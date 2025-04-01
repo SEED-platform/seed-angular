@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Delete Label</h2>
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Delete Label</h2>
 <div class="flex flex-col gap-4">
   <div class="prose flex">
     Delete the label <seed-label [label]="label"></seed-label> and remove it from all buildings it has been applied to?
@@ -7,9 +7,9 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()">Yes</button>
+    <button (click)="onSubmit()" mat-raised-button color="primary">Yes</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="close()">No</button>
+    <button (click)="close()" mat-stroked-button>No</button>
   </mat-dialog-actions>
 </div>

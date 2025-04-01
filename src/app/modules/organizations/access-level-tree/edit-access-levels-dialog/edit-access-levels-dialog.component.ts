@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -20,6 +20,7 @@ import type { EditAccessLevelsData } from '..'
   templateUrl: './edit-access-levels-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
   imports: [
+    CommonModule,
     FormsModule,
     MatButtonModule,
     MatDialogModule,
@@ -27,7 +28,6 @@ import type { EditAccessLevelsData } from '..'
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    NgClass,
     ReactiveFormsModule,
     SharedImports,
   ],
@@ -41,7 +41,7 @@ export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
   originalAccessLevels = this._data.accessLevelNames
   submitted = false
   form = new FormGroup({
-    levels: new FormArray(this.originalAccessLevels.map((level) => new FormControl(level, [Validators.required]))),
+    levels: new FormArray(this.originalAccessLevels.map((level) => new FormControl(level, Validators.required))),
   })
   private _accessLevelInstancesByDepth: AccessLevelsByDepth
 

@@ -37,7 +37,7 @@ export class CreateInstanceDialogComponent {
 
   private _siblingInstanceNames = new Set(this._data.parentInstance.children?.map(({ name }) => name) ?? [])
   breadcrumbs: string[] = []
-  nameValidator = new FormControl('', [this._siblingNameValidator()])
+  nameValidator = new FormControl('', this._siblingNameValidator())
   submitted = false
 
   constructor() {

@@ -1,14 +1,14 @@
 import type { Routes } from '@angular/router'
-import { APIKeyComponent } from './api-key/api-key.component'
+import { ApiKeysComponent } from './api-keys/api-keys.component'
 import { AuditTemplateComponent } from './audit-template/audit-template.component'
-import { DefaultDisplayFieldComponent } from './default-display-fields/default-display-fields.component'
+import { DisplayFieldsComponent } from './display-fields/display-fields.component'
+import { DisplayUnitsComponent } from './display-units/display-units.component'
 import { EmailComponent } from './email/email.component'
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
 import { SalesforceComponent } from './salesforce/salesforce.component'
 import { TwoFactorComponent } from './two-factor/two-factor.component'
 import { UBIDComponent } from './ubid/ubid.component'
-import { UnitsComponent } from './units/units.component'
 
 export default [
   {
@@ -18,32 +18,37 @@ export default [
   },
   {
     path: 'options',
-    title: 'Basic Organization Settings',
+    title: 'Options',
     component: OptionsComponent,
   },
   {
     path: 'api-keys',
-    title: 'Organizations API Keys',
-    component: APIKeyComponent,
+    title: 'API Keys',
+    component: ApiKeysComponent,
   },
   {
     path: 'audit-template',
-    title: 'Organization Audit Template Settings',
+    title: 'Audit Template',
     component: AuditTemplateComponent,
   },
   {
-    path: 'default-display-fields',
-    title: 'Default Display Field Settings',
-    component: DefaultDisplayFieldComponent,
+    path: 'display-fields',
+    title: 'Display Fields',
+    component: DisplayFieldsComponent,
+  },
+  {
+    path: 'display-units',
+    title: 'Display Units',
+    component: DisplayUnitsComponent,
   },
   {
     path: 'email',
-    title: 'New User Email Settings',
+    title: 'Email',
     component: EmailComponent,
   },
   {
     path: 'maintenance',
-    title: 'Organization Maintenance Actions',
+    title: 'Maintenance',
     component: MaintenanceComponent,
   },
   {
@@ -53,17 +58,12 @@ export default [
   },
   {
     path: 'two-factor',
-    title: 'Two Factor Authentication Settings',
+    title: 'Two-Factor Authentication',
     component: TwoFactorComponent,
   },
   {
     path: 'ubid',
-    title: 'UBID Threshold Setting',
+    title: 'UBID',
     component: UBIDComponent,
-  },
-  {
-    path: 'units',
-    title: 'Display Unit Settings',
-    component: UnitsComponent,
   },
 ] satisfies Routes

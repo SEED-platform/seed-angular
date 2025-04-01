@@ -1,3 +1,4 @@
+import type { Routes } from '@angular/router'
 import {
   CustomReportsComponent,
   DefaultReportsComponent,
@@ -7,9 +8,29 @@ import {
 } from '.'
 
 export default [
-  { path: 'custom-reports', component: CustomReportsComponent },
-  { path: 'default-reports', component: DefaultReportsComponent },
-  { path: 'program-overview', component: ProgramOverviewComponent },
-  { path: 'property-insights', component: PropertyInsightsComponent },
-  { path: 'portfolio-summary', component: PortfolioSummaryComponent },
-]
+  {
+    path: 'custom-reports',
+    title: 'Custom Reports',
+    component: CustomReportsComponent,
+  },
+  {
+    path: 'default-reports',
+    title: 'Default Reports',
+    component: DefaultReportsComponent,
+  },
+  {
+    path: 'program-overview',
+    title: 'Program Overview',
+    component: ProgramOverviewComponent,
+  },
+  {
+    path: 'property-insights',
+    title: 'Property Insights',
+    component: PropertyInsightsComponent,
+  },
+  {
+    path: 'portfolio-summary',
+    title: 'Portfolio Summary',
+    component: PortfolioSummaryComponent,
+  },
+] satisfies Routes

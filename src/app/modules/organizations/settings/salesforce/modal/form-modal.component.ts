@@ -33,8 +33,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
     salesforce_fieldname: string;
   }
   form = new FormGroup({
-    salesforce_fieldname: new FormControl<string | null>('', [Validators.required]),
-    column: new FormControl<number | null>(null, [Validators.required]),
+    salesforce_fieldname: new FormControl<string | null>('', Validators.required),
+    column: new FormControl<number | null>(null, Validators.required),
     organization_id: new FormControl<number | null>(null),
     id: new FormControl<number | null>(null),
   })

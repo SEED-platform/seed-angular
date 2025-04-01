@@ -1,0 +1,35 @@
+<mat-drawer-container class="static h-full">
+  <mat-drawer class="fixed top-16 h-full" mode="side" opened>
+    <seed-vertical-navigation
+      class="mt-4 bg-gray-100 dark:bg-gray-700 print:hidden"
+      [appearance]="'default'"
+      [mode]="'side'"
+      [navigation]="columnsNavigationMenu"
+      [opened]="true"
+      [autoCollapse]="true"
+      name="columnssNavigation"
+    >
+      <!-- Navigation header hook -->
+      <ng-container verticalNavigationContentHeader>
+        <div class="static flex items-center justify-center p-4">
+          <h3 class="font-xl font-bold">Columns</h3>
+        </div>
+      </ng-container>
+
+      <!-- Navigation footer hook -->
+      <ng-container verticalNavigationFooter> </ng-container>
+    </seed-vertical-navigation>
+  </mat-drawer>
+  <mat-drawer-content class="h-full bg-white p-4">
+    <seed-page [config]="{ title: pageTitle }">
+      <nav [tabPanel]="tabPanel" mat-tab-nav-bar>
+        @for (tab of tabs; track tab.label) {
+          <a [active]="tab.route === currentType()" (click)="navigateTo(tab.route)" mat-tab-link>{{ tab.label }}</a>
+        }
+      </nav>
+      <mat-tab-nav-panel #tabPanel>
+        <router-outlet></router-outlet>
+      </mat-tab-nav-panel>
+    </seed-page>
+  </mat-drawer-content>
+</mat-drawer-container>
