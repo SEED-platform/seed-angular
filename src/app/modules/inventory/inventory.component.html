@@ -24,22 +24,22 @@
         [cycleId]="cycleId"
         [gridApi]="gridApi"
         [inventory]="inventory"
-        (loadInventory)="loadInventory()"
         [orgId]="orgId"
         [profile]="profile"
         [selectedViewIds]="selectedViewIds"
+        (loadInventory)="loadInventory()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
-      <seed-inventory-grid-config-selector label="Cycle" [items]="cycles" [selectedId]="cycleId" (selectionChange)="onCycleChange($event)">
+      <seed-inventory-grid-config-selector [items]="cycles" [selectedId]="cycleId" (selectionChange)="onCycleChange($event)" label="Cycle">
       </seed-inventory-grid-config-selector>
 
       <!-- Profiles -->
       <seed-inventory-grid-config-selector
-        label="Profile"
         [items]="profiles"
         [selectedId]="profileId"
         (selectionChange)="onProfileChange($event)"
+        label="Profile"
       >
       </seed-inventory-grid-config-selector>
     </div>

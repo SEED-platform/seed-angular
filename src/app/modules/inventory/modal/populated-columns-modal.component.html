@@ -1,5 +1,5 @@
 @if (data.profile) {
-  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  <h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
     Only Show Populated Columns
   </h2>
 
@@ -9,19 +9,19 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button mat-stroked-button (click)="onStart()">Start</button>
+      <button (click)="onStart()" mat-stroked-button>Start</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
-      <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+      <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
     </mat-dialog-actions>
   </div>
 } @else {
-  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+  <h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
     Create Column List Profile
   </h2>
 
   <div class="mb-4 mt-4">
-    <form [formGroup]="form" class="flex flex-col gap-4">
+    <form class="flex flex-col gap-4" [formGroup]="form">
       <mat-form-field class="w-full">
         <mat-label>Profile Name</mat-label>
         <input matInput formControlName="name" placeholder="Profile Name" />
@@ -31,10 +31,10 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button mat-stroked-button (click)="onCreate()" [disabled]="form.invalid">Create</button>
+      <button [disabled]="form.invalid" (click)="onCreate()" mat-stroked-button>Create</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
-      <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+      <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
     </mat-dialog-actions>
   </div>
 }

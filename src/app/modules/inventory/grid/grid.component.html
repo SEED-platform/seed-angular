@@ -1,21 +1,21 @@
 <seed-inventory-grid-controls
   [pagination]="pagination"
   [resetGrid]="resetGrid"
-  (pageChange)="onPageChange($event)"
   [selectedViewIds]="selectedViewIds"
+  (pageChange)="onPageChange($event)"
 >
 </seed-inventory-grid-controls>
 
 <ag-grid-angular
   class="inventory-grid h-[calc(100%-130px)] w-full"
-  style="width: 100%; height: 100%"
   [columnDefs]="columnDefs"
   [defaultColDef]="defaultColDef"
   [gridOptions]="gridOptions"
-  (gridReady)="onGridReady($event)"
   [paginationPageSize]="agPageSize"
   [rowData]="rowData"
+  [theme]="gridTheme"
+  (gridReady)="onGridReady($event)"
   (filterChanged)="onFilterSortChange()"
   (sortChanged)="onFilterSortChange()"
-  [theme]="gridTheme"
+  style="width: 100%; height: 100%"
 />

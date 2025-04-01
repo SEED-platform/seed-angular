@@ -2,12 +2,12 @@
   <div class="mr-1 flex flex-col">
     <mat-label class="text-sm text-gray-400">{{ label }}</mat-label>
     <mat-select
+      class="h-6 w-50 rounded border border-gray-500 p-3 text-sm"
       [(value)]="selectedId"
       (selectionChange)="onSelectionChange($event.value)"
-      class="h-6 w-50 rounded border border-gray-500 p-3 text-sm"
     >
       @for (item of items; track $index) {
-        <mat-option [value]="item.id" class="text-sm">{{ item.name }}</mat-option>
+        <mat-option class="text-sm" [value]="item.id">{{ item.name }}</mat-option>
       }
     </mat-select>
   </div>

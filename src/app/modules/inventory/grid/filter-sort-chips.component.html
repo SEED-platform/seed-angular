@@ -6,7 +6,7 @@
         @for (item of filterChips; track $index) {
           <mat-chip class="filter-sort-chip"
             >{{ item.displayName }}
-            <mat-icon matChipRemove (click)="removeFilter(item.original)">close</mat-icon>
+            <mat-icon (click)="removeFilter(item.original)" matChipRemove>close</mat-icon>
           </mat-chip>
         }
       </mat-chip-set>
@@ -20,7 +20,7 @@
         @for (item of sortChips; track $index) {
           <mat-chip class="filter-sort-chip"
             >{{ item.displayName }}
-            <mat-icon matChipRemove (click)="removeSort(item.original)">close</mat-icon>
+            <mat-icon (click)="removeSort(item.original)" matChipRemove>close</mat-icon>
           </mat-chip>
         }
       </mat-chip-set>

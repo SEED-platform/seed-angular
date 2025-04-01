@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   Apply Action to Selection ({{ data.viewIds.length }})
 </h2>
 
@@ -7,10 +7,10 @@
     @for (item of actionsColumn1; track $index) {
       <li>
         <button
-          mat-button
           class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
           [disabled]="item.disabled"
           (click)="item.action()"
+          mat-button
         >
           {{ item.name }}
         </button>
@@ -21,10 +21,10 @@
     @for (item of actionsColumn2; track $index) {
       <li>
         <button
-          mat-button
           class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
           [disabled]="item.disabled"
           (click)="item.action()"
+          mat-button
         >
           {{ item.name }}
         </button>
@@ -35,6 +35,6 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>
