@@ -1,5 +1,5 @@
 import type { Routes } from '@angular/router'
-import { InventoryComponent } from 'app/modules/inventory/inventory.component'
+import { InventoryComponent } from 'app/modules/inventory/list/inventory.component'
 import type { InventoryType } from './inventory.types'
 
 type InventoryParam = {

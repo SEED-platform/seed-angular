@@ -1,6 +1,6 @@
 <seed-page
   [config]="{
-    title: 'Properties',
+    title: pageTitle,
     titleIcon: 'fa-solid:building',
   }"
 >
@@ -49,8 +49,8 @@
       <seed-inventory-filter-sort-chips
         [gridApi]="gridApi"
         [columnDefs]="columnDefs"
-        [filters]="userSettings.filters"
-        [sorts]="userSettings.sorts"
+        [filters]="filters"
+        [sorts]="sorts"
       ></seed-inventory-filter-sort-chips>
     }
 

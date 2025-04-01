@@ -32,6 +32,9 @@ export class FilterSortChipsComponent implements OnChanges {
     this.filterChips = []
     for (const columnName of Object.keys(this.filters)) {
       const colDef = this.columnDefs.find(({ field }) => field === columnName)
+
+      if (!colDef) return
+
       const displayName = this.buildFilterDisplayName(colDef, this.filters[columnName])
       const chip = { field: colDef.field, displayName, original: columnName }
       this.filterChips.push(chip)

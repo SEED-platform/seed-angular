@@ -1,10 +1,10 @@
 import type { ColDef } from 'ag-grid-community'
-import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
 import type { CurrentUser } from '@seed/api/user'
 
-export type InventoryType = 'properties' | 'taxlots' | 'goal'
+export type InventoryType = 'properties' | 'taxlots'
+export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
 
 export type FilterResponse = {
   cycle_id?: number;
@@ -90,7 +90,6 @@ export type FilterSortChip = {
 export type InventoryDependencies = {
   cycles: Cycle[];
   profiles: Profile[];
-  propertyColumns: Column[];
   labels: Label[];
   currentUser: CurrentUser;
 }

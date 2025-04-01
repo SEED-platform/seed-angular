@@ -104,8 +104,18 @@ export type OrganizationUserSettings = {
   [key: string]: unknown;
   cycle_id?: number;
   profile_id?: number;
-  sorts?: string[];
-  filters?: Record<string, unknown>;
+  sorts?: UserSettingsSorts;
+  filters?: UserSettingsFilters;
+}
+
+type UserSettingsFilters = {
+  properties: Record<string, unknown>;
+  taxlots: Record<string, unknown>;
+}
+
+type UserSettingsSorts = {
+  properties: string[];
+  taxlots: string[];
 }
 
 export type OrganizationUsersResponse = {

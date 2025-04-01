@@ -14,7 +14,6 @@ import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { forkJoin, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
@@ -26,9 +25,9 @@ import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
+import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from '../grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
-import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from './inventory.types'
+import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../inventory.types'
 
 @Component({
   selector: 'seed-inventory',
@@ -59,7 +58,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
-  private _columnService = inject(ColumnService)
   private _labelService = inject(LabelService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -78,6 +76,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   inventory: Record<string, unknown>[]
   orgId: number = null
   page = 1
+  pageTitle = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
   pagination: InventoryPagination
   profile: Profile
   profileId: number
@@ -87,7 +86,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   taxlotProfiles: Profile[]
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
-  taxlotColumns: Column[]
+  taxLotColumns: Column[]
   userSettings: OrganizationUserSettings = {}
 
   /*
@@ -117,7 +116,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
     return forkJoin({
       cycles: this._cycleService.get(this.orgId),
       profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-      propertyColumns: this._columnService.propertyColumns$.pipe(take(1)),
+      // propertyColumns: this._columnService.propertyColumns$.pipe(take(1)),
+      // taxLotColumns: this._columnService.taxLotColumns$.pipe(take(1)),
       labels: this._labelService.labels$.pipe(take(1)),
       currentUser: this._userService.currentUser$.pipe(take(1)),
     })
@@ -126,7 +126,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   /*
   * set class variables: cycles, profiles, columns, inventory. returns profile id
   */
-  setDependencies({ cycles, profiles, propertyColumns, labels, currentUser }: InventoryDependencies) {
+  // setDependencies({ cycles, profiles, propertyColumns, taxLotColumns, labels, currentUser }: InventoryDependencies) {
+  setDependencies({ cycles, profiles, labels, currentUser }: InventoryDependencies) {
     if (!cycles) {
       return null
     }
@@ -142,7 +143,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
     this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
-    this.propertyColumns = propertyColumns
+    // this.propertyColumns = propertyColumns
+    // this.taxLotColumns = taxLotColumns
 
     for (const label of labels) {
       this.labelLookup[label.id] = label
@@ -195,12 +197,13 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const data = {
       include_property_ids: null,
       profile_id: this.profileId,
-      filters: this.userSettings.filters,
-      sorts: this.userSettings.sorts,
+      filters: this.filters,
+      sorts: this.sorts,
     }
 
     return this._inventoryService.getAgInventory(params.toString(), data).pipe(
       tap(({ pagination, results, column_defs }: AgFilterResponse) => {
+        console.log('load inventory')
         this.pagination = pagination
         this.inventory = results
 
@@ -257,15 +260,24 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   setFilters() {
-    if (Object.keys(this.userSettings.filters).length == 0) return
-    const filters = this.userSettings.filters
-    this.gridApi.setFilterModel(filters)
+    if (Object.keys(this.filters).length === 0) return
+
+    const validColIds = new Set(this.gridApi.getColumns().map((c) => c.getColId()))
+    const validFilters = {}
+    // filter out any filters that are not in the current column definitions.
+    for (const colId in this.filters) {
+      if (validColIds.has(colId)) {
+        validFilters[colId] = this.filters[colId]
+      }
+    }
+
+    this.gridApi.setFilterModel(validFilters)
   }
 
   setSorts() {
-    if (!this.userSettings.sorts.length) return
+    if (!this.sorts.length) return
 
-    for (const sort of this.userSettings.sorts) {
+    for (const sort of this.sorts) {
       const colId = sort.replace(/^-/, '')
       const direction = sort.startsWith('-') ? 'desc' : 'asc'
       const colDef = this.columnDefs.find((col) => col.field === colId)
@@ -274,10 +286,18 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.gridApi.onSortChanged()
   }
 
+  get sorts() {
+    return this.userSettings.sorts?.[this.type] ?? []
+  }
+
+  get filters() {
+    return this.userSettings.filters?.[this.type] ?? {}
+  }
+
   onFilterSortChange({ sorts, filters }: FiltersSorts) {
     this.page = 1
-    this.userSettings.filters = filters
-    this.userSettings.sorts = sorts
+    this.userSettings.filters[this.type] = filters
+    this.userSettings.sorts[this.type] = sorts
 
     if (this.firstLoad) {
       this.firstLoad = false
