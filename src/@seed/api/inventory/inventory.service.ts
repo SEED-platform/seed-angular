@@ -33,19 +33,6 @@ export class InventoryService {
       .subscribe()
   }
 
-  getProperties(params: Record<string, string | number | boolean>, data: Record<string, unknown>): Observable<FilterResponse> {
-    const url = 'api/v3/properties/filter/'
-    return this._httpClient.post<FilterResponse>(url, data, { params }).pipe(
-      map((response) => response),
-      tap((response) => {
-        this._properties.next(response)
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching properties')
-      }),
-    )
-  }
-
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
     const url = `api/v4/tax_lot_properties/filter/?${paramString}`
     return this._httpClient.post<FilterResponse>(url, data).pipe(
