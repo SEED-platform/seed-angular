@@ -8,13 +8,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { ActivatedRoute } from '@angular/router'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
 import { DataQualityUtils } from '../data-quality.utils'
 import { DeleteModalComponent } from '../modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -31,13 +29,11 @@ import { FormModalComponent } from './modal/form-modal.component'
     MatIconModule,
     MatSlideToggleModule,
     MatTableModule,
-    SharedImports,
   ],
 })
 export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]
   @Output() getRules = new EventEmitter<void>()
-  private _route = inject(ActivatedRoute)
   private _organizationService = inject(OrganizationService)
   private _dataQualityService = inject(DataQualityService)
   private _labelsService = inject(LabelService)
@@ -60,10 +56,7 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
     }
   }
   ngOnInit() {
-    combineLatest([
-      this._organizationService.currentOrganization$,
-      this._labelsService.labels$,
-    ])
+    combineLatest([this._organizationService.currentOrganization$, this._labelsService.labels$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([organization, labels]) => {
         this._orgId = organization.id
@@ -77,7 +70,9 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
     this._unsubscribeAll$.complete()
   }
 
-  getCriteria(rule: Rule) { return DataQualityUtils.getCriteria(rule) }
+  getCriteria(rule: Rule) {
+    return DataQualityUtils.getCriteria(rule)
+  }
 
   editRule(rule: Rule) {
     const tableName = 'Goal'
@@ -102,8 +97,11 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.getRules.emit() }),
-      ).subscribe()
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   toggleEnable(index: number) {

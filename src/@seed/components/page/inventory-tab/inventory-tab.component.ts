@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
@@ -10,7 +10,7 @@ import type { Config } from './inventory-tab.types'
 @Component({
   selector: 'seed-page-inventory-tab',
   templateUrl: './inventory-tab.component.html',
-  imports: [NgClass, SharedImports],
+  imports: [CommonModule, SharedImports],
 })
 export class InventoryTabComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)

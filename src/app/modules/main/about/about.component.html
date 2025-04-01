@@ -1,12 +1,4 @@
-<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
-  <div
-    class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
-  >
-    <div class="min-w-0 flex-1">
-      <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">About SEED Platform™</h2>
-    </div>
-  </div>
-
+<seed-page *transloco="let t" [config]="{ title: 'About SEED Platform™', titleIcon: 'fa-solid:circle-info' }">
   <div class="flex-auto p-6 sm:p-10">
     <div class="prose max-w-3xl">
       <p [innerHTML]="t('ABOUT_SEED')"></p>
@@ -33,4 +25,4 @@
       </p>
     </div>
   </div>
-</div>
+</seed-page>

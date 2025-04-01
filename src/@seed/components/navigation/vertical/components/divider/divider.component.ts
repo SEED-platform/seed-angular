@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
@@ -9,7 +9,7 @@ import { SeedNavigationService } from '@seed/components'
   selector: 'seed-vertical-navigation-divider-item',
   templateUrl: './divider.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [CommonModule],
 })
 export class VerticalNavigationDividerItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

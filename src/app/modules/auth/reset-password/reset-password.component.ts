@@ -8,10 +8,12 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
-import { finalize } from 'rxjs'
+import { finalize, take } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
+import type { SEEDConfig } from '@seed/services'
+import { ConfigService } from '@seed/services'
 import { SEEDValidators } from '@seed/validators'
 import { AuthService } from 'app/core/auth/auth.service'
 
@@ -34,6 +36,7 @@ import { AuthService } from 'app/core/auth/auth.service'
 })
 export class AuthResetPasswordComponent implements OnInit {
   private _authService = inject(AuthService)
+  private _configService = inject(ConfigService)
   private _formBuilder = inject(FormBuilder)
 
   alert: Alert
@@ -44,15 +47,17 @@ export class AuthResetPasswordComponent implements OnInit {
   showAlert = false
 
   ngOnInit(): void {
-    this.resetPasswordForm = this._formBuilder.group(
-      {
-        password: ['', Validators.required],
-        passwordConfirm: ['', Validators.required],
-      },
-      {
-        validators: SEEDValidators.mustMatch('password', 'passwordConfirm'),
-      },
-    )
+    this._configService.config$.pipe(take(1)).subscribe((config: SEEDConfig) => {
+      this.resetPasswordForm = this._formBuilder.group(
+        {
+          password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(config.passwordPattern)]],
+          passwordConfirm: ['', Validators.required],
+        },
+        {
+          validators: SEEDValidators.mustMatch('password', 'passwordConfirm'),
+        },
+      )
+    })
   }
 
   /**

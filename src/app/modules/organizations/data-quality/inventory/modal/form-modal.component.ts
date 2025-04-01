@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -22,7 +21,6 @@ import { DataQualityValidator } from '../../data-quality.validator'
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
   imports: [
-    CommonModule,
     FormsModule,
     MatButtonModule,
     MatDatepickerModule,
@@ -60,41 +58,42 @@ export class FormModalComponent implements OnDestroy, OnInit {
     dataTypesByCondition: DATATYPES_BY_CONDITION,
     units: UNITS,
     severities: SEVERITIES,
-
   }
 
-  form: DataQualityFormGroup = new FormGroup({
-    condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
-    cross_cycle: new FormControl<boolean>(false), // unused
-    data_type: new FormControl<number | null>(null, Validators.required),
-    enabled: new FormControl<boolean>(true),
-    field: new FormControl<string | null>(null, Validators.required),
-    for_derived_column: new FormControl<boolean>(false), // unused
-    id: new FormControl<number | null>(null), // hidden
-    max: new FormControl<number | null>(null),
-    min: new FormControl<number | null>(null),
-    not_null: new FormControl<boolean>(false),
-    required: new FormControl<boolean>(false),
-    rule_type: new FormControl<number | null>(null),
-    severity: new FormControl<number | null>(null, Validators.required),
-    status_label: new FormControl<number | null>(null),
-    table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
-    text_match: new FormControl<string | null>(null),
-    units: new FormControl<string>(''),
-  }, { validators: [
-    this._dataQualityValidator.hasRange(),
-    this._dataQualityValidator.hasTextMatch(),
-    this._dataQualityValidator.dataTypeMatch(this.data.currentRules),
-    this._dataQualityValidator.hasValidLabel(),
-  ] })
+  form: DataQualityFormGroup = new FormGroup(
+    {
+      condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
+      cross_cycle: new FormControl<boolean>(false), // unused
+      data_type: new FormControl<number | null>(null, Validators.required),
+      enabled: new FormControl<boolean>(true),
+      field: new FormControl<string | null>(null, Validators.required),
+      for_derived_column: new FormControl<boolean>(false), // unused
+      id: new FormControl<number | null>(null), // hidden
+      max: new FormControl<number | null>(null),
+      min: new FormControl<number | null>(null),
+      not_null: new FormControl<boolean>(false),
+      required: new FormControl<boolean>(false),
+      rule_type: new FormControl<number | null>(null),
+      severity: new FormControl<number | null>(null, Validators.required),
+      status_label: new FormControl<number | null>(null),
+      table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
+      text_match: new FormControl<string | null>(null),
+      units: new FormControl<string>(''),
+    },
+    {
+      validators: [
+        this._dataQualityValidator.hasRange(),
+        this._dataQualityValidator.hasTextMatch(),
+        this._dataQualityValidator.dataTypeMatch(this.data.currentRules),
+        this._dataQualityValidator.hasValidLabel(),
+      ],
+    },
+  )
 
   ngOnInit(): void {
     this.watchForm()
 
-    combineLatest([
-      this.data.columns$,
-      this._labelsService.labels$,
-    ]).subscribe(([columns, labels]) => {
+    combineLatest([this.data.columns$, this._labelsService.labels$]).subscribe(([columns, labels]) => {
       this.columns = columns
       this.labels = labels
       for (const label of labels) {
@@ -113,17 +112,19 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   watchForm() {
-    this.form.get('condition')?.valueChanges.pipe(
-      takeUntil(this._unsubscribeAll$),
-      distinctUntilChanged(),
-    ).subscribe((condition) => { this.handleConditionChange(condition) })
+    this.form
+      .get('condition')
+      ?.valueChanges.pipe(takeUntil(this._unsubscribeAll$), distinctUntilChanged())
+      .subscribe((condition) => {
+        this.handleConditionChange(condition)
+      })
   }
 
   /*
-  * if a condition changes check the following error scenarios
-  * 1. if range and the data type is text, set the data type to null
-  * 2. if exclude or include and the data type is not text, set the data type to null.
-  */
+   * if a condition changes check the following error scenarios
+   * 1. if range and the data type is text, set the data type to null
+   * 2. if exclude or include and the data type is not text, set the data type to null.
+   */
   handleConditionChange(condition: string): void {
     const formDataType = this.form.get('data_type')
     // const formTextMatch = this.form.get('text_match')
@@ -144,7 +145,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   get formErrors() {
-    return this.form.errors ? Object.values(this.form.errors) as string[] : null
+    return this.form.errors ? (Object.values(this.form.errors) as string[]) : null
   }
 
   onSubmit() {

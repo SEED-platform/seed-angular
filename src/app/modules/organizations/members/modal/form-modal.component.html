@@ -50,9 +50,9 @@
 <!-- Actions -->
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

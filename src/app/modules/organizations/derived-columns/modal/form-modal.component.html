@@ -1,8 +1,8 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   {{ update ? 'Edit' : 'Create' }} Derived Column
 </h2>
 
-<form [formGroup]="form" class="flex flex-col gap-4">
+<form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Name</mat-label>
     <input matInput formControlName="name" placeholder="Derived Column Name" />
@@ -40,7 +40,7 @@
       </mat-form-field>
 
       @if (parameters.controls.length > 1) {
-        <a mat-stroked-button class="mt-7" color="warn" (click)="deleteParameter($index)">
+        <a class="mt-7" (click)="deleteParameter($index)" mat-stroked-button color="warn">
           <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
         </a>
       }
@@ -51,7 +51,7 @@
     <mat-error>Parameter names must be unique.</mat-error>
   }
 
-  <a mat-flat-button color="primary" (click)="addParameter()">
+  <a (click)="addParameter()" mat-flat-button color="primary">
     <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
     <span class="ml-2">Add Parameter</span>
   </a>
@@ -64,7 +64,7 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

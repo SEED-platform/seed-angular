@@ -1,28 +1,28 @@
-<table class="w-full bg-transparent" mat-table matSort [dataSource]="rulesDataSource" [trackBy]="trackByFn">
+<table class="w-full bg-transparent" [dataSource]="rulesDataSource" [trackBy]="trackByFn" mat-table matSort>
   <ng-container matColumnDef="enabled">
-    <th mat-header-cell *matHeaderCellDef>Enabled</th>
-    <td mat-cell *matCellDef="let rule; let i = index">
-      <mat-slide-toggle (click)="toggleEnable(i)" [(ngModel)]="currentRules[i].enabled"></mat-slide-toggle>
+    <th *matHeaderCellDef mat-header-cell>Enabled</th>
+    <td *matCellDef="let rule; let i = index" mat-cell>
+      <mat-slide-toggle [(ngModel)]="currentRules[i].enabled" (click)="toggleEnable(i)"></mat-slide-toggle>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="field">
-    <th mat-header-cell *matHeaderCellDef>Field</th>
-    <td mat-cell *matCellDef="let rule; let i = index" class="max-w-50 flex-grow truncate">
+    <th *matHeaderCellDef mat-header-cell>Field</th>
+    <td class="max-w-50 flex-grow truncate" *matCellDef="let rule; let i = index" mat-cell>
       {{ getFieldName(rule.field) }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="criteria">
-    <th mat-header-cell *matHeaderCellDef>Criteria</th>
-    <td mat-cell *matCellDef="let rule" class="max-w-60 flex-grow truncate">
+    <th *matHeaderCellDef mat-header-cell>Criteria</th>
+    <td class="max-w-60 flex-grow truncate" *matCellDef="let rule" mat-cell>
       {{ getCriteria(rule) }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="severity">
-    <th mat-header-cell *matHeaderCellDef>Severity</th>
-    <td mat-cell *matCellDef="let rule" class="w-26">
+    <th *matHeaderCellDef mat-header-cell>Severity</th>
+    <td class="w-26" *matCellDef="let rule" mat-cell>
       <div class="rounded px-2 py-1" [ngClass]="severityLookup[rule.severity].class">
         {{ severityLookup[rule.severity].name }}
       </div>
@@ -39,22 +39,22 @@
   </ng-container>
 
   <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef class="select-none pr-24 text-right">Actions</th>
-    <td mat-cell *matCellDef="let rule" class="w-50 text-right" class="whitespace-nowrap text-right">
-      <a mat-stroked-button (click)="editRule(rule)" class="mr-2">
+    <th class="select-none pr-24 text-right" *matHeaderCellDef mat-header-cell>Actions</th>
+    <td class="w-50 text-right" class="whitespace-nowrap text-right" *matCellDef="let rule" mat-cell>
+      <a class="mr-2" (click)="editRule(rule)" mat-stroked-button>
         <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
       </a>
-      <a mat-stroked-button color="warn" (click)="deleteRule(rule)">
+      <a (click)="deleteRule(rule)" mat-stroked-button color="warn">
         <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
       </a>
     </td>
   </ng-container>
 
   <thead>
-    <tr mat-header-row *matHeaderRowDef="rulesColumns"></tr>
+    <tr *matHeaderRowDef="rulesColumns" mat-header-row></tr>
   </thead>
   <tbody>
-    <tr mat-row *matRowDef="let row; columns: rulesColumns"></tr>
+    <tr *matRowDef="let row; columns: rulesColumns" mat-row></tr>
   </tbody>
 </table>
 

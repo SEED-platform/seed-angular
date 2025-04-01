@@ -1,3 +1,215 @@
-<seed-page [config]="{ title: 'Access Level Tree', titleIcon: 'fa-solid:sitemap' }">
-  <div>Access Level Tree Content</div>
+<seed-page
+  class="flex flex-auto flex-col"
+  *transloco="let t"
+  [config]="{
+    title: 'Access Level Tree',
+    titleIcon: 'fa-solid:sitemap',
+    action: toggleHelp,
+    actionIcon: 'fa-solid:circle-question',
+    action2: toggleDrawer,
+    action2Icon: 'heroicons-outline:bars-3',
+    action2Classes: 'inline-flex md:hidden',
+  }"
+>
+  <mat-drawer-container class="h-full">
+    <mat-drawer-content>
+      <mat-drawer-container class="h-full">
+        <mat-drawer class="w-72 dark:bg-gray-900" [(opened)]="drawerOpened" [mode]="drawerMode">
+          <div class="flex h-full w-full flex-col">
+            <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">{{ t('Access Levels') }}</div>
+
+            @if (currentUser.is_ali_root) {
+              <div class="mb-8 flex h-12 items-center">
+                <button class="mx-6 w-full" (click)="editAccessLevels()" mat-flat-button color="primary">
+                  <mat-icon class="icon-size-4" svgIcon="fa-regular:pen-to-square"></mat-icon>
+                  <span class="ml-2">{{ t('Edit') }}</span>
+                </button>
+              </div>
+            }
+
+            <ol class="mx-6 list-inside list-decimal space-y-4 font-bold">
+              @for (level of accessLevelNames; track level) {
+                <li class="pl-5 -indent-5">{{ level }}</li>
+              }
+            </ol>
+
+            @if (currentUser.is_ali_root) {
+              <button class="m-6 mt-auto flex" (click)="uploadInstances()" mat-flat-button color="primary">
+                <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
+                <span class="ml-2">{{ t('Upload') }}</span>
+              </button>
+            }
+          </div>
+        </mat-drawer>
+
+        <mat-drawer-content class="flex flex-col overflow-hidden">
+          <div class="relative flex flex-auto flex-col overflow-y-auto sm:max-h-[calc(100svh-14rem-1px)]">
+            <div class="mx-6 mb-8 mt-10 text-3xl font-extrabold leading-none tracking-tight">{{ t('Access Level Instances') }}</div>
+            <div class="max-w-3xl px-6 pb-6">
+              <div class="mb-4 flex h-12 flex-auto items-center">
+                <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="dynamic">
+                  <mat-icon class="icon-size-5" svgIcon="fa-solid:magnifying-glass" matPrefix></mat-icon>
+                  <input
+                    class="text-ellipsis"
+                    #filterInput
+                    [placeholder]="t('Filter access level instances')"
+                    (input)="onFilterChange(filterInput.value)"
+                    matInput
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </mat-form-field>
+              </div>
+
+              @if (filteredAccessLevelTree?.length === 0) {
+                <div class="ml-[calc(0.5rem-1px)] flex items-center">
+                  <div
+                    class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-accent-200 text-accent-600 dark:bg-accent-600 dark:text-accent-50"
+                  >
+                    <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:magnifying-glass-minus"></mat-icon>
+                  </div>
+                  <span class="ml-2">{{ t('No matching instances') }}</span>
+                </div>
+              } @else {
+                <div class="flex h-6 items-center">
+                  <div class="inline-flex h-[22px] select-none items-center rounded-md bg-gray-200 px-2 text-sm dark:bg-gray-800">
+                    {{ accessLevelNames[0] }}
+                  </div>
+                </div>
+                <ng-container
+                  *ngTemplateOutlet="instanceTemplate; context: { $implicit: filteredAccessLevelTree ?? accessLevelTree, depth: 0 }"
+                ></ng-container>
+              }
+            </div>
+          </div>
+        </mat-drawer-content>
+      </mat-drawer-container>
+    </mat-drawer-content>
+    <mat-drawer [(opened)]="helpOpened" mode="over" position="end">
+      <ng-container *ngTemplateOutlet="helpTemplate"></ng-container>
+    </mat-drawer>
+  </mat-drawer-container>
 </seed-page>
+
+<ng-template #instanceTemplate let-tree let-depth="depth">
+  @for (instance of tree; track instance.id) {
+    @let isExpanded = expanded.has(instance.id);
+    @let hasChildren = instance.children?.length > 0;
+    <div
+      class="relative flex flex-col overflow-hidden"
+      [ngClass]="{
+        'pl-8 before:absolute before:start-3 before:top-0 before:ms-[calc(0.375rem+1px)] before:h-full before:w-0.5 before:bg-gray-200 before:dark:bg-gray-800':
+          depth > 0,
+      }"
+    >
+      <div
+        class="group flex h-10 w-full select-none items-center rounded-lg hover:bg-hover"
+        [ngClass]="hasChildren ? 'cursor-pointer' : 'cursor-default'"
+        (click)="hasChildren && toggleExpand(instance.id)"
+      >
+        @if (hasChildren) {
+          <div class="flex min-w-10 items-center justify-center">
+            <mat-icon class="h-4 min-h-4 w-4 min-w-4" [svgIcon]="isExpanded ? 'fa-solid:minus' : 'fa-solid:plus'"></mat-icon>
+          </div>
+        }
+        <div class="flex flex-auto items-center" [ngClass]="{ 'pl-2': !hasChildren }">
+          <mat-icon [svgIcon]="hasChildren ? (isExpanded ? 'fa-solid:folder-open' : 'fa-solid:folder-closed') : 'fa-solid:file'"></mat-icon>
+          <div class="ml-3 h-full truncate">{{ instance.name }}</div>
+        </div>
+        @if (currentUser.is_ali_root) {
+          <div
+            class="m-1.5 hidden h-7 w-7 cursor-pointer items-center justify-center rounded-md hover:bg-gray-300 group-hover:flex dark:hover:bg-gray-700"
+            [matMenuTriggerFor]="instanceMenu"
+            [matMenuTriggerData]="{ $implicit: instance, depth }"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon class="h-4 min-h-4 w-4 min-w-4" svgIcon="fa-solid:ellipsis-vertical"></mat-icon>
+          </div>
+        }
+      </div>
+
+      @if (hasChildren && isExpanded) {
+        <div
+          class="flex h-6 items-center pl-8 before:absolute before:start-3 before:top-10 before:ms-[calc(0.375rem+1px)] before:h-6 before:w-0.5 before:bg-gray-200 before:dark:bg-gray-800"
+          [ngClass]="{ 'before:ms-[calc(2.375rem+1px)]': depth > 0 }"
+        >
+          <div class="inline-flex h-[1.375rem] select-none items-center rounded-md bg-gray-200 px-2 text-sm dark:bg-gray-800">
+            {{ accessLevelNames[depth + 1] }}
+          </div>
+        </div>
+        <ng-container *ngTemplateOutlet="instanceTemplate; context: { $implicit: instance.children, depth: depth + 1 }"></ng-container>
+      }
+    </div>
+  }
+</ng-template>
+
+<mat-menu #instanceMenu="matMenu" overlapTrigger xPosition="before">
+  <ng-template *transloco="let t" matMenuContent let-instance let-depth="depth">
+    @let isMaximumDepth = depth === accessLevelNames.length - 1;
+    <div class="flex h-12 cursor-default items-center px-4" (click)="$event.stopPropagation()">
+      <span class="flex flex-col leading-none">
+        <span class="mt-1.5">{{ instance.name }}</span>
+      </span>
+    </div>
+    <mat-divider class="my-2"></mat-divider>
+    <div
+      [matTooltipDisabled]="!isMaximumDepth"
+      matTooltip="Create an additional access level before creating new instances here"
+      matTooltipPosition="before"
+    >
+      <button [disabled]="isMaximumDepth" (click)="createInstance(instance)" mat-menu-item>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:circle-plus"></mat-icon>
+        <span>{{ t('Create child instances') }}</span>
+      </button>
+    </div>
+    <button (click)="renameInstance(instance)" mat-menu-item>
+      <mat-icon class="icon-size-5" svgIcon="fa-solid:pen"></mat-icon>
+      <span>{{ t('Rename') }}</span>
+    </button>
+    @if (depth > 0) {
+      <button (click)="deleteInstance(instance)" mat-menu-item>
+        <mat-icon class="icon-size-5" svgIcon="fa-solid:trash-can"></mat-icon>
+        <span>{{ t('Delete') }}</span>
+      </button>
+    }
+  </ng-template>
+</mat-menu>
+
+<ng-template #helpTemplate>
+  <div class="prose px-4" *transloco="let t">
+    <h2 class="mt-6 flex items-center border-b-2 font-extrabold tracking-tight">
+      {{ t('Help') }}<mat-icon class="mx-2 text-current icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon
+      >{{ t('Access Level Tree') }}
+    </h2>
+    <p>{{ t('ACCESS_LEVEL_TREE_HELP_1') }}</p>
+
+    <h3>{{ t('Access Levels') }}</h3>
+    <p>{{ t('ACCESS_LEVEL_DESCRIPTION') }}</p>
+
+    <h3>{{ t('Access Level Instances') }}</h3>
+    <p>{{ t('ACCESS_LEVEL_INSTANCE_DESCRIPTION') }}</p>
+
+    <h3>{{ t('Example Access Level Tree') }}</h3>
+    <img
+      class="drop-shadow-lg"
+      [alt]="t('Example Access Level Tree')"
+      imageOverlay
+      src="/images/documentation/access-level-tree/ali-tree-example-lg.webp"
+    />
+
+    @if (currentUser.is_ali_root) {
+      <h3>{{ t('Managing the Access Level Tree') }}</h3>
+      <p>{{ t('ACCESS_LEVEL_ORG_OWNER') }}</p>
+      <ul>
+        <li>
+          <strong>{{ t('Step 1: Add Access Levels') }}</strong> - {{ t('ACCESS_LEVEL_OWNER_STEP1') }}
+        </li>
+        <li>
+          <strong>{{ t('Step 2: Upload Access Level Instances') }}</strong> - {{ t('ACCESS_LEVEL_OWNER_STEP2') }}
+        </li>
+      </ul>
+
+      <p>{{ t('ACCESS_LEVEL_OWNER_END') }}</p>
+    }
+  </div>
+</ng-template>

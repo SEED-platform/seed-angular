@@ -1,4 +1,4 @@
-<seed-page [config]="{ titleIcon: 'fa-solid:gears', title: 'Organization Settings: Require Two-Factor Authentication' }">
+<seed-page [config]="{ titleIcon: 'fa-solid:gears', title: 'Two-Factor Authentication', breadcrumbs: ['Organization Settings'] }">
   @if (organization) {
     <div class="flex-auto p-6 sm:p-10" *transloco="let t">
       <div class="max-w-2xl">
@@ -13,7 +13,7 @@
             >
           </div>
           <div>
-            <button mat-flat-button [disabled]="twoFactorForm.invalid || twoFactorForm.pending" color="primary">
+            <button [disabled]="twoFactorForm.invalid || twoFactorForm.pending" mat-flat-button color="primary">
               <span class="">{{ t('Save Changes') }}</span>
             </button>
           </div>

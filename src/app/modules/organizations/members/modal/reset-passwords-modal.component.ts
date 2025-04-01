@@ -2,10 +2,10 @@ import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { AuthService } from 'app/core/auth'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-member-reset-passwords-modal',
@@ -15,7 +15,7 @@ import { SnackbarService } from 'app/core/snackbar/snackbar.service'
 export class ResetPasswordsModalComponent implements OnDestroy {
   private _organizationService = inject(OrganizationService)
   private _dialogRef = inject(MatDialogRef<ResetPasswordsModalComponent>)
-  private _snackbar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
   private _authService = inject(AuthService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   errorMessage: string
@@ -28,7 +28,7 @@ export class ResetPasswordsModalComponent implements OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap(() => {
-          this._snackbar.warning('All passwords have been reset.')
+          this._snackBar.warning('All passwords have been reset.')
           this.close('success')
           this._authService.signOut()
         }),

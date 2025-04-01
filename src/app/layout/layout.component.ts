@@ -19,7 +19,7 @@ import { MainLayoutComponent } from './layouts/main/main.component'
   imports: [DevSettingsComponent, EmptyLayoutComponent, LandingLayoutComponent, MainLayoutComponent],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
-  private _activatedRoute = inject(ActivatedRoute)
+  private _route = inject(ActivatedRoute)
   private _configService = inject(ConfigService)
   private _document = inject(DOCUMENT)
   private _mediaWatcherService = inject(MediaWatcherService)
@@ -107,7 +107,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
    */
   private _updateLayout(): void {
     // Get the current activated route
-    let route = this._activatedRoute
+    let route = this._route
     while (route.firstChild) {
       route = route.firstChild
     }

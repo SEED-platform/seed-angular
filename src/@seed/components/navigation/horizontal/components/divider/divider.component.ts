@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
@@ -10,7 +10,7 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
   selector: 'seed-horizontal-navigation-divider-item',
   templateUrl: './divider.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [CommonModule],
 })
 export class HorizontalNavigationDividerItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

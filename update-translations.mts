@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { LokaliseApi } from '@lokalise/node-api'
 import decompress from 'decompress'
 import ora from 'ora'
@@ -33,7 +35,18 @@ try {
 
   const zipResponse = await fetch(bundle_url)
 
-  await decompress(Buffer.from(await zipResponse.arrayBuffer()), 'public/i18n', { strip: 1 })
+  const i18nDir = 'public/i18n'
+  await decompress(Buffer.from(await zipResponse.arrayBuffer()), i18nDir, { strip: 1 })
+
+  // Fix UTC modified timestamps
+  const now = new Date()
+  const files = await fs.readdir(i18nDir)
+  await Promise.all(
+    files.map(async (file) => {
+      const filePath = path.join(i18nDir, file)
+      await fs.utimes(filePath, now, now)
+    }),
+  )
 
   spinner.succeed('Translations updated')
 } catch (err) {

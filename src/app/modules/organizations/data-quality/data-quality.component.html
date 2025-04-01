@@ -1,4 +1,4 @@
-<seed-page [config]="config" *transloco="let t">
+<seed-page *transloco="let t" [config]="config">
   <seed-page-inventory-tab [config]="{ tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
   <seed-page-table-container>
     @if (type === 'goal') {

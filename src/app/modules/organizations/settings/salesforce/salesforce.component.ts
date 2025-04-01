@@ -84,7 +84,7 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       contact_name_column: new FormControl(null),
       account_name_column: new FormControl(null),
       default_contact_account_name: new FormControl(''),
-      logging_email: new FormControl('', [Validators.email]),
+      logging_email: new FormControl('', Validators.email),
       benchmark_contact_fieldname: new FormControl(''),
       data_admin_email_column: new FormControl(null),
       data_admin_name_column: new FormControl(null),

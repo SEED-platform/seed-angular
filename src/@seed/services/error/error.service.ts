@@ -1,11 +1,11 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { throwError } from 'rxjs'
-import { SnackbarService } from 'app/core/snackbar/snackbar.service'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Injectable({ providedIn: 'root' })
 export class ErrorService {
-  private _snackBar = inject(SnackbarService)
+  private _snackBar = inject(SnackBarService)
 
   handleError(error: HttpErrorResponse, defaultMessage: string) {
     let errorMessage = ''

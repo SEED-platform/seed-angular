@@ -1,10 +1,10 @@
 <div class="overflow-x-none">
-  <h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Edit Rule</h2>
+  <h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Edit Rule</h2>
   <div class="h-150 mt-2 overflow-y-auto">
-    <form [formGroup]="form" class="flex flex-col gap-4">
+    <form class="flex flex-col gap-4" [formGroup]="form">
       <!-- enabled -->
       <div class="mt-4 flex">
-        <mat-label required class="mr-4 font-medium">Enabled</mat-label>
+        <mat-label class="mr-4 font-medium" required>Enabled</mat-label>
         <mat-slide-toggle formControlName="enabled"></mat-slide-toggle>
       </div>
 
@@ -12,17 +12,17 @@
         <!-- data type -->
         <mat-form-field class="mr-1 w-1/3">
           <mat-label>Data Type</mat-label>
-          <input matInput disabled [value]="constants.dataTypeLookup[data.rule.data_type]" />
+          <input [value]="constants.dataTypeLookup[data.rule.data_type]" matInput disabled />
         </mat-form-field>
         <!-- condition -->
         <mat-form-field class="mr-1 w-1/3">
           <mat-label>Condition</mat-label>
-          <input matInput disabled [value]="data.rule.condition === 'range' ? 'Range' : 'Not Null'" />
+          <input [value]="data.rule.condition === 'range' ? 'Range' : 'Not Null'" matInput disabled />
         </mat-form-field>
         <!-- cross cycle -->
         <mat-form-field class="mr-1 w-1/3">
           <mat-label>Range</mat-label>
-          <input matInput disabled [value]="data.rule.cross_cycle ? 'Across Cycles' : 'Within Cycle'" />
+          <input [value]="data.rule.cross_cycle ? 'Across Cycles' : 'Within Cycle'" matInput disabled />
         </mat-form-field>
       </div>
 
@@ -93,10 +93,10 @@
   <!-- Actions -->
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+      <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
-      <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+      <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
     </mat-dialog-actions>
   </div>
 </div>

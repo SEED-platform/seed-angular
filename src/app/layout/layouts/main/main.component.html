@@ -4,15 +4,15 @@
   class="dark bg-gray-900 print:hidden"
   [appearance]="navigationAppearance"
   [mode]="isScreenSmall ? 'over' : 'side'"
-  name="mainNavigation"
   [navigation]="navigation"
   [opened]="!isScreenSmall"
+  name="mainNavigation"
 >
   <!-- Navigation header hook -->
   <ng-container verticalNavigationContentHeader>
-    <div class="flex h-20 cursor-pointer items-center justify-center" role="button" [routerLink]="['/']">
+    <div class="flex h-20 cursor-pointer items-center justify-center" [routerLink]="['/']" role="button">
       <div class="w-14 rounded-md bg-white p-0.5">
-        <img src="images/logo.svg" class="pointer-events-none select-none" alt="SEED Platform logo" />
+        <img class="pointer-events-none select-none" src="images/logo.svg" alt="SEED Platform logo" />
       </div>
     </div>
   </ng-container>
@@ -20,7 +20,7 @@
   <!-- Navigation footer hook -->
   <ng-container verticalNavigationFooter>
     <div class="hidden p-5 md:flex">
-      <button mat-icon-button (click)="toggleNavigationAppearance()">
+      <button (click)="toggleNavigationAppearance()" mat-icon-button>
         <mat-icon svgIcon="heroicons-outline:arrows-right-left"></mat-icon>
       </button>
     </div>
@@ -35,7 +35,7 @@
   >
     <div class="flex items-center space-x-2 pr-2">
       <!-- Navigation toggle button -->
-      <button class="inline-flex md:hidden" mat-icon-button (click)="toggleNavigation('mainNavigation')">
+      <button class="inline-flex md:hidden" (click)="toggleNavigation('mainNavigation')" mat-icon-button>
         <mat-icon svgIcon="heroicons-outline:bars-3"></mat-icon>
       </button>
 

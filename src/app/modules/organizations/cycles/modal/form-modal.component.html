@@ -1,8 +1,8 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   {{ create ? 'Create' : 'Edit' }} a Cycle
 </h2>
 <!-- <mat-dialog-content>content?</mat-dialog-content> -->
-<form [formGroup]="form" class="flex flex-col gap-4">
+<form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Cycle Name</mat-label>
     <input matInput formControlName="name" placeholder="Cycle Name" />
@@ -13,17 +13,17 @@
 
   <mat-form-field>
     <mat-label>Start Date</mat-label>
-    <input matInput formControlName="start" [matDatepicker]="start" />
+    <input [matDatepicker]="start" matInput formControlName="start" />
     <mat-hint class="m-b-4">MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matIconSuffix [for]="start"></mat-datepicker-toggle>
+    <mat-datepicker-toggle [for]="start" matIconSuffix></mat-datepicker-toggle>
     <mat-datepicker #start></mat-datepicker>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>End Date</mat-label>
-    <input matInput formControlName="end" [matDatepicker]="end" />
+    <input [matDatepicker]="end" matInput formControlName="end" />
     <mat-hint>MM/DD/YYYY</mat-hint>
-    <mat-datepicker-toggle matIconSuffix [for]="end"></mat-datepicker-toggle>
+    <mat-datepicker-toggle [for]="end" matIconSuffix></mat-datepicker-toggle>
     <mat-datepicker #end></mat-datepicker>
     @if (form.controls.end?.hasError('dateBefore')) {
       <mat-error>End date must be after end date.</mat-error>
@@ -33,9 +33,9 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Submit</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="dismiss()">Dismiss</button>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

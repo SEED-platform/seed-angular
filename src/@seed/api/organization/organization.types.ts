@@ -106,20 +106,58 @@ export type OrganizationUsersResponse = {
 
 export type AccessLevelTreeResponse = {
   access_level_names: string[];
-  access_level_tree: AccessLevelNode[];
+  access_level_tree: AccessLevelInstance[];
 }
 
 export type AccessLevelTree = {
   accessLevelNames: string[];
+  accessLevelTree: AccessLevelInstance[];
+}
+
+export type AccessLevelInstancesByDepth = {
+  accessLevelNames: string[];
   accessLevelInstancesByDepth: AccessLevelsByDepth;
 }
 
-export type AccessLevelNode = {
+export type AccessLevelInstance = {
   id: number;
   name: string;
   organization: number;
   path: Record<string, string>;
-  children: AccessLevelNode[];
+  children?: AccessLevelInstance[];
 }
 
-export type AccessLevelsByDepth = Record<string, { id: number; name: string }[]>
+export type AccessLevelsByDepth = Record<number, { id: number; name: string }[]>
+
+export type UpdateAccessLevelsRequest = {
+  access_level_names: string[];
+}
+
+export type UpdateAccessLevelsResponse = string[]
+
+export type CreateAccessLevelInstanceRequest = {
+  name: string;
+  parent_id: number;
+}
+
+export type EditAccessLevelInstanceRequest = {
+  name: string;
+}
+
+export type EditAccessLevelInstanceResponse = {
+  status: 'success';
+}
+
+export type CanDeleteInstanceResponse = {
+  can_delete: boolean;
+  reasons?: string[];
+}
+
+export type UploadAccessLevelInstancesResponse = {
+  status: 'success';
+  tempfile: string;
+}
+
+export type StartSavingAccessLevelInstancesRequest = {
+  filename: string;
+}

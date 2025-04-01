@@ -53,8 +53,8 @@ export class AuditTemplateService {
     })
   }
 
-  getConfigs(org_id: number): Observable<AuditTemplateConfig> {
-    const url = `/api/v3/audit_template_configs/?organization_id=${org_id}`
+  getConfigs(organizationId: number): Observable<AuditTemplateConfig> {
+    const url = `/api/v3/audit_template_configs/?organization_id=${organizationId}`
     return this._httpClient.get<AuditTemplateConfigResponse>(url).pipe(
       map((response) => {
         this._auditTemplateConfig.next(response.data[0])

@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, SimpleChanges, TemplateRef } from '@angular/core'
 import { Component, input, ViewEncapsulation } from '@angular/core'
 import { Animations } from '@seed/animations'
@@ -9,7 +9,7 @@ import { Animations } from '@seed/animations'
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
   exportAs: 'seedMasonry',
-  imports: [NgTemplateOutlet],
+  imports: [CommonModule],
 })
 export class MasonryComponent implements OnChanges, AfterViewInit {
   columnsTemplate = input.required<TemplateRef<unknown>>()

@@ -1,5 +1,5 @@
 import type { BooleanInput } from '@angular/cdk/coercion'
-import { NgClass } from '@angular/common'
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
@@ -23,7 +23,7 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   animations: Animations,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgClass,
+    CommonModule,
     MatTooltipModule,
     MatIconModule,
     VerticalNavigationBasicItemComponent,
