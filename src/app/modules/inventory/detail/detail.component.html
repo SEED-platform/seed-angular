@@ -3,4 +3,31 @@
     titleIcon: 'fa-solid:building',
   }">
 </seed-page>
-<div>INVENTORY DETAIL {{ viewId }}</div>
+
+
+
+
+<div class="m-10 flex flex-col gap-4">
+  
+  @if (views) {
+    <seed-inventory-detail-header
+      [labels]="labels"
+      [selectedView]="selectedView"
+      [view]="view"
+      [views]="views"
+      (changeView)="onChangeView($event)"
+    ></seed-inventory-detail-header>
+  }
+  @if (view) {
+    <seed-inventory-detail-history
+    [view]="view"
+    ></seed-inventory-detail-history>
+  }
+
+  <div class="m-10">{{ view?.cycle | json }}</div>
+  <div class="mt-10"></div>
+  <div>Paired Taxlots</div>
+  <div>Building Files</div>
+  <div>Scenarios and Measures</div>
+
+</div>

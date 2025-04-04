@@ -1,0 +1,47 @@
+
+<div class="flex gap-4">
+  <div class="border border-gray-500">
+    <!--  Actions -->
+    <div class="m-1 flex flex-row gap-4">
+      <mat-label class="text-sm text-gray-400 w-15">Actions</mat-label>
+      <mat-select class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
+        #actionSelect
+        placeholder="Select Action" 
+        (selectionChange)="onAction($event.value.action, actionSelect)"
+      >
+        @for (item of actions; track $index) {
+        <mat-option class="!h-3 text-sm" [value]="item">{{ item.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    <!--  Cycles -->
+    <div class="m-1 flex flex-row gap-4">
+      <mat-label class="text-sm text-gray-400 w-15">Cycle</mat-label>
+      <mat-select class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
+        placeholder="Select Cycle"
+        [value]="selectedView.id"
+        (selectionChange)="onChangeView($event.value)"
+      >
+        @for (item of views; track $index) {
+          <mat-option class="!h-3 text-sm" [value]="item.id">{{ item.cycle.name }} {{ item.id }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    <!-- Labels -->
+
+    <div class="flex">
+      labels
+      @for (label of labels; track $index) {
+        <seed-label [label]="label"></seed-label>
+      }
+    </div>
+    
+    <div>groups</div>
+    
+    <div>access level instance info</div>
+    
+  </div>
+  <div class="w-1/2 border border-gray-500">map</div>
+</div>

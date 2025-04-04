@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, Profile, ProfileResponse, ProfilesResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, PropertyViewResponse, TaxLotViewResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -86,6 +86,62 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting property states')
+      }),
+    )
+  }
+
+  /*
+  * Get PropertyView or TaxLotView
+  */
+  getView(orgId: number, viewId: number, inventoryType: InventoryType): Observable<ViewResponse> {
+    return inventoryType === 'taxlots' ? this.getTaxLotView(orgId, viewId) : this.getPropertyView(orgId, viewId)
+  }
+
+  getPropertyView(orgId: number, viewId: number): Observable<PropertyViewResponse> {
+    const url = `/api/v3/properties/${viewId}/`
+    const params = { organization_id: orgId }
+    return this._httpClient.get<PropertyViewResponse>(url, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching property')
+      }),
+    )
+  }
+
+  getTaxLotView(orgId: number, viewId: number): Observable<TaxLotViewResponse> {
+    const url = `/api/v3/taxlots/${viewId}/`
+    const params = { organization_id: orgId }
+    return this._httpClient.get<TaxLotViewResponse>(url, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching property')
+      }),
+    )
+  }
+
+  /*
+  * Get PropertyViews or TaxLotViews given a Property or Taxlot id
+  */
+  getViews(orgId: number, id: number, inventoryType: InventoryType): Observable<GenericView[]> {
+    return inventoryType === 'taxlots' ? this.getTaxLotViews(orgId, id) : this.getPropertyViews(orgId, id)
+  }
+
+  getPropertyViews(orgId: number, propertyId: number): Observable<GenericView[]> {
+    const url = '/api/v3/property_views/'
+    const params = { organization_id: orgId, property: propertyId }
+    return this._httpClient.get<GenericViewsResponse>(url, { params }).pipe(
+      map(({ property_views }) => property_views),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching property')
+      }),
+    )
+  }
+
+  getTaxLotViews(orgId: number, taxLotId: number): Observable<GenericView[]> {
+    const url = '/api/v3/property_views/'
+    const params = { organization_id: orgId, taxlot: taxLotId }
+    return this._httpClient.get<GenericViewsResponse>(url, { params }).pipe(
+      map(({ taxlot_views }) => taxlot_views),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching property')
       }),
     )
   }

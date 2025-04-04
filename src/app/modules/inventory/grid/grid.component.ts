@@ -7,7 +7,7 @@ import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegist
 import { map, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryPagination } from '../inventory.types'
+import type { FiltersSorts, InventoryPagination, InventoryType } from '../inventory.types'
 // import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
@@ -26,6 +26,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
 })
 export class InventoryGridComponent implements OnInit, OnChanges {
   @Input() columnDefs!: ColDef[]
+  @Input() inventoryType: InventoryType
   @Input() labelLookup: Record<number, Label>
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
@@ -134,13 +135,11 @@ export class InventoryGridComponent implements OnInit, OnChanges {
       sortable: false,
       width: 60,
       cellRenderer: ({ value }) => {
-        const eGui = document.createElement('span')
+        const eGui = document.createElement('a')
+        eGui.href = `/${this.inventoryType}/${value}`
+        eGui.textContent = 'i'
         eGui.className = 'cursor-pointer truncate border border-gray-400 dark:border-white'
         eGui.style.cssText = 'border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
-        eGui.textContent = 'i'
-        eGui.onclick = () => {
-          console.log('/details/', value)
-        }
         return eGui
       },
     }

@@ -93,3 +93,99 @@ export type InventoryDependencies = {
   labels: Label[];
   currentUser: CurrentUser;
 }
+
+type AccessLevelInstance = {
+  id: number;
+  lft: number;
+  rgt: number;
+  tree_id: number;
+  depth: number;
+  name: string;
+  path: Record<string, string>;
+  organization: number;
+}
+
+export type GenericRelatedInventory = {
+  cycle: Cycle;
+  id: number;
+  labels: number[];
+  // state needs to be typed
+  state: Record<string, unknown>;
+  taxlot?: TaxLot;
+  property?: Property;
+}
+
+export type GenericView = {
+  cycle: Cycle;
+  id: number;
+  property_id?: number;
+  taxlot_id?: number;
+}
+
+export type GenericViewsResponse = {
+  status: string;
+  property_views?: GenericView[];
+  taxlot_views?: GenericView[];
+}
+
+// PROPERTY TYPES
+export type Property = {
+  access_level_instance: AccessLevelInstance;
+  created: string;
+  group_mappings: unknown[];
+  id: number;
+  inventory_documents: unknown[];
+  organization: number;
+  parent_property: unknown;
+  updated: string;
+}
+
+export type PropertyViewResponse = {
+  changed_fields: unknown;
+  cycle: Cycle;
+  date_edited: number;
+  filename: string;
+  history: History[];
+  labels: number[];
+  property: Property;
+  source: unknown;
+  // state needs to be typed
+  state: Record<string, unknown>;
+  status: string;
+  taxlots: GenericRelatedInventory[];
+}
+
+// TAX LOT TYPES
+export type TaxLot = {
+  access_level_instance: number;
+  created: string;
+  id: number;
+  organization: number;
+  updated: string;
+}
+
+export type TaxLotViewResponse = {
+  changed_fields: unknown;
+  cycle: Cycle;
+  date_edited: number;
+  filename: string;
+  history: History[];
+  labels: number[];
+  properties: GenericRelatedInventory[];
+  source: unknown;
+  // state needs to be typed
+  state: Record<string, unknown>;
+  status: string;
+  taxlot: TaxLot;
+}
+
+export type ViewResponse = PropertyViewResponse | TaxLotViewResponse
+
+type History = {
+  date_edited: number;
+  file: string;
+  filename: string;
+  source: string;
+  // state needs to be typed
+  state: Record<string, unknown>;
+}

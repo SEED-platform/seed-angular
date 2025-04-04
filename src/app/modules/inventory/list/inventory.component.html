@@ -58,9 +58,10 @@
     <seed-inventory-grid
       #grid
       [columnDefs]="columnDefs"
+      [inventoryType]="type"
+      [labelLookup]="labelLookup"
       [pagination]="pagination"
       [rowData]="rowData"
-      [labelLookup]="labelLookup"
       [selectedViewIds]="selectedViewIds"
       (pageChange)="onPageChange($event)"
       (filterSortChange)="onFilterSortChange($event)"
