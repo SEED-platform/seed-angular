@@ -9,8 +9,9 @@ import { Router, RouterOutlet } from '@angular/router'
 import { type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { ColumnMappingHelpComponent } from './mappings/help.component'
 
-type ColumnNavigationItem = NavigationItem & { useTabs: boolean }
+type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: any | null }
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
@@ -32,6 +33,7 @@ export class ColumnsComponent implements OnInit {
   private _location = inject(Location)
   drawerOpened = true
   helpOpened = false
+  helpComponent: any | null
   tabs = [
     {
       label: 'Properties',
@@ -53,6 +55,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: null,
     },
     {
       id: 'organizations/columns/geocoding',
@@ -61,6 +64,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: null,
     },
     {
       id: 'organization/columns/data-type',
@@ -69,6 +73,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: null,
     },
     {
       id: 'organizations/columns/import-settings',
@@ -77,6 +82,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: null,
     },
     {
       id: 'organizations/columns/mappings',
@@ -85,6 +91,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: false,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: ColumnMappingHelpComponent,
     },
   ]
 
@@ -114,6 +121,7 @@ export class ColumnsComponent implements OnInit {
   setPageInfo(n: ColumnNavigationItem) {
     this.pageTitle = n.title
     this.useTabs = n.useTabs
+    this.helpComponent = n.helpComponent
   }
 
   setTitle() {
