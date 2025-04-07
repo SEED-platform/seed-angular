@@ -12,7 +12,9 @@
   @if (views) {
     <seed-inventory-detail-header
       [labels]="labels"
+      [org]="org"
       [selectedView]="selectedView"
+      [type]="type"
       [view]="view"
       [views]="views"
       (changeView)="onChangeView($event)"

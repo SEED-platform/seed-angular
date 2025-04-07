@@ -7,9 +7,10 @@ import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
+import type { Organization } from '@seed/api/organization';
 import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
-import type { GenericView, InventoryType, PropertyViewResponse, TaxLotViewResponse, ViewResponse } from '../inventory.types'
+import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
 import { HeaderComponent } from './header.component'
 import { HistoryComponent } from './history.component'
 
@@ -29,14 +30,15 @@ export class DetailComponent implements OnDestroy, OnInit {
   private _labelService = inject(LabelService)
   private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
-  readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
   private readonly _unsubscribeAll$ = new Subject<void>()
+  labels: Label[]
+  org: Organization
+  orgId: number
+  selectedView: GenericView
+  type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
   view: ViewResponse
   viewId: number
   views: GenericView[]
-  selectedView: GenericView
-  orgId: number
-  labels: Label[]
 
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
 
@@ -52,15 +54,16 @@ export class DetailComponent implements OnDestroy, OnInit {
     console.log('load view')
     return this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap(({ org_id }) => {
-        this.orgId = org_id
-        return this._inventoryService.getView(org_id, this.viewId, this.type)
+      switchMap((organization) => {
+        this.org = organization
+        this.orgId = organization.org_id
+        return this._inventoryService.getView(organization.org_id, this.viewId, this.type)
       }),
       switchMap((view) => {
         this.view = view
         const id = this.type === 'taxlots'
-          ? (view as TaxLotViewResponse).taxlot?.id
-          : (view as PropertyViewResponse).property?.id
+          ? view.taxlot?.id
+          : view.property?.id
         return this._inventoryService.getViews(this.orgId, id, this.type)
       }),
       switchMap((views) => {
@@ -68,9 +71,9 @@ export class DetailComponent implements OnDestroy, OnInit {
         this.selectedView = views.find((v) => v.id === this.viewId)
         return this._labelService.getInventoryLabels(this.orgId, [this.viewId], this.view.cycle.id, this.type)
       }),
-      // tap((labels) => {
-      // // more action
-      // }),
+      tap((labels: Label[]) => {
+        this.labels = labels.filter((label) => label.is_applied.includes(this.selectedView.id))
+      }),
     )
   }
 

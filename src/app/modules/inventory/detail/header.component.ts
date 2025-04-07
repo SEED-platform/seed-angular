@@ -1,24 +1,37 @@
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
+import { MatTableModule } from '@angular/material/table'
 import type { Label } from '@seed/api/label'
+import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import type { GenericView, ViewResponse } from '../inventory.types'
+import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
   imports: [
+    MatButtonModule,
+    MatTableModule,
     MatSelectModule,
     LabelComponent,
   ],
 })
 export class HeaderComponent implements OnInit {
   @Input() labels: Label[]
+  @Input() org: Organization
   @Input() selectedView: GenericView
   @Input() view: ViewResponse
   @Input() views: GenericView[]
+  @Input() type: 'properties' | 'taxlots'
   @Output() changeView = new EventEmitter<number>()
+  groupMappings: GroupMapping[]
+  accessLevelInstance: AccessLevelInstance
+  // aliDataSource = new MatTableDataSource<unknown>([])
+  aliDataSource = []
+  // aliHeaders = this.org.access_level_names
+  aliColumns: string[] = []
 
   actions = [
     { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: false },
@@ -37,7 +50,17 @@ export class HeaderComponent implements OnInit {
   ]
 
   ngOnInit(): void {
-    console.log('init detail header')
+    // taxlots will not have group mappings
+    this.groupMappings = this.view.property?.group_mappings
+    this.formatAliData()
+  }
+
+  formatAliData() {
+    const inventoryKey = this.type === 'properties' ? 'property' : 'taxlot'
+    this.accessLevelInstance = this.view[inventoryKey].access_level_instance
+
+    this.aliColumns = this.org.access_level_names
+    this.aliDataSource = [this.view[inventoryKey].access_level_instance.path]
   }
 
   tempAction() {
@@ -47,6 +70,10 @@ export class HeaderComponent implements OnInit {
   onAction(action: () => void, select: MatSelect) {
     action()
     select.value = null
+  }
+
+  trackByFn(_index: number, { id }: AccessLevelInstance) {
+    return id
   }
 
   onChangeView(viewId: number) {

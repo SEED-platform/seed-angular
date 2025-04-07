@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, PropertyViewResponse, TaxLotViewResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -97,20 +97,20 @@ export class InventoryService {
     return inventoryType === 'taxlots' ? this.getTaxLotView(orgId, viewId) : this.getPropertyView(orgId, viewId)
   }
 
-  getPropertyView(orgId: number, viewId: number): Observable<PropertyViewResponse> {
+  getPropertyView(orgId: number, viewId: number): Observable<ViewResponse> {
     const url = `/api/v3/properties/${viewId}/`
     const params = { organization_id: orgId }
-    return this._httpClient.get<PropertyViewResponse>(url, { params }).pipe(
+    return this._httpClient.get<ViewResponse>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
     )
   }
 
-  getTaxLotView(orgId: number, viewId: number): Observable<TaxLotViewResponse> {
+  getTaxLotView(orgId: number, viewId: number): Observable<ViewResponse> {
     const url = `/api/v3/taxlots/${viewId}/`
     const params = { organization_id: orgId }
-    return this._httpClient.get<TaxLotViewResponse>(url, { params }).pipe(
+    return this._httpClient.get<ViewResponse>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),

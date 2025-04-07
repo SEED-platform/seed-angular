@@ -4,4 +4,5 @@ export type Label = {
   color: string;
   organization_id: number;
   show_in_list: boolean;
+  is_applied?: number[];
 }

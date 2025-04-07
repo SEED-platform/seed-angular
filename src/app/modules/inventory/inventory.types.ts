@@ -1,4 +1,5 @@
 import type { ColDef } from 'ag-grid-community'
+import type { ValueGetterParams } from 'ag-grid-community'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
 import type { CurrentUser } from '@seed/api/user'
@@ -128,11 +129,11 @@ export type GenericViewsResponse = {
   taxlot_views?: GenericView[];
 }
 
-// PROPERTY TYPES
+// could combine property and taxlot into a generic Inventory type
 export type Property = {
   access_level_instance: AccessLevelInstance;
   created: string;
-  group_mappings: unknown[];
+  group_mappings: GroupMapping[];
   id: number;
   inventory_documents: unknown[];
   organization: number;
@@ -140,46 +141,30 @@ export type Property = {
   updated: string;
 }
 
-export type PropertyViewResponse = {
-  changed_fields: unknown;
-  cycle: Cycle;
-  date_edited: number;
-  filename: string;
-  history: History[];
-  labels: number[];
-  property: Property;
-  source: unknown;
-  // state needs to be typed
-  state: Record<string, unknown>;
-  status: string;
-  taxlots: GenericRelatedInventory[];
-}
-
-// TAX LOT TYPES
 export type TaxLot = {
-  access_level_instance: number;
+  access_level_instance: AccessLevelInstance;
   created: string;
   id: number;
   organization: number;
   updated: string;
 }
 
-export type TaxLotViewResponse = {
+export type ViewResponse = {
   changed_fields: unknown;
   cycle: Cycle;
   date_edited: number;
   filename: string;
   history: History[];
   labels: number[];
-  properties: GenericRelatedInventory[];
+  property?: Property;
+  properties?: GenericRelatedInventory[];
   source: unknown;
   // state needs to be typed
   state: Record<string, unknown>;
   status: string;
-  taxlot: TaxLot;
+  taxlot?: TaxLot;
+  taxlots?: GenericRelatedInventory[];
 }
-
-export type ViewResponse = PropertyViewResponse | TaxLotViewResponse
 
 type History = {
   date_edited: number;
@@ -188,4 +173,14 @@ type History = {
   source: string;
   // state needs to be typed
   state: Record<string, unknown>;
+}
+
+export type ValueGetterParamsData = ValueGetterParams<Record<string, unknown>>
+
+export type GroupMapping = {
+  group_id: number;
+  group_name: string;
+  id: number;
+  property_id: number;
+  taxlot_id: number;
 }

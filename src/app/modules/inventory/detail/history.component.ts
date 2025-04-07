@@ -1,12 +1,13 @@
+import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { type Column, ColumnService } from '@seed/api/column'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { take, tap } from 'rxjs'
-import type { Profile, ViewResponse } from '../inventory.types'
-import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
-
+import { type Column, ColumnService } from '@seed/api/column'
+import { ConfigService } from '@seed/services'
+import type { Profile, ValueGetterParamsData, ViewResponse } from '../inventory.types'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -16,20 +17,28 @@ ModuleRegistry.registerModules([AllCommunityModule])
   imports: [
     AgGridAngular,
     AgGridModule,
+    CommonModule,
   ],
 })
 export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
   @Input() view: ViewResponse
   private _columnService = inject(ColumnService)
+  private _configService = inject(ConfigService)
   columns: Column[]
   columnDefs: ColDef[]
   currentProfile: Profile
-  gridTheme = themeAlpine.withPart(colorSchemeLight)
+  gridTheme$ = this._configService.gridTheme$
   rowData: Record<string, unknown>[]
   gridApi: GridApi
 
+  defaultColDef = {
+    sortable: false,
+    filter: false,
+    resizable: true,
+    suppressMovable: true,
+  }
+
   ngOnInit(): void {
-    console.log('init history')
     this.getHistory().subscribe()
   }
 
@@ -38,8 +47,6 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
       take(1),
       tap((columns) => {
         this.setColumns(columns)
-        // this.setColumnDefs()
-        // this.setHistoryRowDataTransposed()
         this.setColumnDefs()
         this.setRowData()
       }),
@@ -47,15 +54,14 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes)
     if (changes.view) {
-      this.getHistory()
+      this.getHistory().subscribe()
     }
   }
 
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
-    console.log('gridApi', this.gridApi)
+    this.gridApi.autoSizeAllColumns()
   }
 
   get gridHeight() {
@@ -73,44 +79,32 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
     }
   }
 
-  // setColumnDefsTransposed() {
-  //   this.columnDefs = this.columns.map((c) => ({ field: c.column_name, headerName: c.display_name }))
-  // }
-
   setColumnDefs() {
     this.columnDefs = [
-      { field: 'field', headerName: 'Field' },
+      { field: 'field', headerName: 'Field', pinned: true },
       { field: 'state', headerName: 'Main' },
     ]
+
     for (const { filename } of this.view.history) {
-      this.columnDefs.push({ field: filename, headerName: filename })
+      // field names with periods require formatting, otherwise treated as a path
+      this.columnDefs.push({
+        field: filename,
+        headerName: filename,
+        valueGetter: (params: ValueGetterParamsData) => params.data[filename],
+      })
     }
   }
 
   setRowData() {
-    // NO - its all addressline 1, all addressline 2, etc
-    // 1. field names
-    // 2. this state
-    // 3. historical states
-    // const rows = []
+    // Transposed data. Each row is a column name (address line 1, address line 2, etc.)
     this.rowData = []
     for (const { column_name, display_name } of this.columns) {
       const row = { field: display_name, state: this.view.state[column_name] }
       for (const item of this.view.history) {
-        // WHY ISNT THIS WORKING?
         row[item.filename] = item.state[column_name]
       }
       this.rowData.push(row)
     }
-    // const fieldNames = this.columns.map((c) => c.column_name)
-    // const state = this.view.state
-  }
-
-  setHistoryRowDataTranspose() {
-    const historicalStates = this.view.history.map((h) => h.state)
-    this.rowData = [this.view.state, ...historicalStates]
-    console.log('rowData', this.rowData)
-    console.log('columnDefs', this.columnDefs)
   }
 
   ngOnDestroy(): void {
