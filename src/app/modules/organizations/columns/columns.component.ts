@@ -1,5 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import { Component, inject, type OnInit } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTabsModule } from '@angular/material/tabs'
@@ -16,6 +17,7 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean }
   imports: [
     CommonModule,
     SharedImports,
+    MatButtonModule,
     MatIconModule,
     MatSidenavModule,
     MatTabsModule,
@@ -28,6 +30,8 @@ export class ColumnsComponent implements OnInit {
   private _title = inject(Title)
   private _router = inject(Router)
   private _location = inject(Location)
+  drawerOpened = true
+  helpOpened = false
   tabs = [
     {
       label: 'Properties',
@@ -118,5 +122,16 @@ export class ColumnsComponent implements OnInit {
       basePath = `${this._location.path().split('/').slice(0, -1).join('/')}/properties`
     }
     this.setPageInfo(this.columnsNavigationMenu.find((n) => basePath.includes(n.link)))
+  }
+
+  toggleDrawer = (): void => {
+    this.drawerOpened = !this.drawerOpened
+    if (this.drawerOpened) {
+      this.helpOpened = false
+    }
+  }
+
+  toggleHelp = () => {
+    this.helpOpened = !this.helpOpened
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, type OnInit, ViewEncapsulation } from '@angular/core'
+import { Component, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
@@ -7,14 +7,14 @@ import { MatIcon } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
+import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
 import { SharedImports } from '@seed/directives'
-import { EditButtonComponent } from './edit-button-component'
+import { ActionButtonsComponent } from './action-buttons.component'
 import { CreateModalComponent } from './modal/create-modal.component'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
@@ -38,7 +38,7 @@ type RenderMapping = ColumnMapping & {
   encapsulation: ViewEncapsulation.None,
   imports: [AgGridAngular, SharedImports, MatButtonModule, MatIcon, MatFormFieldModule, ReactiveFormsModule, MatSelectModule, MatTooltipModule],
 })
-export class MappingsComponent implements OnInit {
+export class MappingsComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _mappableColumnService = inject(MappableColumnService)
@@ -73,39 +73,53 @@ export class MappingsComponent implements OnInit {
   columnDefs: ColDef[] | ColGroupDef[] = [
     { headerName: 'SEED', children: [
       { headerName: 'Omit?', field: 'is_omitted', cellRenderer: 'agCheckboxCellRenderer',
-        cellEditor: 'agCheckboxCellEditor', editable: true,
+        editable: false, width: 100,
 
       },
       { headerName: 'Inventory Type',
         field: 'to_table_name',
-        editable: true,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: { values: ['PropertyState', 'TaxLotState']},
+        editable: false,
         valueFormatter: (params: ValueFormatterParams) => { return (params.value as string).slice(0, -5) },
       },
       {
         headerName: 'SEED Header',
         field: 'to_field',
-        valueFormatter: (params: ValueFormatterParams) => { return (params.data.column?.display_name || params.value) as string },
+        valueFormatter: (params: ValueFormatterParams<RenderMapping>) => { return (params.data.column?.display_name || params.value) as string },
       },
       { headerName: 'Measurement Units', field: 'from_units',
         editable: false,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: { values: this.dataTypes.map((dt) => dt.id) },
-        valueFormatter: (params) => { return params.data.unit_label as string },
+        valueFormatter: (params: ValueFormatterParams<RenderMapping>) => { return params.data.unit_label },
+        cellClass: (params: CellClassParams<RenderMapping>) => {
+          if (this.measuredColumn(params.node) && !params.data.from_units) {
+            return 'bg-red-300'
+          } else {
+            return ''
+          }
+        },
       },
     ],
     },
     { headerName: 'Profile', children: [
-      { headerName: 'Data File Header', field: 'from_field' },
+      {
+        headerName: 'Data File Header',
+        field: 'from_field',
+        cellClass: (params: CellClassParams<RenderMapping>) => {
+          if (this.countFromFieldsInGrid(params.data.from_field) > 1) {
+            return 'bg-red-300'
+          } else {
+            return ''
+          }
+        },
+      },
       {
         headerName: 'Actions',
         field: 'actions',
-        cellRenderer: EditButtonComponent,
+        cellRenderer: ActionButtonsComponent,
         cellRendererParams: {
-          onClick: this.editMapping.bind(this),
+          onDelete: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.deleteMapping(data, node) },
+          onEdit: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.editMapping(data, node) },
         },
-      }
+      },
     ],
     },
   ]
@@ -113,8 +127,10 @@ export class MappingsComponent implements OnInit {
   gridOptions: GridOptions = {
     columnDefs: this.columnDefs,
     pagination: false,
+    suppressCellFocus: true,
   }
   gridReady = false
+  changesToSave = false
 
   isLoaded = false
   selectedProfileForm = new FormGroup({ selectedProfile: new FormControl<number | null>(null) })
@@ -131,10 +147,14 @@ export class MappingsComponent implements OnInit {
         this.mappablePropertyColumns = propertyColumns
         this.profiles = profiles
         this.selectedProfile = profiles[0]
-        this.selectedProfileForm.get('selectedProfile').setValue(profiles[0].id)
+        this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
         this.rowData = this.buildRenderMappings(this.selectedProfile.mappings)
       })
     this.isLoaded = true
+  }
+
+  ngOnDestroy(): void {
+    this._gridApi = undefined
   }
 
   toFieldRenderer(params: ValueFormatterParams) {
@@ -182,15 +202,32 @@ export class MappingsComponent implements OnInit {
     this._gridApi.setGridOption('rowData', this.buildRenderMappings(profile.mappings))
   }
 
+  countFromFieldsInGrid(matchValue: string): number {
+    if (!this.gridReady) {
+      return 0
+    }
+    let count = 0
+    this._gridApi.forEachNode((node: IRowNode<RenderMapping>, _index) => {
+      if (node.data.from_field === matchValue) {
+        count += 1
+      }
+    })
+    return count
+  }
+
   selectProfile() {
     const profileId = this.selectedProfileForm.get('selectedProfile').value
     if (profileId !== this.selectedProfile.id) {
       this.selectedProfile = this.profiles.find((p) => p.id === profileId)
     }
     this.populateGrid(this.selectedProfile)
+    this.changesToSave = false
   }
 
   profileReadOnly() {
+    if (!this.selectedProfile) {
+      return true
+    }
     return this.selectedProfile.profile_type !== 'Normal'
   }
 
@@ -216,6 +253,13 @@ export class MappingsComponent implements OnInit {
       return this.mappableTaxlotColumns.find((c) => c.column_name === to_field) || null
     }
     return null
+  }
+
+  measuredColumn(node: IRowNode<RenderMapping>) {
+    if (!node.data.column) {
+      return false
+    }
+    return ['area', 'eui', 'ghg', 'wui', 'ghg_intensity', 'water_use'].includes(node.data.column.data_type)
   }
 
   unitSelections(mapping: ColumnMapping) {
@@ -266,15 +310,6 @@ export class MappingsComponent implements OnInit {
     }
   }
 
-  updateProfile() {
-    // const profile_id = this.profileForm.get('profile_id').value
-    // if (profile_id !== this.selectedProfile.id || this.profileReadOnly()) {
-    //   return
-    // }
-
-    // this._columnMappingProfileService.updateMappings(this.mappablePropertyColumns[0].organization_id, profile_id, this.getMappingsFromForm()).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
-  }
-
   getMappingsFromForm(): ColumnMapping[] {
     const mappings: ColumnMapping[] = []
     /*
@@ -295,11 +330,19 @@ export class MappingsComponent implements OnInit {
     return mappings
   }
 
-  editMapping(mapping: ColumnMapping, node: IRowNode) {
-    console.log('Editing node: ', node)
+  onCellDoubleClicked(event: CellDoubleClickedEvent) {
+    this.editMapping(event.data as ColumnMapping, event.node)
+  }
+
+  deleteMapping(_mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {
+    this._gridApi.applyTransaction({ remove: [node.data] })
+    this.changesToSave = true
+  }
+
+  editMapping(mapping: ColumnMapping, node: IRowNode): void {
     const dialogRef = this._dialog.open(EditModalComponent, {
       width: '80rem',
-      data: { profile: this.selectedProfile, mapping, org_id: this.mappablePropertyColumns[0].organization_id, columns: mapping.to_table_name === 'PropertyState' ? this.mappablePropertyColumns : this.mappableTaxlotColumns },
+      data: { profile: this.selectedProfile, mapping, org_id: this.mappablePropertyColumns[0].organization_id, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
     })
     dialogRef
       .afterClosed()
@@ -308,6 +351,7 @@ export class MappingsComponent implements OnInit {
         tap((newMapping: ColumnMapping) => {
           if (newMapping) {
             node.setData(this.buildRenderMappings([newMapping])[0])
+            this.changesToSave = true
           }
         }),
       )
@@ -390,9 +434,45 @@ export class MappingsComponent implements OnInit {
 
   suggest() {
     const headers = this.selectedProfile.mappings.map((m) => m.from_field)
-    this._columnMappingProfileService.suggestions(this.mappablePropertyColumns[0].organization_id, headers).pipe(
-      takeUntil(this._unsubscribeAll$),
+    this._columnMappingProfileService.suggestions(this.mappablePropertyColumns[0].organization_id, headers)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((suggestions) => {
+        for (const k of Object.keys(suggestions)) {
+          this.selectedProfile.mappings.find((m) => m.from_field === k).to_table_name = suggestions[k][0]
+          this.selectedProfile.mappings.find((m) => m.from_field === k).to_field = suggestions[k][1]
+        }
+        this.populateGrid(this.selectedProfile)
+      })
+  }
 
-    ).subscribe()
+  copy() {
+    for (const m of this.selectedProfile.mappings) {
+      m.to_field = m.from_field
+    }
+    this.populateGrid(this.selectedProfile)
+    this.changesToSave = true
+  }
+
+  save() {
+    const orgId = this.mappablePropertyColumns[0].organization_id
+    const mappings: ColumnMapping[] = []
+    this._gridApi.forEachNode((rowNode, _index) => {
+      mappings.push(this.buildMappingFromRowNode(rowNode))
+    })
+    this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, mappings).subscribe((updatedProfile) => {
+      const i = this.profiles.indexOf(this.selectedProfile)
+      this.profiles[i] = updatedProfile
+      this.populateGrid(this.profiles[i])
+    })
+  }
+
+  buildMappingFromRowNode(rowNode: IRowNode<ColumnMapping>) {
+    return {
+      to_field: rowNode.data.to_field,
+      from_field: rowNode.data.from_field,
+      from_units: rowNode.data.from_units,
+      to_table_name: rowNode.data.to_table_name,
+      is_omitted: rowNode.data.is_omitted,
+    } as ColumnMapping
   }
 }

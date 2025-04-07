@@ -6,12 +6,11 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
-import { AlertComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-column-mappings-rename-modal',
   templateUrl: './rename-modal.component.html',
-  imports: [AlertComponent, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
 })
 export class RenameModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)

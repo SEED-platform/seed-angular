@@ -30,5 +30,5 @@ export type ColumnMappingProfileDeleteResponse = {
 
 export type ColumnMappingSuggestionResponse = {
   status: string;
-  data: string[][];
+  data: Record<string, [('PropertyState' | 'TaxlotState'), string, number]>;
 }

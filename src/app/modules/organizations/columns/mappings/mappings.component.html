@@ -1,43 +1,57 @@
 <div class="flex w-full flex-row items-center gap-x-2">
-  <form [formGroup]="selectedProfileForm" (ngSubmit)="selectProfile()" class="flex w-1/3">
+  <form class="flex w-1/3" [formGroup]="selectedProfileForm" (ngSubmit)="selectProfile()">
     <mat-form-field class="mt-4 w-full">
-      <mat-select formControlName="selectedProfile" (selectionChange)="selectProfile()">
+      <mat-select (selectionChange)="selectProfile()" formControlName="selectedProfile">
         @for (profile of profiles; track profile.id) {
           <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
   </form>
-  <a mat-stroked-button class="flex" matTooltip="Rename Profile" (click)="rename()">
+  <a
+    class="flex bg-green-700 {{ changesToSave ? 'bg-opacity-100' : 'bg-opacity-50' }}"
+    [disabled]="!changesToSave"
+    (click)="save()"
+    mat-stroked-button
+    matTooltip="Save"
+  >
+    <mat-icon class="fill-white icon-size-4" svgIcon="fa-solid:check"></mat-icon>
+  </a>
+  <a class="flex" (click)="rename()" mat-stroked-button matTooltip="Rename Profile">
     <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
   </a>
-  <a mat-stroked-button class="flex" matTooltip="Delete This Profile" (click)="delete()">
+  <a class="flex" (click)="delete()" mat-stroked-button matTooltip="Delete This Profile">
     <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
   </a>
-  <a mat-stroked-button class="flex" matTooltip="Copy This Profile" (click)="create()">
+  <a class="flex" (click)="create()" mat-stroked-button matTooltip="Copy This Profile">
     <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
   </a>
-  <a mat-stroked-button class="flex" matTooltip="Download as CSV" (click)="export()">
+  <a class="flex" (click)="export()" mat-stroked-button matTooltip="Download as CSV">
     <mat-icon class="fill-green-700 icon-size-4" svgIcon="fa-solid:download"></mat-icon>
   </a>
 </div>
 
-<div class="mx-auto w-full max-w-screen-xl h-screen">
-<ag-grid-angular
-  style="width: 100%; height: 100%"
-  [rowData]="rowData"
-  [gridOptions]="gridOptions"
-  (gridReady)="onGridReady($event)"
-  class="ag-theme-alpine">
-</ag-grid-angular>
-</div> 
-
+<div class="prose" *transloco="let t" class="mb-4">
+ {{ t('COL_MAP_PROFILE_INTRO') }}
+</div>
 @if (selectedProfile && mappablePropertyColumns && mappableTaxlotColumns) {
   <div class="prose">
-  <button mat-flat-button [disabled]="profileReadOnly()" color="accent" (click)="suggest()">
-    <span class="">Populate SEED Headers with best known matches</span>
-  </button>
+    <button class="mb-4" [disabled]="profileReadOnly()" (click)="copy()" mat-flat-button color="accent">
+      <span class="">Copy Data File Headers directly to SEED Headers</span>
+    </button>
+    <button class="mb-4" [disabled]="profileReadOnly()" (click)="suggest()" mat-flat-button color="accent">
+      <span class="">Populate SEED Headers with Best Known Matches</span>
+    </button>
   </div>
-
-
 }
+<div class="mx-auto h-screen w-full max-w-screen-xl">
+  <ag-grid-angular
+    class="ag-theme-alpine"
+    [rowData]="rowData"
+    [gridOptions]="gridOptions"
+    (gridReady)="onGridReady($event)"
+    (cellDoubleClicked)="onCellDoubleClicked($event)"
+    style="width: 100%; height: 100%"
+  >
+  </ag-grid-angular>
+</div>

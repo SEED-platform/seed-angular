@@ -6,15 +6,16 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
-import { AlertComponent } from '@seed/components'
+import { type ColumnMapping, type ColumnMappingProfile } from '@seed/api/column_mapping_profile'
+import { SEEDValidators } from '@seed/validators'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 
 @Component({
   selector: 'seed-column-mappings-edit-modal',
   templateUrl: './edit-modal.component.html',
-  imports: [AlertComponent, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, ReactiveFormsModule, SeedHeaderAutocompleteComponent],
+  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, SeedHeaderAutocompleteComponent],
 })
 export class EditModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditModalComponent>)
@@ -23,25 +24,50 @@ export class EditModalComponent implements OnInit {
   mapping: ColumnMapping
   profile: ColumnMappingProfile
   columns: Column[]
+  from_fields: string[]
   form = new FormGroup({
     is_omitted: new FormControl<boolean | null>(null),
     to_table_name: new FormControl<string>('', [Validators.required]),
-    to_field: new FormControl<string>('', [Validators.required]),
-    from_field: new FormControl<string>('', [Validators.required]),
+    to_field: new FormControl<string>('', []),
+    from_field: new FormControl<string>('', []),
     from_units: new FormControl<string>(''),
 
   })
-  data = inject(MAT_DIALOG_DATA) as { mapping: ColumnMapping; org_id: number, columns: Column[], profile: ColumnMappingProfile }
+  data = inject(MAT_DIALOG_DATA) as { mapping: ColumnMapping; org_id: number; columns: Column[]; profile: ColumnMappingProfile }
 
   ngOnInit(): void {
     this.mapping = this.data.mapping
     this.columns = this.data.columns
     this.profile = this.data.profile
+    this.from_fields = this.profile.mappings.filter((m) => {
+      if (m.from_field === this.mapping.from_field && m.to_field === this.mapping.to_field && m.to_table_name === this.mapping.to_table_name) {
+        return false
+      } else {
+        return true
+      }
+    }).map((m) => m.from_field)
+    this.form.get('to_field').disable()
+    this.form.get('to_table_name').valueChanges.subscribe((val) => {
+      this.columns = this.data.columns.filter((c) => c.table_name === val)
+      if (val) {
+        this.form.get('to_field').enable()
+      }
+    })
+    this.form.get('is_omitted').valueChanges.subscribe((val) => {
+      if (!val) {
+        this.form.get('to_field').setValidators(Validators.required)
+      } else {
+        this.form.get('to_field').clearValidators()
+      }
+    })
+    this.form.get('to_field').valueChanges.subscribe((val) => {
+      this.setMeasurementSelect(val)
+    })
+    this.form.get('from_field').setValidators([Validators.required, SEEDValidators.uniqueValue(this.from_fields)])
     this.form.patchValue(this.mapping)
   }
 
   onSubmit() {
-    console.log('Saving: ', this.form.value)
     this._dialogRef.close(this.form.value as ColumnMapping)
   }
 
@@ -57,8 +83,26 @@ export class EditModalComponent implements OnInit {
     }
   }
 
-  unitSelections(mapping: ColumnMapping) {
-    const col = this.columns.find((c) => c.column_name === mapping.to_field)
+  getColumn(to_field: string): Column | null {
+    return this.columns.find((c) => c.column_name === to_field)
+  }
+
+  setMeasurementSelect(field: string): void {
+    const col = this.getColumn(field)
+    if (!col) {
+      return null
+    }
+    if (['area', 'eui', 'ghg', 'wui', 'ghg_intensity', 'water_use'].includes(col.data_type)) {
+      this.form.get('from_units').enable()
+      this.form.get('from_units').setValidators(Validators.required)
+    } else {
+      this.form.get('from_units').disable()
+      this.form.get('from_units').clearValidators()
+    }
+  }
+
+  unitSelections() {
+    const col = this.columns.find((c) => c.column_name === this.form.get('to_field').value)
     if (!col) {
       return []
     }

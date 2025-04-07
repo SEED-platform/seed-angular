@@ -4,8 +4,8 @@ import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { MatInputModule } from '@angular/material/input'
-import { type Column } from '@seed/api/column'
 import { map, type Observable, startWith } from 'rxjs'
+import { type Column } from '@seed/api/column'
 import { SharedImports } from '@seed/directives'
 
 @Component({
@@ -35,7 +35,7 @@ export class SeedHeaderAutocompleteComponent implements OnInit {
   }
 
   filter(val: string) {
-    return this.columns.filter((col) => col.column_name.toLocaleLowerCase().includes(val))
+    return this.columns.filter((col) => col.column_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
   }
   displayFn = (a: string) => {
     if (this.columns) {

@@ -1,7 +1,7 @@
-<h2 mat-dialog-title class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   New Column Mapping Profile
 </h2>
-<form [formGroup]="form" class="flex flex-col gap-4">
+<form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Name</mat-label>
     <input matInput formControlName="name" placeholder="Profile Name" />
@@ -13,9 +13,9 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Create Profile</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Create Profile</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
-    <button mat-stroked-button (click)="close()">Cancel</button>
+    <button (click)="close()" mat-stroked-button>Cancel</button>
   </mat-dialog-actions>
 </div>

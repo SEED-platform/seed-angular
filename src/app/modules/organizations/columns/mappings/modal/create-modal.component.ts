@@ -7,12 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { map } from 'rxjs'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
-import { AlertComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
-  imports: [AlertComponent, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
 })
 export class CreateModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
