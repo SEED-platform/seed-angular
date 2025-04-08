@@ -109,13 +109,13 @@ export type OrganizationUserSettings = {
 }
 
 type UserSettingsFilters = {
-  properties: Record<string, unknown>;
-  taxlots: Record<string, unknown>;
+  properties?: Record<string, unknown>;
+  taxlots?: Record<string, unknown>;
 }
 
 type UserSettingsSorts = {
-  properties: string[];
-  taxlots: string[];
+  properties?: string[];
+  taxlots?: string[];
 }
 
 export type OrganizationUsersResponse = {

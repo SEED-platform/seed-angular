@@ -26,7 +26,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
 })
 export class InventoryGridComponent implements OnInit, OnChanges {
   @Input() columnDefs!: ColDef[]
-  @Input() labelLookup: Record<number, Label>
+  @Input() labelMap: Record<number, Label>
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
@@ -34,6 +34,7 @@ export class InventoryGridComponent implements OnInit, OnChanges {
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
+  @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
 
   agPageSize = 100
@@ -167,15 +168,15 @@ export class InventoryGridComponent implements OnInit, OnChanges {
       // labels come in as an array of ids [1,2,3]. Ag grid needs them formatted as a string
       valueFormatter: ({ value }: { value: number[] }) => {
         const labels = value
-        return labels?.length ? labels.map((id: number) => this.labelLookup[id]?.name).join(', ') : ''
+        return labels?.length ? labels.map((id: number) => this.labelMap[id]?.name).join(', ') : ''
       },
       cellRenderer: ({ value }: { value: number[] }) => {
         const labels = value
         if (!labels.length) return ''
 
         const eLabels = labels.map((id: number) => {
-          return this.labelLookup[id]
-            ? `<div class="label ${this.labelLookup[labels[0]]?.color} whitespace-nowrap px-2">${this.labelLookup[id].name}</div>`
+          return this.labelMap[id]
+            ? `<div class="label ${this.labelMap[id]?.color} whitespace-nowrap px-2">${this.labelMap[id].name}</div>`
             : ''
         }).join(' ')
 
@@ -192,6 +193,8 @@ export class InventoryGridComponent implements OnInit, OnChanges {
     this.gridApi.applyColumnState({ state: [], applyOrder: true })
     this.gridApi.resetColumnState()
     this.gridApi.refreshClientSideRowModel()
+    this.gridApi.refreshCells({ force: true })
+    this.gridReset.emit()
   }
 
   /*
