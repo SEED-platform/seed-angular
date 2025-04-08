@@ -23,12 +23,16 @@
   <a class="flex" (click)="delete()" mat-stroked-button matTooltip="Delete This Profile">
     <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
   </a>
-  <a class="flex" (click)="create()" mat-stroked-button matTooltip="Copy This Profile">
-    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
+  <a class="flex" (click)="copy_profile()" mat-stroked-button matTooltip="Copy This Profile">
+    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
+  </a>
+  <a class="flex" (click)="create_profile()" mat-stroked-button matTooltip="Create New Profile">
+    <mat-icon class="fill-gray-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
   </a>
   <a class="flex" (click)="export()" mat-stroked-button matTooltip="Download as CSV">
     <mat-icon class="fill-green-700 icon-size-4" svgIcon="fa-solid:download"></mat-icon>
   </a>
+
 </div>
 
 <div class="prose" *transloco="let t" class="mb-4">

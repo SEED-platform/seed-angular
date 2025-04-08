@@ -15,6 +15,7 @@ import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
 import { SharedImports } from '@seed/directives'
 import { ActionButtonsComponent } from './action-buttons.component'
+import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
@@ -43,7 +44,7 @@ export class MappingsComponent implements OnDestroy, OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _mappableColumnService = inject(MappableColumnService)
   protected readonly _unsubscribeAll$ = new Subject<void>()
-  private _gridApi!: GridApi<ColumnMapping>
+  private _gridApi!: GridApi<RenderMapping>
   profiles: ColumnMappingProfile[]
   mappablePropertyColumns: Column[]
   mappableTaxlotColumns: Column[]
@@ -114,10 +115,17 @@ export class MappingsComponent implements OnDestroy, OnInit {
       {
         headerName: 'Actions',
         field: 'actions',
-        cellRenderer: ActionButtonsComponent,
-        cellRendererParams: {
-          onDelete: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.deleteMapping(data, node) },
-          onEdit: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.editMapping(data, node) },
+        cellRendererSelector: (_params) => {
+          if (this.profileReadOnly()) {
+            return undefined
+          }
+          return {
+            component: ActionButtonsComponent,
+            params: {
+              onDelete: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.deleteMapping(data, node) },
+              onEdit: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.editMapping(data, node) },
+            },
+          }
         },
       },
     ],
@@ -194,12 +202,14 @@ export class MappingsComponent implements OnDestroy, OnInit {
     })
   }
 
-  onGridReady(params: GridReadyEvent<ColumnMapping>) {
+  onGridReady(params: GridReadyEvent<RenderMapping>) {
     this._gridApi = params.api
   }
 
   populateGrid(profile: ColumnMappingProfile) {
-    this._gridApi.setGridOption('rowData', this.buildRenderMappings(profile.mappings))
+    const rm = this.buildRenderMappings(profile.mappings)
+    this.rowData = rm
+    this._gridApi.setGridOption('rowData', rm)
   }
 
   countFromFieldsInGrid(matchValue: string): number {
@@ -215,8 +225,10 @@ export class MappingsComponent implements OnDestroy, OnInit {
     return count
   }
 
-  selectProfile() {
-    const profileId = this.selectedProfileForm.get('selectedProfile').value
+  selectProfile(profileId = undefined) {
+    if (!profileId) {
+      profileId = this.selectedProfileForm.get('selectedProfile').value
+    }
     if (profileId !== this.selectedProfile.id) {
       this.selectedProfile = this.profiles.find((p) => p.id === profileId)
     }
@@ -262,71 +274,11 @@ export class MappingsComponent implements OnDestroy, OnInit {
     return ['area', 'eui', 'ghg', 'wui', 'ghg_intensity', 'water_use'].includes(node.data.column.data_type)
   }
 
-  unitSelections(mapping: ColumnMapping) {
-    const col = this.getColumn(mapping.to_table_name, mapping.to_field)
-    if (!col) {
-      return []
-    }
-    switch (col.data_type) {
-      case 'area':
-        return [
-          { id: 'ft**2', value: 'square feet' },
-          { id: 'm**2', value: 'square metres' },
-        ]
-      case 'eui':
-        return [
-          { id: 'kBtu/ft**2/year', value: 'kBtu/ft²/year' },
-          { id: 'kWh/m**2/year', value: 'kWh/m²/year' },
-          { id: 'GJ/m**2/year', value: 'GJ/m²/year' },
-          { id: 'MJ/m**2/year', value: 'MJ/m²/year' },
-          { id: 'kBtu/m**2/year', value: 'kBtu/m²/year' },
-        ]
-      case 'ghg':
-        return [
-          { id: 'MtCO2e/year', value: 'MtCO2e/year' },
-          { id: 'kgCO2e/year', value: 'kgCO2e/year' },
-        ]
-      case 'wui':
-        return [
-          { id: 'kgal/ft**2/year', value: 'kgal/ft²/year' },
-          { id: 'gal/ft**2/year', value: 'gal/ft²/year' },
-          { id: 'L/m**2/year', value: 'L/m²/year' },
-        ]
-      case 'ghg_intensity':
-        return [
-          { id: 'MtCO2e/ft**2/year', value: 'MtCO2e/ft²/year' },
-          { id: 'kgCO2e/ft**2/year', value: 'kgCO2e/ft²/year' },
-          { id: 'MtCO2e/m**2/year', value: 'MtCO2e/m²/year' },
-          { id: 'kgCO2e/m**2/year', value: 'kgCO2e/m²/year' },
-        ]
-      case 'water_use':
-        return [
-          { id: 'kgal/year', value: 'kgal/year' },
-          { id: 'gal/year', value: 'gal/year' },
-          { id: 'L/year', value: 'L/year' },
-        ]
-      default:
-        return []
-    }
-  }
-
-  getMappingsFromForm(): ColumnMapping[] {
+  getMappingsFromGrid(): ColumnMapping[] {
     const mappings: ColumnMapping[] = []
-    /*
-    for (const group of Object.keys(this.profileForm.controls)) {
-      if (group === 'profile_id') {
-        continue
-      }
-      const c: ColumnMapping = {
-        from_field: this.profileForm.get(group).get('from_field').value as string,
-        to_field: this.profileForm.get(group).get('to_field').value as string,
-        to_table_name: this.profileForm.get(group).get('to_table_name').value as 'PropertyState' | 'TaxlotState',
-        from_units: this.profileForm.get(group).get('from_units').value as string,
-        is_omitted: this.profileForm.get(group).get('is_omitted').value as boolean | null,
-      }
-      mappings.push(c)
-    }
-    */
+    this._gridApi.forEachNode((rowNode, _index) => {
+      mappings.push(this.buildMappingFromRowNode(rowNode))
+    })
     return mappings
   }
 
@@ -358,10 +310,33 @@ export class MappingsComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  create() {
+  create_profile = () => {
     const dialogRef = this._dialog.open(CreateModalComponent, {
       width: '40rem',
-      data: { mappings: this.getMappingsFromForm(), org_id: this.mappablePropertyColumns[0].organization_id },
+      data: { org_id: this.mappablePropertyColumns[0].organization_id },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((newProfileId: number) => {
+          this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe((_profiles) => {
+            this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
+            this.selectProfile(newProfileId)
+            this._gridApi.redrawRows()
+          },
+          )
+        },
+        ),
+      )
+      .subscribe()
+  }
+
+  copy_profile() {
+    const dialogRef = this._dialog.open(CopyModalComponent, {
+      width: '40rem',
+      data: { mappings: this.getMappingsFromGrid(), org_id: this.mappablePropertyColumns[0].organization_id },
     })
 
     dialogRef
@@ -373,7 +348,7 @@ export class MappingsComponent implements OnDestroy, OnInit {
             () => {
               if (newProfileId) {
                 this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
-                this.selectProfile()
+                this.selectProfile(newProfileId)
               }
             },
           )
@@ -455,11 +430,7 @@ export class MappingsComponent implements OnDestroy, OnInit {
 
   save() {
     const orgId = this.mappablePropertyColumns[0].organization_id
-    const mappings: ColumnMapping[] = []
-    this._gridApi.forEachNode((rowNode, _index) => {
-      mappings.push(this.buildMappingFromRowNode(rowNode))
-    })
-    this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, mappings).subscribe((updatedProfile) => {
+    this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, this.getMappingsFromGrid()).subscribe((updatedProfile) => {
       const i = this.profiles.indexOf(this.selectedProfile)
       this.profiles[i] = updatedProfile
       this.populateGrid(this.profiles[i])
