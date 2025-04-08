@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common'
-import { Component, inject, type OnInit } from '@angular/core'
+import { Component, inject, type OnInit, type Type } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSidenavModule } from '@angular/material/sidenav'
@@ -11,7 +11,7 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
 
-type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: any | null }
+type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: Type<Component> | null }
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
@@ -33,7 +33,7 @@ export class ColumnsComponent implements OnInit {
   private _location = inject(Location)
   drawerOpened = true
   helpOpened = false
-  helpComponent: any | null
+  helpComponent: Type<Component> | null
   tabs = [
     {
       label: 'Properties',
