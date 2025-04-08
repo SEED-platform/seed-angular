@@ -1,5 +1,5 @@
 <mat-drawer-container class="static h-full">
-  <mat-drawer class="fixed top-16 h-full" mode="side" [(opened)]="drawerOpened">
+  <mat-drawer class="fixed top-16 h-full" [(opened)]="drawerOpened" mode="side">
     <seed-vertical-navigation
       class="mt-4 bg-gray-100 dark:bg-gray-700 print:hidden"
       [appearance]="'default'"
@@ -21,11 +21,12 @@
     </seed-vertical-navigation>
   </mat-drawer>
   <mat-drawer-content class="h-full bg-white p-4">
-    <seed-page [config]="{ 
-      title: pageTitle,
-      titleIcon: 'fa-solid:sitemap',
-      action: toggleHelp,
-      actionIcon: 'fa-solid:circle-question',
+    <seed-page
+      [config]="{
+        title: pageTitle,
+        titleIcon: 'fa-solid:sitemap',
+        action: toggleHelp,
+        actionIcon: 'fa-solid:circle-question',
       }"
     >
       @if (useTabs) {
@@ -43,7 +44,6 @@
   <mat-drawer [(opened)]="helpOpened" mode="over" position="end">
     @if (!helpComponent) {
       <div class="prose px-4" *transloco="let t">
-
         <h2 class="mt-6 flex items-center border-b-2 font-extrabold tracking-tight">
           {{ t('Help') }}<mat-icon class="mx-2 text-current icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon
           >{{ t('No Help Available Yet') }}

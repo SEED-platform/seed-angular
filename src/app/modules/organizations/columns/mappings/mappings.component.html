@@ -32,11 +32,10 @@
   <a class="flex" (click)="export()" mat-stroked-button matTooltip="Download as CSV">
     <mat-icon class="fill-green-700 icon-size-4" svgIcon="fa-solid:download"></mat-icon>
   </a>
-
 </div>
 
-<div class="prose" *transloco="let t" class="mb-4">
- {{ t('COL_MAP_PROFILE_INTRO') }}
+<div class="prose" class="mb-4" *transloco="let t">
+  {{ t('COL_MAP_PROFILE_INTRO') }}
 </div>
 @if (selectedProfile && mappablePropertyColumns && mappableTaxlotColumns) {
   <div class="prose">

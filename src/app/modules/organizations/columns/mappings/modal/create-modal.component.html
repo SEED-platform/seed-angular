@@ -9,21 +9,24 @@
       <mat-error>Name is a required field</mat-error>
     }
   </mat-form-field>
-  <div class="flex flex-row w-full items-center">
-    <div class="flex flex-1 w-75 flex-row items-center"><span class="flex flex-1 text-lg">File Headers: </span><span class="flex justify-self-end text-base color-gray-400">( List below will scroll )</span></div>
+  <div class="flex w-full flex-row items-center">
+    <div class="w-75 flex flex-1 flex-row items-center">
+      <span class="flex flex-1 text-lg">File Headers: </span
+      ><span class="color-gray-400 flex justify-self-end text-base">( List below will scroll )</span>
+    </div>
     <div class="flex justify-self-end">
       <a (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
         <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon>
       </a>
     </div>
   </div>
-  
-  <div formArrayName="mappings" class="overflow-scroll h-50" id="mappings">
+
+  <div class="h-50 overflow-scroll" id="mappings" formArrayName="mappings">
     @for (mapping of mappings.controls; track $index; let i = $index) {
-      <div class="flex flex-row items-center w-full">
-        <mat-form-field class="flex flex-1 w-75">
-          <mat-label>File Header {{ i + 1}}</mat-label>
-          <input matInput [formControlName]="i" placeholder="File Header {{ i + 1 }}"/>
+      <div class="flex w-full flex-row items-center">
+        <mat-form-field class="w-75 flex flex-1">
+          <mat-label>File Header {{ i + 1 }}</mat-label>
+          <input [formControlName]="i" matInput placeholder="File Header {{ i + 1 }}" />
         </mat-form-field>
         <a class="flex flex-0" (click)="removeMapping(i)" mat-stroked-button matTooltip="Remove">
           <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
@@ -31,7 +34,6 @@
       </div>
     }
   </div>
-    
 </form>
 
 <div class="flex justify-end">
