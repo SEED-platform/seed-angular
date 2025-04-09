@@ -1,5 +1,7 @@
+import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import { MatButtonModule } from '@angular/material/button'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
@@ -7,11 +9,16 @@ import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
+import { ColDef } from 'ag-grid-community'
+import { ConfigService } from '@seed/services'
 
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
   imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
     MatButtonModule,
     MatTableModule,
     MatSelectModule,
@@ -26,12 +33,17 @@ export class HeaderComponent implements OnInit {
   @Input() views: GenericView[]
   @Input() type: 'properties' | 'taxlots'
   @Output() changeView = new EventEmitter<number>()
+  private _configService = inject(ConfigService)
   groupMappings: GroupMapping[]
   accessLevelInstance: AccessLevelInstance
   // aliDataSource = new MatTableDataSource<unknown>([])
   aliDataSource = []
   // aliHeaders = this.org.access_level_names
   aliColumns: string[] = []
+  aliColumnDefs: ColDef[]
+  aliRowData: Record<string, unknown>[] = []
+  gridTheme$ = this._configService.gridTheme$
+
 
   actions = [
     { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: false },
@@ -52,15 +64,34 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     // taxlots will not have group mappings
     this.groupMappings = this.view.property?.group_mappings
-    this.formatAliData()
+    this.formatAliGrid()
   }
 
-  formatAliData() {
+  formatAliGrid() {
     const inventoryKey = this.type === 'properties' ? 'property' : 'taxlot'
-    this.accessLevelInstance = this.view[inventoryKey].access_level_instance
 
-    this.aliColumns = this.org.access_level_names
-    this.aliDataSource = [this.view[inventoryKey].access_level_instance.path]
+    // column defs
+    for (const name of this.org.access_level_names) {
+      this.aliColumnDefs = [
+        {
+          headerName: name,
+          field: name,
+          sortable: false,
+          filter: false,
+          resizable: true,
+          suppressMovable: true,
+          width: 100,
+        },
+      ]
+    }
+    // row data 
+    for (const [key, value] of Object.entries(this.view[inventoryKey].access_level_instance.path)) {
+      this.aliRowData.push({ [key]: value })
+    }
+  }
+
+  get gridWidth() {
+    return this.aliRowData.length * 100
   }
 
   tempAction() {

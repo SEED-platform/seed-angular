@@ -54,22 +54,14 @@
     <!-- Access Level Instance Info -->
     <div>
       <span class="text-gray-400 m-1">Access Level Instance</span>
-      <table class="mat-elevation-z8 w-full bg-transparent w-4" [dataSource]="aliDataSource" [trackBy]="trackByFn" mat-table>
-        @for (column of aliColumns; track $index) {
-          <ng-container matColumnDef="{{ column }}">
-            <th *matHeaderCellDef mat-header-cell>{{ column }}</th>
-            <td *matCellDef="let item" mat-cell>{{ item[column] }}</td>
-          </ng-container>
-        }
-
-        <thead>
-          <tr *matHeaderRowDef="aliColumns" mat-header-row></tr>
-        </thead>
-        <tbody>
-          <tr *matRowDef="let row; columns: aliColumns" mat-row></tr>
-        </tbody>
-        
-      </table>
+      <ag-grid-angular 
+        style="height: 100%"
+        [columnDefs]="aliColumnDefs"
+        [rowData]="aliRowData" 
+        [theme]="gridTheme$ | async" 
+        [style.width.px]="gridWidth"
+        [style.height.px]="90"
+       />
     </div>
     
   </div>
