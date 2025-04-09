@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatPaginator } from '@angular/material/paginator'
 import { MatTableModule } from '@angular/material/table'
 import { MatTooltip } from '@angular/material/tooltip'
-import { map, takeUntil } from 'rxjs'
+import { combineLatest, takeUntil } from 'rxjs'
 import { TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -22,14 +22,16 @@ export class ListTaxLotComponent extends ListComponent implements AfterViewInit,
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    this._columnService.taxLotColumns$
+    combineLatest([
+      this._columnService.taxLotColumns$,
+      this._organizationService.currentOrganization$,
+    ])
       .pipe(takeUntil(this._unsubscribeAll$))
-      .pipe(
-        map((columns) => {
-          this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
-        }),
-      )
-      .subscribe()
+      .subscribe(([columns, organization]) => {
+        this.organization = organization
+        this.columnTableDataSource.data = columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+        this.buildColumnList()
+      })
   }
 
   ngAfterViewInit() {
