@@ -9,6 +9,9 @@ import { Router, RouterOutlet } from '@angular/router'
 import { type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { ColumnDataTypesHelpComponent } from './data-types/help.component'
+import { ColumnGeocodingHelpComponent } from './geocoding/help.component'
+import { ColumnImportSettingsHelpComponent } from './import-settings/help.component'
 import { ColumnListHelpComponent } from './list/help.component'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
 
@@ -65,7 +68,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
-      helpComponent: null,
+      helpComponent: ColumnGeocodingHelpComponent,
     },
     {
       id: 'organization/columns/data-type',
@@ -74,7 +77,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
-      helpComponent: null,
+      helpComponent: ColumnDataTypesHelpComponent,
     },
     {
       id: 'organizations/columns/import-settings',
@@ -83,7 +86,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
-      helpComponent: null,
+      helpComponent: ColumnImportSettingsHelpComponent,
     },
     {
       id: 'organizations/columns/mappings',
