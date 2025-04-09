@@ -23,6 +23,7 @@ import type {
   OrganizationSettings,
   OrganizationsResponse,
   OrganizationUser,
+  OrganizationUserResponse,
   OrganizationUsersResponse,
   StartSavingAccessLevelInstancesRequest,
   UpdateAccessLevelsRequest,
@@ -101,6 +102,16 @@ export class OrganizationService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching organization users')
+      }),
+    )
+  }
+
+  updateOrganizationUser(orgUserId: number, orgId: number, settings: Record<string, unknown>): Observable<OrganizationUserResponse> {
+    const data = { settings }
+    const url = `/api/v4/organization_users/${orgUserId}/?organization_id=${orgId}`
+    return this._httpClient.put<OrganizationUserResponse>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating organization user')
       }),
     )
   }

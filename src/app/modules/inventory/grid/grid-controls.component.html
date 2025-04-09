@@ -1,0 +1,24 @@
+<div class="mx-2 flex justify-between">
+  <mat-icon class="scale-75 cursor-pointer" (click)="resetGrid()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid"></mat-icon>
+  <div class="my-auto flex justify-end">
+    @if (selectedViewIds.length > 0) {
+      <span class="my-auto mr-10">({{ selectedViewIds.length }} selected)</span>
+    }
+    @if (pagination) {
+      <span class="my-auto mr-10">{{ pagination.start }} - {{ pagination.end }} of {{ pagination.total }}</span>
+      <div class="m-1 h-[25px] cursor-pointer rounded hover:bg-white" (click)="onPageChange('first')">
+        <mat-icon class="scale-50" svgIcon="fa-solid:angles-left"></mat-icon>
+      </div>
+      <div class="m-1 h-[25px] cursor-pointer rounded hover:bg-white" (click)="onPageChange('previous')">
+        <mat-icon class="scale-50" svgIcon="fa-solid:chevron-left"></mat-icon>
+      </div>
+      <span class="my-auto">Page {{ pagination.page }} of {{ pagination.num_pages }}</span>
+      <div class="m-1 h-[25px] cursor-pointer rounded hover:bg-white" (click)="onPageChange('next')">
+        <mat-icon class="scale-50" svgIcon="fa-solid:chevron-right"></mat-icon>
+      </div>
+      <div class="m-1 h-[25px] cursor-pointer rounded hover:bg-white" (click)="onPageChange('last')">
+        <mat-icon class="scale-50" svgIcon="fa-solid:angles-right"></mat-icon>
+      </div>
+    }
+  </div>
+</div>

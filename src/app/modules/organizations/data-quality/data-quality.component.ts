@@ -15,7 +15,7 @@ import { OrganizationService } from '@seed/api/organization'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import type { InventoryType } from '../../inventory/inventory.types'
+import type { InventoryTypeGoal } from 'app/modules/inventory/inventory.types'
 import { DataQualityGoalTableComponent } from './goal/goal-table.component'
 import { DataQualityInventoryTableComponent } from './inventory/inventory-table.component'
 import { FormModalComponent } from './inventory/modal/form-modal.component'
@@ -45,7 +45,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _dataQualityService = inject(DataQualityService)
   private _columnService = inject(ColumnService)
   private _dialog = inject(MatDialog)
-  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goal']
+  readonly tabs: InventoryTypeGoal[] = ['properties', 'taxlots', 'goal']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   private _propertyRules: Rule[]
@@ -53,7 +53,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   private _goalRules: Rule[]
   rules: Rule[]
   currentRules: Rule[]
-  type = this._route.snapshot.paramMap.get('type') as InventoryType
+  type = this._route.snapshot.paramMap.get('type') as InventoryTypeGoal
 
   ngOnInit(): void {
     combineLatest([
@@ -96,7 +96,7 @@ export class DataQualityComponent implements OnDestroy, OnInit {
     this.currentRules = typeLookup[this.type]
   }
 
-  async toggleInventoryType(type: InventoryType) {
+  async toggleInventoryType(type: InventoryTypeGoal) {
     if (type !== this.type) {
       const newRoute = `/organizations/data-quality/${type}`
       await this._router.navigateByUrl(newRoute, { skipLocationChange: false })

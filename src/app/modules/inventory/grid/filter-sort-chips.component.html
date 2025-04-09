@@ -1,0 +1,29 @@
+<div class="ml-2">
+  @if ((filters | keyvalue).length) {
+    <div class="flex">
+      <div class="my-auto mr-2 w-10 text-sm text-gray-400">Filters</div>
+      <mat-chip-set>
+        @for (item of filterChips; track $index) {
+          <mat-chip class="filter-sort-chip"
+            >{{ item.displayName }}
+            <mat-icon (click)="removeFilter(item.original)" matChipRemove>close</mat-icon>
+          </mat-chip>
+        }
+      </mat-chip-set>
+    </div>
+  }
+
+  @if (sorts.length) {
+    <div class="flex">
+      <div class="my-auto mr-2 w-10 text-sm text-gray-400">Sorts</div>
+      <mat-chip-set>
+        @for (item of sortChips; track $index) {
+          <mat-chip class="filter-sort-chip"
+            >{{ item.displayName }}
+            <mat-icon (click)="removeSort(item.original)" matChipRemove>close</mat-icon>
+          </mat-chip>
+        }
+      </mat-chip-set>
+    </div>
+  }
+</div>
