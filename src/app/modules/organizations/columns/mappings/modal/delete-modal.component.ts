@@ -26,10 +26,10 @@ export class DeleteModalComponent implements OnInit {
 
   onSubmit() {
     this._columnMappingProfileService.delete(this.data.org_id, this.profile.id).subscribe()
-    this.close()
+    this._dialogRef.close(true)
   }
 
   close() {
-    this._dialogRef.close()
+    this._dialogRef.close(false)
   }
 }

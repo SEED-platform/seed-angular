@@ -321,12 +321,14 @@ export class MappingsComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((newProfileId: number) => {
-          this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe((_profiles) => {
-            this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
-            this.selectProfile(newProfileId)
-            this._gridApi.redrawRows()
-          },
-          )
+          if (newProfileId) {
+            this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe((_profiles) => {
+              this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
+              this.selectProfile(newProfileId)
+              this._gridApi.redrawRows()
+            },
+            )
+          }
         },
         ),
       )
@@ -359,6 +361,9 @@ export class MappingsComponent implements OnDestroy, OnInit {
 
   delete() {
     const profileToDelete = this.selectedProfile
+    if (profileToDelete.profile_type !== 'Normal') {
+      return
+    }
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { profile: profileToDelete, org_id: this.mappablePropertyColumns[0].organization_id },
@@ -368,10 +373,12 @@ export class MappingsComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
-          this.selectProfile()
-          this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe()
+        tap((deleted: boolean) => {
+          if (deleted) {
+            this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
+            this.selectProfile()
+            this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe()
+          }
         }),
       )
       .subscribe()

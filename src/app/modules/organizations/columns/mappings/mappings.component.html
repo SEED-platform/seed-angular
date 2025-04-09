@@ -17,10 +17,10 @@
   >
     <mat-icon class="fill-white icon-size-4" svgIcon="fa-solid:check"></mat-icon>
   </a>
-  <a class="flex" (click)="rename()" mat-stroked-button matTooltip="Rename Profile">
+  <a class="flex" [disabled]="profileReadOnly()" (click)="rename()" mat-stroked-button matTooltip="Rename Profile">
     <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
   </a>
-  <a class="flex" (click)="delete()" mat-stroked-button matTooltip="Delete This Profile">
+  <a class="flex" [disabled]="profileReadOnly()" (click)="delete()" mat-stroked-button mat-stroked-button matTooltip="Delete This Profile">
     <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
   </a>
   <a class="flex" (click)="copy_profile()" mat-stroked-button matTooltip="Copy This Profile">
