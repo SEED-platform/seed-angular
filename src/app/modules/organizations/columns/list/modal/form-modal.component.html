@@ -1,5 +1,5 @@
 <h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Edit Column</h2>
-<form class="flex flex-col gap-4" [formGroup]="form" *transloco="let t">
+<form class="flex flex-col gap-4" *transloco="let t" [formGroup]="form">
   <mat-form-field>
     <mat-label>Display Name</mat-label>
     <input matInput formControlName="display_name" placeholder="Display Name" />
@@ -16,7 +16,7 @@
     }
   </mat-form-field>
   @if (data.organization.comstock_enabled) {
-    <mat-form-field >
+    <mat-form-field>
       <mat-label>Comstock Mapping</mat-label>
       <mat-select formControlName="comstock_mapping">
         <mat-option value=""></mat-option>
