@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { saveAs } from 'file-saver'
+import * as FileSaver from 'file-saver'
 import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
@@ -407,7 +407,7 @@ export class MappingsComponent implements OnDestroy, OnInit {
     this._columnMappingProfileService.export(this.mappablePropertyColumns[0].organization_id, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
-        saveAs(blob, filename)
+        FileSaver.saveAs(blob, filename)
       })
   }
 
