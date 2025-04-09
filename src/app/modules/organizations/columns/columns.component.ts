@@ -9,6 +9,7 @@ import { Router, RouterOutlet } from '@angular/router'
 import { type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { ColumnListHelpComponent } from './list/help.component'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
 
 type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: Type<Component> | null }
@@ -55,7 +56,7 @@ export class ColumnsComponent implements OnInit {
       type: 'basic',
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
-      helpComponent: null,
+      helpComponent: ColumnListHelpComponent,
     },
     {
       id: 'organizations/columns/geocoding',
