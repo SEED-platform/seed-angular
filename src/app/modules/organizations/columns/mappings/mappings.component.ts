@@ -400,10 +400,14 @@ export class MappingsComponent implements OnDestroy, OnInit {
   }
 
   export() {
+    if (!this.selectedProfile) {
+      return
+    }
+    const filename = `column_mapping_profile_${this.selectedProfile.id}.csv`
     this._columnMappingProfileService.export(this.mappablePropertyColumns[0].organization_id, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
-        saveAs(blob, `column_mapping_profile_${this.selectedProfile.id}.csv`)
+        saveAs(blob, filename)
       })
   }
 
