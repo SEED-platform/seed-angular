@@ -32,7 +32,7 @@
   <ng-container matColumnDef="label">
     <th *matHeaderCellDef mat-header-cell>Label</th>
     <td *matCellDef="let rule" mat-cell matTooltip="{{ labelLookup[rule.status_label] ? labelLookup[rule.status_label].name : null }}">
-      @if (rule.status_label) {
+      @if (labelLookup[rule.status_label]) {
         <seed-label [label]="labelLookup[rule.status_label]"></seed-label>
       }
     </td>
