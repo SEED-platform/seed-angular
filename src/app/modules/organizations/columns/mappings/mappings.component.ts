@@ -1,4 +1,4 @@
-import { Component, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
+import { Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
@@ -10,10 +10,11 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
-import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, type Observable, Subject, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
 import { SharedImports } from '@seed/directives'
+import { type ComponentCanDeactivate } from '@seed/guards/pending-changes.guard'
 import { ActionButtonsComponent } from './action-buttons.component'
 import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
@@ -39,7 +40,7 @@ type RenderMapping = ColumnMapping & {
   encapsulation: ViewEncapsulation.None,
   imports: [AgGridAngular, SharedImports, MatButtonModule, MatIcon, MatFormFieldModule, ReactiveFormsModule, MatSelectModule, MatTooltipModule],
 })
-export class MappingsComponent implements OnDestroy, OnInit {
+export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _mappableColumnService = inject(MappableColumnService)
@@ -142,6 +143,14 @@ export class MappingsComponent implements OnDestroy, OnInit {
 
   isLoaded = false
   selectedProfileForm = new FormGroup({ selectedProfile: new FormControl<number | null>(null) })
+
+  @HostListener('window:beforeunload')
+  canDeactivate(): Observable<boolean> | boolean {
+    // insert logic to check if there are pending changes here;
+    // returning true will navigate without confirmation
+    // returning false will show a confirm dialog before navigating away
+    return false
+  }
 
   ngOnInit(): void {
     combineLatest([
@@ -304,6 +313,7 @@ export class MappingsComponent implements OnDestroy, OnInit {
           if (newMapping) {
             node.setData(this.buildRenderMappings([newMapping])[0])
             this.changesToSave = true
+            this.selectedProfileForm.get('selectedProfile').disable()
           }
         }),
       )
@@ -444,8 +454,15 @@ export class MappingsComponent implements OnDestroy, OnInit {
     this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, this.getMappingsFromGrid()).subscribe((updatedProfile) => {
       const i = this.profiles.indexOf(this.selectedProfile)
       this.profiles[i] = updatedProfile
+      this.selectedProfileForm.get('selectedProfile').enable()
       this.populateGrid(this.profiles[i])
     })
+  }
+
+  cancel() {
+    this.populateGrid(this.selectedProfile)
+    this.changesToSave = false
+    this.selectedProfileForm.get('selectedProfile').enable()
   }
 
   buildMappingFromRowNode(rowNode: IRowNode<ColumnMapping>) {

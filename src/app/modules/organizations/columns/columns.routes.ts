@@ -1,4 +1,5 @@
 import type { Routes } from '@angular/router'
+import { PendingChangesGuard } from '@seed/guards/pending-changes.guard'
 import { DataTypesPropertiesComponent } from './data-types/data-types-properties.component'
 import { DataTypesTaxLotsComponent } from './data-types/data-types-taxlots.component'
 import { GeocodingPropertiesComponent } from './geocoding/geocoding-properties.component'
@@ -74,5 +75,6 @@ export default [
     path: 'mappings',
     title: 'Column Mappings',
     component: MappingsComponent,
+    canDeactivate: [PendingChangesGuard],
   },
 ] satisfies Routes
