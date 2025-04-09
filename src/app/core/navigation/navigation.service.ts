@@ -52,7 +52,7 @@ export class NavigationService {
           title: 'Columns',
           icon: 'fa-solid:sliders',
           type: 'basic',
-          regexMatch: /^\/organizations\/columns\/list\/(properties|taxlots)/,
+          regexMatch: /^\/organizations\/columns/,
         },
         {
           id: 'organizations/cycles',
