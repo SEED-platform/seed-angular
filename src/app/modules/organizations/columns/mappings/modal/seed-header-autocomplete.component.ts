@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, SimpleChanges, type OnChanges, type OnInit } from '@angular/core'
+import { Component, Input, type OnChanges, type OnInit, type SimpleChanges } from '@angular/core'
 import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
