@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
-import { of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -13,12 +13,11 @@ import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
 import { HeaderComponent } from './header.component'
-import { HistoryComponent } from './history.component'
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Column, ColumnService } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon'
+import { DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } from '.'
 
 
 
@@ -29,11 +28,13 @@ import { MatIconModule } from '@angular/material/icon'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    DocumentsGridComponent,
     HeaderComponent,
-    HistoryComponent,
+    HistoryGridComponent,
     MatDividerModule,
     MatIconModule,
     PageComponent,
+    PairedGridComponent,
   ],
 })
 export class DetailComponent implements OnDestroy, OnInit {
@@ -46,7 +47,6 @@ export class DetailComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
   labels: Label[]
-  gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   org: Organization
   orgId: number
@@ -55,16 +55,6 @@ export class DetailComponent implements OnDestroy, OnInit {
   view: ViewResponse
   viewId: number
   views: GenericView[]
-  relatedColumns: Column[]
-  relatedColumnDefs: ColDef[] = []
-  relatedDefaultColumn: Column
-  relatedRowData: Record<string, unknown>[] = []
-  relatedDefaultColDef = {
-    sortable: false,
-    filter: false,
-    resizable: true,
-    suppressMovable: true,
-  }
 
 
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
@@ -74,7 +64,6 @@ export class DetailComponent implements OnDestroy, OnInit {
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
       switchMap(() => this.loadView()),
-      switchMap(() => this.getRelated()),
     ).subscribe()
   }
 
@@ -104,60 +93,9 @@ export class DetailComponent implements OnDestroy, OnInit {
     )
   }
 
-  get related() {
+  get paired() {
     if (!this.view) return []
     return this.type === 'taxlots' ? this.view.properties : this.view.taxlots
-  }
-
-  getRelated(): Observable<Column[]> {
-    if (!this.related.length) return of([])
-
-    const stream = this.type === 'taxlots' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
-    return stream.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((columns) => { 
-        this.relatedColumns = columns
-        const defaultColumnName = this.type === 'taxlots' ? this.org.property_display_field : this.org.taxlot_display_field
-        this.relatedDefaultColumn = columns.find((c) => c.column_name === defaultColumnName)
-        this.setRelatedGrid()
-      }),
-    )
-  }
-
-  setRelatedGrid() {
-    const colDefMap = {
-      'taxlots': { idField: 'pm_property_id', idName: 'PM Property ID', },
-      'properties': { idField: 'jurisdiction_tax_lot_id', idName: 'Jurisdiction Tax Lot ID', },
-    }
-    const { idField, idName } = colDefMap[this.type]
-
-    this.relatedColumnDefs = [
-      { field: idField, headerName: idName },
-      { field: this.relatedDefaultColumn.column_name, headerName: this.relatedDefaultColumn.display_name },
-      { field: 'Unpair', headerName: 'Unpair' },
-    ]
-
-
-    for (const item of this.related) {
-      const row = {
-        [idField]: item.state[idField],
-        [this.relatedDefaultColumn.column_name]: item.state[this.relatedDefaultColumn.column_name],
-        Unpair: 'x',
-      }
-      this.relatedRowData.push(row)
-    }
-  }  
-  
-  get relatedGridHeight() {
-    const headerHeight = 50
-    const rowHeight = 40
-    const gridHeight = this.relatedRowData.length * rowHeight + headerHeight
-    return Math.min(gridHeight, 500)
-  }
-
-  onGridReady(agGrid: GridReadyEvent) {
-    this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
   }
 
   onChangeView(viewId: number) {

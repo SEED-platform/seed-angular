@@ -4,8 +4,9 @@
   }">
 </seed-page>
 
-<div class="mx-5 flex flex-col gap-4">
+<div class="m-5 flex flex-col gap-4">
   
+  <!-- HEADER -->
   @if (views) {
     <seed-inventory-detail-header
       [labels]="labels"
@@ -18,32 +19,41 @@
     ></seed-inventory-detail-header>
   }
 
-  <mat-divider></mat-divider>
-
+  <!-- HISTORY -->
   @if (view) {
+    <mat-divider></mat-divider>
     <seed-inventory-detail-history
     [view]="view"
     ></seed-inventory-detail-history>
   }
 
-  <mat-divider></mat-divider>
-  @if (relatedRowData.length) {
-    <div class="text-lg font-medium mb-4 ml-4 flex">
-      <mat-icon svgIcon="fa-solid:map"></mat-icon>
-      <span class="ml-4">Paired {{ this.type === 'taxlots' ? 'Properties' : 'Tax Lots' }}</span>
-    </div>
-    <ag-grid-angular
-      [columnDefs]="relatedColumnDefs"
-      [rowData]="relatedRowData"
-      [theme]="gridTheme$ | async" 
-      [style.height.px]="relatedGridHeight"
-      (gridReady)="onGridReady($event)"
-    ></ag-grid-angular>
+  <!-- PAIRED TAXLOTS / PROPERTIES -->
+  @if (paired?.length) {
+    <mat-divider></mat-divider>
+    <seed-inventory-detail-paired-grid
+      [org]="org"
+      [type]="type"
+      [view]="view"
+    ></seed-inventory-detail-paired-grid>
+
+  }
+
+  @if (view && type === 'properties') {
+    <mat-divider></mat-divider>
+    <seed-inventory-detail-documents-grid
+      [org]="org"
+      [type]="type"
+      [view]="view">
+    </seed-inventory-detail-documents-grid>
+    <!-- <seed-inventory-detail-property
+      [org]="org"
+      [type]="type"
+      [view]="view"
+    ></seed-inventory-detail-property> -->
   }
 
 
   <div class="mt-10"></div>
-  <div>Paired Taxlots</div>
   <div>Building Files</div>
   <div>Scenarios and Measures</div>
 

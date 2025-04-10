@@ -135,7 +135,7 @@ export type Property = {
   created: string;
   group_mappings: GroupMapping[];
   id: number;
-  inventory_documents: unknown[];
+  inventory_documents: InventoryDocument[];
   organization: number;
   parent_property: unknown;
   updated: string;
@@ -183,4 +183,14 @@ export type GroupMapping = {
   id: number;
   property_id: number;
   taxlot_id: number;
+}
+
+export type InventoryDocument = {
+  created: string;
+  file: string;
+  file_type: string;
+  filename: string;
+  id: number;
+  property?: number;
+  taxlot?: number;
 }

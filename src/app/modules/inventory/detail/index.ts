@@ -1,0 +1,5 @@
+export * from './detail.component'
+export * from './documents-grid.component'
+export * from './header.component'
+export * from './history-grid.component'
+export * from './paired-grid.component'

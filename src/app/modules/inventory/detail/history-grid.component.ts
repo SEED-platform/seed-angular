@@ -8,33 +8,37 @@ import { take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
 import type { Profile, ValueGetterParamsData, ViewResponse } from '../inventory.types'
-import { MatCardModule } from '@angular/material/card'
 import { MatIconModule } from '@angular/material/icon'
 import { MatDividerModule } from '@angular/material/divider'
+import { naturalSort } from '@seed/utils'
+import { MatButtonModule } from '@angular/material/button'
+
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
 @Component({
   selector: 'seed-inventory-detail-history',
-  templateUrl: './history.component.html',
+  templateUrl: './history-grid.component.html',
   imports: [
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MatButtonModule,
     MatIconModule,
     MatDividerModule
   ],
 })
-export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
+export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   @Input() view: ViewResponse
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   columns: Column[]
   columnDefs: ColDef[]
   currentProfile: Profile
-  gridTheme$ = this._configService.gridTheme$
-  rowData: Record<string, unknown>[]
   gridApi: GridApi
+  gridTheme$ = this._configService.gridTheme$
+  isEditing = false
+  rowData: Record<string, unknown>[]
 
   defaultColDef = {
     sortable: false,
@@ -87,7 +91,19 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
   setColumnDefs() {
     this.columnDefs = [
       { field: 'field', headerName: 'Field', pinned: true },
-      { field: 'state', headerName: 'Main' },
+      { 
+        field: 'state', 
+        headerName: 'Main', 
+        editable: () => this.isEditing,
+        cellStyle: () => this.isEditing ? {
+          border: '1px solid #ccc',
+          'border-radius': '4px',
+          cursor: 'text',
+        } : { 
+          border: 'none',
+          cursor: 'default',
+        },
+       },
     ]
 
     for (const { filename } of this.view.history) {
@@ -103,13 +119,32 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
   setRowData() {
     // Transposed data. Each row is a column name (address line 1, address line 2, etc.)
     this.rowData = []
-    for (const { column_name, display_name } of this.columns) {
+    const columnsSorted = this.columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+
+    for (const { column_name, display_name } of columnsSorted) {
       const row = { field: display_name, state: this.view.state[column_name] }
       for (const item of this.view.history) {
         row[item.filename] = item.state[column_name]
       }
       this.rowData.push(row)
     }
+  }
+
+  edit() {
+    this.isEditing = true
+    this.gridApi.refreshCells({ force: true, columns: ['state'] });
+  }
+
+  save() {
+    console.log('save')
+    this.isEditing = false
+    this.gridApi.refreshCells({ force: true, columns: ['state'] });
+  }
+
+  cancel() {
+    console.log('cancel')
+    this.isEditing = false
+    this.gridApi.refreshCells({ force: true, columns: ['state'] });
   }
 
   ngOnDestroy(): void {
