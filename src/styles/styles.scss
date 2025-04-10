@@ -109,6 +109,26 @@
   }
 }
 
+.inventory-actions-dropdown .mat-select-panel, .mat-mdc-select-panel {
+  min-height: fit-content !important;
+}
+
+.even-row {
+  @apply bg-gray-100
+}
+
+.dark .even-row {
+  @apply bg-slate-900
+}
+
+.inventory-grid {
+  .ag-header-cell {
+    .cell-menu {
+      overflow: visible !important
+    }
+  }
+}
+
 .seed-dialog-panel {
   @screen md {
     @apply w-128;
@@ -119,4 +139,9 @@
       padding: 0 !important;
     }
   }
+}
+
+.filter-sort-chip 
+.mat-mdc-chip-action-label {
+  @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
 }

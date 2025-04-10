@@ -97,10 +97,34 @@ export type OrganizationUser = {
   number_of_orgs: number;
   role: UserRole;
   user_id: number;
+  settings: Record<string, unknown>;
+}
+
+export type OrganizationUserSettings = {
+  [key: string]: unknown;
+  cycle_id?: number;
+  profile_id?: number;
+  sorts?: UserSettingsSorts;
+  filters?: UserSettingsFilters;
+}
+
+type UserSettingsFilters = {
+  properties?: Record<string, unknown>;
+  taxlots?: Record<string, unknown>;
+}
+
+type UserSettingsSorts = {
+  properties?: string[];
+  taxlots?: string[];
 }
 
 export type OrganizationUsersResponse = {
   users: OrganizationUser[];
+  status: string;
+}
+
+export type OrganizationUserResponse = {
+  data: OrganizationUser;
   status: string;
 }
 

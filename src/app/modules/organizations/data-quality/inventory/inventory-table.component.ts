@@ -17,7 +17,7 @@ import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import type { InventoryTypeGoal } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
 import { DeleteModalComponent } from '../modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -48,12 +48,12 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
   private _columnService = inject(ColumnService)
   private _labelsService = inject(LabelService)
   private _dialog = inject(MatDialog)
-  readonly tabs: InventoryType[] = ['properties', 'taxlots', 'goal']
+  readonly tabs: InventoryTypeGoal[] = ['properties', 'taxlots', 'goal']
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
   rulesDataSource = new MatTableDataSource<Rule>([])
   rulesColumns = ['enabled', 'field', 'severity', 'criteria', 'label', 'actions']
-  type = this._route.snapshot.paramMap.get('type') as InventoryType
+  type = this._route.snapshot.paramMap.get('type') as InventoryTypeGoal
   propertyColumnsLookup: Record<string, string> = {}
   taxlotColumnsLookup: Record<string, string> = {}
   isOverflowing = false
