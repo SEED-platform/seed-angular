@@ -8,6 +8,9 @@ import { take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
 import type { Profile, ValueGetterParamsData, ViewResponse } from '../inventory.types'
+import { MatCardModule } from '@angular/material/card'
+import { MatIconModule } from '@angular/material/icon'
+import { MatDividerModule } from '@angular/material/divider'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -18,6 +21,8 @@ ModuleRegistry.registerModules([AllCommunityModule])
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MatIconModule,
+    MatDividerModule
   ],
 })
 export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
@@ -61,7 +66,7 @@ export class HistoryComponent implements OnChanges, OnDestroy, OnInit {
 
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
-    this.gridApi.autoSizeAllColumns()
+    this.gridApi.sizeColumnsToFit()
   }
 
   get gridHeight() {

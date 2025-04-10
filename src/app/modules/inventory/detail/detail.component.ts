@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -13,25 +14,40 @@ import { PageComponent } from '@seed/components'
 import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
 import { HeaderComponent } from './header.component'
 import { HistoryComponent } from './history.component'
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { Column, ColumnService } from '@seed/api/column'
+import { ConfigService } from '@seed/services'
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon'
+
+
 
 @Component({
   selector: 'seed-inventory-detail',
   templateUrl: './detail.component.html',
   imports: [
+    AgGridAngular,
+    AgGridModule,
     CommonModule,
     HeaderComponent,
     HistoryComponent,
+    MatDividerModule,
+    MatIconModule,
     PageComponent,
   ],
 })
 export class DetailComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
+  private _configService = inject(ConfigService)
+  private _columnService = inject(ColumnService)
   private _inventoryService = inject(InventoryService)
   private _labelService = inject(LabelService)
   private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
   labels: Label[]
+  gridApi: GridApi
+  gridTheme$ = this._configService.gridTheme$
   org: Organization
   orgId: number
   selectedView: GenericView
@@ -39,6 +55,17 @@ export class DetailComponent implements OnDestroy, OnInit {
   view: ViewResponse
   viewId: number
   views: GenericView[]
+  relatedColumns: Column[]
+  relatedColumnDefs: ColDef[] = []
+  relatedDefaultColumn: Column
+  relatedRowData: Record<string, unknown>[] = []
+  relatedDefaultColDef = {
+    sortable: false,
+    filter: false,
+    resizable: true,
+    suppressMovable: true,
+  }
+
 
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
 
@@ -47,11 +74,11 @@ export class DetailComponent implements OnDestroy, OnInit {
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
       switchMap(() => this.loadView()),
+      switchMap(() => this.getRelated()),
     ).subscribe()
   }
 
-  loadView(): Observable<unknown> {
-    console.log('load view')
+  loadView(): Observable<Label[]> {
     return this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap((organization) => {
@@ -75,6 +102,62 @@ export class DetailComponent implements OnDestroy, OnInit {
         this.labels = labels.filter((label) => label.is_applied.includes(this.selectedView.id))
       }),
     )
+  }
+
+  get related() {
+    if (!this.view) return []
+    return this.type === 'taxlots' ? this.view.properties : this.view.taxlots
+  }
+
+  getRelated(): Observable<Column[]> {
+    if (!this.related.length) return of([])
+
+    const stream = this.type === 'taxlots' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
+    return stream.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((columns) => { 
+        this.relatedColumns = columns
+        const defaultColumnName = this.type === 'taxlots' ? this.org.property_display_field : this.org.taxlot_display_field
+        this.relatedDefaultColumn = columns.find((c) => c.column_name === defaultColumnName)
+        this.setRelatedGrid()
+      }),
+    )
+  }
+
+  setRelatedGrid() {
+    const colDefMap = {
+      'taxlots': { idField: 'pm_property_id', idName: 'PM Property ID', },
+      'properties': { idField: 'jurisdiction_tax_lot_id', idName: 'Jurisdiction Tax Lot ID', },
+    }
+    const { idField, idName } = colDefMap[this.type]
+
+    this.relatedColumnDefs = [
+      { field: idField, headerName: idName },
+      { field: this.relatedDefaultColumn.column_name, headerName: this.relatedDefaultColumn.display_name },
+      { field: 'Unpair', headerName: 'Unpair' },
+    ]
+
+
+    for (const item of this.related) {
+      const row = {
+        [idField]: item.state[idField],
+        [this.relatedDefaultColumn.column_name]: item.state[this.relatedDefaultColumn.column_name],
+        Unpair: 'x',
+      }
+      this.relatedRowData.push(row)
+    }
+  }  
+  
+  get relatedGridHeight() {
+    const headerHeight = 50
+    const rowHeight = 40
+    const gridHeight = this.relatedRowData.length * rowHeight + headerHeight
+    return Math.min(gridHeight, 500)
+  }
+
+  onGridReady(agGrid: GridReadyEvent) {
+    this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
   }
 
   onChangeView(viewId: number) {

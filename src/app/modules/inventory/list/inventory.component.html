@@ -26,8 +26,9 @@
         [inventory]="inventory"
         [orgId]="orgId"
         [profile]="profile"
+        [type]="type"
         [selectedViewIds]="selectedViewIds"
-        (loadInventory)="loadInventory()"
+        (refreshInventory)="refreshInventory()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
@@ -49,8 +50,8 @@
       <seed-inventory-filter-sort-chips
         [gridApi]="gridApi"
         [columnDefs]="columnDefs"
-        [filters]="filters"
-        [sorts]="sorts"
+        [type]="type"
+        [userSettings]="userSettings"
       ></seed-inventory-filter-sort-chips>
     }
 
@@ -59,14 +60,16 @@
       #grid
       [columnDefs]="columnDefs"
       [inventoryType]="type"
-      [labelLookup]="labelLookup"
+      [labelMap]="labelMap"
       [pagination]="pagination"
       [rowData]="rowData"
       [selectedViewIds]="selectedViewIds"
+      [type]="type"
       (pageChange)="onPageChange($event)"
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"
       (selectionChanged)="onSelectionChanged()"
+      (gridReset)="onGridReset()"
     ></seed-inventory-grid>
   </div>
 </div>

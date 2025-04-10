@@ -1,5 +1,5 @@
 
-<div class="flex gap-4 mb-20">
+<div class="flex gap-4 mb-5">
   <div>
     <!--  Actions -->
     <div class="m-1 flex flex-row gap-4">
@@ -24,46 +24,54 @@
         (selectionChange)="onChangeView($event.value)"
       >
         @for (item of views; track $index) {
-          <mat-option class="!h-3 text-sm" [value]="item.id">{{ item.cycle.name }} {{ item.id }}</mat-option>
+          <mat-option class="!h-3 text-sm" [value]="item.id">{{ item.cycle.name }}</mat-option>
         }
       </mat-select>
     </div>
 
     <!-- Labels -->
-
-    <div class="flex text-gray-400 m-1 mt-2">
-      <span class="mr-8">Labels</span>
-      @for (label of labels; track $index) {
-        <seed-label [label]="label"></seed-label>
-      }
-    </div>
+    @if (labels && labels.length) {
+      <div class="flex text-gray-400 m-1 mt-2">
+        <span class="mr-8 w-12">Labels</span>
+          @for (label of labels; track $index) {
+            <seed-label [label]="label"></seed-label>
+          }
+      </div>
+    }
     
     <!-- Groups -->
-    @if(type === 'properties') {
+
+    @if(type === 'properties' && groupMappings.length) {
     <div class="flex text-gray-400 m-1 mt-2">
-      <span class="mr-8 my-auto">Groups</span>
+      <span class="mr-8 my-auto w-12">Groups</span>
         @for (group of groupMappings; track $index) {
           <a class="mr-2 !p-0" (click)="tempAction()" mat-stroked-button>
             {{ group.group_name }}
           </a>
         }
       </div>
-
     }
     
     <!-- Access Level Instance Info -->
-    <div>
-      <span class="text-gray-400 m-1">Access Level Instance</span>
-      <ag-grid-angular 
-        style="height: 100%"
-        [columnDefs]="aliColumnDefs"
-        [rowData]="aliRowData" 
-        [theme]="gridTheme$ | async" 
-        [style.width.px]="gridWidth"
-        [style.height.px]="90"
-       />
-    </div>
+    @if (aliColumnDefs.length) {
+      <mat-divider class="mt-4"></mat-divider>
+      <div class="mt-4">
+        <div class="text-lg font-medium mb-4 ml-4 flex">
+          <mat-icon svgIcon="fa-solid:tree"></mat-icon>
+          <span class="ml-4">Access Levels</span>
+        </div>
+        <!-- <span class="text-gray-400 m-1">Access Levels</span> -->
+        <ag-grid-angular 
+          style="height: 100%"
+          [columnDefs]="aliColumnDefs"
+          [rowData]="aliRowData" 
+          [theme]="gridTheme$ | async" 
+          [style.height.px]="90"
+          (gridReady)="onGridReady($event)"
+         />
+      </div>
+    }
     
   </div>
-  <div class="w-1/2 border border-gray-500">map</div>
+  <div class="w-1/2 border border-gray-500">MAP</div>
 </div>

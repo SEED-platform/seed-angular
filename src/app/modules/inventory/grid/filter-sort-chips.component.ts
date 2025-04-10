@@ -4,7 +4,8 @@ import { Component, Input } from '@angular/core'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import type { AgFilter, AgFilterModel, FilterSortChip, FilterType } from '../inventory.types'
+import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../inventory.types'
+import type { OrganizationUserSettings } from '@seed/api/organization'
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
@@ -18,14 +19,24 @@ import type { AgFilter, AgFilterModel, FilterSortChip, FilterType } from '../inv
 export class FilterSortChipsComponent implements OnChanges {
   @Input() gridApi: GridApi
   @Input() columnDefs: ColDef[]
-  @Input() filters: AgFilterModel
-  @Input() sorts: string[]
+  @Input() userSettings: OrganizationUserSettings
+  @Input() type: InventoryType
   filterChips: FilterSortChip[] = []
   sortChips: FilterSortChip[] = []
 
-  ngOnChanges({ filters, sorts }: SimpleChanges) {
-    if (filters?.currentValue) this.getFilterChips()
-    if (sorts?.currentValue) this.getSortChips()
+  ngOnChanges({ userSettings }: SimpleChanges) {
+    if (userSettings?.currentValue) {
+      this.getFilterChips()
+      this.getSortChips()
+    }
+  }
+
+  get sorts() {
+    return this.userSettings.sorts?.[this.type] ?? []
+  }
+
+  get filters() {
+    return this.userSettings.filters?.[this.type] ?? {}
   }
 
   getFilterChips() {

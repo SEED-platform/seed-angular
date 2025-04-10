@@ -9,8 +9,10 @@ import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
-import { ColDef } from 'ag-grid-community'
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { ConfigService } from '@seed/services'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
 
 @Component({
   selector: 'seed-inventory-detail-header',
@@ -20,6 +22,8 @@ import { ConfigService } from '@seed/services'
     AgGridModule,
     CommonModule,
     MatButtonModule,
+    MatDividerModule,
+    MatIconModule,
     MatTableModule,
     MatSelectModule,
     LabelComponent,
@@ -36,12 +40,11 @@ export class HeaderComponent implements OnInit {
   private _configService = inject(ConfigService)
   groupMappings: GroupMapping[]
   accessLevelInstance: AccessLevelInstance
-  // aliDataSource = new MatTableDataSource<unknown>([])
   aliDataSource = []
-  // aliHeaders = this.org.access_level_names
   aliColumns: string[] = []
-  aliColumnDefs: ColDef[]
+  aliColumnDefs: ColDef[] = []
   aliRowData: Record<string, unknown>[] = []
+  gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
 
 
@@ -64,15 +67,15 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     // taxlots will not have group mappings
     this.groupMappings = this.view.property?.group_mappings
-    this.formatAliGrid()
+    this.setAliGrid()
   }
 
-  formatAliGrid() {
+  setAliGrid() {
     const inventoryKey = this.type === 'properties' ? 'property' : 'taxlot'
 
     // column defs
-    for (const name of this.org.access_level_names) {
-      this.aliColumnDefs = [
+    for (const name of this.org.access_level_names.slice(1)) {
+      this.aliColumnDefs.push(
         {
           headerName: name,
           field: name,
@@ -82,17 +85,17 @@ export class HeaderComponent implements OnInit {
           suppressMovable: true,
           width: 100,
         },
-      ]
+      )
     }
     // row data 
-    for (const [key, value] of Object.entries(this.view[inventoryKey].access_level_instance.path)) {
-      this.aliRowData.push({ [key]: value })
-    }
+    this.aliRowData.push(this.view[inventoryKey].access_level_instance.path)
   }
 
-  get gridWidth() {
-    return this.aliRowData.length * 100
+  onGridReady(agGrid: GridReadyEvent) {
+    this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
   }
+  
 
   tempAction() {
     console.log('temp action')

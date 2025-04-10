@@ -3,7 +3,8 @@ import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
+import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
+import { map, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryPagination, InventoryType } from '../inventory.types'
@@ -25,22 +26,26 @@ ModuleRegistry.registerModules([AllCommunityModule])
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
-  @Input() inventoryType: InventoryType
-  @Input() labelLookup: Record<number, Label>
+  @Input() inventoryType: string
+  @Input() labelMap: Record<number, Label>
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
+  @Input() type: InventoryType
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
+  @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
 
   agPageSize = 100
   gridApi!: GridApi
   darkMode: boolean
   gridTheme$ = this._configService.gridTheme$
+
   theme: string
+  
 
   defaultColDef = {
     sortable: true,
@@ -113,8 +118,9 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   buildInfoCell() {
+    const field = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
     return {
-      field: 'id',
+      field,
       headerName: 'Info',
       filter: false,
       sortable: false,
@@ -151,15 +157,15 @@ export class InventoryGridComponent implements OnChanges {
       // labels come in as an array of ids [1,2,3]. Ag grid needs them formatted as a string
       valueFormatter: ({ value }: { value: number[] }) => {
         const labels = value
-        return labels?.length ? labels.map((id: number) => this.labelLookup[id]?.name).join(', ') : ''
+        return labels?.length ? labels.map((id: number) => this.labelMap[id]?.name).join(', ') : ''
       },
       cellRenderer: ({ value }: { value: number[] }) => {
         const labels = value
         if (!labels.length) return ''
 
         const eLabels = labels.map((id: number) => {
-          return this.labelLookup[id]
-            ? `<div class="label ${this.labelLookup[labels[0]]?.color} whitespace-nowrap px-2">${this.labelLookup[id].name}</div>`
+          return this.labelMap[id]
+            ? `<div class="label ${this.labelMap[id]?.color} whitespace-nowrap px-2">${this.labelMap[id].name}</div>`
             : ''
         }).join(' ')
 
@@ -176,6 +182,8 @@ export class InventoryGridComponent implements OnChanges {
     this.gridApi.applyColumnState({ state: [], applyOrder: true })
     this.gridApi.resetColumnState()
     this.gridApi.refreshClientSideRowModel()
+    this.gridApi.refreshCells({ force: true })
+    this.gridReset.emit()
   }
 
   /*

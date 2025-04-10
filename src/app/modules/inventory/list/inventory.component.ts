@@ -64,29 +64,25 @@ export class InventoryComponent implements OnDestroy, OnInit {
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
   chunk = 100
-  columnDefs: ColDef[]
+  columnDefs: ColDef[] = []
   currentUser: CurrentUser
-  orgUserId: number
   cycle: Cycle
   cycleId: number
   cycles: Cycle[]
-  firstLoad = true
   gridApi: GridApi
-  labelLookup: Record<number, Label> = {}
+  labelMap: Record<number, Label> = {}
   inventory: Record<string, unknown>[]
   orgId: number = null
+  orgUserId: number
   page = 1
   pageTitle = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
   pagination: InventoryPagination
   profile: Profile
   profileId: number
-  allProfiles: Profile[]
-  propertyColumns: Column[]
   propertyProfiles: Profile[]
   taxlotProfiles: Profile[]
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
-  taxLotColumns: Column[]
   userSettings: OrganizationUserSettings = {}
 
   /*
@@ -116,8 +112,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     return forkJoin({
       cycles: this._cycleService.get(this.orgId),
       profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-      // propertyColumns: this._columnService.propertyColumns$.pipe(take(1)),
-      // taxLotColumns: this._columnService.taxLotColumns$.pipe(take(1)),
       labels: this._labelService.labels$.pipe(take(1)),
       currentUser: this._userService.currentUser$.pipe(take(1)),
     })
@@ -126,7 +120,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   /*
   * set class variables: cycles, profiles, columns, inventory. returns profile id
   */
-  // setDependencies({ cycles, profiles, propertyColumns, taxLotColumns, labels, currentUser }: InventoryDependencies) {
   setDependencies({ cycles, profiles, labels, currentUser }: InventoryDependencies) {
     if (!cycles) {
       return null
@@ -143,11 +136,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
     this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
-    // this.propertyColumns = propertyColumns
-    // this.taxLotColumns = taxLotColumns
 
     for (const label of labels) {
-      this.labelLookup[label.id] = label
+      this.labelMap[label.id] = label
     }
 
     const profile_id = this.profiles.find((p) => p.id === this.userSettings.profile_id)?.id ?? this.profiles[0]?.id
@@ -203,7 +194,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     return this._inventoryService.getAgInventory(params.toString(), data).pipe(
       tap(({ pagination, results, column_defs }: AgFilterResponse) => {
-        console.log('load inventory')
         this.pagination = pagination
         this.inventory = results
 
@@ -212,6 +202,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
       }),
       map(() => null),
     ) as Observable<null>
+  }
+
+  refreshInventory() {
+    this.loadInventory().subscribe()
   }
 
   /*
@@ -232,8 +226,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onProfileChange(id: number) {
     this.getProfile(id).pipe(
-      switchMap(() => this.loadInventory()),
       switchMap(() => this.updateOrgUserSettings()),
+      switchMap(() => this.loadInventory()),
     ).subscribe()
   }
 
@@ -242,7 +236,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.cycle = this.cycles.find((cycle) => cycle.id === id)
     this.page = 1
     this.userSettings.cycle_id = id
-    this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
+    this.updateOrgUserSettings().pipe(
+      switchMap(() => this.loadInventory()),
+    ).subscribe()
   }
 
   updateOrgUserSettings(): Observable<OrganizationUser> {
@@ -254,21 +250,28 @@ export class InventoryComponent implements OnDestroy, OnInit {
     )
   }
 
+  onGridReset() {
+    this.userSettings.filters = {}
+    this.userSettings.sorts = {}
+    this.updateOrgUserSettings().pipe(
+      switchMap(() => this.loadInventory()),
+    ).subscribe()
+  }
+
   onPageChange(page: number) {
     this.page = page
-    this.loadInventory()
+    this.refreshInventory()
   }
 
   setFilters() {
     if (Object.keys(this.filters).length === 0) return
 
-    const validColIds = new Set(this.gridApi.getColumns().map((c) => c.getColId()))
     const validFilters = {}
+    const colIds = new Set(this.columnDefs.map((c) => c.field))
     // filter out any filters that are not in the current column definitions.
     for (const colId in this.filters) {
-      if (validColIds.has(colId)) {
+      if (colIds.has(colId))
         validFilters[colId] = this.filters[colId]
-      }
     }
 
     this.gridApi.setFilterModel(validFilters)
@@ -298,12 +301,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
-
-    if (this.firstLoad) {
-      this.firstLoad = false
-      return
-    }
-
     this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
   }
 

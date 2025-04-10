@@ -26,7 +26,7 @@ export class ActionsComponent implements OnDestroy {
   @Input() type: InventoryType
   @Input() profile: Profile
   @Input() inventory: Record<string, unknown>[]
-  @Output() loadInventory = new EventEmitter<null>()
+  @Output() refreshInventory = new EventEmitter<null>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -61,7 +61,7 @@ export class ActionsComponent implements OnDestroy {
 
   selectAll() {
     this.gridApi.selectAll()
-    const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
+    const inventory_type = this.type === 'taxlots' ? 'taxlot' : 'property'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
       ids_only: 'true',
@@ -89,7 +89,7 @@ export class ActionsComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.loadInventory.emit() }),
+        tap(() => { this.refreshInventory.emit() }),
       )
       .subscribe()
   }
