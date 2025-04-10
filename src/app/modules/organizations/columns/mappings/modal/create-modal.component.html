@@ -1,7 +1,7 @@
 <h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
   Create New Column Mapping Profile
 </h2>
-<form class="flex flex-col gap-4" [formGroup]="form">
+<form class="flex flex-col gap-2" [formGroup]="form">
   <mat-form-field>
     <mat-label>Name</mat-label>
     <input matInput formControlName="name" placeholder="Profile Name" />
@@ -9,10 +9,9 @@
       <mat-error>Name is a required field</mat-error>
     }
   </mat-form-field>
-  <div class="flex w-full flex-row items-center">
+  <div class="flex w-full flex-row items-center ">
     <div class="w-75 flex flex-1 flex-row items-center">
-      <span class="flex flex-1 text-lg">File Headers: </span
-      ><span class="color-gray-400 flex justify-self-end text-base">( List below will scroll )</span>
+      <span class="flex flex-1 text-lg">File Headers: </span>
     </div>
     <div class="flex justify-self-end">
       <a (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
@@ -21,12 +20,30 @@
     </div>
   </div>
 
-  <div class="h-50 overflow-scroll" id="mappings" formArrayName="mappings">
-    @for (mapping of mappings.controls; track $index; let i = $index) {
-      <div class="flex w-full flex-row items-center">
-        <mat-form-field class="w-75 flex flex-1">
+  <div class="" id="mappings" formArrayName="mappings">
+    @for (mappingForm of mappings.controls; track $index; let i = $index) {
+      <div class="flex w-full flex-row items-center gap-x-2" [formGroupName]="i">
+        <mat-form-field class="w-10 flex flex-1">
+          <mat-label>Inventory Type {{ i + 1}}</mat-label>
+          <mat-select formControlName="to_table_name">
+            <mat-option value="PropertyState">Property</mat-option>
+            <mat-option value="TaxLotState">Taxlot</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="w-30 flex flex-1">
+          <seed-header-autocomplete class="w-full" [formControl]="getToField(i)" [columns]="columns" label="SEED Header {{i+1}}" tableName="{{ getTableName(i) }}"/>
+
+        </div>
+        <mat-form-field class="w-10 flex flex-1">
+          <mat-label>Units {{ i + 1 }}</mat-label>
+          <mat-select formControlName="from_units">
+            @for (option of unitSelections(i); track option.id) {
+              <mat-option [value]="option.id">{{ option.value }}</mat-option>
+            }
+          </mat-select>        </mat-form-field>
+        <mat-form-field class="w-10 flex flex-1">
           <mat-label>File Header {{ i + 1 }}</mat-label>
-          <input [formControlName]="i" matInput placeholder="File Header {{ i + 1 }}" />
+          <input formControlName="from_field" matInput placeholder="File Header {{ i + 1 }}" />
         </mat-form-field>
         <a class="flex flex-0" (click)="removeMapping(i)" mat-stroked-button matTooltip="Remove">
           <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>

@@ -10,12 +10,12 @@
     <mat-label>Inventory Type</mat-label>
     <mat-select formControlName="to_table_name">
       <mat-option value="PropertyState">Property</mat-option>
-      <mat-option value="TaxlotState">Taxlot</mat-option>
+      <mat-option value="TaxLotState">Taxlot</mat-option>
     </mat-select>
   </mat-form-field>
 
   <div class="flex">
-    <seed-header-autocomplete class="w-full" [formControl]="form.controls['to_field']" [columns]="columns" label="SEED Header" />
+    <seed-header-autocomplete class="w-full" [formControl]="form.controls['to_field']" [columns]="columns" label="SEED Header" tableName="{{ form.controls['to_table_name'].value }}"/>
   </div>
 
   <mat-form-field>

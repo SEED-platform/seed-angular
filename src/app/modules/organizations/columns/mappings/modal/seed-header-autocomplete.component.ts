@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, type OnInit } from '@angular/core'
+import { Component, Input, SimpleChanges, type OnChanges, type OnInit } from '@angular/core'
 import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
@@ -20,22 +20,31 @@ import { SharedImports } from '@seed/directives'
     },
   ],
 })
-export class SeedHeaderAutocompleteComponent implements OnInit {
+export class SeedHeaderAutocompleteComponent implements OnChanges, OnInit {
   @Input() formControl: FormControl
   @Input() columns: Column[]
   @Input() label: string
+  @Input() tableName: string
   filteredColumns: Observable<Column[]>
 
   ngOnInit() {
-    console.log(this.formControl)
     this.filteredColumns = this.formControl.valueChanges.pipe(
       startWith(''),
       map((val: string) => this.filter(val)),
     )
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (('tableName' in changes) && (changes.tableName.previousValue !== changes.tableName.currentValue)) {
+      this.filteredColumns = this.formControl.valueChanges.pipe(
+        startWith(''),
+        map((val: string) => this.filter(val)),
+      )
+    }
+  }
+
   filter(val: string) {
-    return this.columns.filter((col) => col.column_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+    return this.columns.filter((col) => col.table_name === this.tableName && col.column_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
   }
   displayFn = (a: string) => {
     if (this.columns) {

@@ -322,8 +322,9 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
   create_profile = () => {
     const dialogRef = this._dialog.open(CreateModalComponent, {
-      width: '40rem',
-      data: { org_id: this.mappablePropertyColumns[0].organization_id },
+      width: '80rem',
+      height: '75vh',
+      data: { org_id: this.mappablePropertyColumns[0].organization_id, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
     })
 
     dialogRef

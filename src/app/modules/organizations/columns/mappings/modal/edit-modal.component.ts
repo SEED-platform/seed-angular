@@ -48,7 +48,6 @@ export class EditModalComponent implements OnInit {
     }).map((m) => m.from_field)
     this.form.get('to_field').disable()
     this.form.get('to_table_name').valueChanges.subscribe((val) => {
-      this.columns = this.data.columns.filter((c) => c.table_name === val)
       if (val) {
         this.form.get('to_field').enable()
       }
