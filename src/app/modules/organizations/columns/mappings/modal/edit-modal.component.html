@@ -15,7 +15,13 @@
   </mat-form-field>
 
   <div class="flex">
-    <seed-header-autocomplete class="w-full" [formControl]="form.controls['to_field']" [columns]="columns" label="SEED Header" tableName="{{ form.controls['to_table_name'].value }}"/>
+    <seed-header-autocomplete
+      class="w-full"
+      [formControl]="form.controls['to_field']"
+      [columns]="columns"
+      label="SEED Header"
+      tableName="{{ form.controls['to_table_name'].value }}"
+    />
   </div>
 
   <mat-form-field>
