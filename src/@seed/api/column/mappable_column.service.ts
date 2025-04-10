@@ -43,7 +43,7 @@ export class MappableColumnService {
   }
 
   getTaxLotColumns(org_id: number): Observable<Column[]> {
-    const url = `/api/v3/columns/mappable/?inventory_type=property&organization_id=${org_id}`
+    const url = `/api/v3/columns/mappable/?inventory_type=taxlot&organization_id=${org_id}`
     return this._httpClient.get<ColumnsResponse>(url).pipe(
       map((cr) => {
         const cols = cr.columns.filter((c) => c.table_name === 'TaxLotState')

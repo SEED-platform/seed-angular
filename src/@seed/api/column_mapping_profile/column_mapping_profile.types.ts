@@ -2,7 +2,7 @@ export type ColumnMapping = {
   to_field: string;
   from_field: string;
   from_units: string | null;
-  to_table_name: 'PropertyState' | 'TaxlotState';
+  to_table_name: 'PropertyState' | 'TaxLotState';
   is_omitted?: boolean;
 }
 
@@ -30,5 +30,5 @@ export type ColumnMappingProfileDeleteResponse = {
 
 export type ColumnMappingSuggestionResponse = {
   status: string;
-  data: Record<string, [('PropertyState' | 'TaxlotState'), string, number]>;
+  data: Record<string, [('PropertyState' | 'TaxLotState'), string, number]>;
 }
