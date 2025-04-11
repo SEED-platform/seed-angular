@@ -1,0 +1,20 @@
+<div class="flex flex-col gap-4 mb-5">
+
+  <div class="flex justify-between">
+    <div class="text-lg font-medium ml-4 flex items-center">
+      <mat-icon svgIcon="fa-solid:file"></mat-icon>
+      <span class="ml-4">Main State Building Files</span>
+    </div>
+  </div>
+
+  @if (rowData.length) {
+  <ag-grid-angular
+    [columnDefs]="columnDefs"
+    [rowData]="rowData"
+    [theme]="gridTheme$ | async"
+    [style.height.px]="gridHeight" (gridReady)="onGridReady($event)"
+    (cellClicked)="onCellClicked($event)"
+  ></ag-grid-angular>
+  }
+
+</div>

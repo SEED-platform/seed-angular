@@ -5,17 +5,10 @@
     <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
     <span class="ml-4">History</span>
     </div>
-    @if (isEditing) {
-      <div class="flex">
-        <button mat-flat-button color="primary" (click)="save()" class="w-fit ml-2 text-sm">Save</button>
-        <button mat-stroked-button (click)="cancel()" class="w-fit ml-2 text-sm">Cancel</button>
-      </div>
-    } @else {
-      <button mat-stroked-button (click)="edit()">
-        <mat-icon svgIcon="fa-solid:pencil" class="scale-75"></mat-icon>
-        <span class="ml-2 text-sm">Edit</span>
-      </button>
-      }
+    <button mat-stroked-button (click)="editMain()">
+      <mat-icon svgIcon="fa-solid:pencil" class="scale-75"></mat-icon>
+      <span class="ml-2 text-sm">Edit</span>
+    </button>
   </div>
 
   <ag-grid-angular 

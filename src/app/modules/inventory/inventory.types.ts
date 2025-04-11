@@ -160,7 +160,7 @@ export type ViewResponse = {
   properties?: GenericRelatedInventory[];
   source: unknown;
   // state needs to be typed
-  state: Record<string, unknown>;
+  state: State;
   status: string;
   taxlot?: TaxLot;
   taxlots?: GenericRelatedInventory[];
@@ -193,4 +193,20 @@ export type InventoryDocument = {
   id: number;
   property?: number;
   taxlot?: number;
+}
+
+export type BuildingFile = {
+  created: string;
+  file: string;
+  file_type: string;
+  filename: string;
+  id: number;
+  modified: string;
+  organization_id: number | null;
+  property_state: number;
+}
+
+export type State = {
+  [key: string]: unknown;
+  files: BuildingFile[]
 }

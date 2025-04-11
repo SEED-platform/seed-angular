@@ -24,6 +24,7 @@
     <mat-divider></mat-divider>
     <seed-inventory-detail-history
     [view]="view"
+    [orgId]="orgId"
     ></seed-inventory-detail-history>
   }
 
@@ -38,23 +39,23 @@
 
   }
 
-  @if (view && type === 'properties') {
+  @if (view?.property) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-documents-grid
       [org]="org"
       [type]="type"
       [view]="view">
     </seed-inventory-detail-documents-grid>
-    <!-- <seed-inventory-detail-property
-      [org]="org"
-      [type]="type"
-      [view]="view"
-    ></seed-inventory-detail-property> -->
   }
 
-
+  @if (view?.property && view?.state.files.length) {
+    <mat-divider></mat-divider>
+    <seed-inventory-detail-building-files-grid
+      [type]="type"
+      [view]="view">
+    </seed-inventory-detail-building-files-grid>
+  }
   <div class="mt-10"></div>
-  <div>Building Files</div>
   <div>Scenarios and Measures</div>
 
 </div>

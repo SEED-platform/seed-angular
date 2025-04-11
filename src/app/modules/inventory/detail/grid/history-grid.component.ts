@@ -2,16 +2,18 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
-import type { Profile, ValueGetterParamsData, ViewResponse } from '../inventory.types'
+import type { Profile, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
 import { MatIconModule } from '@angular/material/icon'
 import { MatDividerModule } from '@angular/material/divider'
 import { naturalSort } from '@seed/utils'
 import { MatButtonModule } from '@angular/material/button'
+import { EditStateModalComponent } from '../modal/edit-state.component'
 
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -24,20 +26,22 @@ ModuleRegistry.registerModules([AllCommunityModule])
     AgGridModule,
     CommonModule,
     MatButtonModule,
+    MatDialogModule,
     MatIconModule,
     MatDividerModule
   ],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   @Input() view: ViewResponse
+  @Input() orgId: number
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
+  private _dialog = inject(MatDialog)
   columns: Column[]
   columnDefs: ColDef[]
   currentProfile: Profile
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
-  isEditing = false
   rowData: Record<string, unknown>[]
 
   defaultColDef = {
@@ -94,16 +98,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
       { 
         field: 'state', 
         headerName: 'Main', 
-        editable: () => this.isEditing,
-        cellStyle: () => this.isEditing ? {
-          border: '1px solid #ccc',
-          'border-radius': '4px',
-          cursor: 'text',
-        } : { 
-          border: 'none',
-          cursor: 'default',
-        },
-       },
+      }
     ]
 
     for (const { filename } of this.view.history) {
@@ -130,21 +125,16 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
     }
   }
 
-  edit() {
-    this.isEditing = true
-    this.gridApi.refreshCells({ force: true, columns: ['state'] });
-  }
-
-  save() {
-    console.log('save')
-    this.isEditing = false
-    this.gridApi.refreshCells({ force: true, columns: ['state'] });
-  }
-
-  cancel() {
-    console.log('cancel')
-    this.isEditing = false
-    this.gridApi.refreshCells({ force: true, columns: ['state'] });
+  editMain() {
+    console.log('editMain')
+    const dialogRef = this._dialog.open(EditStateModalComponent, {
+      autoFocus: false,
+      disableClose: true,
+      width: '40rem',
+      maxHeight: '60rem',
+      data: { columns: this.columns, orgId: this.orgId, view: this.view },
+      panelClass: 'seed-dialog-panel',
+    })
   }
 
   ngOnDestroy(): void {

@@ -17,7 +17,7 @@ import { ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon'
-import { DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } from '.'
+import { BuildingFilesGridComponent, DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } from '.'
 
 
 
@@ -27,6 +27,7 @@ import { DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } fro
   imports: [
     AgGridAngular,
     AgGridModule,
+    BuildingFilesGridComponent,
     CommonModule,
     DocumentsGridComponent,
     HeaderComponent,

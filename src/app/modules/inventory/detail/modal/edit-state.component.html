@@ -1,0 +1,26 @@
+<div class="flex gap-4 ml-4 mt-10" mat-dialog-title>
+  <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
+  <div class="text-2xl font-medium leading-6" >Edit Main State</div>
+</div>
+
+<div class="m-5 max-h-145 overflow-y-auto border border-gray-200 rounded p-5">
+  CONTENT
+  {{ data.view.state | json}}
+
+  <!-- @for (field of data.view.state.entires(); track $index) {
+    <div>{{field}}</div>
+  } -->
+
+
+  <!-- <form class="flex flex-col gap-4" [formGroup]="form">
+  </form> -->
+</div>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+  </mat-dialog-actions>
+</div>

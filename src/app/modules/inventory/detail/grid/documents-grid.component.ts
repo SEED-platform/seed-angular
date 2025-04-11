@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import { InventoryDocument, InventoryType, ViewResponse } from '../inventory.types'
+import { InventoryDocument, InventoryType, ViewResponse } from '../../inventory.types'
 import { Observable } from 'rxjs'
 import { Column, ColumnService } from '@seed/api/column'
 import { of, Subject, takeUntil, tap } from 'rxjs'
@@ -52,8 +52,8 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
 
   setGrid() {
     this.columnDefs = [
-      { field: 'filename', headerName: 'File Name' },
       { field: 'file_type', headerName: 'File Type' },
+      { field: 'filename', headerName: 'File Name' },
       { field: 'created', headerName: 'Created' },
     ]
     for (const { created, file_type, filename } of this.view.property.inventory_documents) {
