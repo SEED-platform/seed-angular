@@ -15,11 +15,9 @@
       <div class="w-75 flex flex-1 flex-row items-center">
         <span class="flex flex-1 text-lg">File Headers: </span>
       </div>
-      <div class="flex justify-self-end">
-  
-      </div>
+      <div class="flex justify-self-end"></div>
     </div>
-  
+
     <div class="" id="mappings" formArrayName="mappings">
       @for (mappingForm of mappings.controls; track $index; let i = $index) {
         <div class="flex w-full flex-row items-center gap-x-2" [formGroupName]="i">
@@ -60,14 +58,14 @@
   </form>
 </div>
 
-<div class="flex flex-row w-full">
+<div class="flex w-full flex-row">
   <div class="flex flex-1">
     <mat-dialog-actions>
       <button (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
         <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon><span class="ml-2">Add Row</span>
       </button>
     </mat-dialog-actions>
-</div>
+  </div>
   <div class="flex justify-self-end">
     <mat-dialog-actions>
       <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Create Profile</button>

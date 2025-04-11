@@ -15,14 +15,14 @@ import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
 import { SharedImports } from '@seed/directives'
 import { type ComponentCanDeactivate } from '@seed/guards/pending-changes.guard'
+import { ConfigService } from '@seed/services'
+import { naturalSort } from '@seed/utils'
 import { ActionButtonsComponent } from './action-buttons.component'
 import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
-import { ConfigService } from '@seed/services'
-import { naturalSort } from '@seed/utils'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -162,21 +162,20 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       this._mappableColumnService.taxLotColumns$,
       this._mappableColumnService.propertyColumns$,
       this._columnMappingProfileService.profiles$,
-      this._configService.config$
+      this._configService.config$,
     ])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([taxLotColumns, propertyColumns, profiles, config]) => {
         this.mappableTaxlotColumns = taxLotColumns
         this.mappablePropertyColumns = propertyColumns
-        this.profiles = profiles.sort((a,b) => naturalSort(a.name, b.name))
-        console.log(profiles)
-        this.selectedProfile = profiles.sort((a,b) => a.id - b.id)[0]
+        this.profiles = profiles.sort((a, b) => naturalSort(a.name, b.name))
+        this.selectedProfile = profiles.sort((a, b) => a.id - b.id)[0]
         this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
         this.rowData = this.buildRenderMappings(this.selectedProfile.mappings)
-        const theme = config.scheme === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-        : config.scheme
+        const theme = config.scheme === 'auto'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          : config.scheme
         this.gridTheme = themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)
-
       })
     this.isLoaded = true
   }
