@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
+import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
 import { combineLatest, type Observable, Subject, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
@@ -21,6 +21,7 @@ import { CreateModalComponent } from './modal/create-modal.component'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
+import { ConfigService } from '@seed/services'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -43,6 +44,7 @@ type RenderMapping = ColumnMapping & {
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
+  private _configService = inject(ConfigService)
   private _mappableColumnService = inject(MappableColumnService)
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _gridApi!: GridApi<RenderMapping>
@@ -138,6 +140,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     pagination: false,
     suppressCellFocus: true,
   }
+  darkMode: boolean
+  gridTheme = themeAlpine.withPart(colorSchemeLight)
   gridReady = false
   changesToSave = false
 
@@ -157,15 +161,20 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       this._mappableColumnService.taxLotColumns$,
       this._mappableColumnService.propertyColumns$,
       this._columnMappingProfileService.profiles$,
+      this._configService.config$
     ])
       .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(([taxLotColumns, propertyColumns, profiles]) => {
+      .subscribe(([taxLotColumns, propertyColumns, profiles, config]) => {
         this.mappableTaxlotColumns = taxLotColumns
         this.mappablePropertyColumns = propertyColumns
         this.profiles = profiles
         this.selectedProfile = profiles[0]
         this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
         this.rowData = this.buildRenderMappings(this.selectedProfile.mappings)
+        const theme = config.scheme === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        : config.scheme
+        this.gridTheme = themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)
+
       })
     this.isLoaded = true
   }
@@ -249,7 +258,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     if (!this.selectedProfile) {
       return true
     }
-    return this.selectedProfile.profile_type !== 'Normal'
+    return this.selectedProfile.profile_type === 'BuildingSync Default'
   }
 
   seedHeaderName(mapping: ColumnMapping): string {
@@ -292,7 +301,9 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   }
 
   onCellDoubleClicked(event: CellDoubleClickedEvent) {
-    this.editMapping(event.data as ColumnMapping, event.node)
+    if (!this.profileReadOnly()) {
+      this.editMapping(event.data as ColumnMapping, event.node)
+    }
   }
 
   deleteMapping(_mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {

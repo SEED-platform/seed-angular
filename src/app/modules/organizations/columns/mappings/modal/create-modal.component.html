@@ -14,9 +14,7 @@
       <span class="flex flex-1 text-lg">File Headers: </span>
     </div>
     <div class="flex justify-self-end">
-      <a (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
-        <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon>
-      </a>
+
     </div>
   </div>
 
@@ -59,11 +57,20 @@
   </div>
 </form>
 
-<div class="flex justify-end">
-  <mat-dialog-actions>
-    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Create Profile</button>
-  </mat-dialog-actions>
-  <mat-dialog-actions>
-    <button (click)="close()" mat-stroked-button>Cancel</button>
-  </mat-dialog-actions>
+<div class="flex flex-row w-full">
+  <div class="flex flex-1">
+    <mat-dialog-actions>
+      <button (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
+        <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon><span class="ml-2">Add Row</span>
+      </button>
+    </mat-dialog-actions>
+</div>
+  <div class="flex justify-self-end">
+    <mat-dialog-actions>
+      <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Create Profile</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button (click)="close()" mat-stroked-button>Cancel</button>
+    </mat-dialog-actions>
+  </div>
 </div>
