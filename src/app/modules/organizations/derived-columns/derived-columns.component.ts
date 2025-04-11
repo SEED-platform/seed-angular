@@ -75,7 +75,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   createDerivedColumn = () => {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
-      maxHeight: '50rem',
+      maxHeight: '75vh',
       data: {
         derivedColumn: null,
         orgId: this._orgId,
