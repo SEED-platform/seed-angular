@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import { type Organization, OrganizationService } from '@seed/api/organization'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -15,11 +16,13 @@ import { FormModalComponent } from './modal/form-modal.component'
 })
 export class ListComponent implements OnDestroy {
   protected _columnService = inject(ColumnService)
+  protected _organizationService = inject(OrganizationService)
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   columnTableDataSource = new MatTableDataSource<Column>([])
-  columnTableColumns = ['canonical', 'display_name', 'column_name', 'column_description', 'actions']
+  columnTableColumns: string[]
   type: string
+  organization: Organization
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
@@ -51,10 +54,18 @@ export class ListComponent implements OnDestroy {
     console.log('Rename called for column: ', column)
   }
 
+  buildColumnList() {
+    if (this.organization.comstock_enabled) {
+      this.columnTableColumns = ['canonical', 'display_name', 'column_name', 'column_description', 'comstock_mapping', 'actions']
+    } else {
+      this.columnTableColumns = ['canonical', 'display_name', 'column_name', 'column_description', 'actions']
+    }
+  }
+
   edit(column: Column) {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
-      data: { column },
+      data: { column, organization: this.organization },
     })
 
     dialogRef.afterClosed().pipe(takeUntil(this._unsubscribeAll$)).subscribe()

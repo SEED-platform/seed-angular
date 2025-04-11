@@ -1,4 +1,4 @@
-<seed-page-table-container>
+<seed-page-table-container *transloco="let t">
   <mat-form-field class="w-full">
     <mat-label>Filter</mat-label>
     <input #input (keyup)="applyFilter($event)" matInput placeholder="Ex. ium" />
@@ -25,6 +25,11 @@
     <ng-container matColumnDef="column_description">
       <th *matHeaderCellDef mat-header-cell>Description</th>
       <td *matCellDef="let c" mat-cell>{{ c.column_description }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="comstock_mapping">
+      <th *matHeaderCellDef mat-header-cell>Comstock Mapping</th>
+      <td *matCellDef="let c" mat-cell>{{ c.comstock_mapping ? t(`comstock.${c.comstock_mapping}`) : '' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="actions">
