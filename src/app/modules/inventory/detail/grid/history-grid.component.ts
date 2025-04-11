@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { take, tap } from 'rxjs'
+import { switchMap, take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { ConfigService } from '@seed/services'
 import type { Profile, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
@@ -40,6 +40,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   columns: Column[]
   columnDefs: ColDef[]
   currentProfile: Profile
+  derivedColumnNames: Set<string>
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   rowData: Record<string, unknown>[]
@@ -90,11 +91,28 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
     } else {
       this.columns = columns.filter((c) => !c.is_extra_data)
     }
+    this.derivedColumnNames = new Set(this.columns.filter((c) => c.derived_column).map((c) => c.column_name))
   }
 
   setColumnDefs() {
     this.columnDefs = [
-      { field: 'field', headerName: 'Field', pinned: true },
+      { 
+        field: 'field', 
+        headerName: 'Field', 
+        pinned: true,
+        cellRenderer: ({value}) => {
+          // add 'link' icon to derived columns
+          const isDerived = this.derivedColumnNames.has(value)
+          return !isDerived 
+            ? value
+            : `
+                <span style="display:inline-flex; align-items:center;">
+                  <span class="ag-icon ag-icon-linked" style="font-size: 16px; margin-right: 4px;"></span>
+                    ${value}
+                 </span>
+              `
+        },
+      },
       { 
         field: 'state', 
         headerName: 'Main', 
@@ -126,15 +144,21 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   editMain() {
-    console.log('editMain')
     const dialogRef = this._dialog.open(EditStateModalComponent, {
       autoFocus: false,
       disableClose: true,
-      width: '40rem',
-      maxHeight: '60rem',
+      width: '50rem',
+      maxHeight: '75vh',
       data: { columns: this.columns, orgId: this.orgId, view: this.view },
       panelClass: 'seed-dialog-panel',
     })
+
+    dialogRef.afterClosed().pipe(
+      switchMap(() => {
+        console.log('refetch')
+        return this.getHistory()
+      })
+    ).subscribe()
   }
 
   ngOnDestroy(): void {
