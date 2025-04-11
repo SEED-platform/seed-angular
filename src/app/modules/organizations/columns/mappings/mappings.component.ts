@@ -22,6 +22,7 @@ import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
 import { ConfigService } from '@seed/services'
+import { naturalSort } from '@seed/utils'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -167,8 +168,9 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .subscribe(([taxLotColumns, propertyColumns, profiles, config]) => {
         this.mappableTaxlotColumns = taxLotColumns
         this.mappablePropertyColumns = propertyColumns
-        this.profiles = profiles
-        this.selectedProfile = profiles[0]
+        this.profiles = profiles.sort((a,b) => naturalSort(a.name, b.name))
+        console.log(profiles)
+        this.selectedProfile = profiles.sort((a,b) => a.id - b.id)[0]
         this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
         this.rowData = this.buildRenderMappings(this.selectedProfile.mappings)
         const theme = config.scheme === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -213,6 +215,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
         to_table_name: m.to_table_name,
         from_units: m.from_units,
         from_field: m.from_field,
+        from_field_value: m.from_field_value ? m.from_field_value : null,
         column: this.getColumn(m.to_table_name, m.to_field),
         unit_label: this.lookupDataType(m.from_units),
       }
@@ -358,9 +361,10 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   }
 
   copy_profile() {
+    console.log(this.getMappingsFromGrid())
     const dialogRef = this._dialog.open(CopyModalComponent, {
       width: '40rem',
-      data: { mappings: this.getMappingsFromGrid(), org_id: this.mappablePropertyColumns[0].organization_id },
+      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', mappings: this.getMappingsFromGrid(), org_id: this.mappablePropertyColumns[0].organization_id },
     })
 
     dialogRef
@@ -383,7 +387,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
   delete() {
     const profileToDelete = this.selectedProfile
-    if (profileToDelete.profile_type !== 'Normal') {
+    if (profileToDelete.profile_type === 'BuildingSync Default') {
       return
     }
     const dialogRef = this._dialog.open(DeleteModalComponent, {
@@ -484,6 +488,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       from_units: rowNode.data.from_units,
       to_table_name: rowNode.data.to_table_name,
       is_omitted: rowNode.data.is_omitted,
+      from_field_value: rowNode.data.from_field_value,
     } as ColumnMapping
   }
 }

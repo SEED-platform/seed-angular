@@ -4,6 +4,7 @@ export type ColumnMapping = {
   from_units: string | null;
   to_table_name: 'PropertyState' | 'TaxLotState';
   is_omitted?: boolean;
+  from_field_value?: string;
 }
 
 export type ColumnMappingProfile = {

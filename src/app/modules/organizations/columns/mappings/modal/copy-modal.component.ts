@@ -22,10 +22,10 @@ export class CopyModalComponent implements OnInit {
   form = new FormGroup({
     name: new FormControl<string>('', [Validators.required]),
   })
-  data = inject(MAT_DIALOG_DATA) as { mappings: ColumnMapping[]; org_id: number }
+  data = inject(MAT_DIALOG_DATA) as { mappings: ColumnMapping[]; org_id: number, profile_type: string }
 
   ngOnInit(): void {
-    this.profile = { profile_type: 'Normal', name: '', id: null, mappings: [] }
+    this.profile = { profile_type: this.data.profile_type, name: '', id: null, mappings: [] }
     this.profile.mappings = this.data.mappings
   }
 
