@@ -87,7 +87,7 @@ export class HeaderComponent implements OnInit {
         },
       )
     }
-    // row data 
+    // row data
     this.aliRowData.push(this.view[inventoryKey].access_level_instance.path)
   }
 
@@ -95,7 +95,6 @@ export class HeaderComponent implements OnInit {
     this.gridApi = agGrid.api
     this.gridApi.sizeColumnsToFit()
   }
-  
 
   tempAction() {
     console.log('temp action')
@@ -111,7 +110,6 @@ export class HeaderComponent implements OnInit {
   }
 
   onChangeView(viewId: number) {
-    console.log('onChangeView', viewId)
     this.changeView.emit(viewId)
   }
 }

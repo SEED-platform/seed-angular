@@ -185,3 +185,8 @@ export type UploadAccessLevelInstancesResponse = {
 export type StartSavingAccessLevelInstancesRequest = {
   filename: string;
 }
+
+export type MatchingCriteriaColumnsResponse = {
+  PropertyState: string[];
+  TaxLotState: string[];
+}

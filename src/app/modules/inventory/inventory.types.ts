@@ -208,5 +208,17 @@ export type BuildingFile = {
 
 export type State = {
   [key: string]: unknown;
-  files: BuildingFile[]
+  derived_data: Record<string, unknown>;
+  extra_data: Record<string, unknown>;
+  files: BuildingFile[];
+  measures: Record<string, unknown>[];
+  scenarios: Record<string, unknown>[];
+}
+
+export type UpdateInventoryResponse = {
+  match_link_count: number;
+  match_merged_count: number;
+  state: State;
+  status: string;
+  view_id: number;
 }

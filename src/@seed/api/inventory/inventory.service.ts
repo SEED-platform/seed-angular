@@ -2,11 +2,11 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -136,12 +136,49 @@ export class InventoryService {
   }
 
   getTaxLotViews(orgId: number, taxLotId: number): Observable<GenericView[]> {
-    const url = '/api/v3/property_views/'
+    const url = '/api/v3/taxlot_views/'
     const params = { organization_id: orgId, taxlot: taxLotId }
     return this._httpClient.get<GenericViewsResponse>(url, { params }).pipe(
       map(({ taxlot_views }) => taxlot_views),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching property')
+        return this._errorService.handleError(error, 'Error fetching taxlot')
+      }),
+    )
+  }
+
+  /*
+  * Update a property/taxlot view's state
+  */
+  updateInventory(orgId: number, viewId: number, inventoryType: InventoryType, updatedStateFields: Record<string, unknown>): Observable<UpdateInventoryResponse> {
+    return inventoryType === 'taxlots'
+      ? this.updateTaxLot(orgId, viewId, updatedStateFields)
+      : this.updateProperty(orgId, viewId, updatedStateFields)
+  }
+
+  updateProperty(orgId: number, viewId: number, state: Record<string, unknown>): Observable<UpdateInventoryResponse> {
+    const url = `/api/v3/properties/${viewId}/?organization_id=${orgId}`
+    return this._httpClient.put<UpdateInventoryResponse>(url, { state }).pipe(
+      tap((response) => {
+        this._snackBar.success(`Success! - ${response.match_link_count} Linked. ${response.match_merged_count} Merged`)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // errors tend to be non human readable
+        this._snackBar.alert('Error updating property')
+        return throwError(() => error)
+      }),
+    )
+  }
+
+  updateTaxLot(orgId: number, viewId: number, state: Record<string, unknown>): Observable<UpdateInventoryResponse> {
+    const url = `/api/v3/taxlots/${viewId}/?organization_id=${orgId}`
+    return this._httpClient.put<UpdateInventoryResponse>(url, { state }).pipe(
+      tap((response) => {
+        this._snackBar.success(`Success! - ${response.match_link_count} Linked. ${response.match_merged_count} Merged`)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // errors tend to be non human readable
+        this._snackBar.alert('Error updating taxlot')
+        return throwError(() => error)
       }),
     )
   }

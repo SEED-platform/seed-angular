@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatTableModule } from '@angular/material/table'
 import type { Column } from '@seed/api/column'
-import type { ViewResponse } from '../../inventory.types'
+import type { InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-edit-state',
@@ -32,11 +32,13 @@ export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)
   private _fb = inject(FormBuilder)
 
-  data = inject(MAT_DIALOG_DATA) as { columns: Column[]; orgId: number; view: ViewResponse }
+  data = inject(MAT_DIALOG_DATA) as { columns: Column[]; orgId: number; view: ViewResponse; matchingColumns: string[] }
   form: FormGroup<Record<string, FormControl>>
   labelWidth: number
   changedFields: Set<string>
   displayNameMap: Record<string, string> = {}
+  preSave = true
+  type: InventoryType
 
   ngOnInit() {
     this.setForm()
@@ -66,10 +68,15 @@ export class EditStateModalComponent implements OnInit {
     this.form = this._fb.group(controls)
   }
 
+  onSave() {
+    console.log('save')
+    this.data.view.state = { ...this.data.view.state, ...this.form.value }
+    this.preSave = false
+  }
+
   onSubmit() {
     console.log('submit')
-    this.data.view.state = { ...this.data.view.state, ...this.form.value }
-    this._dialogRef.close()
+    this._dialogRef.close('matchMerge')
   }
 
   dismiss() {

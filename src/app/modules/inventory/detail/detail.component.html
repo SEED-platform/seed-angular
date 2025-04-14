@@ -23,8 +23,12 @@
   @if (view) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-history
-    [view]="view"
+    [matchingColumns]="matchingColumns"
     [orgId]="orgId"
+    [type]="type"
+    [view]="view"
+    [viewId]="viewId"
+    (refreshView)="onRefreshView()"
     ></seed-inventory-detail-history>
   }
 

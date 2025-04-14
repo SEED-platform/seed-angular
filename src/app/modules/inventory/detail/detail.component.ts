@@ -1,25 +1,23 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
-import type { Organization } from '@seed/api/organization';
+import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
+import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
 import { HeaderComponent } from './header.component'
-import { ColumnService } from '@seed/api/column'
-import { ConfigService } from '@seed/services'
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon'
 import { BuildingFilesGridComponent, DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } from '.'
-
-
 
 @Component({
   selector: 'seed-inventory-detail',
@@ -49,6 +47,7 @@ export class DetailComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   labels: Label[]
   gridTheme$ = this._configService.gridTheme$
+  matchingColumns: string[]
   org: Organization
   orgId: number
   selectedView: GenericView
@@ -57,25 +56,30 @@ export class DetailComponent implements OnDestroy, OnInit {
   viewId: number
   views: GenericView[]
 
-
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
 
   ngOnInit(): void {
     this._activatedRoute.paramMap.pipe(
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
+      switchMap(() => this.getOrgData()),
       switchMap(() => this.loadView()),
     ).subscribe()
   }
 
-  loadView(): Observable<Label[]> {
+  getOrgData() {
     return this._organizationService.currentOrganization$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap((organization) => {
-        this.org = organization
+      tap((organization) => {
         this.orgId = organization.org_id
-        return this._inventoryService.getView(organization.org_id, this.viewId, this.type)
+        this.org = organization
       }),
+      switchMap(() => this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type)),
+      tap((matchingColumns) => { this.matchingColumns = matchingColumns as string[] }),
+    )
+  }
+
+  loadView(): Observable<Label[]> {
+    return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
       switchMap((view) => {
         this.view = view
         const id = this.type === 'taxlots'
@@ -99,8 +103,11 @@ export class DetailComponent implements OnDestroy, OnInit {
     return this.type === 'taxlots' ? this.view.properties : this.view.taxlots
   }
 
+  onRefreshView() {
+    this.loadView().subscribe()
+  }
+
   onChangeView(viewId: number) {
-    console.log('change this view', viewId)
     void this._router.navigate([`/${this.type}/${viewId}`])
   }
 
