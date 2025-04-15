@@ -7,9 +7,12 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MatSelectModule } from '@angular/material/select'
 import { type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import { type Organization } from '@seed/api/organization'
 import type { ProgressResponse } from '@seed/api/progress'
+import { SharedImports } from '@seed/directives'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -25,7 +28,9 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     FormsModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSelectModule,
     ReactiveFormsModule,
+    SharedImports,
   ],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
@@ -35,8 +40,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
   private _uploaderService = inject(UploaderService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   column: Column
+  organization: Organization
   refreshFn: (organization_id: number) => Observable<Column[]>
-  data = inject(MAT_DIALOG_DATA) as { column: Column }
+  data = inject(MAT_DIALOG_DATA) as { column: Column; organization: Organization }
   inProgress = false
   progressBarObj: ProgressBarObj = {
     message: '',
@@ -51,6 +57,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
     column_description: new FormControl<string | null>(null, [Validators.required]),
     organization_id: new FormControl<number | null>(null, [Validators.required]),
     table_name: new FormControl<string | null>('', [Validators.required]),
+    comstock_mapping: new FormControl<string | null>(null),
     id: new FormControl<number | null>(null),
   })
 
@@ -78,7 +85,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
     const c = this.form.value as Column
     const changes = {}
     this.inProgress = true
-    changes[`${c.id}`] = { display_name: c.display_name, column_description: c.column_description }
+    changes[`${c.id}`] = { display_name: c.display_name, column_description: c.column_description, comstock_mapping: c.comstock_mapping }
     this._columnService
       .updateMultipleColumns(c.organization_id, c.table_name, changes)
       .pipe(
