@@ -134,7 +134,6 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
   }
 
   save() {
-    console.log('saving')
     const html = this.templateForm.get('html_content').value
     const div = document.createElement('div')
     div.innerHTML = html
