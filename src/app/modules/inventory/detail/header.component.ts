@@ -46,6 +46,7 @@ export class HeaderComponent implements OnInit {
   aliColumns: string[] = []
   aliColumnDefs: ColDef[] = []
   aliRowData: Record<string, unknown>[] = []
+  enableMap: boolean
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
 
@@ -68,6 +69,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     // taxlots will not have group mappings
     this.groupMappings = this.view.property?.group_mappings
+    this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
     this.setAliGrid()
   }
 

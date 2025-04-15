@@ -73,10 +73,13 @@
     }
     
   </div>
-  <div class="w-1/2 border border-gray-500">
-    <seed-inventory-detail-map
-    [state]="view.state"
-    [type]="type"
-    ></seed-inventory-detail-map>    
-  </div>
+  
+  @if (enableMap) {
+    <div class="w-full h-80">
+      <seed-inventory-detail-map
+      [state]="view.state"
+      [type]="type"
+      ></seed-inventory-detail-map>    
+    </div>
+  }
 </div>

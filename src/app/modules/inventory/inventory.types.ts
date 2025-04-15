@@ -214,7 +214,7 @@ export type State = {
   extra_data: Record<string, unknown>;
   files: BuildingFile[];
   measures: Record<string, unknown>[];
-  related?: Record<string, unknown>[];
+  related?: State[];
   scenarios: Record<string, unknown>[];
 }
 
