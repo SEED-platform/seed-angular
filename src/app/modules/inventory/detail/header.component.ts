@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { ConfigService } from '@seed/services'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
+import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
+import { MapComponent } from './map.component'
 
 @Component({
   selector: 'seed-inventory-detail-header',
@@ -21,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MapComponent,
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
@@ -46,7 +48,6 @@ export class HeaderComponent implements OnInit {
   aliRowData: Record<string, unknown>[] = []
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
-
 
   actions = [
     { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: false },

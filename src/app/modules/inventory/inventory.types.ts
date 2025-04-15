@@ -208,10 +208,13 @@ export type BuildingFile = {
 
 export type State = {
   [key: string]: unknown;
+  bounding_box: string;
+  centroid: string;
   derived_data: Record<string, unknown>;
   extra_data: Record<string, unknown>;
   files: BuildingFile[];
   measures: Record<string, unknown>[];
+  related?: Record<string, unknown>[];
   scenarios: Record<string, unknown>[];
 }
 

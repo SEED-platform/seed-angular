@@ -16,8 +16,13 @@ import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
-import { HeaderComponent } from './header.component'
-import { BuildingFilesGridComponent, DocumentsGridComponent, HistoryGridComponent, PairedGridComponent } from '.'
+import {
+  BuildingFilesGridComponent,
+  DocumentsGridComponent,
+  HeaderComponent,
+  HistoryGridComponent,
+  PairedGridComponent,
+} from '.'
 
 @Component({
   selector: 'seed-inventory-detail',
@@ -101,10 +106,6 @@ export class DetailComponent implements OnDestroy, OnInit {
   get paired() {
     if (!this.view) return []
     return this.type === 'taxlots' ? this.view.properties : this.view.taxlots
-  }
-
-  onRefreshView() {
-    this.loadView().subscribe()
   }
 
   onChangeView(viewId: number) {
