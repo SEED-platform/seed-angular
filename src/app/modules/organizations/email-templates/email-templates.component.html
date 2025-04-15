@@ -1,3 +1,47 @@
-<seed-page [config]="{ title: 'Email Templates', titleIcon: 'fa-solid:envelope' }">
-  <div>Email Templates Content</div>
+<seed-page [config]="{ titleIcon: 'fa-solid:envelope', title: 'Email Templates' }">
+
+  <div class="flex w-full flex-row items-center gap-x-2 justify-end">
+    
+
+    <form [formGroup]="selectedTemplateForm" class="flex mt-4 w-100">
+      <mat-form-field class="w-full">
+        <mat-select formControlName="selectedTemplate" (selectionChange)="selectTemplate()">
+          @for (template of templates; track template.id) {
+            <mat-option [value]="template.id">{{ template.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+
+    <a class="flex" (click)="rename()" mat-stroked-button matTooltip="Rename">
+      <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
+    </a>
+    <a class="flex" (click)="delete()" mat-stroked-button matTooltip="Delete">
+      <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+    </a>
+    <a class="flex" (click)="create()" mat-stroked-button matTooltip="Create New">
+      <mat-icon class="fill-blue-300 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
+    </a>
+  </div>
+
+  <div class="ml-8 w-2/3">
+    <form [formGroup]="templateForm" class="flex flex-col m-l-8">
+      <mat-form-field class="flex">
+        <mat-label>Subject</mat-label>
+        <input matInput formControlName="subject">
+        @if (templateForm.controls.subject?.hasError('required')) {
+          <mat-error>Subject is a required field</mat-error>
+        }
+      </mat-form-field>
+
+        <mat-label>Content</mat-label>
+        <ngx-wig class="dark:bg-gray-400 dark" formControlName="html_content"></ngx-wig>
+        @if (templateForm.controls.html_content?.hasError('required')) {
+          <mat-error>Content is a required field</mat-error>
+        }
+      <div class="flex">
+        <button mat-flat-button color="primary" [disabled]="templateForm.invalid || templateForm.pending" (click)="save()"><span>Save Changes</span></button>
+      </div>
+    </form>
+  </div>
 </seed-page>

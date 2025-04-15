@@ -145,3 +145,9 @@
 .mat-mdc-chip-action-label {
   @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
 }
+
+// NGX-Wig Editor
+.dark .nw-editor {
+  background-color: theme('colors.gray.700');
+
+}
