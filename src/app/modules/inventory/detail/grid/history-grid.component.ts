@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { EventEmitter } from '@angular/core'
-import { Component, inject, Input, Output } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBar } from '@angular/material/progress-bar'
+import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
@@ -15,9 +15,9 @@ import { type Column, ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, Profile, State, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
 import { EditStateModalComponent } from '../modal/edit-state.component'
-import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -41,11 +41,11 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   @Input() type: InventoryType
   @Input() view: ViewResponse
   @Input() viewId: number
-  @Output() refreshView = new EventEmitter<null>()
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
+  private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
   columns: Column[]
   columnDefs: ColDef[]
@@ -170,13 +170,11 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
 
     dialogRef.afterClosed().pipe(
       tap((message) => {
-        const updated = JSON.stringify(this.viewCopy) !== JSON.stringify(this.view)
-        if (!updated) {
-          this._snackBar.info('No changes detected')
-          return
-        }
+        if (message !== 'matchMerge') return
 
-        if (message === 'matchMerge') this.saveItem()
+        const updated = JSON.stringify(this.viewCopy) !== JSON.stringify(this.view)
+        if (updated) this.saveItem()
+        else this._snackBar.info('No changes detected')
       }),
     ).subscribe()
   }
@@ -188,10 +186,8 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
     const updatedFields = this.checkStateDifference(this.view.state, this.viewCopy.state)
     this.loading = true
     this._inventoryService.updateInventory(this.orgId, this.viewId, this.type, updatedFields).pipe(
-      finalize(() => {
-        this.refreshView.emit()
-        this.loading = false
-      }),
+      tap((response) => { void this._router.navigateByUrl(`${this.type}/${response.view_id}`) }),
+      finalize(() => this.loading = false),
     ).subscribe()
   }
 

@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { ConfigService } from '@seed/services'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import { InventoryType, ViewResponse } from '../../inventory.types'
-import { Observable } from 'rxjs'
-import { Column, ColumnService } from '@seed/api/column'
-import { of, Subject, takeUntil, tap } from 'rxjs'
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Organization } from '@seed/api/organization'
+import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
-
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { Observable } from 'rxjs'
+import { of, Subject, takeUntil, tap } from 'rxjs'
+import type { Column } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
+import type { Organization } from '@seed/api/organization'
+import { ConfigService } from '@seed/services'
+import type { InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-paired-grid',
@@ -28,7 +29,7 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  
+
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   columns: Column[]
@@ -42,7 +43,6 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
     suppressMovable: true,
   }
 
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.view) {
       this.getData().subscribe()
@@ -55,7 +55,7 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   }
 
   getData(): Observable<Column[]> {
-    if (!this.data.length) return of([])
+    if (!this.data.length) return of<Column[]>([])
 
     const stream = this.type === 'taxlots' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
     return stream.pipe(
@@ -71,26 +71,26 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
 
   setGrid() {
     const colDefMap = {
-      'taxlots': { idField: 'pm_property_id', idName: 'PM Property ID', },
-      'properties': { idField: 'jurisdiction_tax_lot_id', idName: 'Jurisdiction Tax Lot ID', },
+      taxlots: { idField: 'pm_property_id', idName: 'PM Property ID' },
+      properties: { idField: 'jurisdiction_tax_lot_id', idName: 'Jurisdiction Tax Lot ID' },
     }
     const { idField, idName } = colDefMap[this.type]
 
     this.columnDefs = [
-      { field: idField, headerName: idName },
+      {
+        field: idField,
+        headerName: idName,
+        cellRenderer: ({ value }) => value as string,
+      },
       { field: this.defaultColumn.column_name, headerName: this.defaultColumn.display_name },
       { field: 'Unpair', headerName: 'Unpair' },
     ]
-
-
-    for (const item of this.data) {
-      const row = {
-        [idField]: item.state[idField],
-        [this.defaultColumn.column_name]: item.state[this.defaultColumn.column_name],
-        Unpair: 'x',
-      }
-      this.rowData.push(row)
-    }
+    const otherType = this.type === 'taxlots' ? 'properties' : 'taxlots'
+    this.rowData = this.data.map((item) => ({
+      [idField]: `<a href="${otherType}/${item.id}/" class="underline">${item.state[idField] as string}</a>`,
+      [this.defaultColumn.column_name]: item.state[this.defaultColumn.column_name],
+      Unpair: 'x',
+    }))
   }
 
   get gridHeight() {
@@ -108,5 +108,4 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
-
 }

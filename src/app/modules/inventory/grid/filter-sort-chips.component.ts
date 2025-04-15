@@ -4,8 +4,8 @@ import { Component, Input } from '@angular/core'
 import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../inventory.types'
 import type { OrganizationUserSettings } from '@seed/api/organization'
+import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../inventory.types'
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
@@ -58,6 +58,9 @@ export class FilterSortChipsComponent implements OnChanges {
       const direction = sort.startsWith('-') ? 'desc' : 'asc'
       sort = sort.replace(/^-/, '')
       const colDef = this.columnDefs.find(({ field }) => field === sort)
+
+      if (!colDef) return
+
       const chip = { field: colDef.field, displayName: `${colDef.headerName} ${direction}`, original: sort }
       this.sortChips.push(chip)
     }
