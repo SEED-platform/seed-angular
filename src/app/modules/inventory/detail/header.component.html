@@ -5,7 +5,8 @@
     <div class="m-1 flex flex-row gap-4">
       <mat-label class="text-sm text-gray-400 w-15">Actions</mat-label>
       <mat-select class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
-        #actionSelect
+        panelClass="fit-content-select"
+        #actionSelect 
         placeholder="Select Action" 
         (selectionChange)="onAction($event.value.action, actionSelect)"
       >
