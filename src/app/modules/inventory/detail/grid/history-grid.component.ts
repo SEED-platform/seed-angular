@@ -10,14 +10,16 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { finalize, take, tap } from 'rxjs'
+import { catchError, EMPTY, finalize, map, type Observable, of, switchMap, take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType, Profile, State, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
+import type { InventoryType, Profile, ProfileColumn, State, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
 import { EditStateModalComponent } from '../modal/edit-state.component'
+import { CurrentUser, UserService } from '@seed/api/user'
+import { OrganizationService, OrganizationUser, OrganizationUserSettings } from '@seed/api/organization'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -35,7 +37,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
     MatProgressBar,
   ],
 })
-export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
+export class HistoryGridComponent implements OnChanges, OnDestroy {
   @Input() matchingColumns: string[]
   @Input() orgId: number
   @Input() type: InventoryType
@@ -45,17 +47,32 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
+  private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
-  columns: Column[]
+  private _userService = inject(UserService)
+  allColumns: Column[]
   columnDefs: ColDef[]
+  // columns: Column[]
+  profileColumns: ProfileColumn[]
   currentProfile: Profile
+  currentUser: CurrentUser
   derivedColumnNames: Set<string>
   gridApi: GridApi
+  gridColumns: Column[]
   gridTheme$ = this._configService.gridTheme$
   loading = false
+  orgUserId: number
+  profiles: Profile[]
   rowData: Record<string, unknown>[]
   viewCopy: ViewResponse
+  userSettings: OrganizationUserSettings
+  userProfileId: number
+
+  defaultProfile = {
+    detail: { taxlots: null, properties: null },
+    list: { taxlots: null, properties: null },
+  }
 
   defaultColDef = {
     sortable: false,
@@ -64,21 +81,129 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
     suppressMovable: true,
   }
 
-  ngOnInit(): void {
-    this.getHistory().subscribe()
-  }
+  /*
+  * what columns are we using? if theres a profile use those, if theres no profile use all columns. 
+  * could do a fork join but might be unnecessary
+  * so start with best case which is a profile
+  * also need user settings?
+  */
 
   getHistory() {
-    const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
-    return columns$.pipe(
-      take(1),
+    console.log('getHistory')
+    return this.getProfiles().pipe(
+      switchMap(() => this.getCurrentUser()),
+      switchMap((profileColumns) => {
+        const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+        return columns$
+      }),
       tap((columns) => {
-        this.setColumns(columns)
-        this.setColumnDefs()
-        this.setRowData()
+        console.log(columns)
+      }),
+      // switchMap(() => this.getColumns()),
+      // switchMap(() => this.updateOrgUserSettings()),
+    )
+    // return this.getColumns().pipe(
+    //   take(1),
+    //   tap((columns) => {
+    //     this.allColumns = columns
+    //     this.setColumns(columns)
+    //     this.setColumnDefs()
+    //     this.setRowData()
+    //   }),
+    // )
+  }
+
+  getProfiles() {
+    return this._inventoryService.getColumnListProfiles('Detail View Profile', this.type).pipe(
+      tap((profiles) => { this.profiles = profiles }),
+    )
+  }
+
+  getCurrentUser() {
+    console.log('getCurrentUser')
+    return this._userService.currentUser$.pipe(
+      map((currentUser) => {
+        const { org_user_id, settings }: { org_user_id: number; settings: OrganizationUserSettings } = currentUser
+        this.currentUser = currentUser // may not be necessary
+        this.orgUserId = org_user_id // for update org settings
+        this.userSettings = settings
+        this.setUserSettings(settings)
+        this.userProfileId = settings.profile.detail[this.type]
+        // set current profile if present
+        if (this.profiles.length) {
+          this.currentProfile = this.profiles.find((p) => p.id === this.userProfileId)
+          this.profileColumns = this.currentProfile?.columns ?? []
+        }
+        if (!this.currentProfile) {
+          // update user settings. not sure if i need a subscribe?
+          this.userSettings.profile.detail[this.type] = null
+          this.updateOrgUserSettings() // .pipe(take(1))
+        }
+
+        return this.profileColumns
+      }),
+
+    )
+  }
+
+  setUserSettings(settings: OrganizationUserSettings) {
+    console.log('setUserSettings')
+    this.userSettings = settings
+    this.userSettings.profile = this.userSettings.profile || {}
+    this.userSettings.profile.detail = this.userSettings.profile.detail || {}
+    this.userSettings.profile.detail[this.type] = this.userSettings.profile.detail[this.type] || null
+  }
+
+  getColumns() {
+    // columns will either be
+    // 1. the current profile columns
+    // 2. inventory type columns
+    console.log('getProfiles')
+
+    // if current profile, use that.
+    if (this.userProfileId) {
+      return this._inventoryService.getColumnListProfile(this.userProfileId).pipe(
+        map((profile) => {
+          console.log('p', profile)
+          return profile
+        }),
+      )
+    } else {
+      console.log('else')
+    }
+    // if no current profile, assign the first profile
+    return this._inventoryService.getColumnListProfiles('Detail View Profile', this.type).pipe(
+      switchMap((profiles) => {
+        if (profiles.length) {
+          this.currentProfile = profiles[0]
+          this.userProfileId = profiles[0].id
+          return of(profiles[0].columns)
+        } else {
+          // if there are no profiles, just use inventory type columns
+          console.log('no profiles')
+          return this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+        }
       }),
     )
   }
+
+  // setProfile(profiles: Profile[]) {
+  //   console.log('setProfile', profiles)
+  //   if (!this.currentProfile && profiles?.length) {
+  //     this.currentProfile = profiles[0]
+  //     this.userSettings.profile = this.userSettings.profile || this.defaultProfile
+  //     this.userSettings.profile.detail[this.type] = this.currentProfile.id
+  //   } else {
+  //     console.log('current profile', this.currentProfile)
+  //     console.log('profiles', profiles)
+  //   }
+  // }
+
+  // getColumns() {
+  //   console.log('getColumns')
+  //   const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+  //   return columns$
+  // }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.view) {
@@ -102,9 +227,9 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
     if (this.currentProfile) {
       // format based on profile settings
     } else {
-      this.columns = columns.filter((c) => !c.is_extra_data)
+      this.gridColumns = columns.filter((c) => !c.is_extra_data)
     }
-    this.derivedColumnNames = new Set(this.columns.filter((c) => c.derived_column).map((c) => c.column_name))
+    this.derivedColumnNames = new Set(this.gridColumns.filter((c) => c.derived_column).map((c) => c.column_name))
   }
 
   setColumnDefs() {
@@ -145,7 +270,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
   setRowData() {
     // Transposed data. Each row is a column name (address line 1, address line 2, etc.)
     this.rowData = []
-    const columnsSorted = this.columns.sort((a, b) => naturalSort(a.display_name, b.display_name))
+    const columnsSorted = this.gridColumns.sort((a, b) => naturalSort(a.display_name, b.display_name))
 
     for (const { column_name, display_name } of columnsSorted) {
       const row = { field: display_name, state: this.view.state[column_name] }
@@ -164,7 +289,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
       disableClose: true,
       width: '50rem',
       maxHeight: '75vh',
-      data: { columns: this.columns, orgId: this.orgId, view: this.view, matchingColumns: this.matchingColumns },
+      data: { columns: this.gridColumns, orgId: this.orgId, view: this.view, matchingColumns: this.matchingColumns },
       panelClass: 'seed-dialog-panel',
     })
 
@@ -214,6 +339,17 @@ export class HistoryGridComponent implements OnChanges, OnDestroy, OnInit {
         updatedFields[field] = extraData[field]
       }
     }
+  }
+
+  updateOrgUserSettings(): Observable<OrganizationUser> {
+    console.log('updateOrgUserSettings')
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).pipe(
+      map((response) => response.data),
+      tap(({ settings }) => {
+        console.log('set settings', settings)
+        this.userSettings = settings
+      }),
+    )
   }
 
   ngOnDestroy(): void {
