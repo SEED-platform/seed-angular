@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
@@ -12,7 +13,8 @@ import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { GenericView, GroupMapping, ViewResponse } from '../inventory.types'
+import type { GenericView, GroupMapping, Profile, ViewResponse } from '../inventory.types'
+import { PopulatedColumnsModalComponent } from '../modal/populated-columns-modal.component'
 import { MapComponent } from './map.component'
 
 @Component({
@@ -22,16 +24,18 @@ import { MapComponent } from './map.component'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    LabelComponent,
     MapComponent,
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
     MatTableModule,
     MatSelectModule,
-    LabelComponent,
+    PopulatedColumnsModalComponent,
   ],
 })
 export class HeaderComponent implements OnInit {
+  @Input() currentProfile: Profile
   @Input() labels: Label[]
   @Input() org: Organization
   @Input() selectedView: GenericView
@@ -40,6 +44,7 @@ export class HeaderComponent implements OnInit {
   @Input() type: 'properties' | 'taxlots'
   @Output() changeView = new EventEmitter<number>()
   private _configService = inject(ConfigService)
+  private _dialog = inject(MatDialog)
   groupMappings: GroupMapping[]
   accessLevelInstance: AccessLevelInstance
   aliDataSource = []
@@ -51,19 +56,19 @@ export class HeaderComponent implements OnInit {
   gridTheme$ = this._configService.gridTheme$
 
   actions = [
-    { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Add/Remove Labels', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Add/Update UBID', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Export Audit Template File (XML)', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Export BuildingSync', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Export BuildingSync (Excel)', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Export to Audit Template', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Merge and Link Matches', action: () => { this.tempAction() }, disabled: false },
+    { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Add/Remove Labels', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Add/Update UBID', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Export Audit Template File (XML)', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Export BuildingSync', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Export BuildingSync (Excel)', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Export to Audit Template', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Merge and Link Matches', action: () => { this.tempAction() }, disabled: true },
     { name: 'Only Show Populated Columns', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Run Analysis', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Update with Audit Template', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Update with BuildingSync', action: () => { this.tempAction() }, disabled: false },
-    { name: 'Update with ESPM', action: () => { this.tempAction() }, disabled: false },
+    { name: 'Run Analysis', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Update with Audit Template', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Update with BuildingSync', action: () => { this.tempAction() }, disabled: true },
+    { name: 'Update with ESPM', action: () => { this.tempAction() }, disabled: true },
   ]
 
   ngOnInit(): void {
@@ -106,6 +111,19 @@ export class HeaderComponent implements OnInit {
   onAction(action: () => void, select: MatSelect) {
     action()
     select.value = null
+  }
+
+  openShowPopulatedColumnsModal() {
+    this._dialog.open(PopulatedColumnsModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.org.id,
+        columns: null,
+        profile: this.currentProfile,
+        cycleId: this.view.cycle.id,
+        inventoryType: this.type,
+      },
+    })
   }
 
   trackByFn(_index: number, { id }: AccessLevelInstance) {

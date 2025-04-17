@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
@@ -10,18 +10,16 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { finalize, forkJoin, map, type Observable, switchMap, take, tap } from 'rxjs'
+import { finalize, take, tap } from 'rxjs'
 import type { GenericColumn } from '@seed/api/column'
 import { type Column, ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
-import type { OrganizationUser, OrganizationUserSettings } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { OrganizationUserSettings } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType, Profile, ProfileColumn, State, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
+import type { InventoryType, Profile, ProfileColumn, ValueGetterParamsData, ViewResponse } from '../../inventory.types'
 import { EditStateModalComponent } from '../modal/edit-state.component'
 
 ModuleRegistry.registerModules([AllCommunityModule])
@@ -41,25 +39,23 @@ ModuleRegistry.registerModules([AllCommunityModule])
   ],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {
+  @Input() currentUser: CurrentUser
+  @Input() currentProfile: Profile
   @Input() matchingColumns: string[]
   @Input() orgId: number
+  @Input() profiles: Profile[]
   @Input() type: InventoryType
   @Input() view: ViewResponse
   @Input() viewId: number
+  @Output() refreshView = new EventEmitter<null>()
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
-  private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
-  private _userService = inject(UserService)
-  allColumns: Column[]
   columnDefs: ColDef[]
   columns: Column[]
-  profileColumns: ProfileColumn[]
-  currentProfile: Profile
-  currentUser: CurrentUser
   derivedColumnNames: Set<string>
   extraDataColumnNames: Set<string>
   gridApi: GridApi
@@ -67,9 +63,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   gridTheme$ = this._configService.gridTheme$
   loading = false
   orgUserId: number
-  profiles: Profile[]
   rowData: Record<string, unknown>[]
-  viewCopy: ViewResponse
   userSettings: OrganizationUserSettings
   userProfileId: number
 
@@ -85,19 +79,9 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
     suppressMovable: true,
   }
 
-  /*
-  * what columns are we using? if theres a profile use those, if theres no profile use all columns.
-  * could do a fork join but might be unnecessary
-  * so start with best case which is a profile
-  * also need user settings?
-  */
-
   getHistory() {
-    return this.getProfileColumns().pipe(
-      tap((results) => {
-        this.setProfileColumns(results)
-      }),
-      switchMap(() => this.updateOrgUserSettings()),
+    return this.getColumns().pipe(
+      tap((columns) => { this.setProfileColumns(columns) }),
       tap(() => {
         this.setColumnDefs()
         this.setRowData()
@@ -105,38 +89,19 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
     )
   }
 
-  getProfileColumns() {
+  getColumns() {
     const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
-    return forkJoin({
-      columns: columns$.pipe(take(1)),
-      currentUser: this._userService.currentUser$.pipe(take(1)),
-      profiles: this._inventoryService.getColumnListProfiles('Detail View Profile', this.type),
-    })
+    return columns$.pipe(take(1))
   }
 
   /*
   * 1. find current profile
   * 2. if no profile, set to null
   * 3. set columns to current profile columns or all canonical columns
-
   */
-  setProfileColumns({ columns, currentUser, profiles }: { columns: Column[]; currentUser: CurrentUser; profiles: Profile[] }) {
+  setProfileColumns(columns: Column[]) {
     this.columns = columns
-    this.getProfile(currentUser, profiles)
     this.setGridColumns()
-  }
-
-  getProfile(currentUser: CurrentUser, profiles: Profile[]) {
-    this.currentUser = currentUser
-    this.profiles = profiles
-
-    const { org_user_id, settings } = currentUser
-    this.orgUserId = org_user_id
-    this.checkUserProfileSettings(settings)
-    this.userProfileId = settings.profile.detail[this.type]
-
-    this.currentProfile = profiles.find((p) => p.id === this.userProfileId) ?? this.profiles[0]
-    this.userSettings.profile.detail[this.type] = this.currentProfile?.id
   }
 
   setGridColumns() {
@@ -228,55 +193,48 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   editMain() {
-    this.viewCopy = JSON.parse(JSON.stringify(this.view)) as ViewResponse
-
     const dialogRef = this._dialog.open(EditStateModalComponent, {
       autoFocus: false,
       disableClose: true,
       width: '50rem',
       maxHeight: '75vh',
-      data: { columns: this.gridColumns, orgId: this.orgId, view: this.view, matchingColumns: this.matchingColumns },
+      data: { columns: this.gridColumns, orgId: this.orgId, view: this.view, matchingColumns: this.matchingColumns, extraDataColumnNames: this.extraDataColumnNames },
       panelClass: 'seed-dialog-panel',
     })
 
     dialogRef.afterClosed().pipe(
-      tap((message) => {
-        if (message !== 'matchMerge') return
-
-        const updated = JSON.stringify(this.viewCopy) !== JSON.stringify(this.view)
-        if (updated) this.saveItem()
-        else this._snackBar.info('No changes detected')
+      tap((updatedFields: Record<string, unknown>) => {
+        if (this.updatedFieldsEmpty(updatedFields)) {
+          this._snackBar.info('No changes detected')
+        } else if (updatedFields) {
+          this.saveItem(updatedFields)
+        }
       }),
     ).subscribe()
+  }
+
+  updatedFieldsEmpty(updatedFields) {
+    return JSON.stringify(updatedFields) === JSON.stringify({ extra_data: {} })
   }
 
   /*
   * save the user's changes to the Property/TaxLot State object.
   */
-  saveItem() {
-    const updatedFields = this.checkStateDifference(this.view.state, this.viewCopy.state)
+  saveItem(updatedFields: Record<string, unknown>) {
+    // const updatedFields = this.checkStateDifference(this.view.state, this.viewCopy.state)
     this.loading = true
     this._inventoryService.updateInventory(this.orgId, this.viewId, this.type, updatedFields).pipe(
-      tap((response) => { void this._router.navigateByUrl(`${this.type}/${response.view_id}`) }),
-      finalize(() => this.loading = false),
+      tap((response) => {
+        if (response.view_id !== this.viewId) {
+          void this._router.navigateByUrl(`${this.type}/${response.view_id}`)
+        } else {
+          this.refreshView.emit()
+        }
+      }),
+      finalize(() => {
+        this.loading = false
+      }),
     ).subscribe()
-  }
-
-  checkStateDifference(state: State, stateCopy: State): Record<string, unknown> {
-    const updatedFields = {}
-    for (const field in state) {
-      if (field === 'extra_data') {
-        this.checkExtraDataDifference(state.extra_data, stateCopy.extra_data, updatedFields)
-        continue
-      }
-
-      if (typeof state[field] === 'object') continue
-
-      if (state[field] !== stateCopy[field]) {
-        updatedFields[field] = state[field]
-      }
-    }
-    return updatedFields
   }
 
   checkExtraDataDifference(extraData: Record<string, unknown>, extraDataCopy: Record<string, unknown>, updatedFields: Record<string, unknown>) {
@@ -285,15 +243,6 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
         updatedFields[field] = extraData[field]
       }
     }
-  }
-
-  updateOrgUserSettings(): Observable<OrganizationUser> {
-    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).pipe(
-      map((response) => response.data),
-      tap(({ settings }) => {
-        this.userSettings = settings
-      }),
-    )
   }
 
   ngOnDestroy(): void {

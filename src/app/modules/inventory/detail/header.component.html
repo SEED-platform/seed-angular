@@ -11,7 +11,7 @@
         (selectionChange)="onAction($event.value.action, actionSelect)"
       >
         @for (item of actions; track $index) {
-        <mat-option class="!h-3 text-sm" [value]="item">{{ item.name }}</mat-option>
+        <mat-option class="!h-3 text-sm" [value]="item" [disabled]="item.disabled">{{ item.name }}</mat-option>
         }
       </mat-select>
     </div>

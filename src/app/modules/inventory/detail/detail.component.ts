@@ -6,15 +6,17 @@ import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
-import type { Organization } from '@seed/api/organization'
+import type { Organization, OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
+import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { GenericView, InventoryType, ViewResponse } from '../inventory.types'
+import type { GenericView, InventoryType, Profile, ViewResponse } from '../inventory.types'
 import {
   BuildingFilesGridComponent,
   DocumentsGridComponent,
@@ -47,14 +49,20 @@ export class DetailComponent implements OnDestroy, OnInit {
   private _labelService = inject(LabelService)
   private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
+  private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  labels: Label[]
+  currentUser: CurrentUser
+  currentProfile: Profile
   gridTheme$ = this._configService.gridTheme$
+  labels: Label[]
   matchingColumns: string[]
   org: Organization
   orgId: number
+  orgUserId: number
+  profiles: Profile[]
   selectedView: GenericView
   type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  userSettings: OrganizationUserSettings
   view: ViewResponse
   viewId: number
   views: GenericView[]
@@ -66,6 +74,7 @@ export class DetailComponent implements OnDestroy, OnInit {
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
       switchMap(() => this.getOrgData()),
+      switchMap(() => this.updateOrgUserSettings()),
       switchMap(() => this.loadView()),
     ).subscribe()
   }
@@ -76,10 +85,20 @@ export class DetailComponent implements OnDestroy, OnInit {
         this.orgId = organization.org_id
         this.org = organization
       }),
-      switchMap(() => this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type)),
-      tap((matchingColumns) => { this.matchingColumns = matchingColumns as string[] }),
+      switchMap(() => forkJoin({
+        matchingColumns: this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
+        currentUser: this._userService.currentUser$.pipe(take(1)),
+        profiles: this._inventoryService.getColumnListProfiles('Detail View Profile', this.type),
+      })),
+      tap(({ matchingColumns, currentUser, profiles }) => {
+        this.matchingColumns = matchingColumns as string[]
+        this.currentUser = currentUser
+        this.profiles = profiles
+        this.setProfile()
+      }),
     )
   }
+
 
   loadView(): Observable<Label[]> {
     return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
@@ -106,8 +125,34 @@ export class DetailComponent implements OnDestroy, OnInit {
     return this.type === 'taxlots' ? this.view.properties : this.view.taxlots
   }
 
+  setProfile() {
+    const { org_user_id, settings } = this.currentUser
+    this.orgUserId = org_user_id
+    this.checkUserProfileSettings(settings)
+    const userProfileId = settings.profile.detail[this.type]
+
+    this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
+    this.userSettings.profile.detail[this.type] = this.currentProfile?.id
+  }
+
+  checkUserProfileSettings(settings: OrganizationUserSettings) {
+    this.userSettings = settings
+    this.userSettings.profile = this.userSettings.profile || {}
+    this.userSettings.profile.detail = this.userSettings.profile.detail || {}
+    this.userSettings.profile.detail[this.type] = this.userSettings.profile.detail[this.type] || null
+  }
+
+  updateOrgUserSettings() {
+    const { org_user_id, settings } = this.currentUser
+    return this._organizationService.updateOrganizationUser(org_user_id, this.orgId, settings)
+  }
+
   onChangeView(viewId: number) {
     void this._router.navigate([`/${this.type}/${viewId}`])
+  }
+
+  onRefreshView() {
+    this.loadView().subscribe()
   }
 
   ngOnDestroy(): void {

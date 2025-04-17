@@ -9,6 +9,7 @@
   <!-- HEADER -->
   @if (views) {
     <seed-inventory-detail-header
+      [currentProfile]="currentProfile"
       [labels]="labels"
       [org]="org"
       [selectedView]="selectedView"
@@ -23,11 +24,15 @@
   @if (view) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-history
+    [currentUser]="currentUser"
+    [currentProfile]="currentProfile"
     [matchingColumns]="matchingColumns"
     [orgId]="orgId"
+    [profiles]="profiles"
     [type]="type"
     [view]="view"
     [viewId]="viewId"
+    (refreshView)="onRefreshView()"
     ></seed-inventory-detail-history>
   }
 

@@ -32,11 +32,13 @@ export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)
   private _fb = inject(FormBuilder)
 
-  data = inject(MAT_DIALOG_DATA) as { columns: Column[]; orgId: number; view: ViewResponse; matchingColumns: string[] }
+  data = inject(MAT_DIALOG_DATA) as { columns: Column[]; orgId: number; view: ViewResponse; matchingColumns: string[]; extraDataColumnNames: Set<string> }
+
+  changedData: Record<string, unknown> = { extra_data: {} }
+  changedFields = new Set<string>()
+  displayNameMap: Record<string, string> = {}
   form: FormGroup<Record<string, FormControl>>
   labelWidth: number
-  changedFields: Set<string>
-  displayNameMap: Record<string, string> = {}
   preSave = true
   type: InventoryType
 
@@ -51,12 +53,13 @@ export class EditStateModalComponent implements OnInit {
   setForm() {
     const controls: Record<string, FormControl> = {}
     const state = this.data.view.state
-    this.changedFields = new Set<string>()
     const filteredCols = this.data.columns.filter((c) => !c.derived_column)
 
     for (const { column_name, display_name } of filteredCols) {
+      const isExtraData = this.data.extraDataColumnNames.has(column_name)
       const displayName = display_name || column_name
-      const control = new FormControl(state[column_name])
+      const value = isExtraData ? state.extra_data[column_name] : state[column_name]
+      const control = new FormControl(value)
 
       control.valueChanges.subscribe(() => {
         this.changedFields.add(column_name)
@@ -69,14 +72,18 @@ export class EditStateModalComponent implements OnInit {
   }
 
   onSave() {
-    console.log('save')
-    this.data.view.state = { ...this.data.view.state, ...this.form.value }
+    for (const [key, control] of Object.entries(this.form.controls)) {
+      if (!control.dirty) continue
+
+      const target = this.data.extraDataColumnNames.has(key) ? this.changedData.extra_data : this.changedData
+      target[key] = control.value as unknown
+    }
+
     this.preSave = false
   }
 
   onSubmit() {
-    console.log('submit')
-    this._dialogRef.close('matchMerge')
+    this._dialogRef.close(this.changedData)
   }
 
   dismiss() {
