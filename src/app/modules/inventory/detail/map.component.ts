@@ -1,7 +1,7 @@
 // ol imports throw type errors
 /* eslint-disable import/no-extraneous-dependencies */
 import { CommonModule } from '@angular/common'
-import type { AfterViewInit, OnDestroy, OnInit } from '@angular/core'
+import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
@@ -30,7 +30,7 @@ import type { InventoryType, State } from '../inventory.types'
     MatTooltipModule,
   ],
 })
-export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
+export class MapComponent implements AfterViewInit, OnDestroy {
   @Input() state: State
   @Input() type: InventoryType
 
@@ -51,16 +51,11 @@ export class MapComponent implements AfterViewInit, OnInit, OnDestroy {
   taxlotStyle: Style
   unGeocodedData: State[]
 
-  ngOnInit() {
-    console.log('map init')
-  }
-
   ngAfterViewInit() {
     this.initMap()
   }
 
   initMap() {
-
     this.resetMap()
     this.buildGeocodedInventory()
     this.setGeocodedData()

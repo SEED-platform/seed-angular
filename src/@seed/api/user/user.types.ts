@@ -1,3 +1,5 @@
+import type { OrganizationUserSettings } from '../organization'
+
 export type UserRole = 'viewer' | 'member' | 'owner'
 
 export type CurrentUser = {
@@ -18,7 +20,7 @@ export type CurrentUser = {
   is_ali_root: boolean;
   is_ali_leaf: boolean;
   org_user_id: number;
-  settings: Record<string, unknown>;
+  settings: OrganizationUserSettings;
 }
 
 export type UserUpdateRequest = {

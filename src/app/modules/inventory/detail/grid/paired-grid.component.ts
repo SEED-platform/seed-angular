@@ -3,7 +3,7 @@ import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { of, Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
@@ -101,7 +101,10 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
+  }
+
+  onFirstDataRendered(params: FirstDataRenderedEvent) {
+    params.api.sizeColumnsToFit()
   }
 
   ngOnDestroy(): void {

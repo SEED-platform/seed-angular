@@ -97,7 +97,7 @@ export type OrganizationUser = {
   number_of_orgs: number;
   role: UserRole;
   user_id: number;
-  settings: Record<string, unknown>;
+  settings: OrganizationUserSettings;
 }
 
 export type OrganizationUserSettings = {

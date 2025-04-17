@@ -1,16 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { ConfigService } from '@seed/services'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import { InventoryDocument, InventoryType, ViewResponse } from '../../inventory.types'
-import { Observable } from 'rxjs'
-import { Column, ColumnService } from '@seed/api/column'
-import { of, Subject, takeUntil, tap } from 'rxjs'
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Organization } from '@seed/api/organization'
-import { MatIconModule } from '@angular/material/icon'
+import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
-
+import { MatIconModule } from '@angular/material/icon'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { Subject } from 'rxjs'
+import type { Organization } from '@seed/api/organization'
+import { ConfigService } from '@seed/services'
+import type { InventoryDocument, InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
@@ -29,7 +27,6 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() view: ViewResponse
   private _configService = inject(ConfigService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   columnDefs: ColDef[] = []
@@ -42,7 +39,6 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   }
 
   documents: InventoryDocument[]
-
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.view) {
@@ -57,7 +53,7 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
       { field: 'created', headerName: 'Created' },
     ]
     for (const { created, file_type, filename } of this.view.property.inventory_documents) {
-      this.rowData.push({created, file_type, filename})
+      this.rowData.push({ created, file_type, filename })
     }
     const documents = this.view.property.inventory_documents
     this.rowData = documents.map(({ created, file_type, filename }) => ({ created, file_type, filename }))
@@ -82,5 +78,4 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
-
 }

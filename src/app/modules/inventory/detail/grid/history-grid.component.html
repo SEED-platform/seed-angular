@@ -23,6 +23,7 @@
     [style.height.px]="gridHeight"
     [theme]="gridTheme$ | async" 
     (gridReady)="onGridReady($event)" 
+    (firstDataRendered)="onFirstDataRendered($event)"
   />
  
   <span class="text-xs italic text-gray-500 ml-4">

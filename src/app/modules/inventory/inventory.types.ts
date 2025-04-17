@@ -45,10 +45,12 @@ export type Profile = {
 }
 
 export type ProfileColumn = {
-  id: number;
-  pinned: boolean;
-  order: number;
   column_name: string;
+  display_name: string;
+  id: number;
+  name: string;
+  order: number;
+  pinned: boolean;
   table_name: string;
 }
 

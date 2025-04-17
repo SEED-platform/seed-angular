@@ -11,6 +11,7 @@
   [theme]="gridTheme$ | async"
   [style.height.px]="gridHeight" 
   (gridReady)="onGridReady($event)"
+  (firstDataRendered)="onFirstDataRendered($event)"
   ></ag-grid-angular>
 
 </div>
