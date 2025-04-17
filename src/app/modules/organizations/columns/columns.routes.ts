@@ -9,6 +9,8 @@ import { ImportSettingsTaxLotsComponent } from './import-settings/import-setting
 import { ListPropertiesComponent } from './list/list-properties.component'
 import { ListTaxLotComponent } from './list/list-taxlots.component'
 import { MappingsComponent } from './mappings/mappings.component'
+import { MatchingCriteriaPropertiesComponent } from './matching-criteria/matching-criteria-properties.component'
+import { MatchingCriteriaTaxlotsComponent } from './matching-criteria/matching-criteria-taxlots.component'
 
 export default [
   {
@@ -70,6 +72,21 @@ export default [
     path: 'import-settings/taxlots',
     title: 'Import Settings',
     component: ImportSettingsTaxLotsComponent,
+  },
+  {
+    path: 'matching-criteria',
+    pathMatch: 'full',
+    redirectTo: 'matching-criteria/properties',
+  },
+  {
+    path: 'matching-criteria/properties',
+    title: 'Matching Criteria',
+    component: MatchingCriteriaPropertiesComponent,
+  },
+  {
+    path: 'matching-criteria/taxlots',
+    title: 'Matching Criteria',
+    component: MatchingCriteriaTaxlotsComponent,
   },
   {
     path: 'mappings',

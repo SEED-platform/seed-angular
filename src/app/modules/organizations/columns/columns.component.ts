@@ -14,6 +14,7 @@ import { ColumnGeocodingHelpComponent } from './geocoding/help.component'
 import { ColumnImportSettingsHelpComponent } from './import-settings/help.component'
 import { ColumnListHelpComponent } from './list/help.component'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
+import { ColumnMatchingCriteriaHelpComponent } from './matching-criteria/help.component'
 
 type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: Type<Component> | null }
 @Component({
@@ -87,6 +88,15 @@ export class ColumnsComponent implements OnInit {
       useTabs: true,
       fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
       helpComponent: ColumnImportSettingsHelpComponent,
+    },
+    {
+      id: 'organizations/columns/matching-criteria',
+      link: '/organizations/columns/matching-criteria',
+      title: 'Matching Criteria',
+      type: 'basic',
+      useTabs: true,
+      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      helpComponent: ColumnMatchingCriteriaHelpComponent,
     },
     {
       id: 'organizations/columns/mappings',
