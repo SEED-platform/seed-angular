@@ -7,7 +7,6 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -44,7 +43,6 @@ import {
 export class DetailComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
   private _configService = inject(ConfigService)
-  private _columnService = inject(ColumnService)
   private _inventoryService = inject(InventoryService)
   private _labelService = inject(LabelService)
   private _organizationService = inject(OrganizationService)

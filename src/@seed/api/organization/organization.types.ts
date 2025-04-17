@@ -106,6 +106,7 @@ export type OrganizationUserSettings = {
   profile_id?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
+  profile?: UserSettingsProfiles;
 }
 
 type UserSettingsFilters = {
@@ -116,6 +117,11 @@ type UserSettingsFilters = {
 type UserSettingsSorts = {
   properties?: string[];
   taxlots?: string[];
+}
+
+type UserSettingsProfiles = {
+  detail?: { properties?: number; taxlots?: number };
+  list?: { properties?: number; taxlots?: number };
 }
 
 export type OrganizationUsersResponse = {
