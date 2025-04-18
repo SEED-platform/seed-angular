@@ -15,8 +15,10 @@
       [selectedView]="selectedView"
       [type]="type"
       [view]="view"
+      [viewId]="viewId"
       [views]="views"
       (changeView)="onChangeView($event)"
+      (refreshDetail)="onRefreshDetail()"
     ></seed-inventory-detail-header>
   }
 

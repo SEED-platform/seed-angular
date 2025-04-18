@@ -77,6 +77,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
     filter: false,
     resizable: true,
     suppressMovable: true,
+    minWidth: 100,
   }
 
   getHistory() {

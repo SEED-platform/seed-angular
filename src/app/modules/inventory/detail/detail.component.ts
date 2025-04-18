@@ -70,6 +70,10 @@ export class DetailComponent implements OnDestroy, OnInit {
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
 
   ngOnInit(): void {
+    this.initDetail()
+  }
+
+  initDetail() {
     this._activatedRoute.paramMap.pipe(
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
@@ -98,7 +102,6 @@ export class DetailComponent implements OnDestroy, OnInit {
       }),
     )
   }
-
 
   loadView(): Observable<Label[]> {
     return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
@@ -153,6 +156,10 @@ export class DetailComponent implements OnDestroy, OnInit {
 
   onRefreshView() {
     this.loadView().subscribe()
+  }
+
+  onRefreshDetail() {
+    this.initDetail()
   }
 
   ngOnDestroy(): void {

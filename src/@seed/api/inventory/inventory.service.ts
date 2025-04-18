@@ -76,6 +76,20 @@ export class InventoryService {
     )
   }
 
+  updateProfileToShowPopulatedColumns(orgId: number, id: number, cycle_id: number, inventory_type: 'Property' | 'Tax Lot'): Observable<unknown> {
+    const url = `/api/v3/column_list_profiles/${id}/show_populated/?organization_id=${orgId}`
+    const data = { cycle_id, inventory_type }
+    return this._httpClient.put<unknown>(url, data).pipe(
+      map((response) => {
+        console.log(response)
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating column list profile')
+      }),
+    )
+  }
+
   deletePropertyStates({ orgId, viewIds }: DeleteParams): Observable<object> {
     const url = '/api/v3/properties/batch_delete/'
     const data = { property_view_ids: viewIds }
@@ -163,7 +177,7 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         // errors tend to be non human readable
-        this._snackBar.alert('Error updating property')
+        this._snackBar.alert('Error updating property. Check data types and try again')
         return throwError(() => error)
       }),
     )
@@ -177,7 +191,7 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         // errors tend to be non human readable
-        this._snackBar.alert('Error updating taxlot')
+        this._snackBar.alert('Error updating taxlot. Check data types and try again')
         return throwError(() => error)
       }),
     )

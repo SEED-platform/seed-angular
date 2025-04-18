@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatTableModule } from '@angular/material/table'
 import type { Column } from '@seed/api/column'
+import { naturalSort } from '@seed/utils'
 import type { InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
@@ -71,12 +72,18 @@ export class EditStateModalComponent implements OnInit {
     this.form = this._fb.group(controls)
   }
 
+  get orderedColumns() {
+    const keys = Object.keys(this.form.controls)
+    return keys.sort((a, b) => naturalSort(a, b))
+  }
+
   onSave() {
     for (const [key, control] of Object.entries(this.form.controls)) {
       if (!control.dirty) continue
 
       const target = this.data.extraDataColumnNames.has(key) ? this.changedData.extra_data : this.changedData
-      target[key] = control.value as unknown
+      const value: unknown = control.value === '' ? null : control.value
+      target[key] = value
     }
 
     this.preSave = false

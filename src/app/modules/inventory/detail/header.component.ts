@@ -40,9 +40,11 @@ export class HeaderComponent implements OnInit {
   @Input() org: Organization
   @Input() selectedView: GenericView
   @Input() view: ViewResponse
+  @Input() viewId: number
   @Input() views: GenericView[]
   @Input() type: 'properties' | 'taxlots'
   @Output() changeView = new EventEmitter<number>()
+  @Output() refreshDetail = new EventEmitter<null>()
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   groupMappings: GroupMapping[]
@@ -64,7 +66,7 @@ export class HeaderComponent implements OnInit {
     { name: 'Export BuildingSync (Excel)', action: () => { this.tempAction() }, disabled: true },
     { name: 'Export to Audit Template', action: () => { this.tempAction() }, disabled: true },
     { name: 'Merge and Link Matches', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Only Show Populated Columns', action: () => { this.tempAction() }, disabled: false },
+    { name: 'Only Show Populated Columns', action: () => { this.openShowPopulatedColumnsModal() }, disabled: false },
     { name: 'Run Analysis', action: () => { this.tempAction() }, disabled: true },
     { name: 'Update with Audit Template', action: () => { this.tempAction() }, disabled: true },
     { name: 'Update with BuildingSync', action: () => { this.tempAction() }, disabled: true },
@@ -114,7 +116,7 @@ export class HeaderComponent implements OnInit {
   }
 
   openShowPopulatedColumnsModal() {
-    this._dialog.open(PopulatedColumnsModalComponent, {
+    const dialogRef = this._dialog.open(PopulatedColumnsModalComponent, {
       width: '40rem',
       data: {
         orgId: this.org.id,
@@ -123,6 +125,10 @@ export class HeaderComponent implements OnInit {
         cycleId: this.view.cycle.id,
         inventoryType: this.type,
       },
+    })
+
+    dialogRef.afterClosed().subscribe((message) => {
+      if (message === 'refresh') this.refreshDetail.emit()
     })
   }
 
