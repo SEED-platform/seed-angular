@@ -1,0 +1,76 @@
+$warningBackground: #fcf8e3;
+$errorBackground: #f2dede;
+$successBackground: #dff0d8;
+$infoBackground: #d9edf7;
+$cellBackground: #f2f2f2;
+
+.even-card {
+  background-color: $cellBackground !important;
+}
+
+.dynamic-grid {
+  padding-bottom: 10px;
+}
+
+// mat-grid-tile {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: flex-start;
+//   align-items: stretch; /* Ensure content stretches to fit the width */
+//   height: auto; /* Allow the tile to grow based on content */
+//   overflow: hidden; /* Prevent content from spilling out */
+//   padding: 8px; /* Add padding for better spacing */
+//   box-sizing: border-box; /* Include padding in the height/width calculations */
+// }
+
+// .tile-content {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: flex-start;
+//   align-items: flex-start;
+//   width: 100%; /* Ensure the content takes up the full width */
+//   height: auto; /* Allow the content to grow dynamically */
+//   overflow: visible; /* Ensure content is not clipped */
+// }
+
+.header-row {
+  font-weight: bold;
+  padding: 0 5px;
+  box-sizing: border-box;
+  background-color: $cellBackground !important;
+}
+
+.alt-row {
+  background-color: $cellBackground !important;
+}
+
+.pad-row {
+  padding-left:10px !important;
+}
+
+/* ANALYSIS STATUS COLORS */
+
+.analysis-status {
+  &.creating,
+  &.warning {
+    background: $warningBackground !important;
+  }
+
+  &.stopped,
+  &.failed,
+  &.error {
+    background: $errorBackground !important;
+  }
+
+  &.ready,
+  &.completed,
+  &.success {
+    background: $successBackground !important;
+  }
+
+  &.queued,
+  &.running,
+  &.info {
+    background: $infoBackground !important;
+  }
+}
