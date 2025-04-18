@@ -15,6 +15,7 @@ import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
 import { SEEDValidators } from '@seed/validators'
 import { DerivedColumnsValidator } from '../derived-columns.validator'
+import { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',
@@ -44,7 +45,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   data = inject(MAT_DIALOG_DATA) as {
     derivedColumn: DerivedColumn | null;
     orgId: number;
-    inventoryType: 'Property' | 'Tax Lot';
+    inventoryType: InventoryDisplayType;
     existingNames: string[];
   }
   form = new FormGroup({

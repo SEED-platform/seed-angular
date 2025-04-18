@@ -13,8 +13,8 @@ import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
+import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from '../inventory.types'
-import { PopulatedColumnsModalComponent } from '../modal/populated-columns-modal.component'
 import { MapComponent } from './map.component'
 
 @Component({
@@ -31,7 +31,7 @@ import { MapComponent } from './map.component'
     MatIconModule,
     MatTableModule,
     MatSelectModule,
-    PopulatedColumnsModalComponent,
+    ModalComponent,
   ],
 })
 export class HeaderComponent implements OnInit {
@@ -116,14 +116,17 @@ export class HeaderComponent implements OnInit {
   }
 
   openShowPopulatedColumnsModal() {
-    const dialogRef = this._dialog.open(PopulatedColumnsModalComponent, {
+    const dialogRef = this._dialog.open(ModalComponent, {
       width: '40rem',
       data: {
-        orgId: this.org.id,
-        columns: null,
-        profile: this.currentProfile,
+        columns: [],
         cycleId: this.view.cycle.id,
         inventoryType: this.type,
+        location: 'Detail View Profile',
+        mode: 'populate',
+        orgId: this.org.id,
+        profile: this.currentProfile,
+        type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
       },
     })
 

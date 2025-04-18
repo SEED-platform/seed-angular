@@ -1,11 +1,13 @@
 import type { ColDef } from 'ag-grid-community'
 import type { ValueGetterParams } from 'ag-grid-community'
+import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
 import type { CurrentUser } from '@seed/api/user'
 
 export type InventoryType = 'properties' | 'taxlots'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
+export type InventoryDisplayType = 'Property' | 'Tax Lot'
 
 export type FilterResponse = {
   cycle_id?: number;
@@ -43,6 +45,16 @@ export type Profile = {
   profile_location: number;
   columns?: ProfileColumn[];
 }
+
+export type NewProfileData = {
+  name: string;
+  profile_location: ProfileLocation
+  inventory_type: InventoryDisplayType;
+  columns: Column[];
+  derived_columns: Column[];
+}
+
+export type ProfileLocation = 'Detail View Profile' | 'List View Profile';
 
 export type ProfileColumn = {
   column_name: string;

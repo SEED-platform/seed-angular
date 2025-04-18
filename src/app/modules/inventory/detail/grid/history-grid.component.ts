@@ -10,7 +10,7 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { finalize, take, tap } from 'rxjs'
+import { finalize, tap } from 'rxjs'
 import type { GenericColumn } from '@seed/api/column'
 import { type Column, ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -39,6 +39,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
   ],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {
+  @Input() columns: Column[]
   @Input() currentUser: CurrentUser
   @Input() currentProfile: Profile
   @Input() matchingColumns: string[]
@@ -48,14 +49,12 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   @Input() view: ViewResponse
   @Input() viewId: number
   @Output() refreshView = new EventEmitter<null>()
-  private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
   columnDefs: ColDef[]
-  columns: Column[]
   derivedColumnNames: Set<string>
   extraDataColumnNames: Set<string>
   gridApi: GridApi
@@ -81,18 +80,9 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   getHistory() {
-    return this.getColumns().pipe(
-      tap((columns) => { this.setProfileColumns(columns) }),
-      tap(() => {
-        this.setColumnDefs()
-        this.setRowData()
-      }),
-    )
-  }
-
-  getColumns() {
-    const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
-    return columns$.pipe(take(1))
+    this.setGridColumns()
+    this.setColumnDefs()
+    this.setRowData()
   }
 
   /*
@@ -100,11 +90,6 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   * 2. if no profile, set to null
   * 3. set columns to current profile columns or all canonical columns
   */
-  setProfileColumns(columns: Column[]) {
-    this.columns = columns
-    this.setGridColumns()
-  }
-
   setGridColumns() {
     if (this.currentProfile?.columns) {
       this.gridColumns = this.currentProfile.columns
@@ -124,7 +109,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.view) {
-      this.getHistory().subscribe()
+      this.getHistory()
     }
   }
 

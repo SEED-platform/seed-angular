@@ -7,15 +7,15 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBar } from '@angular/material/progress-bar'
-import { finalize, Subject, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType, Profile } from '../inventory.types'
+import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation } from 'app/modules/inventory/inventory.types'
+import { finalize, tap } from 'rxjs'
 
 @Component({
-  selector: 'seed-populated-columns-modal',
-  templateUrl: './populated-columns-modal.component.html',
+  selector: 'seed-column-list-profile-modal',
+  templateUrl: './modal.component.html',
   imports: [
     FormsModule,
     MatButtonModule,
@@ -28,8 +28,8 @@ import type { InventoryType, Profile } from '../inventory.types'
     ReactiveFormsModule,
   ],
 })
-export class PopulatedColumnsModalComponent {
-  private _dialogRef = inject(MatDialogRef<PopulatedColumnsModalComponent>)
+export class ModalComponent {
+  private _dialogRef = inject(MatDialogRef<ModalComponent>)
   private _inventoryService = inject(InventoryService)
   private _snackBar = inject(SnackBarService)
 
@@ -40,14 +40,32 @@ export class PopulatedColumnsModalComponent {
   })
 
   data = inject(MAT_DIALOG_DATA) as {
-    orgId: number;
     columns: Column[];
-    profile: Profile;
     cycleId: number;
     inventoryType: InventoryType;
+    mode: 'create' | 'delete' | 'rename' | 'populate';
+    orgId: number;
+    profile: Profile;
+    location: ProfileLocation;
+    type: InventoryDisplayType;
   }
   errorMessage = false
   inProgress = false
+  // headerTextMap = {
+  //   create: 'Create Column List Profile?',
+  //   delete: 'Delete Column List Profile?',
+  //   rename: 'Rename Column List Profile?',
+  //   populate: 'Only Show Populated Columns?',
+  // }
+
+  get createMode() {
+    const populateCreate = this.data.mode === 'populate' && !this.data.profile
+    return this.data.mode === 'create' || populateCreate
+  }
+
+  get populateMode() {
+    return this.data.mode === 'populate' && this.data.profile
+  }
 
   close(message = null) {
     this._dialogRef.close(message)
@@ -57,7 +75,7 @@ export class PopulatedColumnsModalComponent {
     this._dialogRef.close()
   }
 
-  onStart() {
+  onPopulated() {
     this.inProgress = true
     const displayType = this.data.inventoryType === 'taxlots' ? 'Tax Lot' : 'Property'
     const { orgId, profile, cycleId } = this.data
@@ -74,6 +92,18 @@ export class PopulatedColumnsModalComponent {
   }
 
   onCreate() {
-    console.log('create')
+    const data = {
+      name: this.form.get('name')?.value,
+      profile_location: this.data.location,
+      inventory_type: this.data.type,
+      columns: this.data.columns,
+      derived_columns: [],
+    }
+
+    this._inventoryService.createColumnListProfile(this.data.orgId, data).pipe(
+      tap((profile) => {
+        this.data.profile = profile
+      }),
+    ).subscribe()
   }
 }

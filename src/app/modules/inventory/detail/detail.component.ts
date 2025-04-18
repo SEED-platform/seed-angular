@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import type { Column } from '@seed/api/column'
+import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -44,6 +46,7 @@ import {
 })
 export class DetailComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
+  private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _inventoryService = inject(InventoryService)
   private _labelService = inject(LabelService)
@@ -51,6 +54,7 @@ export class DetailComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  columns: Column[]
   currentUser: CurrentUser
   currentProfile: Profile
   gridTheme$ = this._configService.gridTheme$
@@ -89,12 +93,17 @@ export class DetailComponent implements OnDestroy, OnInit {
         this.orgId = organization.org_id
         this.org = organization
       }),
-      switchMap(() => forkJoin({
-        matchingColumns: this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
-        currentUser: this._userService.currentUser$.pipe(take(1)),
-        profiles: this._inventoryService.getColumnListProfiles('Detail View Profile', this.type),
-      })),
-      tap(({ matchingColumns, currentUser, profiles }) => {
+      switchMap(() => {
+        const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+        return forkJoin({
+          columns: columns$.pipe(take(1)),
+          currentUser: this._userService.currentUser$.pipe(take(1)),
+          matchingColumns: this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
+          profiles: this._inventoryService.getColumnListProfiles('Detail View Profile', this.type),
+        })
+      }),
+      tap(({ columns, currentUser, matchingColumns, profiles }) => {
+        this.columns = columns
         this.matchingColumns = matchingColumns as string[]
         this.currentUser = currentUser
         this.profiles = profiles

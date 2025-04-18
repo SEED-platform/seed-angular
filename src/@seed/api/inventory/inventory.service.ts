@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError }
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryType, Profile, ProfileResponse, ProfilesResponse, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, NewProfileData, Profile, ProfileResponse, ProfilesResponse, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -76,16 +76,23 @@ export class InventoryService {
     )
   }
 
-  updateProfileToShowPopulatedColumns(orgId: number, id: number, cycle_id: number, inventory_type: 'Property' | 'Tax Lot'): Observable<unknown> {
+  updateProfileToShowPopulatedColumns(orgId: number, id: number, cycle_id: number, inventory_type: InventoryDisplayType): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/${id}/show_populated/?organization_id=${orgId}`
     const data = { cycle_id, inventory_type }
-    return this._httpClient.put<unknown>(url, data).pipe(
-      map((response) => {
-        console.log(response)
-        return response
-      }),
+    return this._httpClient.put<ProfileResponse>(url, data).pipe(
+      map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating column list profile')
+      }),
+    )
+  }
+
+  createColumnListProfile(orgId: number, data: NewProfileData): Observable<Profile> {
+    const url = `/api/v3/column_list_profiles/?organization_id=${orgId}`
+    return this._httpClient.post<ProfileResponse>(url, data).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating column list profile')
       }),
     )
   }

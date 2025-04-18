@@ -27,6 +27,7 @@ import { SharedImports } from '@seed/directives'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from '../grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../inventory.types'
+import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-inventory',
@@ -145,7 +146,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   get profiles() {
-    return this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
+    const profiles = this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
+    if (!profiles) return
+    return profiles.sort((a, b) => naturalSort(a.name, b.name))
   }
 
   /*

@@ -11,7 +11,7 @@ import { DerivedColumnService } from '@seed/api/derived-column'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import type { InventoryType } from '../../inventory/inventory.types'
+import type { InventoryDisplayType, InventoryType } from '../../inventory/inventory.types'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
@@ -39,7 +39,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private _orgId: number
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   inventoryTypeParam = this._route.snapshot.paramMap.get('type') as InventoryType
-  inventoryType: 'Property' | 'Tax Lot'
+  inventoryType: InventoryDisplayType
   derivedColumnDataSource = new MatTableDataSource<DerivedColumn>([])
   derivedColumns: DerivedColumn[]
   derivedColumnColumns = ['name', 'expression', 'actions']
