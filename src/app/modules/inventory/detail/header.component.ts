@@ -38,11 +38,12 @@ export class HeaderComponent implements OnInit {
   @Input() currentProfile: Profile
   @Input() labels: Label[]
   @Input() org: Organization
+  @Input() profiles: Profile[]
   @Input() selectedView: GenericView
   @Input() view: ViewResponse
-  @Input() viewId: number
   @Input() views: GenericView[]
   @Input() type: 'properties' | 'taxlots'
+  @Output() changeProfile = new EventEmitter<number>()
   @Output() changeView = new EventEmitter<number>()
   @Output() refreshDetail = new EventEmitter<null>()
   private _configService = inject(ConfigService)
@@ -115,6 +116,14 @@ export class HeaderComponent implements OnInit {
     select.value = null
   }
 
+  onChangeProfile(profileId: number) {
+    this.changeProfile.emit(profileId)
+  }
+
+  onChangeView(viewId: number) {
+    this.changeView.emit(viewId)
+  }
+
   openShowPopulatedColumnsModal() {
     const dialogRef = this._dialog.open(ModalComponent, {
       width: '40rem',
@@ -137,9 +146,5 @@ export class HeaderComponent implements OnInit {
 
   trackByFn(_index: number, { id }: AccessLevelInstance) {
     return id
-  }
-
-  onChangeView(viewId: number) {
-    this.changeView.emit(viewId)
   }
 }

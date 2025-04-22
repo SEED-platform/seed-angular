@@ -12,11 +12,12 @@
       [currentProfile]="currentProfile"
       [labels]="labels"
       [org]="org"
+      [profiles]="profiles"
       [selectedView]="selectedView"
       [type]="type"
       [view]="view"
-      [viewId]="viewId"
       [views]="views"
+      (changeProfile)="onChangeProfile($event)"
       (changeView)="onChangeView($event)"
       (refreshDetail)="onRefreshDetail()"
     ></seed-inventory-detail-header>
@@ -75,6 +76,15 @@
   }
 
   <!-- SCENARIOS AND MEASURES -->
+   @if (view?.state.scenarios?.length) {
+    <mat-divider></mat-divider>
+    <seed-inventory-detail-scenarios-grid
+      [view]="view"
+      [viewId]="viewId"
+      >
+    </seed-inventory-detail-scenarios-grid>
+  }
+
   <div class="mt-10"></div>
   <div>Scenarios and Measures</div>
 

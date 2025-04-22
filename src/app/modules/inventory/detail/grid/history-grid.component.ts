@@ -64,7 +64,6 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   orgUserId: number
   rowData: Record<string, unknown>[]
   userSettings: OrganizationUserSettings
-  userProfileId: number
 
   defaultProfile = {
     detail: { taxlots: null, properties: null },
@@ -108,7 +107,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.view) {
+    if (changes.view || changes.currentProfile) {
       this.getHistory()
     }
   }

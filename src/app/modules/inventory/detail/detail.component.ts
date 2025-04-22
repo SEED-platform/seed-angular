@@ -25,6 +25,7 @@ import {
   HeaderComponent,
   HistoryGridComponent,
   PairedGridComponent,
+  ScenariosGridComponent,
 } from '.'
 
 @Component({
@@ -42,6 +43,7 @@ import {
     MatIconModule,
     PageComponent,
     PairedGridComponent,
+    ScenariosGridComponent,
   ],
 })
 export class DetailComponent implements OnDestroy, OnInit {
@@ -78,16 +80,16 @@ export class DetailComponent implements OnDestroy, OnInit {
   }
 
   initDetail() {
-    this._activatedRoute.paramMap.pipe(
+    return this._activatedRoute.paramMap.pipe(
       takeUntil(this._unsubscribeAll$),
       tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
-      switchMap(() => this.getOrgData()),
+      switchMap(() => this.getDependencies()),
       switchMap(() => this.updateOrgUserSettings()),
       switchMap(() => this.loadView()),
     ).subscribe()
   }
 
-  getOrgData() {
+  getDependencies() {
     return this._organizationService.currentOrganization$.pipe(
       tap((organization) => {
         this.orgId = organization.org_id
@@ -161,6 +163,13 @@ export class DetailComponent implements OnDestroy, OnInit {
 
   onChangeView(viewId: number) {
     void this._router.navigate([`/${this.type}/${viewId}`])
+  }
+
+  onChangeProfile(id: number) {
+    this.currentUser.settings.profile.detail[this.type] = id
+    this.updateOrgUserSettings().subscribe(() => {
+      this.setProfile()
+    })
   }
 
   onRefreshView() {

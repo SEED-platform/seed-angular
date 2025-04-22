@@ -110,17 +110,17 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.orgId = org_id
 
     return forkJoin({
-      cycles: this._cycleService.get(this.orgId),
-      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-      labels: this._labelService.labels$.pipe(take(1)),
       currentUser: this._userService.currentUser$.pipe(take(1)),
+      cycles: this._cycleService.get(this.orgId),
+      labels: this._labelService.labels$.pipe(take(1)),
+      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
     })
   }
 
   /*
   * set class variables: cycles, profiles, columns, inventory. returns profile id
   */
-  setDependencies({ cycles, profiles, labels, currentUser }: InventoryDependencies) {
+  setDependencies({ currentUser, cycles, labels, profiles }: InventoryDependencies) {
     if (!cycles) {
       return null
     }
