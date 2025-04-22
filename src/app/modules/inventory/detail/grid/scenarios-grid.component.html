@@ -1,3 +1,20 @@
-<div>
-  TEST
+<div class="flex flex-col gap-4 mb-5">
+
+  <div class="text-lg font-medium ml-4 flex">
+    <mat-icon svgIcon="fa-solid:bolt"></mat-icon>
+    <mat-icon svgIcon="fa-solid:fire-flame-curved"></mat-icon>
+    <span class="ml-4">Scenarios & Measures</span>
+  </div>
+
+
+  <ag-grid-angular
+    [columnDefs]="columnDefs"
+    [detailRowHeight]="150"
+    [rowData]="rowData"
+    [gridOptions]="gridOptions"
+    [theme]="gridTheme$ | async"
+    [style.height.px]="gridHeight"
+    (gridReady)="onGridReady($event)"
+  ></ag-grid-angular>
+
 </div>

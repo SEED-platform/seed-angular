@@ -229,7 +229,7 @@ export type State = {
   files: BuildingFile[];
   measures: Record<string, unknown>[];
   related?: State[];
-  scenarios: Record<string, unknown>[];
+  scenarios: Scenario[];
 }
 
 export type UpdateInventoryResponse = {
@@ -242,3 +242,14 @@ export type UpdateInventoryResponse = {
 
 export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
+
+export type Scenario = {
+  [key: string]: unknown;
+  annual_electricity_savings: number;
+  annual_natural_gas_savings: number;
+  annual_peak_electricity_reduction: number;
+  id: number;
+  measures: Record<string, unknown>[];
+  name: string;
+  propertyState: number;
+}
