@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular';
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
-import { BuildingFile, InventoryType, ViewResponse } from '../../inventory.types';
-import { ConfigService } from '@seed/services';
-import { MatIconModule } from '@angular/material/icon';
-
+import { CommonModule } from '@angular/common'
+import type { OnInit } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { ConfigService } from '@seed/services'
+import type { InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-building-files-grid',
@@ -15,13 +15,12 @@ import { MatIconModule } from '@angular/material/icon';
     AgGridModule,
     CommonModule,
     MatIconModule,
-  ]
+  ],
 })
 export class BuildingFilesGridComponent implements OnInit {
   @Input() view: ViewResponse
   @Input() type: InventoryType
   private _configService = inject(ConfigService)
-  
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   columnDefs: ColDef[] = []
@@ -40,7 +39,7 @@ export class BuildingFilesGridComponent implements OnInit {
   setBuildingFilesGrid() {
     this.columnDefs = [
       { field: 'file_type', headerName: 'File Type' },
-      { 
+      {
         field: 'filename',
         headerName: 'File Name',
         cellRenderer: (params) => {
@@ -53,15 +52,15 @@ export class BuildingFilesGridComponent implements OnInit {
           `
         },
         cellRendererParams: {
-          onClick: (filename) => {
+          onClick: (filename: string) => {
             console.log('File clicked:', filename)
-          }
-        }
+          },
+        },
       },
       { field: 'created', headerName: 'Created' },
     ]
-    const files = this.view.state.files as BuildingFile[]
 
+    const files = this.view.state.files
     for (const { created, file_type, filename } of files) {
       this.rowData.push({ created, file_type, filename })
     }

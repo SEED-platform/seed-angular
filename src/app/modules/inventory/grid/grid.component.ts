@@ -3,8 +3,7 @@ import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
-import { map, tap } from 'rxjs'
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryPagination, InventoryType } from '../inventory.types'
@@ -45,7 +44,6 @@ export class InventoryGridComponent implements OnChanges {
   gridTheme$ = this._configService.gridTheme$
 
   theme: string
-  
 
   defaultColDef = {
     sortable: true,

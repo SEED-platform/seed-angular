@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError }
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, NewProfileData, Profile, ProfileResponse, ProfilesResponse, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -200,6 +200,33 @@ export class InventoryService {
         // errors tend to be non human readable
         this._snackBar.alert('Error updating taxlot. Check data types and try again')
         return throwError(() => error)
+      }),
+    )
+  }
+
+  uploadPropertyDocument(orgId: number, viewId: number, file: File, fileExt: PropertyDocumentExtension): Observable<unknown> {
+    const url = `/api/v3/properties/${viewId}/upload_inventory_document/?organization_id=${orgId}`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    formData.append('file_type', fileExt)
+    return this._httpClient.put<unknown>(url, formData).pipe(
+      tap(() => {
+        this._snackBar.success('Document uploaded successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error Uploading Document')
+      }),
+    )
+  }
+
+  deletePropertyDocument(orgId: number, viewId: number, file_id: string): Observable<object> {
+    const url = `/api/v3/properties/${viewId}/delete_inventory_document/?organization_id=${orgId}&file_id=${file_id}`
+    return this._httpClient.delete(url).pipe(
+      tap(() => {
+        this._snackBar.success('Document deleted successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting Document')
       }),
     )
   }

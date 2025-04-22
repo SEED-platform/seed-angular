@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { of, Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { Organization } from '@seed/api/organization'
+import { PairingService } from '@seed/api/pairing'
 import { ConfigService } from '@seed/services'
-import type { InventoryType, ViewResponse } from '../../inventory.types'
+import type { GenericRelatedInventory, InventoryType, ViewResponse } from '../../inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-paired-grid',
@@ -26,8 +27,11 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
   @Input() type: InventoryType
   @Input() view: ViewResponse
+  @Input() viewId: number
+  @Output() refreshView = new EventEmitter<null>()
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
+  private _pairingService = inject(PairingService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   gridApi: GridApi
@@ -41,6 +45,11 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
     filter: false,
     resizable: true,
     suppressMovable: true,
+  }
+
+  otherMap = {
+    properties: { other: 'taxlot', others: 'taxlots' },
+    taxlots: { other: 'property', others: 'properties' },
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -75,32 +84,48 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
       properties: { idField: 'jurisdiction_tax_lot_id', idName: 'Jurisdiction Tax Lot ID' },
     }
     const { idField, idName } = colDefMap[this.type]
+    const { other, others } = this.otherMap[this.type]
 
     this.columnDefs = [
+      { field: 'id', hide: true },
       {
         field: idField,
         headerName: idName,
         cellRenderer: ({ value }) => value as string,
       },
       { field: this.defaultColumn.column_name, headerName: this.defaultColumn.display_name },
-      { field: 'Unpair', headerName: 'Unpair' },
+      { field: 'Unpair', headerName: 'Unpair', cellRenderer: this.unpairRenderer },
     ]
-    const otherType = this.type === 'taxlots' ? 'properties' : 'taxlots'
-    this.rowData = this.data.map((item) => ({
-      [idField]: `<a href="${otherType}/${item.id}/" class="underline">${item.state[idField] as string}</a>`,
+    this.rowData = this.data.map((item: GenericRelatedInventory) => ({
+      id: (item[other] as { id: string }).id,
+      [idField]: `<a href="${others}/${item.id}/" class="underline">${item.state[idField] as string}</a>`,
       [this.defaultColumn.column_name]: item.state[this.defaultColumn.column_name],
-      Unpair: 'x',
     }))
+  }
+
+  unpairRenderer = () => {
+    return '<span class="material-icons mt-2 action-icon cursor-pointer">clear</span>'
   }
 
   get gridHeight() {
     const headerHeight = 50
-    const gridHeight = this.rowData.length * 40 + headerHeight
+    const gridHeight = this.rowData.length * 42 + headerHeight
     return Math.min(gridHeight, 500)
   }
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+  }
+
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'Unpair') return
+    const { id } = event.data as { id: number }
+    if (confirm(`Are you sure you want to unpair this ${this.otherMap[this.type].other}?`)) {
+      this._pairingService.unpairInventory(this.org.id, this.viewId, id, this.type).subscribe(() => {
+        this.refreshView.emit()
+      })
+    }
   }
 
   onFirstDataRendered(params: FirstDataRenderedEvent) {

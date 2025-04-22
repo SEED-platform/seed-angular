@@ -48,13 +48,13 @@ export type Profile = {
 
 export type NewProfileData = {
   name: string;
-  profile_location: ProfileLocation
+  profile_location: ProfileLocation;
   inventory_type: InventoryDisplayType;
   columns: Column[];
   derived_columns: Column[];
 }
 
-export type ProfileLocation = 'Detail View Profile' | 'List View Profile';
+export type ProfileLocation = 'Detail View Profile' | 'List View Profile'
 
 export type ProfileColumn = {
   column_name: string;
@@ -239,3 +239,6 @@ export type UpdateInventoryResponse = {
   status: string;
   view_id: number;
 }
+
+export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
+export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'

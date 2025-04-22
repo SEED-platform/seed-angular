@@ -12,7 +12,7 @@ import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { finalize, tap } from 'rxjs'
 import type { GenericColumn } from '@seed/api/column'
-import { type Column, ColumnService } from '@seed/api/column'
+import { type Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import type { OrganizationUserSettings } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'

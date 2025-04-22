@@ -46,19 +46,26 @@
       [org]="org"
       [type]="type"
       [view]="view"
+      [viewId]="viewId"
+      (refreshView)="onRefreshView()"
     ></seed-inventory-detail-paired-grid>
 
   }
 
+  <!-- INVENTORY DOCUMENTS -->
   @if (view?.property) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-documents-grid
       [org]="org"
       [type]="type"
-      [view]="view">
+      [view]="view"
+      [viewId]="viewId"
+      (refreshDetail)="onRefreshDetail()"
+      >
     </seed-inventory-detail-documents-grid>
   }
 
+  <!-- BUILDING FILES -->
   @if (view?.property && view?.state.files.length) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-building-files-grid
@@ -66,6 +73,8 @@
       [view]="view">
     </seed-inventory-detail-building-files-grid>
   }
+
+  <!-- SCENARIOS AND MEASURES -->
   <div class="mt-10"></div>
   <div>Scenarios and Measures</div>
 
