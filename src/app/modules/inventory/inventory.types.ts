@@ -3,6 +3,7 @@ import type { ValueGetterParams } from 'ag-grid-community'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
+import type { Scenario } from '@seed/api/scenario'
 import type { CurrentUser } from '@seed/api/user'
 
 export type InventoryType = 'properties' | 'taxlots'
@@ -185,8 +186,7 @@ type History = {
   file: string;
   filename: string;
   source: string;
-  // state needs to be typed
-  state: Record<string, unknown>;
+  state: State;
 }
 
 export type ValueGetterParamsData = ValueGetterParams<Record<string, unknown>>
@@ -242,14 +242,3 @@ export type UpdateInventoryResponse = {
 
 export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
-
-export type Scenario = {
-  [key: string]: unknown;
-  annual_electricity_savings: number;
-  annual_natural_gas_savings: number;
-  annual_peak_electricity_reduction: number;
-  id: number;
-  measures: Record<string, unknown>[];
-  name: string;
-  propertyState: number;
-}

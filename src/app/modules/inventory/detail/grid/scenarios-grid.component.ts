@@ -1,11 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
+import type { Scenario } from '@seed/api/scenario'
+import { ScenarioService } from '@seed/api/scenario/scenario.service'
 import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import type { Scenario, ViewResponse } from '../../inventory.types'
+import type { ViewResponse } from '../../inventory.types'
+
+type FieldType = 'annual_electricity_savings' | 'annual_peak_electricity_reduction' | 'annual_natural_gas_savings'
 
 @Component({
   selector: 'seed-inventory-detail-scenarios-grid',
@@ -18,19 +22,23 @@ import type { Scenario, ViewResponse } from '../../inventory.types'
   ],
 })
 export class ScenariosGridComponent implements OnChanges {
+  @Input() orgId: number
   @Input() view: ViewResponse
   @Input() viewId: number
+  @Output() refreshView = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _scenarioService = inject(ScenarioService)
   columnDefs: ColDef[] = []
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   gridOptions: GridOptions
   scenarios: Scenario[]
-  rowData: Scenario[]
+  rowDataEntries: { date: string; rawDate: number; rowData: Scenario[] }[] = []
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes)
-    this.initScenarios()
+    if (changes.view) {
+      this.initScenarios()
+    }
   }
 
   initScenarios() {
@@ -41,7 +49,7 @@ export class ScenariosGridComponent implements OnChanges {
 
   setColumnDefs() {
     this.columnDefs = [
-      { headerName: 'Actions', cellRenderer: this.actionRenderer },
+      { field: 'remove', headerName: 'Remove', cellRenderer: this.actionRenderer, width: 90 },
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Scenario' },
       {
@@ -49,34 +57,25 @@ export class ScenariosGridComponent implements OnChanges {
         headerName: 'Electricity Savings (kBtu)',
         valueGetter: this.withDefault('annual_electricity_savings'),
       },
-      { field: 'annual_peak_electricity_reduction', headerName: 'Peak Reduction (kW)', valueGetter: this.withDefault('annual_peak_electricity_reduction') },
-      { field: 'annual_natural_gas_savings', headerName: 'Gas Savings (kBTU)', valueGetter: this.withDefault('annual_natural_gas_savings') },
+      {
+        field: 'annual_peak_electricity_reduction',
+        headerName: 'Peak Reduction (kW)',
+        valueGetter: this.withDefault('annual_peak_electricity_reduction'),
+      },
+      {
+        field: 'annual_natural_gas_savings',
+        headerName: 'Gas Savings (kBTU)',
+        valueGetter: this.withDefault('annual_natural_gas_savings'),
+      },
       {
         headerName: 'Status of Measures',
-        valueGetter: ({ data }: { data: Scenario }) => `${data.measures?.length || 0} Proposed`,
+        valueGetter: ({ data }: { data: Scenario }) => `${data?.measures?.length || 0} Proposed`,
       },
     ]
     this.gridOptions = {}
-    // this.gridOptions = {
-    //   masterDetail: true,
-    //   columnDefs: this.columnDefs,
-    //   detailCellRendererParams: {
-    //     getDetailRowData: (params: { data: Scenario; successCallback: (rowData: unknown[]) => void }) => {
-    //       params.successCallback(params.data.measures)
-    //     },
-    //     detailGridOptions: {
-    //       columnDefs: [
-    //         { field: 'category', headerName: 'Category' },
-    //         { field: 'name', headerName: 'Name' },
-    //         { field: 'recommended', headerName: 'Recommended' },
-    //         { field: 'status', headerName: 'Status' },
-    //       ],
-    //     },
-    //   },
-    // }
   }
 
-  withDefault = (field: string) => {
+  withDefault = (field: FieldType) => {
     return ({ data }: { data: Scenario }) => data?.[field] ?? 'N/A'
   }
 
@@ -84,18 +83,36 @@ export class ScenariosGridComponent implements OnChanges {
     return '<span class="material-icons mt-2 action-icon cursor-pointer">clear</span>'
   }
 
+  onCellClicked(event: CellClickedEvent) {
+    console.log('click')
+    if (event.colDef.field === 'remove') {
+      const { id, name } = event.data as { id: number; name: string }
+      if (confirm(`Are you sure you want to delete scenario "${name}" ?`)) {
+        console.log('Delete function fails while in development mode, via a vite proxy error')
+        this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe()
+      }
+    }
+  }
+  // ON CELL CLICK
+
   setGrid() {
-    this.rowData = this.scenarios.map((s) => ({ ...s, expanded: false }))
+    for (const history of this.view.history) {
+      const date = new Date(history.date_edited).toLocaleString('en-US', {})
+      const entry = { date, rawDate: history.date_edited, rowData: history.state.scenarios }
+      this.rowDataEntries.push(entry)
+    }
+    this.rowDataEntries.sort((a, b) => b.rawDate - a.rawDate)
   }
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
-  get gridHeight() {
+  getGridHeight(rowData: Scenario[]) {
+    if (!rowData) return
     const headerHeight = 50
-    const gridHeight = this.rowData.length * 42 + headerHeight
-    return Math.min(gridHeight, 500)
+    const gridHeight = rowData.length * 42 + headerHeight
+    return Math.min(gridHeight, 300)
   }
 }

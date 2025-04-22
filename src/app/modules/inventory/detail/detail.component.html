@@ -79,8 +79,10 @@
    @if (view?.state.scenarios?.length) {
     <mat-divider></mat-divider>
     <seed-inventory-detail-scenarios-grid
+      [orgId]="orgId"
       [view]="view"
       [viewId]="viewId"
+      (refreshView)="onRefreshView()"
       >
     </seed-inventory-detail-scenarios-grid>
   }

@@ -7,14 +7,17 @@
   </div>
 
 
-  <ag-grid-angular
-    [columnDefs]="columnDefs"
-    [detailRowHeight]="150"
-    [rowData]="rowData"
-    [gridOptions]="gridOptions"
-    [theme]="gridTheme$ | async"
-    [style.height.px]="gridHeight"
-    (gridReady)="onGridReady($event)"
-  ></ag-grid-angular>
+  @for(entry of rowDataEntries; track $index) {
+    <div class="text-secondary ml-1">{{entry.date}}</div>
+    <ag-grid-angular
+      [columnDefs]="columnDefs"
+      [detailRowHeight]="150"
+      [rowData]="entry.rowData"
+      [gridOptions]="gridOptions"
+      [theme]="gridTheme$ | async"
+      [style.height.px]="getGridHeight(entry.rowData)"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  }
 
 </div>
