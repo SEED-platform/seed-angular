@@ -48,7 +48,6 @@ export class ScenariosGridComponent implements OnChanges {
 
   setColumnDefs() {
     this.columnDefs = [
-      { field: 'remove', headerName: 'Remove', cellRenderer: this.actionRenderer, width: 90 },
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Scenario' },
       {
@@ -71,6 +70,7 @@ export class ScenariosGridComponent implements OnChanges {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         valueGetter: ({ data }: { data: Scenario }) => `${data?.measures?.length || 0} Proposed`,
       },
+      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer, width: 90 },
     ]
   }
 
@@ -84,7 +84,7 @@ export class ScenariosGridComponent implements OnChanges {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    if (event.colDef.field === 'remove') {
+    if (event.colDef.field === 'actions') {
       const { id, name } = event.data as { id: number; name: string }
       if (confirm(`Are you sure you want to delete scenario "${name}" ?`)) {
         console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')

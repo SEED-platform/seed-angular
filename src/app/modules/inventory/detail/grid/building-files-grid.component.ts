@@ -3,7 +3,7 @@ import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from '../../inventory.types'
 
@@ -37,37 +37,51 @@ export class BuildingFilesGridComponent implements OnInit {
   }
 
   setBuildingFilesGrid() {
+    this.setColumnDefs()
+    this.setRowData()
+  }
+
+  setColumnDefs() {
     this.columnDefs = [
       { field: 'file_type', headerName: 'File Type' },
       {
         field: 'filename',
         headerName: 'File Name',
-        cellRenderer: (params) => {
-          return `
-            <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-              <span style="text-decoration: underline;">${params.value}</span>
-              <span style="margin-left: 5px;" class="ag-icon ag-icon-save">
-              </span>
-            </div>
-          `
-        },
-        cellRendererParams: {
-          onClick: (filename: string) => {
-            console.log('File clicked:', filename)
-          },
-        },
       },
       { field: 'created', headerName: 'Created' },
+      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer }
     ]
+  }
 
+  actionRenderer = () => {
+    return `
+      <div class="flex gap-2 mt-2 align-center"">
+        <span class="material-icons action-icon cursor-pointer" data-action="download">cloud_download</span>
+      </div>
+    `
+  }
+
+  setRowData() {
     const files = this.view.state.files
     for (const { created, file_type, filename } of files) {
       this.rowData.push({ created, file_type, filename })
     }
   }
 
-  onCellClicked({ data }) {
-    console.log('click', data)
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'actions') return
+    this.downloadDocument(event.data)
+  }
+
+  downloadDocument(data: unknown) {
+    const { file, filename } = data as { file: string; filename: string }
+
+    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
+    const a = document.createElement('a')
+    const url = file
+    a.href = url
+    a.download = filename
+    a.click()
   }
 
   get gridHeight() {
