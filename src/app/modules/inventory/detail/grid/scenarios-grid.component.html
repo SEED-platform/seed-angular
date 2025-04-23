@@ -13,7 +13,6 @@
       [columnDefs]="columnDefs"
       [detailRowHeight]="150"
       [rowData]="entry.rowData"
-      [gridOptions]="gridOptions"
       [theme]="gridTheme$ | async"
       [style.height.px]="getGridHeight(entry.rowData)"
       (gridReady)="onGridReady($event)"

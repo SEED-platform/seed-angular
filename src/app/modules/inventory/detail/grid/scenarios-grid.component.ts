@@ -6,7 +6,7 @@ import type { Scenario } from '@seed/api/scenario'
 import { ScenarioService } from '@seed/api/scenario/scenario.service'
 import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { ViewResponse } from '../../inventory.types'
 
 type FieldType = 'annual_electricity_savings' | 'annual_peak_electricity_reduction' | 'annual_natural_gas_savings'
@@ -31,7 +31,6 @@ export class ScenariosGridComponent implements OnChanges {
   columnDefs: ColDef[] = []
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
-  gridOptions: GridOptions
   scenarios: Scenario[]
   rowDataEntries: { date: string; rawDate: number; rowData: Scenario[] }[] = []
 
@@ -69,14 +68,15 @@ export class ScenariosGridComponent implements OnChanges {
       },
       {
         headerName: 'Status of Measures',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         valueGetter: ({ data }: { data: Scenario }) => `${data?.measures?.length || 0} Proposed`,
       },
     ]
-    this.gridOptions = {}
   }
 
   withDefault = (field: FieldType) => {
-    return ({ data }: { data: Scenario }) => data?.[field] ?? 'N/A'
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return ({ data }: { data: Scenario }): unknown => data?.[field] ?? 'N/A'
   }
 
   actionRenderer = () => {
@@ -84,11 +84,10 @@ export class ScenariosGridComponent implements OnChanges {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    console.log('click')
     if (event.colDef.field === 'remove') {
       const { id, name } = event.data as { id: number; name: string }
       if (confirm(`Are you sure you want to delete scenario "${name}" ?`)) {
-        console.log('Delete function fails while in development mode, via a vite proxy error')
+        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
         this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe()
       }
     }
@@ -106,6 +105,7 @@ export class ScenariosGridComponent implements OnChanges {
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 

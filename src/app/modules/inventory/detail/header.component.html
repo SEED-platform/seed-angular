@@ -31,15 +31,17 @@
     </div>
 
     <!-- Profiles -->
-    <div class="m-1 flex flex-row gap-4">
-      <mat-label class="text-sm text-gray-400 w-15">Profile</mat-label>
-      <mat-select class="h-8 w-60 rounded border border-gray-500 p-3 text-sm" placeholder="(no profiles)"
-        [value]="currentProfile.id" (selectionChange)="onChangeProfile($event.value)">
-        @for (item of profiles; track $index) {
-        <mat-option class="!h-3 text-sm" [value]="item.id">{{ item.name }}</mat-option>
-        }
-      </mat-select>
-    </div>
+     @if (profiles && profiles.length) {
+       <div class="m-1 flex flex-row gap-4">
+         <mat-label class="text-sm text-gray-400 w-15">Profile</mat-label>
+         <mat-select class="h-8 w-60 rounded border border-gray-500 p-3 text-sm" placeholder="(no profiles)"
+           [value]="currentProfile.id" (selectionChange)="onChangeProfile($event.value)">
+           @for (item of profiles; track $index) {
+           <mat-option class="!h-3 text-sm" [value]="item.id">{{ item.name }}</mat-option>
+           }
+         </mat-select>
+       </div>
+     }
 
     <!-- Labels -->
     @if (labels && labels.length) {

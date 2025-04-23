@@ -11,7 +11,6 @@
 <div class="m-5 max-h-[75vh-300px] overflow-y-auto p-5">
 
   @if (preSave) {
-    
     <form [formGroup]="form">
       <table class="table-auto w-full border-collapse">
         <tbody>
@@ -22,7 +21,7 @@
               <input 
                 [formControlName]="column" 
                 class="border border-gray-500 rounded-full px-4 py-1 w-full" 
-                [class.border-blue-300]="changedFields.has(column)"
+                [class.border-blue-400]="changedFields.has(column)"
               />
             </td>
           </tr>
