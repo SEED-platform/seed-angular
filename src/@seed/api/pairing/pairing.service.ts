@@ -1,10 +1,11 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import type { Observable } from 'rxjs'
+import { catchError, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { catchError, type Observable, tap } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
 export class PairingService {

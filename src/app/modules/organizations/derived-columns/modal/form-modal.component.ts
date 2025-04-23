@@ -14,8 +14,8 @@ import { ColumnService } from '@seed/api/column'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
 import { SEEDValidators } from '@seed/validators'
+import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 import { DerivedColumnsValidator } from '../derived-columns.validator'
-import { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',

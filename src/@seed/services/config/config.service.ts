@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core'
-import { colorSchemeDarkBlue, colorSchemeLight, themeAlpine, type Theme } from 'ag-grid-community'
+import { colorSchemeDarkBlue, colorSchemeLight, type Theme, themeAlpine } from 'ag-grid-community'
 import { BehaviorSubject, map, type Observable } from 'rxjs'
 import { SEED_CONFIG } from './config.constants'
 import type { SEEDConfig } from './config.types'

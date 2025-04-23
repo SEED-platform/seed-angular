@@ -1,4 +1,4 @@
-import { InventoryDisplayType } from "app/modules/inventory/inventory.types";
+import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 
 export type DerivedColumn = {
   expression: string;

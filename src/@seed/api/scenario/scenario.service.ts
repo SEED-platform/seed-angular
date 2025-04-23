@@ -1,9 +1,10 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import type { Observable } from 'rxjs'
+import { catchError, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { catchError, type Observable, tap } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
 export class ScenarioService {

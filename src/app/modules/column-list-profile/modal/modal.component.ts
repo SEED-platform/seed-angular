@@ -7,11 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBar } from '@angular/material/progress-bar'
+import { finalize, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation } from 'app/modules/inventory/inventory.types'
-import { finalize, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-column-list-profile-modal',

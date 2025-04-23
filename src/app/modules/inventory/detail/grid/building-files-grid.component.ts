@@ -49,7 +49,7 @@ export class BuildingFilesGridComponent implements OnInit {
         headerName: 'File Name',
       },
       { field: 'created', headerName: 'Created' },
-      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer }
+      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
   }
 
