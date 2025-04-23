@@ -125,8 +125,7 @@ export type GenericRelatedInventory = {
   cycle: Cycle;
   id: number;
   labels: number[];
-  // state needs to be typed
-  state: Record<string, unknown>;
+  state: State;
   taxlot?: TaxLot;
   property?: Property;
 }
@@ -174,7 +173,6 @@ export type ViewResponse = {
   property?: Property;
   properties?: GenericRelatedInventory[];
   source: unknown;
-  // state needs to be typed
   state: State;
   status: string;
   taxlot?: TaxLot;

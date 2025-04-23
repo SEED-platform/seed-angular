@@ -51,12 +51,6 @@ export class ModalComponent {
   }
   errorMessage = false
   inProgress = false
-  // headerTextMap = {
-  //   create: 'Create Column List Profile?',
-  //   delete: 'Delete Column List Profile?',
-  //   rename: 'Rename Column List Profile?',
-  //   populate: 'Only Show Populated Columns?',
-  // }
 
   get createMode() {
     const populateCreate = this.data.mode === 'populate' && !this.data.profile

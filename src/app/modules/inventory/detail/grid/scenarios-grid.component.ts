@@ -92,7 +92,6 @@ export class ScenariosGridComponent implements OnChanges {
       }
     }
   }
-  // ON CELL CLICK
 
   setGrid() {
     for (const history of this.view.history) {
