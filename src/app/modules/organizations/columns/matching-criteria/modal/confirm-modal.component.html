@@ -1,0 +1,27 @@
+<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>Confirm Changes</h2>
+
+<div class="mb-4 mt-4">
+  @if (inProgress) {
+    <mat-progress-bar [value]="progressBarObj.progress" mode="determinate"></mat-progress-bar>
+  }
+  @if (errorMessage) {
+    <seed-alert type="error">{{ errorMessage }}</seed-alert>
+  }
+  @if (!inProgress) {
+    <h3>Changing Columns</h3>
+    <ul>
+      @for (c of data.columns; track c.id) {
+        <li>{{ c.display_name }} is being {{ c.is_matching_criteria ? 'removed from' : 'added to' }} matching criteria for import</li>
+      }
+    </ul>
+  }
+</div>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button [disabled]="errorMessage" (click)="onSubmit()" mat-raised-button color="warn">Confirm Changes</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+  </mat-dialog-actions>
+</div>
