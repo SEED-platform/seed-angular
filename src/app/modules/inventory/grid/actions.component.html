@@ -2,9 +2,9 @@
   <mat-label class="text-sm text-gray-400">Actions</mat-label>
   <mat-select
     class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
-    panelClass="fit-content-select"
     #actionSelect
     (selectionChange)="onAction($event.value.action, actionSelect)"
+    panelClass="fit-content-select"
     placeholder="Select Action"
   >
     @for (item of actions; track $index) {

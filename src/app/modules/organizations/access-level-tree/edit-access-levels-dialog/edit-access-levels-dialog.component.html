@@ -51,7 +51,6 @@
             [disabled]="submitted"
             (keydown.enter)="newLevelInput.value.trim() !== '' && addLevel(newLevelInput.value); newLevelInput.value = ''"
           />
-
         </div>
         @if (levelsRemoved) {
           @let instancesRemoved = instancesToBeRemoved();
