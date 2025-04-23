@@ -10,4 +10,5 @@ export type Config = {
   breadcrumbs?: string[];
   title: string;
   titleIcon?: string;
+  sideNavToggle?: boolean;
 }

@@ -1,8 +1,12 @@
-import { Component, ViewEncapsulation } from '@angular/core'
+import type { AfterViewInit} from '@angular/core';
+import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
+import type { MatDrawer} from '@angular/material/sidenav';
 import { MatSidenavModule } from '@angular/material/sidenav'
+import { MatToolbarModule } from '@angular/material/toolbar'
 import { RouterOutlet } from '@angular/router'
 import type { NavigationItem } from '@seed/components'
-import { VerticalNavigationComponent } from '@seed/components'
+import { DrawerService, VerticalNavigationComponent } from '@seed/components'
 import { ScrollResetDirective } from '@seed/directives'
 
 @Component({
@@ -10,9 +14,19 @@ import { ScrollResetDirective } from '@seed/directives'
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [MatSidenavModule, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
+  imports: [
+    MatIconModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterOutlet,
+    ScrollResetDirective,
+    VerticalNavigationComponent,
+  ],
 })
-export class SettingsComponent {
+export class SettingsComponent implements AfterViewInit {
+  @ViewChild('drawer') drawer!: MatDrawer
+  private _drawerService = inject(DrawerService)
+
   readonly settingsNavigationMenu: NavigationItem[] = [
     {
       id: 'organizations/settings',
@@ -88,4 +102,8 @@ export class SettingsComponent {
       ],
     },
   ]
+
+  ngAfterViewInit() {
+    this._drawerService.setDrawer(this.drawer)
+  }
 }
