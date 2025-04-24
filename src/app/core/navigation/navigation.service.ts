@@ -10,14 +10,38 @@ export class NavigationService {
 
   private _badgeClasses = 'px-2 bg-primary-900 rounded-full'
 
-  readonly navigation: NavigationItem[] = [
+  // {
+  //   id: 'inventory',
+  //   title: 'Inventory',
+  //   type: 'basic',
+  //   icon: 'fa-solid:building',
+  //   link: '/properties',
+  //   regexMatch: /^\/(properties|taxlots)/,
+  // },
+  navigation: NavigationItem[] = [
     {
       id: 'inventory',
       title: 'Inventory',
-      type: 'basic',
+      type: 'collapsible',
       icon: 'fa-solid:building',
-      link: '/properties',
       regexMatch: /^\/(properties|taxlots)/,
+      children: [
+        {
+          id: 'properties',
+          link: '/properties',
+          title: 'Properties',
+          icon: 'fa-solid:building',
+          type: 'basic',
+        },
+        {
+          id: 'taxlots',
+          link: '/taxlots',
+          title: 'Tax Lots',
+          icon: 'fa-solid:map-location-dot',
+          type: 'basic',
+        },
+
+      ],
     },
     {
       id: 'data',
