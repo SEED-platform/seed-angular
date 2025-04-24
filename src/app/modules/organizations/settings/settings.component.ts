@@ -1,7 +1,7 @@
-import type { AfterViewInit} from '@angular/core';
+import type { AfterViewInit } from '@angular/core'
 import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
-import type { MatDrawer} from '@angular/material/sidenav';
+import type { MatDrawer } from '@angular/material/sidenav'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { RouterOutlet } from '@angular/router'

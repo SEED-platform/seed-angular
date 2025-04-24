@@ -3,7 +3,7 @@
     class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
     >
     <div class="min-w-0 flex-1">
-      <div class="flex" [class]="config.sideNavToggle ? '-mt-3' : ''">
+      <div class="flex" [class]="config.sideNavToggle ? '-mt-3 -ml-10' : ''">
         @if (config.sideNavToggle) {
           <button mat-icon-button (click)="toggleDrawer()">
             <mat-icon>menu</mat-icon>
