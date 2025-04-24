@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common'
-import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
+import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
-import { map, tap } from 'rxjs'
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryPagination } from '../inventory.types'
+import type { FiltersSorts, InventoryPagination, InventoryType } from '../inventory.types'
 // import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
@@ -24,12 +23,14 @@ ModuleRegistry.registerModules([AllCommunityModule])
     InventoryGridControlsComponent,
   ],
 })
-export class InventoryGridComponent implements OnInit, OnChanges {
+export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
+  @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
   @Input() pagination!: InventoryPagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
+  @Input() type: InventoryType
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
@@ -40,7 +41,8 @@ export class InventoryGridComponent implements OnInit, OnChanges {
   agPageSize = 100
   gridApi!: GridApi
   darkMode: boolean
-  gridTheme = themeAlpine.withPart(colorSchemeLight)
+  gridTheme$ = this._configService.gridTheme$
+
   theme: string
 
   defaultColDef = {
@@ -62,20 +64,6 @@ export class InventoryGridComponent implements OnInit, OnChanges {
       'even-row': (params) => params.node.rowIndex % 2 === 0,
     },
     onSelectionChanged: () => { this.onSelectionChanged() },
-  }
-
-  ngOnInit() {
-    this._configService.config$.pipe(
-      map(({ scheme }) => {
-        return scheme === 'auto'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-          : scheme
-      }),
-      tap((theme) => {
-        this.gridTheme = themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)
-        this.theme = theme
-      }),
-    ).subscribe()
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -128,20 +116,19 @@ export class InventoryGridComponent implements OnInit, OnChanges {
   }
 
   buildInfoCell() {
+    const field = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
     return {
-      field: 'id',
+      field,
       headerName: 'Info',
       filter: false,
       sortable: false,
       width: 60,
       cellRenderer: ({ value }) => {
-        const eGui = document.createElement('span')
+        const eGui = document.createElement('a')
+        eGui.href = `/${this.inventoryType}/${value}`
+        eGui.textContent = 'i'
         eGui.className = 'cursor-pointer truncate border border-gray-400 dark:border-white'
         eGui.style.cssText = 'border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
-        eGui.textContent = 'i'
-        eGui.onclick = () => {
-          console.log('/details/', value)
-        }
         return eGui
       },
     }

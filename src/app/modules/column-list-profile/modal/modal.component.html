@@ -1,0 +1,57 @@
+<!-- header -->
+<div class="ml-4 mt-4 flex gap-4" mat-dialog-title>
+  <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
+  <div class="text-2xl font-medium leading-6">
+    @if (populateMode) {
+      Only Show Populated Data?
+    }
+    @if (createMode) {
+      Create Column List Profile?
+    }
+  </div>
+</div>
+<mat-divider></mat-divider>
+
+<!-- content -->
+@if (inProgress) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+@if (populateMode) {
+  <div class="mx-4 my-10 flex justify-evenly">
+    This will reset your visible columns and column order to show only columns that contain data. Are you sure you want to continue?
+  </div>
+}
+
+@if (createMode) {
+  <div class="m-4">
+    <form class="flex flex-col gap-4" [formGroup]="form">
+      <mat-form-field class="w-full">
+        <mat-label>Profile Name</mat-label>
+        <input matInput formControlName="name" placeholder="Profile Name" />
+      </mat-form-field>
+    </form>
+  </div>
+}
+
+<mat-divider></mat-divider>
+@if (populateMode) {
+  <div class="flex justify-end">
+    <mat-dialog-actions>
+      <button (click)="onPopulated()" mat-stroked-button>Start</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+    </mat-dialog-actions>
+  </div>
+}
+
+@if (createMode) {
+  <div class="flex justify-end">
+    <mat-dialog-actions>
+      <button [disabled]="form.invalid" (click)="onCreate()" mat-stroked-button>Create</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions>
+      <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+    </mat-dialog-actions>
+  </div>
+}

@@ -6,6 +6,7 @@ import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { UserService } from '../user'
 import type { Label } from './label.types'
 
@@ -38,6 +39,46 @@ export class LabelService {
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching organization')
+      }),
+    )
+  }
+
+  /*
+  * Get inventory labels for a list of views
+  */
+  getInventoryLabels(orgId: number, viewIds: number[], cycleId: number, inventoryType: InventoryType): Observable<Label[]> {
+    return inventoryType === 'taxlots'
+      ? this.getTaxLotLabels(orgId, viewIds, cycleId)
+      : this.getPropertyLabels(orgId, viewIds, cycleId)
+  }
+
+  getPropertyLabels(orgId: number, viewIds: number[], cycleId: number): Observable<Label[]> {
+    const url = '/api/v3/properties/labels/'
+    const data = { selected: viewIds }
+    const params = { organization_id: orgId, cycle_id: cycleId }
+    return this._httpClient.post<Label[]>(url, data, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching labels: ${error.message}`)
+      }),
+    )
+  }
+
+  getTaxLotLabels(orgId: number, viewIds: number[], cycleId: number): Observable<Label[]> {
+    const url = '/api/v3/properties/labels/'
+    const data = { selected: viewIds }
+    const params = { organization_id: orgId, cycle_id: cycleId }
+    return this._httpClient.post<Label[]>(url, data, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching labels: ${error.message}`)
+      }),
+    )
+  }
+
+  get(orgId: number, id: number): Observable<Label> {
+    const url = `/api/v3/labels/${id}/?organization_id=${orgId}`
+    return this._httpClient.get<Label>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching label: ${error.message}`)
       }),
     )
   }

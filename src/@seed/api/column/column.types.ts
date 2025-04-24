@@ -41,3 +41,9 @@ export type ColumnsResponse = {
   status: string;
   columns: Column[];
 }
+
+export type GenericColumn = {
+  [key: string]: unknown;
+  display_name: string;
+  column_name: string;
+}

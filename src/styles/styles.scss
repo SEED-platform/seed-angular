@@ -141,3 +141,15 @@
 .mat-mdc-chip-action-label {
   @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
 }
+
+.fit-content-select.mat-mdc-select-panel {
+  min-height: fit-content !important;
+}
+
+.dark {
+  .mat-mdc-option-active{
+    .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
+      color: lightblue !important;
+    }
+  }
+}

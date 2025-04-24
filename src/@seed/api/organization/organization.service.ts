@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs'
 import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { naturalSort } from '../../utils'
 import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
@@ -18,6 +19,7 @@ import type {
   CreateAccessLevelInstanceRequest,
   EditAccessLevelInstanceRequest,
   EditAccessLevelInstanceResponse,
+  MatchingCriteriaColumnsResponse,
   Organization,
   OrganizationResponse,
   OrganizationSettings,
@@ -266,6 +268,20 @@ export class OrganizationService {
     return this._httpClient.post(url, {}).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error resetting passwords')
+      }),
+    )
+  }
+
+  getMatchingCriteriaColumns(orgId: number, inventoryType: InventoryType | null = null): Observable<MatchingCriteriaColumnsResponse | string[]> {
+    const url = `/api/v3/organizations/${orgId}/matching_criteria_columns/`
+    return this._httpClient.get<MatchingCriteriaColumnsResponse>(url).pipe(
+      map((response) => {
+        if (inventoryType === 'properties') return response.PropertyState
+        if (inventoryType === 'taxlots') return response.TaxLotState
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching matching columns')
       }),
     )
   }
