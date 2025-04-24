@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 import { DatasetService } from '@seed/api/dataset'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
@@ -7,6 +8,8 @@ import { SeedNavigationService } from '@seed/components'
 export class NavigationService {
   private _datasetService = inject(DatasetService)
   private _seedNavigationService = inject(SeedNavigationService)
+  private _router = inject(Router)
+  private _route = inject(ActivatedRoute)
 
   private _badgeClasses = 'px-2 bg-primary-900 rounded-full'
 
@@ -214,6 +217,13 @@ export class NavigationService {
         this.updateBadge('data', 'mainNavigation', count)
       })
     })
+  }
+
+  getNavigation(): NavigationItem[] {
+    const currentUrl = this._router.url
+    console.log('Current URL:', currentUrl)
+    console.log('snapshot', this._route.snapshot)
+    return this.navigation
   }
 
   updateBadge(itemId: string, navigationName: string, title: string | number) {
