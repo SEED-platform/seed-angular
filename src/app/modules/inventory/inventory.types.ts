@@ -1,5 +1,4 @@
-import type { ColDef } from 'ag-grid-community'
-import type { ValueGetterParams } from 'ag-grid-community'
+import type { ColDef, ValueGetterParams } from 'ag-grid-community'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
