@@ -4,6 +4,17 @@
   }">
 </seed-page>
 
-<div class="m-10">
-  CONTENT
+<div class="m-5 flex flex-col gap-4">
+
+  @if (rowData.length) {
+    <ag-grid-angular
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [gridOptions]="gridOptions"
+      [rowData]="rowData"
+      [style.height.px]="gridHeight"
+      [theme]="gridTheme$ | async"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+  }
 </div>

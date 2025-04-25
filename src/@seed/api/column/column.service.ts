@@ -32,8 +32,14 @@ export class ColumnService {
   getPropertyColumns(organizationId: number): Observable<Column[]> {
     const url = `/api/v3/columns/?inventory_type=property&display_units=true&organization_id=${organizationId}`
     return this._httpClient.get<ColumnsResponse>(url).pipe(
+      // Why were the related fields filtered ? should be done in components to preserve the api response
+      // map((cr) => {
+      //   const cols = cr.columns.filter((c) => c.table_name === 'PropertyState')
+      //   this._propertyColumns.next(cols)
+      //   return cols
+      // }),
       map((cr) => {
-        const cols = cr.columns.filter((c) => c.table_name === 'PropertyState')
+        const cols = cr.columns
         this._propertyColumns.next(cols)
         return cols
       }),
@@ -47,11 +53,12 @@ export class ColumnService {
   getTaxLotColumns(organizationId: number): Observable<Column[]> {
     const url = `/api/v3/columns/?inventory_type=taxlot&display_units=true&organization_id=${organizationId}`
     return this._httpClient.get<ColumnsResponse>(url).pipe(
-      map((cr) => {
-        const cols = cr.columns.filter((c) => c.table_name === 'TaxLotState')
-        this._taxLotColumns.next(cols)
-        return cols
-      }),
+      map((response) => response.columns),
+      // map((cr) => {
+      //   const cols = cr.columns.filter((c) => c.table_name === 'TaxLotState')
+      //   this._taxLotColumns.next(cols)
+      //   return cols
+      // }),
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching columns')
