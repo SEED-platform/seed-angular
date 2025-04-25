@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatTableModule } from '@angular/material/table'
 import type { Column } from '@seed/api/column'
 import { naturalSort } from '@seed/utils'
-import type { InventoryType, ViewResponse } from '../../inventory.types'
+import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-edit-state',

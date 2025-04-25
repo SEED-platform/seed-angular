@@ -13,14 +13,39 @@ export class NavigationService {
 
   private _badgeClasses = 'px-2 bg-primary-900 rounded-full'
 
-  // {
-  //   id: 'inventory',
-  //   title: 'Inventory',
-  //   type: 'basic',
-  //   icon: 'fa-solid:building',
-  //   link: '/properties',
-  //   regexMatch: /^\/(properties|taxlots)/,
-  // },
+  inventoryChildrenProperties: NavigationItem[] = [
+    {
+      id: 'properties',
+      link: '/properties',
+      title: 'Properties',
+      icon: 'fa-solid:building',
+      type: 'basic',
+    },
+    {
+      id: 'notes',
+      link: '/properties/notes',
+      title: 'Property Notes',
+      icon: 'fa-solid:note-sticky',
+      type: 'basic',
+    },
+  ]
+  inventoryChildrenTaxlots: NavigationItem[] = [
+    {
+      id: 'taxlots',
+      link: '/taxlots',
+      title: 'Tax Lots',
+      icon: 'fa-solid:building',
+      type: 'basic',
+    },
+    {
+      id: 'notes',
+      link: '/taxlots/notes',
+      title: 'Tax Lot Notes',
+      icon: 'fa-solid:note-sticky',
+      type: 'basic',
+    },
+  ]
+
   navigation: NavigationItem[] = [
     {
       id: 'inventory',
@@ -28,23 +53,7 @@ export class NavigationService {
       type: 'collapsible',
       icon: 'fa-solid:building',
       regexMatch: /^\/(properties|taxlots)/,
-      children: [
-        {
-          id: 'properties',
-          link: '/properties',
-          title: 'Properties',
-          icon: 'fa-solid:building',
-          type: 'basic',
-        },
-        {
-          id: 'taxlots',
-          link: '/taxlots',
-          title: 'Tax Lots',
-          icon: 'fa-solid:map-location-dot',
-          type: 'basic',
-        },
-
-      ],
+      children: this.inventoryChildrenProperties,
     },
     {
       id: 'data',
@@ -221,8 +230,11 @@ export class NavigationService {
 
   getNavigation(): NavigationItem[] {
     const currentUrl = this._router.url
-    console.log('Current URL:', currentUrl)
-    console.log('snapshot', this._route.snapshot)
+    if (currentUrl.toLowerCase().startsWith('/properties')) {
+      this.navigation[0].children = this.inventoryChildrenProperties
+    } else if (currentUrl.toLowerCase().startsWith('/taxlots')) {
+      this.navigation[0].children = this.inventoryChildrenTaxlots
+    }
     return this.navigation
   }
 

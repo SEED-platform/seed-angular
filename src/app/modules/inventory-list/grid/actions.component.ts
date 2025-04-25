@@ -7,7 +7,7 @@ import type { GridApi } from 'ag-grid-community'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
-import type { InventoryType, Profile } from '../inventory.types'
+import type { InventoryType, Profile } from '../../inventory/inventory.types'
 import { DeleteModalComponent, MoreActionsModalComponent } from '../modal'
 
 @Component({

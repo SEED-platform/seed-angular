@@ -1,8 +1,8 @@
 import { inject } from '@angular/core'
 import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/router'
 import { Router } from '@angular/router'
-import { InventoryComponent } from 'app/modules/inventory/list/inventory.component'
-import { DetailComponent } from './detail/detail.component'
+import { DetailComponent } from 'app/modules/inventory-detail/detail.component'
+import { InventoryComponent } from 'app/modules/inventory-list/list/inventory.component'
 import type { InventoryType } from './inventory.types'
 
 type InventoryParam = {
@@ -25,6 +25,7 @@ export default [
   {
     path: ':id',
     title: (route) => {
+      console.log('id route', route)
       const type = (route.params as InventoryParam).type
       return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
     },

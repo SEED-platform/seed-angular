@@ -6,7 +6,7 @@ import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from '
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryPagination, InventoryType } from '../inventory.types'
+import type { FiltersSorts, InventoryPagination, InventoryType } from '../../inventory/inventory.types'
 // import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 

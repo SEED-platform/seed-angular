@@ -3,8 +3,8 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
-import { RouterLink, RouterOutlet } from '@angular/router'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router'
+import { filter, Subject, takeUntil, tap } from 'rxjs'
 import { VersionService } from '@seed/api/version'
 import type { NavigationItem } from '@seed/components'
 import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
@@ -12,6 +12,7 @@ import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
 import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
 import { UserComponent } from 'app/layout/common/user/user.component'
+import { type InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'layout-main',
@@ -34,6 +35,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
   private _versionService = inject(VersionService)
+  private _router = inject(Router)
+  private _route = inject(ActivatedRoute)
 
   isScreenSmall: boolean
   navigation: NavigationItem[]
@@ -41,9 +44,17 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   version: string
   sha: string
+  type: InventoryType
 
   ngOnInit(): void {
     this.navigation = this._navigationService.navigation
+
+    this._router.events.pipe(
+      filter((event) => event instanceof (NavigationEnd)),
+      tap(() => {
+        this.navigation = this._navigationService.getNavigation()
+      }),
+    ).subscribe()
 
     // Subscribe to media changes
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {

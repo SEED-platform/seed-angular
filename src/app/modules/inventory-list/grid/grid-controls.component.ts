@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import type { InventoryPagination } from '../inventory.types'
+import type { InventoryPagination } from '../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-controls',

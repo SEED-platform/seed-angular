@@ -4,9 +4,6 @@ import { Component, inject } from '@angular/core'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { Observable } from 'rxjs'
-import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -18,7 +15,10 @@ import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { GenericView, InventoryType, Profile, ViewResponse } from '../inventory.types'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { GenericView, InventoryType, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { Observable } from 'rxjs'
+import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import {
   BuildingFilesGridComponent,
   DocumentsGridComponent,
@@ -76,6 +76,7 @@ export class DetailComponent implements OnDestroy, OnInit {
   pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
 
   ngOnInit(): void {
+    console.log('init')
     this.initDetail()
   }
 

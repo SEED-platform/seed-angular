@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { InventoryService } from '@seed/api/inventory'
-import type { PropertyDocumentExtension, PropertyDocumentType } from '../../inventory.types'
+import type { PropertyDocumentExtension, PropertyDocumentType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-detail-document-upload',
