@@ -2,19 +2,19 @@ import { inject } from '@angular/core'
 import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/router'
 import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
-import { InventoryComponent } from 'app/modules/inventory-list/list/inventory.component'
+import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
 import type { InventoryType } from './inventory.types'
 
-type InventoryParam = {
+type NewType = {
   type: InventoryType;
 }
 
-// guards against invalid view ids
+type InventoryParam = NewType
 const integerId: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const router = inject(Router)
   const id = Number(route.params.id)
   if (!Number.isInteger(id)) {
-    void router.navigateByUrl('/dashboard')
+    void router.navigateByUrl('/data')
     return false
   }
   return true
@@ -23,9 +23,23 @@ const integerId: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 export default [
   // Place new routes like /settings before :id
   {
+    path: 'groups',
+    title: 'Groups',
+    component: GroupsComponent,
+  },
+  {
+    path: 'column-list-profiles',
+    title: 'Column Profiles',
+    component: ColumnListProfilesComponent,
+  },
+  {
+    path: 'map',
+    title: 'Map',
+    component: MapComponent,
+  },
+  {
     path: ':id',
     title: (route) => {
-      console.log('id route', route)
       const type = (route.params as InventoryParam).type
       return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
     },

@@ -20,13 +20,31 @@ export class NavigationService {
       title: 'Properties',
       icon: 'fa-solid:building',
       type: 'basic',
+      exactMatch: true,
     },
     {
-      id: 'notes',
-      link: '/properties/notes',
-      title: 'Property Notes',
-      icon: 'fa-solid:note-sticky',
+      id: 'properties/column-list-profiles',
+      link: '/properties/column-list-profiles',
+      title: 'Column Profiles',
+      icon: 'fa-solid:sliders',
       type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/groups',
+      link: '/properties/groups',
+      title: 'Groups',
+      icon: 'fa-solid:sitemap',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/map',
+      link: '/properties/map',
+      title: 'Map',
+      icon: 'fa-solid:map-location-dot',
+      type: 'basic',
+      exactMatch: true,
     },
   ]
   inventoryChildrenTaxlots: NavigationItem[] = [
@@ -36,13 +54,23 @@ export class NavigationService {
       title: 'Tax Lots',
       icon: 'fa-solid:building',
       type: 'basic',
+      exactMatch: true,
     },
     {
-      id: 'notes',
-      link: '/taxlots/notes',
-      title: 'Tax Lot Notes',
-      icon: 'fa-solid:note-sticky',
+      id: 'taxlots/column-list-profiles',
+      link: '/taxlots/column-list-profiles',
+      title: 'Column Profiles',
+      icon: 'fa-solid:sliders',
       type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'taxlots/map',
+      link: '/taxlots/map',
+      title: 'Map',
+      icon: 'fa-solid:map-location-dot',
+      type: 'basic',
+      exactMatch: true,
     },
   ]
 
@@ -52,7 +80,7 @@ export class NavigationService {
       title: 'Inventory',
       type: 'collapsible',
       icon: 'fa-solid:building',
-      regexMatch: /^\/(properties|taxlots)/,
+      // regexMatch: /^\/(properties|taxlots)/,
       children: this.inventoryChildrenProperties,
     },
     {
@@ -226,6 +254,7 @@ export class NavigationService {
         this.updateBadge('data', 'mainNavigation', count)
       })
     })
+    this.getNavigation()
   }
 
   getNavigation(): NavigationItem[] {
