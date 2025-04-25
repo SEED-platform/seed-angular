@@ -5,7 +5,7 @@ import { MatChipsModule } from '@angular/material/chips'
 import { MatIconModule } from '@angular/material/icon'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { OrganizationUserSettings } from '@seed/api/organization'
-import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../inventory/inventory.types'
+import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',

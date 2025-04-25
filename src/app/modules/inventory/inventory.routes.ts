@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/router'
 import { Router } from '@angular/router'
-import { DetailComponent } from 'app/modules/inventory-detail/detail.component'
+import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { InventoryComponent } from 'app/modules/inventory-list/list/inventory.component'
 import type { InventoryType } from './inventory.types'
 

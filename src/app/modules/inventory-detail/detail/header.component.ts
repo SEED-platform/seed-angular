@@ -14,7 +14,7 @@ import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
-import { ModalComponent } from '../column-list-profile/modal/modal.component'
+import { ModalComponent } from '../../column-list-profile/modal/modal.component'
 import { MapComponent } from './map.component'
 
 @Component({
