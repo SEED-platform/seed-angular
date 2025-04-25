@@ -6,7 +6,7 @@ import { LuxonDateAdapter } from '@angular/material-luxon-adapter'
 import { Title } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import type { RouterStateSnapshot } from '@angular/router'
-import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router'
+import { provideRouter, TitleStrategy, UrlSerializer, withInMemoryScrolling, withRouterConfig } from '@angular/router'
 import { provideTransloco, TranslocoService } from '@jsverse/transloco'
 import { firstValueFrom } from 'rxjs'
 import { provideSEED } from '@seed'
@@ -14,6 +14,7 @@ import { appRoutes } from 'app/app.routes'
 import { provideAuth } from 'app/core/auth/auth.provider'
 import { provideIcons } from 'app/core/icons/icons.provider'
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader'
+import { LowerCaseUrlSerializer } from '@seed/routing/url.serializer'
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
@@ -34,6 +35,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
       withRouterConfig({ onSameUrlNavigation: 'reload' }),
     ),
+    { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
     { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },
     { provide: DateAdapter, useClass: LuxonDateAdapter },
     {
