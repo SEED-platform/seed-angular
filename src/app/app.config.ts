@@ -10,11 +10,11 @@ import { provideRouter, TitleStrategy, UrlSerializer, withInMemoryScrolling, wit
 import { provideTransloco, TranslocoService } from '@jsverse/transloco'
 import { firstValueFrom } from 'rxjs'
 import { provideSEED } from '@seed'
+import { LowerCaseUrlSerializer } from '@seed/routing/url.serializer'
 import { appRoutes } from 'app/app.routes'
 import { provideAuth } from 'app/core/auth/auth.provider'
 import { provideIcons } from 'app/core/icons/icons.provider'
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader'
-import { LowerCaseUrlSerializer } from '@seed/routing/url.serializer'
 
 @Injectable({ providedIn: 'root' })
 export class TemplatePageTitleStrategy extends TitleStrategy {
