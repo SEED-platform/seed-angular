@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
 import { ActivatedRoute } from '@angular/router'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
+import { combineLatest, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -11,10 +15,8 @@ import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
 import type { InventoryType, Profile } from 'app/modules/inventory/inventory.types'
-import { combineLatest, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-inventory-list-profiles',
@@ -24,6 +26,7 @@ import { combineLatest, forkJoin, of, Subject, switchMap, take, takeUntil, tap }
     AgGridModule,
     CommonModule,
     PageComponent,
+    MatButtonModule,
   ],
 })
 export class ColumnListProfilesComponent implements OnDestroy, OnInit {
@@ -54,13 +57,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
-    // pinnedTopRowData: [
-    //   { column_name: 'City'}
-    // ],
-    rowClassRules: {
-      'even-row': (params) => params.node.rowIndex % 2 === 0,
-    },
-    onSelectionChanged: () => { this.onSelectionChanged() },
     onRowSelected: (event) => { this.onRowSelected(event) },
   }
 
@@ -95,7 +91,8 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap(([columns, currentUser, profiles]) => {
         this.columns = columns
         this.currentUser = currentUser
-        this.profiles = profiles
+        const inventoryType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
+        this.profiles = profiles.filter((p) => p.inventory_type === inventoryType)
         this.setProfile()
       }),
     )
@@ -109,8 +106,10 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
     this.userSettings.profile.detail[this.type] = this.currentProfile?.id
+    // this.updateOrgUserSettings().subscribe()
   }
 
+  // NOT USED YET - maybe need to pass id and settings as args
   updateOrgUserSettings() {
     const { org_user_id, settings } = this.currentUser
     return this._organizationService.updateOrganizationUser(org_user_id, this.orgId, settings)
@@ -118,81 +117,75 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   setGrid() {
     this.setColumnDefs()
-    this.setRowData()
+    const selectedColIds = new Set(this.currentProfile.columns.map((c) => c.id))
+    console.log('setGrid')
+    this.setRowData(selectedColIds)
   }
 
   setColumnDefs() {
     this.columnDefs = [
       { field: 'id', hide: true },
-      // { field: 'pin', cellRenderer: this.pinRenderer, width: 5 },
-      { field: 'column_name', headerName: 'Column Name' },
+      { field: 'display_name', headerName: 'Column Name' },
     ]
   }
 
-  pinRenderer = () => {
-    return `
-      <span 
-        style="opacity: 0.4"
-        class="material-icons-outlined action-icon cursor-pointer"
-      >
-        push_pin
-      </span>
-    `
-  }
-  setRowData() {
-    const profileColumnNames = new Set(this.currentProfile.columns.map((c) => c.column_name))
-    console.log('setGrid')
+  // pinRenderer = () => {
+  //   return `
+  //     <span 
+  //       style="opacity: 0.4"
+  //       class="material-icons-outlined action-icon cursor-pointer"
+  //     >
+  //       push_pin
+  //     </span>
+  //   `
+  // }
+
+  /**
+   * Place selected rows (profile columns) at the top of the grid
+   */
+  setRowData(selectedColIds: Set<number>) {
+    console.log('setRowData')
+
+    let [selectedRows, unselectedRows] = [[], []]
+
     for (const col of this.columns) {
-      if (profileColumnNames.has(col.column_name)) {
-        console.log('got it')
-        this.rowData.push({ column_name: col.display_name, id: col.column_name, selected: true })
-      } else {
-        this.rowData.push({ column_name: col.display_name, id: col.column_name })
-      }
+      const isSelected = selectedColIds.has(col.id)
+      const arr = isSelected ? selectedRows : unselectedRows
+      arr.push({ display_name: col.display_name, column_name: col.column_name, id: col.id, selected: isSelected })
     }
+
+    selectedRows = selectedRows.sort((a, b) => naturalSort(a.display_name, b.display_name))
+    unselectedRows = unselectedRows.sort((a, b) => naturalSort(a.display_name, b.display_name))
+    this.rowData = [...selectedRows, ...unselectedRows]
   }
 
   onGridReady(agGrid: GridReadyEvent) {
+    console.log('onGridReady')
     this.gridApi = agGrid.api
     this.gridApi.sizeColumnsToFit()
+    this.setSelectedRows()
 
-    this.gridApi.forEachNode((node) => {
-      if (node.data.selected)  {
-        node.setSelected(true)
-      }
-    })
-    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    // this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
-  onCellClicked(event: CellClickedEvent) {
-    this.rowData = [{ column_name: 'test' }, ...this.rowData]
-    console.log('onCellClicked', this.rowData.length)
-    // if (event.colDef.field !== 'pin') return
-
-    // event.data.pinned = !event.data.pinned
-
-    // const target = event.event.target as HTMLElement
-    // // toggle pin styles
-    // target.classList.toggle('material-icons-outlined')
-    // target.classList.toggle('material-icons')
-    // target.style.opacity = target.classList.contains('material-icons') ? '1' : '0.1'
+  setSelectedRows() {
+    console.log('setSelectedRows')
+    this.gridApi.forEachNode((node) => {
+      // setSelected takes 2 args: selected & clearOtherSelections. Without 2nd arg, unselected appears as [-] not [ ]
+      const selectionArgs: [boolean, boolean] = node.data.selected ? [true, null] : [false, true]
+      node.setSelected(...selectionArgs)
+    })
   }
 
   onRowSelected(event: RowSelectedEvent) {
-    console.log('onRowSelected', event)
-
-    // this.rowData.shift()
-    // this.gridOptions.api.setRowData(this.rowData);
-    // console.log('onRowSelected', event.data)
-    // let { pinnedTopRowData } = this.gridOptions
-
-    // if (pinnedTopRowData.includes(event.data)) {
-    //   pinnedTopRowData = pinnedTopRowData.filter((row) => row !== event.data)
-    // } else {
-    //   pinnedTopRowData = [...pinnedTopRowData, event.data]
-    // }
-
-    // this.rowData.unshift(event.data)
+    if (event.source !== 'api') {
+      const selectedRows = new Set(this.gridApi.getSelectedRows().map((r) => r.id as number))
+      console.log('onRowSelect', selectedRows)
+      this.setRowData(selectedRows)
+      setTimeout(() => {
+        this.setSelectedRows()
+      }, 0)
+    }
   }
 
   get gridHeight() {
@@ -201,8 +194,10 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     return Math.min(gridHeight, 1000)
   }
 
-  onSelectionChanged() {
-    // console.log('onSelectionChanged')
+  action() {
+    console.log('reset')
+    this.setRowData(new Set(this.currentProfile.columns.map((c) => c.id)))
+    this.setSelectedRows()
   }
 
   ngOnDestroy(): void {

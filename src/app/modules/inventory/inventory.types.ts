@@ -41,7 +41,7 @@ export type ProfileResponse = {
 
 export type Profile = {
   id: number;
-  inventory_type: number;
+  inventory_type: number | 'Tax Lot' | 'Property';
   name: string;
   profile_location: number;
   columns?: ProfileColumn[];
