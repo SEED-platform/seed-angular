@@ -2,10 +2,16 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
+import { MatIconModule } from '@angular/material/icon'
+import type { MatSelectChange } from '@angular/material/select'
+import { MatSelectModule } from '@angular/material/select'
+import { MatSidenavModule } from '@angular/material/sidenav'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
-import { combineLatest, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams, RowSelectedEvent } from 'ag-grid-community'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -15,8 +21,9 @@ import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { InventoryType, Profile } from 'app/modules/inventory/inventory.types'
 import { naturalSort } from '@seed/utils'
+import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
+import type { InventoryDisplayType, InventoryType, Profile, ProfileColumn, ProfileModalMode } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-list-profiles',
@@ -27,11 +34,17 @@ import { naturalSort } from '@seed/utils'
     CommonModule,
     PageComponent,
     MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatTooltipModule,
+    ModalComponent,
   ],
 })
 export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
   private _columnService = inject(ColumnService)
+  private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
@@ -41,13 +54,14 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   columns: Column[]
   currentProfile: Profile
   currentUser: CurrentUser
+  displayType: InventoryDisplayType
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   orgId: number
   orgUserId: number
   pageTitle: string
   profiles: Profile[]
-  rowData: Record<string, unknown>[] = []
+  rowData: ProfileColumn[] = []
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   userSettings: OrganizationUserSettings
 
@@ -68,7 +82,12 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.displayType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
     this.pageTitle = this.type === 'taxlots' ? 'Tax Lot Column Profiles' : 'Property Column Profiles'
+    this.initPage()
+  }
+
+  initPage() {
     this.getDependencies().pipe(
       tap(() => {
         this.setGrid()
@@ -91,8 +110,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap(([columns, currentUser, profiles]) => {
         this.columns = columns
         this.currentUser = currentUser
-        const inventoryType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
-        this.profiles = profiles.filter((p) => p.inventory_type === inventoryType)
+        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
         this.setProfile()
       }),
     )
@@ -106,13 +124,11 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
     this.userSettings.profile.detail[this.type] = this.currentProfile?.id
-    // this.updateOrgUserSettings().subscribe()
+    this.updateOrgUserSettings().subscribe()
   }
 
-  // NOT USED YET - maybe need to pass id and settings as args
   updateOrgUserSettings() {
-    const { org_user_id, settings } = this.currentUser
-    return this._organizationService.updateOrganizationUser(org_user_id, this.orgId, settings)
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
   }
 
   setGrid() {
@@ -124,14 +140,34 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   setColumnDefs() {
     this.columnDefs = [
+      { field: 'column_name', hide: true },
+      { field: 'display_name', headerName: 'Column Name', cellRenderer: this.columnRenderer },
+      { field: 'derived_column', hide: true },
       { field: 'id', hide: true },
-      { field: 'display_name', headerName: 'Column Name' },
+      { field: 'name', hide: true },
+      { field: 'order', hide: true },
+      { field: 'pinned', hide: true },
+      { field: 'table_name', hide: true },
+
     ]
+  }
+
+  columnRenderer = (params: ICellRendererParams): string | number | null => {
+    const data = params.data as ProfileColumn
+    const value = params.value as string
+    return !data.derived_column
+      ? value
+      : `
+          <span style="display:inline-flex; align-items:center;">
+            <span class="ag-icon ag-icon-linked" style="font-size: 16px; margin-right: 4px;"></span>
+              ${value}
+            </span>
+        `
   }
 
   // pinRenderer = () => {
   //   return `
-  //     <span 
+  //     <span
   //       style="opacity: 0.4"
   //       class="material-icons-outlined action-icon cursor-pointer"
   //     >
@@ -146,17 +182,45 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   setRowData(selectedColIds: Set<number>) {
     console.log('setRowData')
 
-    let [selectedRows, unselectedRows] = [[], []]
+    let [selectedRows, unselectedRows]: [ProfileColumn[], ProfileColumn[]] = [[], []]
 
+    let idx = 0
     for (const col of this.columns) {
-      const isSelected = selectedColIds.has(col.id)
-      const arr = isSelected ? selectedRows : unselectedRows
-      arr.push({ display_name: col.display_name, column_name: col.column_name, id: col.id, selected: isSelected })
+      const { column_name, derived_column, display_name, id, name, table_name } = col
+      const data: ProfileColumn = {
+        column_name,
+        display_name,
+        id,
+        name,
+        table_name,
+        order: undefined,
+        pinned: undefined,
+      }
+
+      if (derived_column) {
+        data.derived_column = derived_column
+      }
+
+      if (selectedColIds.has(col.id)) {
+        idx += 1
+        data.order = idx
+        data.pinned = false
+        data.selected = true
+        selectedRows.push(data)
+      } else {
+        unselectedRows.push(data)
+      }
     }
 
     selectedRows = selectedRows.sort((a, b) => naturalSort(a.display_name, b.display_name))
     unselectedRows = unselectedRows.sort((a, b) => naturalSort(a.display_name, b.display_name))
     this.rowData = [...selectedRows, ...unselectedRows]
+
+    if (this.gridApi) {
+      setTimeout(() => {
+        this.setSelectedRows()
+      }, 0)
+    }
   }
 
   onGridReady(agGrid: GridReadyEvent) {
@@ -172,19 +236,15 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     console.log('setSelectedRows')
     this.gridApi.forEachNode((node) => {
       // setSelected takes 2 args: selected & clearOtherSelections. Without 2nd arg, unselected appears as [-] not [ ]
-      const selectionArgs: [boolean, boolean] = node.data.selected ? [true, null] : [false, true]
+      const selectionArgs: [boolean, boolean] = (node.data as ProfileColumn).selected ? [true, null] : [false, true]
       node.setSelected(...selectionArgs)
     })
   }
 
   onRowSelected(event: RowSelectedEvent) {
     if (event.source !== 'api') {
-      const selectedRows = new Set(this.gridApi.getSelectedRows().map((r) => r.id as number))
-      console.log('onRowSelect', selectedRows)
+      const selectedRows = new Set(this.gridApi.getSelectedRows().map((r: ProfileColumn) => r.id))
       this.setRowData(selectedRows)
-      setTimeout(() => {
-        this.setSelectedRows()
-      }, 0)
     }
   }
 
@@ -194,10 +254,57 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     return Math.min(gridHeight, 1000)
   }
 
-  action() {
-    console.log('reset')
-    this.setRowData(new Set(this.currentProfile.columns.map((c) => c.id)))
-    this.setSelectedRows()
+  selectProfile(event: MatSelectChange) {
+    const profileId: number = event.value as number
+    const profile = this.profiles.find((p) => p.id === profileId)
+    console.log(profile.name)
+    this.currentProfile = profile
+    this.setRowData(new Set(profile.columns.map((c) => c.id)))
+  }
+
+  openProfileModal(mode: ProfileModalMode, columns: ProfileColumn[] = []) {
+    const profile = mode === 'create' ? null : this.currentProfile
+    const dialogRef = this._dialog.open(ModalComponent, {
+      width: '40rem',
+      data: {
+        columns,
+        cycleId: null,
+        inventoryType: this.type,
+        location: 'List View Profile',
+        mode,
+        orgId: this.orgId,
+        profile,
+        profiles: this.profiles,
+        type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
+      },
+    })
+
+    let newProfileId: number
+
+    dialogRef.afterClosed().pipe(
+      filter((message: { profileId?: number } | null) => {
+        if (message?.profileId == null) return false
+        newProfileId = message.profileId
+        return true
+      }),
+      switchMap(() => {
+        return this._inventoryService.getColumnListProfiles('List View Profile', this.type)
+      }),
+      tap((profiles) => {
+        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
+        this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null
+        this.userSettings.profile.list[this.type] = this.currentProfile?.id
+        this.setGrid()
+      }),
+    ).subscribe()
+  }
+
+  onSave = () => {
+    const data = { ...this.currentProfile, columns: this.gridApi.getSelectedRows() }
+
+    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe(() => {
+      console.log('Profile updated')
+    })
   }
 
   ngOnDestroy(): void {

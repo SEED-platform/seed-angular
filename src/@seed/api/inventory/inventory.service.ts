@@ -97,6 +97,25 @@ export class InventoryService {
     )
   }
 
+  updateColumnListProfile(orgId: number, id: number, data: unknown): Observable<Profile> {
+    const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
+    return this._httpClient.put<ProfileResponse>(url, data).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating column list profile')
+      }),
+    )
+  }
+
+  deleteColumnListProfile(orgId: number, id: number): Observable<null> {
+    const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
+    return this._httpClient.delete<null>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting column list profile')
+      }),
+    )
+  }
+
   deletePropertyStates({ orgId, viewIds }: DeleteParams): Observable<object> {
     const url = '/api/v3/properties/batch_delete/'
     const data = { property_view_ids: viewIds }

@@ -7,12 +7,12 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { ModalComponent } from '../../column-list-profile/modal/modal.component'
 import { MapComponent } from './map.component'
@@ -135,6 +135,7 @@ export class HeaderComponent implements OnInit {
         mode: 'populate',
         orgId: this.org.id,
         profile: this.currentProfile,
+        profiles: this.profiles,
         type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
       },
     })

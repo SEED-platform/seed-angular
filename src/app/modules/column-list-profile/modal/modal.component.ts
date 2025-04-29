@@ -10,8 +10,9 @@ import { MatProgressBar } from '@angular/material/progress-bar'
 import { finalize, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
+import { SEEDValidators } from '@seed/validators'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation } from 'app/modules/inventory/inventory.types'
+import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, ProfileModalMode } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-column-list-profile-modal',
@@ -33,22 +34,27 @@ export class ModalComponent {
   private _inventoryService = inject(InventoryService)
   private _snackBar = inject(SnackBarService)
 
-  form = new FormGroup({
-    name: new FormControl<string | null>('', [
-      Validators.required,
-    ]),
-  })
-
   data = inject(MAT_DIALOG_DATA) as {
     columns: Column[];
     cycleId: number;
     inventoryType: InventoryType;
-    mode: 'create' | 'delete' | 'rename' | 'populate';
+    mode: ProfileModalMode;
     orgId: number;
     profile: Profile;
+    profiles: Profile[];
     location: ProfileLocation;
     type: InventoryDisplayType;
   }
+
+  existingNames = this.data.profiles?.map((p) => p.name).filter((name) => name !== this.data.profile?.name) ?? []
+
+  form = new FormGroup({
+    name: new FormControl<string | null>('', [
+      Validators.required,
+      SEEDValidators.uniqueValue(this.existingNames),
+    ]),
+  })
+
   errorMessage = false
   inProgress = false
 
@@ -97,7 +103,31 @@ export class ModalComponent {
     this._inventoryService.createColumnListProfile(this.data.orgId, data).pipe(
       tap((profile) => {
         this.data.profile = profile
+        // do not close if a show populated columns request
+        if (this.data.mode === 'create') {
+          this.close({ profileId: profile.id })
+        }
       }),
     ).subscribe()
+  }
+
+  onDelete() {
+    this._inventoryService.deleteColumnListProfile(this.data.orgId, this.data.profile.id).subscribe(() => {
+      console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
+      this.close({ profileId: null })
+    })
+  }
+
+  onRename() {
+    const data = {
+      name: this.form.get('name')?.value,
+      profile_location: this.data.location,
+      inventory_type: this.data.type,
+      columns: this.data.columns,
+      derived_columns: [],
+    }
+    this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, data).subscribe(() => {
+      this.close({ profileId: this.data.profile.id })
+    })
   }
 }

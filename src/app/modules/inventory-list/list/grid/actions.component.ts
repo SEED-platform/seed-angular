@@ -25,6 +25,7 @@ export class ActionsComponent implements OnDestroy {
   @Input() cycleId: number
   @Input() type: InventoryType
   @Input() profile: Profile
+  @Input() profiles: Profile[]
   @Input() inventory: Record<string, unknown>[]
   @Output() refreshInventory = new EventEmitter<null>()
   private _inventoryService = inject(InventoryService)
@@ -105,6 +106,7 @@ export class ActionsComponent implements OnDestroy {
         mode: 'populate',
         orgId: this.orgId,
         profile: this.profile,
+        profiles: this.profiles,
         type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
       },
     })

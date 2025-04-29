@@ -1,10 +1,38 @@
 <seed-page [config]="{
     title: pageTitle,
     titleIcon: 'fa-solid:sliders',
+    action: onSave,
+    actionText: 'Save Profile',
   }">
 </seed-page>
 
-<button mat-stroked-button (click)="action()">RESET</button>
+<div class="ml-5 mt-5 flex gap-2">
+  <div>
+    <mat-label class="mr-4 text-sm text-gray-400">Column List Profile</mat-label>
+    <mat-select
+      [value]="currentProfile?.id"
+      (selectionChange)="selectProfile($event)"
+      placeholder="(no profiles)"
+      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+    >
+      @for(profile of profiles; track profile.id) {
+        <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+      }
+    </mat-select>
+  </div>
+  <a class="flex" (click)="openProfileModal('create')" mat-stroked-button matTooltip="Create New Profile">
+    <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
+  </a>
+  <a class="flex" (click)="openProfileModal('rename')" mat-stroked-button matTooltip="Rename this Profile">
+    <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
+  </a>
+  <a class="flex" (click)="openProfileModal('delete')" mat-stroked-button matTooltip="Delete this Profile">
+    <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+  </a>
+  <a class="flex" (click)="openProfileModal('create', currentProfile.columns)" mat-stroked-button matTooltip="Copy This Profile">
+    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
+  </a>
+</div>
 
 <div class="m-5 flex flex-col gap-4">
 

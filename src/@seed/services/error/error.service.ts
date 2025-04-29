@@ -20,6 +20,7 @@ export class ErrorService {
     } else {
       errorMessage = defaultMessage
     }
+    errorMessage = this.formatErrorMessage(errorMessage)
     this._snackBar.alert(errorMessage)
     return throwError(() => new Error(error?.message || defaultMessage))
   }
@@ -30,5 +31,13 @@ export class ErrorService {
       && obj !== null
       && Object.values(obj).every((value) => Array.isArray(value) && value.every((item) => typeof item === 'string'))
     )
+  }
+
+  formatErrorMessage(error: unknown): string {
+    const formatted = JSON.stringify(error)
+      .replace(/[\[\]\{\}"]/g, '') // remove brackets and quotes
+      .replace(/,/g, '\n') // put newlines after commas
+      .replace(/:/g, ': ') // space after colon
+    return formatted
   }
 }

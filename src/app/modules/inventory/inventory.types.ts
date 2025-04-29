@@ -65,7 +65,11 @@ export type ProfileColumn = {
   order: number;
   pinned: boolean;
   table_name: string;
+  selected?: boolean;
+  derived_column?: number;
 }
+
+export type ProfileModalMode = 'create' | 'delete' | 'rename' | 'populate'
 
 export type FiltersSorts = {
   sorts: string[];
