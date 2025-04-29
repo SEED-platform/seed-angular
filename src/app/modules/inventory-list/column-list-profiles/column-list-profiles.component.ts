@@ -134,7 +134,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   setGrid() {
     this.setColumnDefs()
     const selectedColIds = new Set(this.currentProfile.columns.map((c) => c.id))
-    console.log('setGrid')
     this.setRowData(selectedColIds)
   }
 

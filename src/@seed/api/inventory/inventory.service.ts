@@ -26,11 +26,7 @@ export class InventoryService {
     this._organizationService.currentOrganization$
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(({ org_id }) => {
-          this.orgId = org_id
-        }),
-      )
-      .subscribe()
+      ).subscribe(({ org_id }) => this.orgId = org_id)
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {

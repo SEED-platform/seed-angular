@@ -75,8 +75,8 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer" data-action="download">cloud_download</span>
-        <span class="material-icons action-icon cursor-pointer" data-action="delete">clear</span>
+        <span class="material-icons action-icon cursor-pointer text-gray-400" data-action="download">cloud_download</span>
+        <span class="material-icons action-icon cursor-pointer text-gray-400" data-action="delete">clear</span>
       </div>
     `
   }

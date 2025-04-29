@@ -104,7 +104,7 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   }
 
   unpairRenderer = () => {
-    return '<span class="material-icons mt-2 action-icon cursor-pointer">clear</span>'
+    return '<span class="material-icons mt-2 action-icon cursor-pointer text-gray-400">clear</span>'
   }
 
   get gridHeight() {

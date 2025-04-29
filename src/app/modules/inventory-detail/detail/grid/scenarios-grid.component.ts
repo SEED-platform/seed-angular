@@ -67,7 +67,6 @@ export class ScenariosGridComponent implements OnChanges {
       },
       {
         headerName: 'Status of Measures',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         valueGetter: ({ data }: { data: Scenario }) => `${data?.measures?.length || 0} Proposed`,
       },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer, width: 90 },
@@ -75,12 +74,11 @@ export class ScenariosGridComponent implements OnChanges {
   }
 
   withDefault = (field: FieldType) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return ({ data }: { data: Scenario }): unknown => data?.[field] ?? 'N/A'
   }
 
   actionRenderer = () => {
-    return '<span class="material-icons mt-2 action-icon cursor-pointer">clear</span>'
+    return '<span class="material-icons mt-2 action-icon cursor-pointer text-gray-400">clear</span>'
   }
 
   onCellClicked(event: CellClickedEvent) {
