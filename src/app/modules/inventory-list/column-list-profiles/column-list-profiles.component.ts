@@ -59,7 +59,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   gridTheme$ = this._configService.gridTheme$
   orgId: number
   orgUserId: number
-  pageTitle: string
   profiles: Profile[]
   rowData: ProfileColumn[] = []
   type = this._route.snapshot.paramMap.get('type') as InventoryType
@@ -83,7 +82,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.displayType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
-    this.pageTitle = this.type === 'taxlots' ? 'Tax Lot Column Profiles' : 'Property Column Profiles'
     this.initPage()
   }
 

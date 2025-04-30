@@ -96,14 +96,6 @@ export class NavigationService {
       type: 'basic',
       exactMatch: true,
     },
-    {
-      id: 'taxlots/summary',
-      link: '/taxlots/summary',
-      title: 'Summary',
-      icon: 'fa-solid:clipboard-list',
-      type: 'basic',
-      exactMatch: true,
-    },
   ]
 
   navigation: NavigationItem[] = [

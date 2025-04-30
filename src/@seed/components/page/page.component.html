@@ -1,7 +1,8 @@
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <div
     class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
-  >
+    [style.padding-bottom]="config.tabs ? '15px !important' : null"
+    >
     <div class="min-w-0 flex-1">
       <div class="flex" [class]="config.sideNavToggle ? '-ml-10 -mt-3' : ''">
         @if (config.sideNavToggle) {
@@ -74,5 +75,13 @@
       }
     </div>
   </div>
+  @if (config.tabs) {
+    <div class="bg-card">
+      <div class="mx-auto flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
+        <!-- Tabs -->
+        <seed-page-inventory-tab [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
+      </div>
+    </div>
+  }
   <ng-content></ng-content>
 </div>

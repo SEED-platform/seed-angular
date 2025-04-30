@@ -3,8 +3,9 @@ import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/rou
 import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
-import type { InventoryType } from './inventory.types'
+import { CrossCyclesComponent } from '../inventory-list/cross-cycles/cross-cycles.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
+import type { InventoryType } from './inventory.types'
 
 type NewType = {
   type: InventoryType;
@@ -32,6 +33,11 @@ export default [
     path: 'column-list-profiles',
     title: 'Column Profiles',
     component: ColumnListProfilesComponent,
+  },
+  {
+    path: 'cross-cycles',
+    title: 'Cross Cycles',
+    component: CrossCyclesComponent,
   },
   {
     path: 'map',

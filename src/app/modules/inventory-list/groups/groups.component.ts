@@ -40,7 +40,6 @@ export class GroupsComponent implements OnDestroy, OnInit {
   gridTheme$ = this._configService.gridTheme$
   groups: InventoryGroup[]
   orgId: number
-  pageTitle = 'Groups'
   rowData: Record<string, unknown>[] = []
   type = this._route.snapshot.paramMap.get('type') as InventoryType
 

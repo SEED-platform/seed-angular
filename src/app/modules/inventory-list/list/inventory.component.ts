@@ -25,9 +25,9 @@ import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
+import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../../inventory/inventory.types'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
-import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory',
@@ -304,14 +304,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
     this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
-  }
-
-  async toggleInventoryType(type: InventoryType) {
-    if (type !== this.type) {
-      // Hack to route to reload the current component
-      await this._router.navigateByUrl('/', { skipLocationChange: true })
-      await this._router.navigate([this.type === 'properties' ? 'taxlots' : 'properties'])
-    }
   }
 
   ngOnDestroy(): void {
