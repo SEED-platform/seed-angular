@@ -86,7 +86,7 @@ export class ModalComponent {
         setTimeout(() => {
           this.inProgress = false
         }, 1000)
-        this.close('refresh')
+        this.close(profile.id)
       }),
     ).subscribe()
   }
@@ -105,7 +105,7 @@ export class ModalComponent {
         this.data.profile = profile
         // do not close if a show populated columns request
         if (this.data.mode === 'create') {
-          this.close({ profileId: profile.id })
+          this.close(profile.id)
         }
       }),
     ).subscribe()
@@ -114,7 +114,7 @@ export class ModalComponent {
   onDelete() {
     this._inventoryService.deleteColumnListProfile(this.data.orgId, this.data.profile.id).subscribe(() => {
       console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-      this.close({ profileId: null })
+      this.close(-1)
     })
   }
 
@@ -127,7 +127,7 @@ export class ModalComponent {
       derived_columns: [],
     }
     this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, data).subscribe(() => {
-      this.close({ profileId: this.data.profile.id })
+      this.close(this.data.profile.id)
     })
   }
 }

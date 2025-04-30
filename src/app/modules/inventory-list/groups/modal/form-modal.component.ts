@@ -55,18 +55,19 @@ export class FormModalComponent implements OnDestroy, OnInit {
       Validators.required,
       SEEDValidators.uniqueValue(this.existingNames),
     ]),
-    access_level: new FormControl<string | null>(''),
+    access_level: new FormControl<string | null>(null),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
   })
 
   ngOnInit(): void {
     this.form.patchValue(this.data.group)
-    this.watchAccessLevel()
     this.getDependencies()
+    this.watchAccessLevel()
   }
 
   watchAccessLevel() {
-    this.form.get('access_level')?.valueChanges.pipe(
+    // update access level instances if the access level changes
+    this.form.get('access_level').valueChanges.pipe(
       takeUntil(this._unsubscribeAll$),
       tap((accessLevel) => {
         this.getPossibleAccessLevelInstances(accessLevel)
@@ -81,11 +82,14 @@ export class FormModalComponent implements OnDestroy, OnInit {
       takeUntil(this._unsubscribeAll$),
       switchMap(({ accessLevelNames }) => {
         this.accessLevelNames = accessLevelNames
+        const accessLevel = this.form.get('access_level')?.value ?? accessLevelNames.at(-1)
+        this.form.get('access_level')?.setValue(accessLevel)
         return this._organizationService.accessLevelInstancesByDepth$
       }),
       tap((accessLevelsByDepth) => {
         this.accessLevelInstancesByDepth = accessLevelsByDepth
         this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+        this.form.get('access_level_instance')?.setValue(this.accessLevelInstances[0]?.id)
       }),
     ).subscribe()
   }
@@ -96,13 +100,21 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   onCreate() {
-    console.log('create group')
+    const data = {
+      inventory_type: 'Property',
+      organization: this.data.orgId,
+      name: this.form.value.name,
+      access_level_instance: this.form.value.access_level_instance,
+    }
+
+    this._groupsService.create(this.data.orgId, data as InventoryGroup).subscribe(({ id }) => {
+      this._dialogRef.close(id)
+    })
   }
 
   onEdit() {
-    console.log('edit group')
     const data = { ...this.data.group, name: this.form.value.name }
-    this._groupsService.updateGroup(this.data.orgId, this.data.id, data).subscribe(({ id }) => {
+    this._groupsService.update(this.data.orgId, this.data.id, data).subscribe(({ id }) => {
       this._dialogRef.close(id)
     })
   }

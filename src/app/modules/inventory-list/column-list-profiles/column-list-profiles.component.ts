@@ -120,8 +120,11 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     const { org_user_id, settings } = this.currentUser
     this.orgUserId = org_user_id
     this.userSettings = settings
-    const userProfileId = settings.profile.detail[this.type]
+    this._userService.checkUserProfileSettings(this.userSettings)
 
+    if (!settings.profile) return
+
+    const userProfileId = settings.profile.detail[this.type]
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
     this.userSettings.profile.detail[this.type] = this.currentProfile?.id
     this.updateOrgUserSettings().subscribe()
@@ -133,7 +136,9 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   setGrid() {
     this.setColumnDefs()
-    const selectedColIds = new Set(this.currentProfile.columns.map((c) => c.id))
+    // use current profile if it exists, otherwise use all canonical columns
+    const selectedCols = this.currentProfile?.columns ?? this.columns.filter((c) => !c.is_extra_data && !c.derived_column)
+    const selectedColIds = new Set(selectedCols.map((c: { id: number }) => c.id))
     this.setRowData(selectedColIds)
   }
 
@@ -179,8 +184,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
    * Place selected rows (profile columns) at the top of the grid
    */
   setRowData(selectedColIds: Set<number>) {
-    console.log('setRowData')
-
     let [selectedRows, unselectedRows]: [ProfileColumn[], ProfileColumn[]] = [[], []]
 
     let idx = 0
@@ -223,7 +226,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   }
 
   onGridReady(agGrid: GridReadyEvent) {
-    console.log('onGridReady')
     this.gridApi = agGrid.api
     this.gridApi.sizeColumnsToFit()
     this.setSelectedRows()
@@ -232,7 +234,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   }
 
   setSelectedRows() {
-    console.log('setSelectedRows')
     this.gridApi.forEachNode((node) => {
       // setSelected takes 2 args: selected & clearOtherSelections. Without 2nd arg, unselected appears as [-] not [ ]
       const selectionArgs: [boolean, boolean] = (node.data as ProfileColumn).selected ? [true, null] : [false, true]
@@ -256,7 +257,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   selectProfile(event: MatSelectChange) {
     const profileId: number = event.value as number
     const profile = this.profiles.find((p) => p.id === profileId)
-    console.log(profile.name)
     this.currentProfile = profile
     this.setRowData(new Set(profile.columns.map((c) => c.id)))
   }
@@ -281,29 +281,26 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     let newProfileId: number
 
     dialogRef.afterClosed().pipe(
-      filter((message: { profileId?: number } | null) => {
-        if (message?.profileId == null) return false
-        newProfileId = message.profileId
-        return true
-      }),
-      switchMap(() => {
-        return this._inventoryService.getColumnListProfiles('List View Profile', this.type)
-      }),
+      filter((id) => !!id),
+      switchMap(() => this._inventoryService.getColumnListProfiles('List View Profile', this.type)),
       tap((profiles) => {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
         this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null
         this.userSettings.profile.list[this.type] = this.currentProfile?.id
         this.setGrid()
       }),
+      switchMap(() => this.updateOrgUserSettings()),
     ).subscribe()
   }
 
   onSave = () => {
-    const data = { ...this.currentProfile, columns: this.gridApi.getSelectedRows() }
+    if (!this.currentProfile) {
+      this.openProfileModal('create', this.gridApi.getSelectedRows() as ProfileColumn[])
+      return
+    }
 
-    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe(() => {
-      console.log('Profile updated')
-    })
+    const data = { ...this.currentProfile, columns: this.gridApi.getSelectedRows() }
+    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe()
   }
 
   ngOnDestroy(): void {

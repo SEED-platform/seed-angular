@@ -23,13 +23,13 @@
   <a class="flex" (click)="openProfileModal('create')" mat-stroked-button matTooltip="Create New Profile">
     <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
   </a>
-  <a class="flex" (click)="openProfileModal('rename')" mat-stroked-button matTooltip="Rename this Profile">
+  <a class="flex" (click)="openProfileModal('rename')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Rename this Profile">
     <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
   </a>
-  <a class="flex" (click)="openProfileModal('delete')" mat-stroked-button matTooltip="Delete this Profile">
+  <a class="flex" (click)="openProfileModal('delete')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Delete this Profile">
     <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
   </a>
-  <a class="flex" (click)="openProfileModal('create', currentProfile.columns)" mat-stroked-button matTooltip="Copy This Profile">
+  <a class="flex" (click)="openProfileModal('create', currentProfile.columns)" [disabled]="!currentProfile" mat-stroked-button matTooltip="Copy This Profile">
     <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
   </a>
 </div>

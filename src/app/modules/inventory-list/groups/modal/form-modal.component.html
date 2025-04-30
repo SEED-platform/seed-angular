@@ -38,7 +38,7 @@
 
       <mat-form-field>
         <mat-label>Access Level Instance</mat-label>
-        <mat-select formControlName="access_level_instance_id">
+        <mat-select formControlName="access_level_instance">
           @for (ali of accessLevelInstances; track ali.id) {
           <mat-option [value]="ali.id">{{ ali.name }}</mat-option>
           }
@@ -53,9 +53,9 @@
   <div class="flex justify-end">
     <mat-dialog-actions>
       @if (data.mode === 'create') {
-        <button [disabled]="form.invalid" (click)="onCreate()" mat-stroked-button>Create</button>
+        <button [disabled]="form.invalid" (click)="onCreate()" color="primary" mat-raised-button>Create</button>
       } @else if (data.mode === 'edit') {
-        <button [disabled]="form.invalid" (click)="onEdit()" mat-stroked-button>Rename</button>
+        <button [disabled]="form.invalid" (click)="onEdit()" color="primary" mat-raised-button>Rename</button>
       }
     </mat-dialog-actions>
     <mat-dialog-actions>

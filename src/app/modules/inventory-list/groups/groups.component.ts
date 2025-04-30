@@ -61,22 +61,19 @@ export class GroupsComponent implements OnDestroy, OnInit {
   getDependencies(orgId: number): Observable<unknown> {
     this.orgId = orgId
 
-    return this._groupsService.getGroups(orgId).pipe(
+    return this._groupsService.list(orgId).pipe(
       tap((groups: InventoryGroup[]) => {
-        console.log('groups', groups)
         this.groups = groups
       }),
     )
   }
 
   setGrid() {
-    console.log('set grid')
     this.setColumnDefs()
     this.setRowData()
   }
 
   setColumnDefs() {
-    console.log('setColumnDefs')
     this.columnDefs = [
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Name', cellRenderer: this.nameRenderer },
@@ -138,8 +135,9 @@ export class GroupsComponent implements OnDestroy, OnInit {
     }
   }
 
-  createGroup() {
-    console.log('createGroup')
+  createGroup = () => {
+    const data = { id: null, group: null, groups: this.groups, mode: 'create', orgId: this.orgId }
+    this.openGroupModal(data)
   }
 
   editGroup(id: number) {
@@ -161,9 +159,8 @@ export class GroupsComponent implements OnDestroy, OnInit {
   }
 
   deleteGroup(id: number, name: string) {
-    console.log('deleteGroup', id)
     if (confirm(`Are you sure you want to delete group "${name}"?`)) {
-      this._groupsService.deleteGroup(this.orgId, id).pipe(
+      this._groupsService.delete(this.orgId, id).pipe(
         tap(() => {
           console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
         }),

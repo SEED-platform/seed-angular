@@ -33,7 +33,7 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button (click)="onPopulated()" mat-stroked-button>Start</button>
+      <button (click)="onPopulated()" color="primary" mat-raised-button>Start</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
       <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
@@ -59,7 +59,7 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button [disabled]="form.invalid" (click)="onCreate()" mat-stroked-button>Create</button>
+      <button [disabled]="form.invalid" (click)="onCreate()" color="primary" mat-raised-button>Create</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
       <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
@@ -78,7 +78,7 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button (click)="onDelete()" color="warn" mat-stroked-button>Delete</button>
+      <button (click)="onDelete()" color="warn" mat-raised-button>Delete</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
       <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
@@ -105,7 +105,7 @@
 
   <div class="flex justify-end">
     <mat-dialog-actions>
-      <button [disabled]="form.invalid" (click)="onRename()" mat-stroked-button>Rename</button>
+      <button [disabled]="form.invalid" (click)="onRename()" color="primary" mat-raised-button>Rename</button>
     </mat-dialog-actions>
     <mat-dialog-actions>
       <button (click)="dismiss()" mat-stroked-button>Dismiss</button>

@@ -17,6 +17,7 @@ import type {
   UserUpdateRequest,
 } from '@seed/api/user'
 import { ErrorService } from '@seed/services'
+import type { OrganizationUserSettings } from '../organization'
 
 @Injectable({ providedIn: 'root' })
 export class UserService implements OnDestroy {
@@ -163,6 +164,17 @@ export class UserService implements OnDestroy {
         return this._errorService.handleError(error, 'Error checking user authorization')
       }),
     )
+  }
+
+  // applies defaults to an org users settings
+  checkUserProfileSettings(userSettings: OrganizationUserSettings) {
+    userSettings.profile = userSettings.profile || {}
+    userSettings.profile.detail = userSettings.profile.detail || {}
+    userSettings.profile.detail.properties = userSettings.profile.detail.properties || null
+    userSettings.profile.detail.taxlots = userSettings.profile.detail.taxlots || null
+    userSettings.profile.list = userSettings.profile.list || {}
+    userSettings.profile.list.properties = userSettings.profile.list.properties || null
+    userSettings.profile.list.taxlots = userSettings.profile.list.taxlots || null
   }
 
   ngOnDestroy() {

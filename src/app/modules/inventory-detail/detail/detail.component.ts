@@ -143,18 +143,12 @@ export class DetailComponent implements OnDestroy, OnInit {
   setProfile() {
     const { org_user_id, settings } = this.currentUser
     this.orgUserId = org_user_id
-    this.checkUserProfileSettings(settings)
+    this.userSettings = settings
+    this._userService.checkUserProfileSettings(this.userSettings)
     const userProfileId = settings.profile.detail[this.type]
 
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
     this.userSettings.profile.detail[this.type] = this.currentProfile?.id
-  }
-
-  checkUserProfileSettings(settings: OrganizationUserSettings) {
-    this.userSettings = settings
-    this.userSettings.profile = this.userSettings.profile || {}
-    this.userSettings.profile.detail = this.userSettings.profile.detail || {}
-    this.userSettings.profile.detail[this.type] = this.userSettings.profile.detail[this.type] || null
   }
 
   updateOrgUserSettings() {

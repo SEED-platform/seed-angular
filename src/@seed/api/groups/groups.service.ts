@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { BehaviorSubject, catchError, map, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, type Observable, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '../organization'
 import type { InventoryGroup, InventoryGroupResponse, InventoryGroupsResponse } from './groups.types'
 
@@ -25,18 +25,33 @@ export class GroupsService {
       .subscribe(({ org_id }) => this.orgId = org_id)
   }
 
-  getGroups(orgId: number): Observable<InventoryGroup[]> {
+  list(orgId: number): Observable<InventoryGroup[]> {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
     return this._httpClient.get<InventoryGroupsResponse>(url).pipe(
-      map(({ data }) => data),
-      tap((groups) => { this._groups.next(groups)}),
+      map(({ data }) => {
+        this._groups.next(data)
+        return data
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching groups')
       }),
     )
   }
 
-  updateGroup(orgId: number, id: number, data: InventoryGroup): Observable<InventoryGroup> {
+  create(orgId: number, data: InventoryGroup): Observable<InventoryGroup> {
+    const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
+    return this._httpClient.post<InventoryGroupResponse>(url, data).pipe(
+      map(({ data }) => {
+        this._snackBar.success('Group created successfully')
+        return data
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating group')
+      }),
+    )
+  }
+
+  update(orgId: number, id: number, data: InventoryGroup): Observable<InventoryGroup> {
     const url = `/api/v3/inventory_groups/${id}/?organization_id=${orgId}`
     return this._httpClient.put<InventoryGroupResponse>(url, data).pipe(
       map(({ data }) => {
@@ -49,7 +64,7 @@ export class GroupsService {
     )
   }
 
-  deleteGroup(orgId: number, id: number): Observable<unknown> {
+  delete(orgId: number, id: number): Observable<unknown> {
     const url = `/api/v3/inventory_groups/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
       tap(() => { this._snackBar.success('Group deleted successfully') }),
