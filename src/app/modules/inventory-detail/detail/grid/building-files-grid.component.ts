@@ -85,9 +85,7 @@ export class BuildingFilesGridComponent implements OnInit {
   }
 
   get gridHeight() {
-    const headerHeight = 50
-    const height = this.rowData.length * 41 + headerHeight
-    return Math.min(height, 500)
+    return Math.min(this.rowData.length * 42 + 50, 500)
   }
 
   onGridReady(params: GridReadyEvent) {

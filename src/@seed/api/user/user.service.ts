@@ -48,6 +48,7 @@ export class UserService implements OnDestroy {
   getCurrentUser(): Observable<CurrentUser> {
     return this._httpClient.get<CurrentUser>('/api/v3/users/current/').pipe(
       tap((user) => {
+        this.checkUserProfileSettings(user.settings)
         this._currentUser.next(user)
         this._currentOrganizationId.next(user.org_id)
       }),

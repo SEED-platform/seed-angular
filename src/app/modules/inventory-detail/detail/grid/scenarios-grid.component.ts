@@ -108,8 +108,6 @@ export class ScenariosGridComponent implements OnChanges {
 
   getGridHeight(rowData: Scenario[]) {
     if (!rowData) return
-    const headerHeight = 50
-    const gridHeight = rowData.length * 42 + headerHeight
-    return Math.min(gridHeight, 300)
+    return Math.min(rowData.length * 42 + 50, 500)
   }
 }

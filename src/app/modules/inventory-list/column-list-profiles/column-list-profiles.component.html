@@ -6,45 +6,47 @@
   }">
 </seed-page>
 
-<div class="ml-5 mt-5 flex gap-2">
-  <div>
-    <mat-label class="mr-4 text-sm text-gray-400">Column List Profile</mat-label>
-    <mat-select
-      [value]="currentProfile?.id"
-      (selectionChange)="selectProfile($event)"
-      placeholder="(no profiles)"
-      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
-    >
-      @for(profile of profiles; track profile.id) {
-        <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
-      }
-    </mat-select>
+<div class="m-5 flex flex-col gap-2 h-[calc(100vh-270px)]">
+  
+  <div class="flex gap-2 mb-5">
+    <div>
+      <mat-label class="mr-4 text-sm text-gray-400">Column List Profile</mat-label>
+      <mat-select
+        [value]="currentProfile?.id"
+        (selectionChange)="selectProfile($event)"
+        placeholder="(no profiles)"
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+      >
+        @for(profile of profiles; track profile.id) {
+          <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+    <a class="flex" (click)="openProfileModal('create')" mat-stroked-button matTooltip="Create New Profile">
+      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
+    </a>
+    <a class="flex" (click)="openProfileModal('rename')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Rename this Profile">
+      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
+    </a>
+    <a class="flex" (click)="openProfileModal('delete')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Delete this Profile">
+      <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
+    </a>
+    <a class="flex" (click)="openProfileModal('create', currentProfile.columns)" [disabled]="!currentProfile" mat-stroked-button matTooltip="Copy This Profile">
+      <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
+    </a>
   </div>
-  <a class="flex" (click)="openProfileModal('create')" mat-stroked-button matTooltip="Create New Profile">
-    <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
-  </a>
-  <a class="flex" (click)="openProfileModal('rename')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Rename this Profile">
-    <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
-  </a>
-  <a class="flex" (click)="openProfileModal('delete')" [disabled]="!currentProfile" mat-stroked-button matTooltip="Delete this Profile">
-    <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-  </a>
-  <a class="flex" (click)="openProfileModal('create', currentProfile.columns)" [disabled]="!currentProfile" mat-stroked-button matTooltip="Copy This Profile">
-    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
-  </a>
-</div>
+  
+  
+    @if (rowData.length) {
+      <ag-grid-angular
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [gridOptions]="gridOptions"
+        [rowData]="rowData"
+        style="width: 100%; height: 100%;"
+        [theme]="gridTheme$ | async"
+        (gridReady)="onGridReady($event)"
+      ></ag-grid-angular>
+    }
 
-<div class="m-5 flex flex-col gap-4">
-
-  @if (rowData.length) {
-    <ag-grid-angular
-      [columnDefs]="columnDefs"
-      [defaultColDef]="defaultColDef"
-      [gridOptions]="gridOptions"
-      [rowData]="rowData"
-      [style.height.px]="gridHeight"
-      [theme]="gridTheme$ | async"
-      (gridReady)="onGridReady($event)"
-    ></ag-grid-angular>
-  }
 </div>

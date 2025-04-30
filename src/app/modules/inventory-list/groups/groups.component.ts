@@ -116,9 +116,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
   }
 
   get gridHeight() {
-    const headerHeight = 50
-    const height = this.rowData.length * 42 + headerHeight
-    return Math.min(height, 1000)
+    return Math.min(this.rowData.length * 42 + 50, 1000)
   }
 
   onCellClicked(event: CellClickedEvent) {

@@ -4,6 +4,7 @@ import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
 import type { InventoryType } from './inventory.types'
+import { SummaryComponent } from '../inventory-list/summary/summary.component'
 
 type NewType = {
   type: InventoryType;
@@ -36,6 +37,11 @@ export default [
     path: 'map',
     title: 'Map',
     component: MapComponent,
+  },
+  {
+    path: 'summary',
+    title: 'Summary',
+    component: SummaryComponent,
   },
   {
     path: ':id',

@@ -120,7 +120,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     const { org_user_id, settings } = this.currentUser
     this.orgUserId = org_user_id
     this.userSettings = settings
-    this._userService.checkUserProfileSettings(this.userSettings)
 
     if (!settings.profile) return
 
@@ -246,12 +245,6 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       const selectedRows = new Set(this.gridApi.getSelectedRows().map((r: ProfileColumn) => r.id))
       this.setRowData(selectedRows)
     }
-  }
-
-  get gridHeight() {
-    const headerHeight = 50
-    const gridHeight = this.rowData.length * 42 + headerHeight
-    return Math.min(gridHeight, 1000)
   }
 
   selectProfile(event: MatSelectChange) {

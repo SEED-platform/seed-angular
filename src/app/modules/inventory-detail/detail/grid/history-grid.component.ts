@@ -99,13 +99,6 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
     this.extraDataColumnNames = new Set(this.columns.filter((c) => c.is_extra_data).map((c) => c.column_name))
   }
 
-  checkUserProfileSettings(settings: OrganizationUserSettings) {
-    this.userSettings = settings
-    this.userSettings.profile = this.userSettings.profile || {}
-    this.userSettings.profile.detail = this.userSettings.profile.detail || {}
-    this.userSettings.profile.detail[this.type] = this.userSettings.profile.detail[this.type] || null
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.view || changes.currentProfile) {
       this.getHistory()
@@ -122,7 +115,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
 
   get gridHeight() {
     if (!this.rowData) return
-    return Math.min(this.rowData.length * 70, 500)
+    return Math.min(this.rowData?.length * 70, 500)
   }
 
   setColumnDefs() {

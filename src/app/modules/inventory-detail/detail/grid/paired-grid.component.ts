@@ -108,9 +108,7 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   }
 
   get gridHeight() {
-    const headerHeight = 50
-    const gridHeight = this.rowData.length * 42 + headerHeight
-    return Math.min(gridHeight, 500)
+    return Math.min(this.rowData.length * 42 + 50, 500)
   }
 
   onGridReady(agGrid: GridReadyEvent) {

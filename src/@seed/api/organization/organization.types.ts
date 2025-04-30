@@ -1,7 +1,7 @@
 import type { UserRole } from '@seed/api/user'
 import type { Column } from '../column'
 
-type OrgCycle = {
+export type OrgCycle = {
   name: string;
   cycle_id: number;
   num_properties: number;
