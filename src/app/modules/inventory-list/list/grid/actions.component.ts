@@ -19,14 +19,14 @@ import { DeleteModalComponent, MoreActionsModalComponent } from '../modal'
   ],
 })
 export class ActionsComponent implements OnDestroy {
-  @Input() selectedViewIds: number[]
-  @Input() gridApi: GridApi
-  @Input() orgId: number
   @Input() cycleId: number
-  @Input() type: InventoryType
+  @Input() gridApi: GridApi
+  @Input() inventory: Record<string, unknown>[]
+  @Input() orgId: number
   @Input() profile: Profile
   @Input() profiles: Profile[]
-  @Input() inventory: Record<string, unknown>[]
+  @Input() selectedViewIds: number[]
+  @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<null>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
@@ -111,8 +111,8 @@ export class ActionsComponent implements OnDestroy {
       },
     })
 
-    dialogRef.afterClosed().subscribe((message) => {
-      if (message === 'refresh') {
+    dialogRef.afterClosed().subscribe((id) => {
+      if (id) {
         this.refreshInventory.emit()
       }
     })

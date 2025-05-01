@@ -93,6 +93,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   * 5. set filters and sorts from user settings
   */
   ngOnInit(): void {
+    this.initPage()
+  }
+
+  initPage() {
     this._organizationService.currentOrganization$.pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap(({ org_id }) => this.getDependencies(org_id)),
@@ -141,8 +145,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
       this.labelMap[label.id] = label
     }
 
-    const profile_id = this.profiles.find((p) => p.id === this.userSettings.profile_id)?.id ?? this.profiles[0]?.id
-    return profile_id
+    const profileId = this.profiles.find((p) => p.id === this.userSettings.profile.list[this.type])?.id ?? this.profiles[0]?.id
+    return profileId
   }
 
   get profiles() {
@@ -165,7 +169,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
         tap((profile) => {
           this.profile = profile
           this.profileId = profile.id
-          this.userSettings.profile_id = profile.id
+          this.userSettings.profile.list[this.type] = profile.id
         }),
       )
   }

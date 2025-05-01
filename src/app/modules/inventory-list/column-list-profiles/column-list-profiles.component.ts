@@ -121,9 +121,9 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
     if (!settings.profile) return
 
-    const userProfileId = settings.profile.detail[this.type]
+    const userProfileId = settings.profile.list[this.type]
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
-    this.userSettings.profile.detail[this.type] = this.currentProfile?.id
+    this.userSettings.profile.list[this.type] = this.currentProfile?.id
     this.updateOrgUserSettings().subscribe()
   }
 
@@ -248,8 +248,10 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   selectProfile(event: MatSelectChange) {
     const profileId: number = event.value as number
     const profile = this.profiles.find((p) => p.id === profileId)
+    this.userSettings.profile.list[this.type] = profileId
     this.currentProfile = profile
     this.setRowData(new Set(profile.columns.map((c) => c.id)))
+    this.updateOrgUserSettings().subscribe()
   }
 
   openProfileModal(mode: ProfileModalMode, columns: ProfileColumn[] = []) {
@@ -272,7 +274,10 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     let newProfileId: number
 
     dialogRef.afterClosed().pipe(
-      filter((id) => !!id),
+      filter((id: number) => {
+        newProfileId = id
+        return !!id
+      }),
       switchMap(() => this._inventoryService.getColumnListProfiles('List View Profile', this.type)),
       tap((profiles) => {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
@@ -37,6 +38,7 @@ export class InventoryGridComponent implements OnChanges {
   @Output() selectionChanged = new EventEmitter<null>()
   @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _router = inject(Router)
 
   agPageSize = 100
   gridApi!: GridApi
@@ -125,10 +127,15 @@ export class InventoryGridComponent implements OnChanges {
       width: 60,
       cellRenderer: ({ value }) => {
         const eGui = document.createElement('a')
-        eGui.href = `/${this.inventoryType}/${value}`
         eGui.textContent = 'i'
         eGui.className = 'cursor-pointer truncate border border-gray-400 dark:border-white'
         eGui.style.cssText = 'border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
+
+        eGui.addEventListener('click', (event) => {
+          event.preventDefault()
+          void this._router.navigate([`/${this.inventoryType}`, value])
+        })
+
         return eGui
       },
     }
