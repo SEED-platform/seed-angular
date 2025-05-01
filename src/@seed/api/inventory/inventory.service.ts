@@ -86,6 +86,7 @@ export class InventoryService {
   createColumnListProfile(orgId: number, data: NewProfileData): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/?organization_id=${orgId}`
     return this._httpClient.post<ProfileResponse>(url, data).pipe(
+      tap(() => { this._snackBar.success('Profile created successfully') }),
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating column list profile')
@@ -96,6 +97,7 @@ export class InventoryService {
   updateColumnListProfile(orgId: number, id: number, data: unknown): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
     return this._httpClient.put<ProfileResponse>(url, data).pipe(
+      tap(() => { this._snackBar.success('Profile updated successfully') }),
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating column list profile')

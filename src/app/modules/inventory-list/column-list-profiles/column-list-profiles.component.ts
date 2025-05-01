@@ -108,7 +108,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap(([columns, currentUser, profiles]) => {
         this.columns = columns
         this.currentUser = currentUser
-        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
+        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
         this.setProfile()
       }),
     )
@@ -296,7 +296,9 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     }
 
     const data = { ...this.currentProfile, columns: this.gridApi.getSelectedRows() }
-    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe()
+    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe(() => {
+      this.initPage()
+    })
   }
 
   ngOnDestroy(): void {

@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBar } from '@angular/material/progress-bar'
-import { finalize, tap } from 'rxjs'
+import { EMPTY, finalize, switchMap, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import { SEEDValidators } from '@seed/validators'
@@ -81,6 +81,7 @@ export class ModalComponent {
     const { orgId, profile, cycleId } = this.data
 
     this._inventoryService.updateProfileToShowPopulatedColumns(orgId, profile.id, cycleId, displayType).pipe(
+      switchMap((profile) => this.setOrder(profile)),
       tap(() => { this._snackBar.success('Profile updated') }),
       finalize(() => {
         setTimeout(() => {
@@ -89,6 +90,12 @@ export class ModalComponent {
         this.close(profile.id)
       }),
     ).subscribe()
+  }
+
+  setOrder(profile: Profile) {
+    if (!profile.columns.some((c) => !c.order)) return EMPTY
+    profile.columns = profile.columns.map((c, idx) => ({ ...c, order: idx + 1 }))
+    return this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, profile)
   }
 
   onCreate() {
@@ -103,7 +110,7 @@ export class ModalComponent {
     this._inventoryService.createColumnListProfile(this.data.orgId, data).pipe(
       tap((profile) => {
         this.data.profile = profile
-        // do not close if a show populated columns request
+        // do not close if its a show populated columns request
         if (this.data.mode === 'create') {
           this.close(profile.id)
         }
@@ -119,14 +126,8 @@ export class ModalComponent {
   }
 
   onRename() {
-    const data = {
-      name: this.form.get('name')?.value,
-      profile_location: this.data.location,
-      inventory_type: this.data.type,
-      columns: this.data.columns,
-      derived_columns: [],
-    }
-    this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, data).subscribe(() => {
+    this.data.profile.name = this.form.get('name')?.value
+    this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, this.data.profile).subscribe(() => {
       this.close(this.data.profile.id)
     })
   }
