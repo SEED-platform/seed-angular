@@ -1,7 +1,7 @@
 <div class="ml-2">
   @if ((filters | keyvalue).length) {
     <div class="flex">
-      <div class="my-auto mr-2 w-10 text-sm text-gray-400">Filters</div>
+      <div class="my-auto mr-2 w-10 text-sm text-secondary">Filters</div>
       <mat-chip-set>
         @for (item of filterChips; track $index) {
           <mat-chip class="filter-sort-chip"
@@ -15,7 +15,7 @@
 
   @if (sorts.length) {
     <div class="flex">
-      <div class="my-auto mr-2 w-10 text-sm text-gray-400">Sorts</div>
+      <div class="my-auto mr-2 w-10 text-sm text-secondary">Sorts</div>
       <mat-chip-set>
         @for (item of sortChips; track $index) {
           <mat-chip class="filter-sort-chip"

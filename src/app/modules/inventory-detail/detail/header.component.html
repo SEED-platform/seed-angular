@@ -2,7 +2,7 @@
   <div>
     <!--  Actions -->
     <div class="m-1 flex flex-row gap-4">
-      <mat-label class="w-15 text-sm text-gray-400">Actions</mat-label>
+      <mat-label class="w-15 text-sm text-secondary">Actions</mat-label>
       <mat-select
         class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
         #actionSelect
@@ -18,7 +18,7 @@
 
     <!--  Cycles -->
     <div class="m-1 flex flex-row gap-4">
-      <mat-label class="w-15 text-sm text-gray-400">Cycle</mat-label>
+      <mat-label class="w-15 text-sm text-secondary">Cycle</mat-label>
       <mat-select
         class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
         [value]="selectedView.id"
@@ -34,7 +34,7 @@
     <!-- Profiles -->
     @if (profiles && profiles.length) {
       <div class="m-1 flex flex-row gap-4">
-        <mat-label class="w-15 text-sm text-gray-400">Profile</mat-label>
+        <mat-label class="w-15 text-sm text-secondary">Profile</mat-label>
         <mat-select
           class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
           [value]="currentProfile.id"
@@ -50,7 +50,7 @@
 
     <!-- Labels -->
     @if (labels && labels.length) {
-      <div class="m-1 mt-2 flex text-gray-400">
+      <div class="m-1 mt-2 flex text-secondary">
         <span class="mr-8 w-12">Labels</span>
         @for (label of labels; track $index) {
           <seed-label [label]="label"></seed-label>
@@ -61,7 +61,7 @@
     <!-- Groups -->
 
     @if (type === 'properties' && groupMappings.length) {
-      <div class="m-1 mt-2 flex text-gray-400">
+      <div class="m-1 mt-2 flex text-secondary">
         <span class="my-auto mr-8 w-12">Groups</span>
         @for (group of groupMappings; track $index) {
           <a class="mr-2 !p-0" (click)="tempAction()" mat-stroked-button>
@@ -79,7 +79,7 @@
           <mat-icon svgIcon="fa-solid:tree"></mat-icon>
           <span class="ml-4">Access Levels</span>
         </div>
-        <!-- <span class="text-gray-400 m-1">Access Levels</span> -->
+        <!-- <span class="text-secondary m-1">Access Levels</span> -->
         <ag-grid-angular
           [columnDefs]="aliColumnDefs"
           [rowData]="aliRowData"
