@@ -5,6 +5,17 @@
   }">
 </seed-page>
 
-<div class="m-10">
-  MAP
+<div class="m-5">
+    <div>
+      <mat-label class="mr-4 text-sm text-gray-400">Cycle</mat-label>
+      <mat-select
+        [value]="cycle?.cycle_id"
+        (selectionChange)="selectCycle()"
+        placeholder="Select Cycle"
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm">
+        @for(cycle of cycles; track cycle.cycle_id) {
+          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
 </div>

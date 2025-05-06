@@ -146,10 +146,14 @@
   min-height: fit-content !important;
 }
 
+// MAT dark components
 .dark {
-  .mat-mdc-option-active{
+  .mat-mdc-option-active {
     .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
       color: lightblue !important;
     }
+  }
+  .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked {
+    background: white !important;
   }
 }

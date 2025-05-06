@@ -102,11 +102,11 @@ export type OrganizationUser = {
 
 export type OrganizationUserSettings = {
   [key: string]: unknown;
-  cycle_id?: number;
-  profile_id?: number;
+  cycleId?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
   profile?: UserSettingsProfiles;
+  crossCycles?: UserSettingsCrossCycles;
 }
 
 type UserSettingsFilters = {
@@ -122,6 +122,11 @@ type UserSettingsSorts = {
 type UserSettingsProfiles = {
   detail?: { properties?: number; taxlots?: number };
   list?: { properties?: number; taxlots?: number };
+}
+
+type UserSettingsCrossCycles = {
+  properties?: number[];
+  taxlots?: number[];
 }
 
 export type OrganizationUsersResponse = {

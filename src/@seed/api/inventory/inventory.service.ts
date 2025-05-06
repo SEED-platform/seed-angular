@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError }
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { CrossCyclesResponse, DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, InventoryTypeGoal, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
@@ -38,6 +38,17 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching properties')
+      }),
+    )
+  }
+
+  getRecordCount(organization_id: number, cycle_id: number, inventory_type: InventoryTypeGoal): Observable<number> {
+    const url = '/api/v4/tax_lot_properties/record_count/'
+    const params = { organization_id, cycle_id, inventory_type }
+    return this._httpClient.get<{ status: string; data: number }>(url, { params }).pipe(
+      map((response) => response.data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching record count')
       }),
     )
   }
@@ -244,6 +255,24 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting Document')
+      }),
+    )
+  }
+
+  filterByCycle(orgId: number, profileId: number, cycleIds: number[], inventoryType: InventoryType): Observable<CrossCyclesResponse> {
+    const url = `/api/v3/${inventoryType}/filter_by_cycle/`
+    const data = {
+      organization_id: orgId,
+      profile_id: profileId,
+      cycle_ids: cycleIds,
+    }
+
+    return this._httpClient.post<CrossCyclesResponse>(url, data).pipe(
+      // map((response) => {
+      //   return response
+      // }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching ${inventoryType}`)
       }),
     )
   }

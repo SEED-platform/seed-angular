@@ -5,6 +5,48 @@
   }">
 </seed-page>
 
-<div class="m-10">
-  CROSS CYCLES
+<!-- CONTENT -->
+<div class="m-5 flex flex-col gap-2 h-[calc(100vh-300px)]">
+
+  <!-- CONFIG -->
+  <div class="flex gap-4 mb-4">
+
+    <div class="mr-1 flex flex-col">
+      <mat-label class="text-sm text-gray-400">Cycle</mat-label>
+      <mat-select
+        multiple
+        [(value)]="selectedCycleIds"
+        (closed)="onSelectCycleClosed()"
+        placeholder="Select Cycles"
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm">
+        @for(cycle of cycles; track cycle.cycle_id) {
+          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    <div class="mr-1 flex flex-col">
+      <mat-label class="text-sm text-gray-400">Profile</mat-label>
+      <mat-select
+        [(value)]="selectedProfileId"
+        (selectionChange)="onSelectProfile()"
+        [placeholder]="profiles?.length ? 'Select Profile' : '(No Profiles)'"
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm">
+        @for(profile of profiles; track profile.id) {
+          <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+  <!-- <ag-grid-angular 
+    class="w-full"
+    [columnDefs]="columnDefs"
+    [rowData]="rowData"
+    [theme]="gridTheme$ | async"
+    (gridReady)="onGridReady($event)"
+    style="width: 100%; height: 100%;"
+  ></ag-grid-angular> -->
 </div>

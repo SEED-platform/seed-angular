@@ -87,7 +87,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   /*
   * 1. get org
-  * 2. get dependencies: cycles, profiles, columns, labels, current user
+  * 2. get dependencies: cycles, profiles, labels, current user
   * 3. set dependencies & get profile
   * 4. load inventory
   * 5. set filters and sorts from user settings
@@ -122,7 +122,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * set class variables: cycles, profiles, columns, inventory. returns profile id
+  * set class variables: cycles, profiles, inventory. returns profile id
   */
   setDependencies({ currentUser, cycles, labels, profiles }: InventoryDependencies) {
     if (!cycles) {
@@ -135,7 +135,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.userSettings = settings
 
     this.cycles = cycles
-    this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycle_id) ?? this.cycles[0]
+    this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycleId) ?? this.cycles[0]
     this.cycleId = this.cycle.id
 
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
@@ -241,7 +241,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.cycleId = id
     this.cycle = this.cycles.find((cycle) => cycle.id === id)
     this.page = 1
-    this.userSettings.cycle_id = id
+    this.userSettings.cycleId = id
     this.updateOrgUserSettings().pipe(
       switchMap(() => this.loadInventory()),
     ).subscribe()

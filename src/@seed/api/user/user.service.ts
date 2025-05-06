@@ -48,7 +48,7 @@ export class UserService implements OnDestroy {
   getCurrentUser(): Observable<CurrentUser> {
     return this._httpClient.get<CurrentUser>('/api/v3/users/current/').pipe(
       tap((user) => {
-        this.checkUserProfileSettings(user.settings)
+        this.checkUserSettings(user.settings)
         this._currentUser.next(user)
         this._currentOrganizationId.next(user.org_id)
       }),
@@ -168,7 +168,7 @@ export class UserService implements OnDestroy {
   }
 
   // applies defaults to an org users settings
-  checkUserProfileSettings(userSettings: OrganizationUserSettings) {
+  checkUserSettings(userSettings: OrganizationUserSettings) {
     userSettings.profile = userSettings.profile || {}
     userSettings.profile.detail = userSettings.profile.detail || {}
     userSettings.profile.detail.properties = userSettings.profile.detail.properties || null
@@ -176,6 +176,9 @@ export class UserService implements OnDestroy {
     userSettings.profile.list = userSettings.profile.list || {}
     userSettings.profile.list.properties = userSettings.profile.list.properties || null
     userSettings.profile.list.taxlots = userSettings.profile.list.taxlots || null
+    userSettings.crossCycles = userSettings.crossCycles || {}
+    userSettings.crossCycles.properties = userSettings.crossCycles.properties || null
+    userSettings.crossCycles.taxlots = userSettings.crossCycles.taxlots || null
   }
 
   ngOnDestroy() {

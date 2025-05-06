@@ -6,9 +6,10 @@ import type { Label } from '@seed/api/label'
 import type { Scenario } from '@seed/api/scenario'
 import type { CurrentUser } from '@seed/api/user'
 
+export type InventoryDisplayType = 'Property' | 'Tax Lot'
+export type InventoryStateType = 'PropertyState' | 'TaxLotState'
 export type InventoryType = 'properties' | 'taxlots'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
-export type InventoryDisplayType = 'Property' | 'Tax Lot'
 
 export type FilterResponse = {
   cycle_id?: number;
@@ -83,7 +84,8 @@ export type DeleteParams = {
 
 export type AgFilterResponse = {
   pagination: InventoryPagination;
-  results: Inventory[];
+  results: State[];
+  // results: Inventory[];
   column_defs: ColDef[];
 }
 
@@ -244,3 +246,5 @@ export type UpdateInventoryResponse = {
 
 export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
+
+export type CrossCyclesResponse = Record<string, Record<string, unknown>[]>

@@ -68,7 +68,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   getDependencies(user: CurrentUser, org: Organization) {
     this.currentUser = user
-    this.cycleId = user.settings.cycle_id
+    this.cycleId = user.settings.cycleId
     this.orgId = org.org_id
     this.cycles = org.cycles
     return this._userService.currentUser$.pipe(
@@ -104,7 +104,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   }
 
   selectCycle(cycleId: number) {
-    this.currentUser.settings.cycle_id = cycleId
+    this.currentUser.settings.cycleId = cycleId
     this.updateOrgUserSettings().subscribe(() => {
       this.initPage()
     })
