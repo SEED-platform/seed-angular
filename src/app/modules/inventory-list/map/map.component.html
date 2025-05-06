@@ -5,17 +5,42 @@
   }">
 </seed-page>
 
-<div class="m-5">
-    <div>
-      <mat-label class="mr-4 text-sm text-gray-400">Cycle</mat-label>
-      <mat-select
-        [value]="cycle?.cycle_id"
-        (selectionChange)="selectCycle()"
-        placeholder="Select Cycle"
-        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm">
-        @for(cycle of cycles; track cycle.cycle_id) {
-          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+<!-- CONTENT -->
+<div class="m-5 w-[100%]">
+  <!-- CONFIG -->
+  <div>
+    <mat-label class="mr-4 text-sm text-secondary">Cycle</mat-label>
+    <mat-select
+      [(value)]="cycle"
+      (selectionChange)="selectCycle()"
+      placeholder="Select Cycle"
+      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm">
+      @for(cycle of cycles; track cycle.cycle_id) {
+        <mat-option [value]="cycle">{{ cycle.name }}</mat-option>
+      }
+    </mat-select>
+  </div>
+
+  <!-- PROGRESS -->
+   @if (inProgress) {
+    <div class="border rounded-xl dark:bg-gray-800 bg-white w-1/2 mt-20 mx-auto p-10">
+      <div class="flex justify-between">
+
+        <div class="flex items-center space-x-2 mb-5">
+          <mat-icon svgIcon="fa-solid:hourglass-half" class="text-primary-600"></mat-icon>
+          <div class="text-xl text-secondary font-medium leading-6">Loading Inventory...</div>
+        </div>
+        @if (progress.current && progress.current < progress.total) {
+          <div class="text-secondary flex flex-col justify-end">( {{progress.current}} / {{ progress.total }} )</div>
         }
-      </mat-select>
+      </div>
+
+      <!-- <span class="mx-auto text-secondary">Loading Inventory... ( {{ progress.current }} / {{ progress.total }} )</span> -->
+      <mat-progress-bar mode="determinate" [value]="progress.percent"></mat-progress-bar>
     </div>
+   } @else {
+    <div class="text-secondary">DONE</div>
+   }
+  
+  <!-- MAP -->
 </div>

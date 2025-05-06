@@ -14,7 +14,8 @@ export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
 export type FilterResponse = {
   cycle_id?: number;
   pagination?: InventoryPagination;
-  results: Inventory[] | number[];
+  results: State[] | number[];
+  // results: Inventory[] | number[];
   column_defs?: ColDef[];
 }
 
