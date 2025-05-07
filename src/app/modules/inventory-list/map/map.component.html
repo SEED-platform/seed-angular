@@ -31,16 +31,17 @@
           <div class="text-xl text-secondary font-medium leading-6">Loading Inventory...</div>
         </div>
         @if (progress.current && progress.current < progress.total) {
-          <div class="text-secondary flex flex-col justify-end">( {{progress.current}} / {{ progress.total }} )</div>
+          <div class="text-secondary flex flex-col justify-end">{{progress.current}} / {{ progress.total }}</div>
         }
       </div>
 
       <!-- <span class="mx-auto text-secondary">Loading Inventory... ( {{ progress.current }} / {{ progress.total }} )</span> -->
       <mat-progress-bar mode="determinate" [value]="progress.percent"></mat-progress-bar>
     </div>
-   } @else {
-    <div class="text-secondary">DONE</div>
    }
+    <!-- MAP -->     
+    <div id="map" class="w-1/1 h-[500px] mt-10 mr-10">
+      <div id="popup-element"></div>
+    </div>
   
-  <!-- MAP -->
 </div>

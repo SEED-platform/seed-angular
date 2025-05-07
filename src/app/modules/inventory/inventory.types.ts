@@ -227,6 +227,7 @@ export type BuildingFile = {
 
 export type State = {
   [key: string]: unknown;
+  id: number;
   bounding_box: string;
   centroid: string;
   derived_data: Record<string, unknown>;
