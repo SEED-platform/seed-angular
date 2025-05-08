@@ -6,10 +6,10 @@
 </seed-page>
 
 <!-- CONTENT -->
-<div class="m-5 w-[100%]">
+<div class="mb-5 h-[calc(100vh-275px)]">
   <!-- CONFIG -->
-  <div>
-    <mat-label class="mr-4 text-sm text-secondary">Cycle</mat-label>
+  <div class="flex gap-4 m-4">
+    <mat-label class="my-auto text-sm text-secondary">Cycle</mat-label>
     <mat-select
       [(value)]="cycle"
       (selectionChange)="selectCycle()"
@@ -36,12 +36,54 @@
       </div>
 
       <!-- <span class="mx-auto text-secondary">Loading Inventory... ( {{ progress.current }} / {{ progress.total }} )</span> -->
-      <mat-progress-bar mode="determinate" [value]="progress.percent"></mat-progress-bar>
+      <mat-progress-bar [mode]="progressMode" [value]="progress.percent"></mat-progress-bar>
     </div>
-   }
-    <!-- MAP -->     
-    <div id="map" class="w-1/1 h-[500px] mt-10 mr-10">
-      <div id="popup-element"></div>
+   } @else {
+    <div class="flex bg-white dark:bg-gray-800 gap-3 px-2">
+      <!-- Refresh Map -->
+      <mat-icon class="scale-75 cursor-pointer my-auto" (click)="refreshMap()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset map"></mat-icon>
+
+      @if (type === 'taxlots') {
+        
+        <!-- Taxlot Layer Toggle -->
+        <mat-checkbox color="primary" [checked]="layers?.pointsLayer.visible" (change)="toggleLayer('pointsLayer', $event.checked)">
+          <span class="text-sm">Tax Lot Points</span>
+        </mat-checkbox>
+        <mat-checkbox color="primary" [checked]="layers?.taxlotBBLayer.visible" (change)="toggleLayer('taxlotBBLayer', $event.checked)">
+          <span class="text-sm">Tax Lot Ubids</span>
+        </mat-checkbox>
+        <mat-checkbox color="primary" [checked]="layers?.taxlotCentroidLayer.visible" (change)="toggleLayer('taxlotCentroidLayer', $event.checked)">
+          <span class="text-sm">Tax Lot Ubid Centroids</span>
+        </mat-checkbox>
+
+      } @else {
+        
+        <!-- Property or Goal layer Toggle -->
+        <mat-checkbox color="primary" [checked]="layers?.hexBinLayer.visible" (change)="toggleLayer('hexBinLayer', $event.checked)">
+          <span class="text-sm">Hexagonal Bins</span>
+        </mat-checkbox>
+        <mat-checkbox color="primary" [checked]="layers?.pointsLayer.visible" (change)="toggleLayer('pointsLayer', $event.checked)">
+          <span class="text-sm">Property Points</span>
+        </mat-checkbox>
+        <mat-checkbox color="primary" [checked]="layers?.propertyBBLayer.visible" (change)="toggleLayer('propertyBBLayer', $event.checked)">
+          <span class="text-sm">Property Ubids</span>
+        </mat-checkbox>
+        <mat-checkbox color="primary" [checked]="layers?.propertyCentroidLayer.visible" (change)="toggleLayer('propertyCentroidLayer', $event.checked)">
+          <span class="text-sm">Property Ubid Centroids</span>
+        </mat-checkbox>
+      }
+      
+      <mat-checkbox color="primary" [checked]="layers?.censusTractLayer.visible" (change)="toggleLayer('censusTractLayer', $event.checked)">
+        <span class="text-sm">Census Tracts</span>
+      </mat-checkbox>
+      <mat-checkbox color="primary" [checked]="highlightDACs" (change)="toggleHighlightDACs()" [disabled]="!layers?.censusTractLayer?.visible">
+        <span class="text-sm">Highlight DACs</span>
+      </mat-checkbox>
     </div>
+  } 
+  <!-- MAP -->     
+  <div id="map" class="w-full h-[calc(100%-100px)]">
+    <div id="popup-element"></div>
+  </div>
   
 </div>

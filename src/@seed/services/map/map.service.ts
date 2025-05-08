@@ -7,9 +7,7 @@ export class MapService {
   private _httpClient: HttpClient = inject(HttpClient)
   disadvantaged = {}
 
-  async checkDisadvantagedStatus(tractIds: number[]) {
-    console.log('tractIds', tractIds)
-    await Promise.resolve('done')
+  checkDisadvantagedStatus(tractIds: number[]) {
     const idsToFetch = tractIds.filter((id) => !(id in this.disadvantaged))
     if (idsToFetch.length) {
       const url = '/api/v3/eeej/filter_disadvantaged_tracts/'
@@ -28,7 +26,8 @@ export class MapService {
     if (tractId in this.disadvantaged) {
       return !!this.disadvantaged[tractId]
     }
-    console.error(`Tract ${tractId} hasn't previously been fetched, run checkDisadvantagedStatus first`)
+    // TODO: address this comment
+    // console.error(`Tract ${tractId} hasn't previously been fetched, run checkDisadvantagedStatus first`)
     return false
   }
 }

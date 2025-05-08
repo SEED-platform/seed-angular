@@ -1,52 +1,57 @@
-import type { AfterViewInit } from '@angular/core'
+import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatIconModule } from '@angular/material/icon'
+import type { ProgressBarMode } from '@angular/material/progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSelectModule } from '@angular/material/select'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
-import { combineLatest, EMPTY, finalize, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
+import { type Feature, Overlay } from 'ol'
+import { defaults as defaultControls } from 'ol/control'
+import GeoJSON from 'ol/format/GeoJSON'
+import WKT from 'ol/format/WKT'
+import TileLayer from 'ol/layer/Tile'
+import VectorLayer from 'ol/layer/Vector'
+import Map from 'ol/Map'
+import { transformExtent } from 'ol/proj'
+import { fromLonLat } from 'ol/proj'
+import Cluster from 'ol/source/Cluster'
+import OSM from 'ol/source/OSM'
+import VectorSource from 'ol/source/Vector'
+import Circle from 'ol/style/Circle'
+import Fill from 'ol/style/Fill'
+import Icon from 'ol/style/Icon'
+import Stroke from 'ol/style/Stroke'
+import Style from 'ol/style/Style'
+import Text from 'ol/style/Text'
+import View from 'ol/View'
+import HexBin from 'ol-ext/source/HexBin'
+import { combineLatest, filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
-import type { Organization, OrgCycle } from '@seed/api/organization'
+import type { Label } from '@seed/api/label'
+import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
-import type { FilterResponse, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatIconModule } from '@angular/material/icon'
 import { MapService } from '@seed/services/map'
-import { defaults as defaultControls } from 'ol/control'
-import Circle from 'ol/style/Circle'
-import Cluster from 'ol/source/Cluster'
-import { Overlay, type Feature } from 'ol'
-import Fill from 'ol/style/Fill'
-import { fromLonLat } from 'ol/proj'
-import GeoJSON from 'ol/format/GeoJSON'
-import HexBin from 'ol-ext/source/HexBin'
-import Icon from 'ol/style/Icon'
-import Map from 'ol/Map'
-import OSM from 'ol/source/OSM'
-import Source from 'ol/source/Source'
-import Stroke from 'ol/style/Stroke'
-import Style from 'ol/style/Style'
-import TileLayer from 'ol/layer/Tile'
-import { transformExtent } from 'ol/proj'
-import VectorLayer from 'ol/layer/Vector'
-import VectorSource from 'ol/source/Vector'
-import View from 'ol/View'
-import WKT from 'ol/format/WKT'
-import Text from 'ol/style/Text'
-import { Label } from '@seed/api/label'
+import type { FilterResponse, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
 
+type Layer = VectorLayer | TileLayer
 @Component({
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
   imports: [
-    MatSelectModule,
     PageComponent,
-    MatProgressBarModule,
+    MatCheckboxModule,
     MatIconModule,
+    MatProgressBarModule,
+    MatSelectModule,
+    MatTooltipModule,
   ],
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements OnInit {
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _mapService = inject(MapService)
@@ -67,10 +72,10 @@ export class MapComponent implements AfterViewInit {
   geocodedTaxlots: State[]
   group: { views_list: number[] } // FUTURE: HANDLE GROUPS
   groupId: number // FUTURE: HANDLE GROUPS
-  hexbinColor = [75, 0, 130]
-  hexbinLayer: VectorLayer
-  hexbinMaxOpacity = 0.8
-  hexbinMinOpacity = 0.2
+  hexBinColor = [75, 0, 130]
+  hexBinLayer: VectorLayer
+  hexBinMaxOpacity = 0.8
+  hexBinMinOpacity = 0.2
   hexagonSize = 750
   highlightDACs = true
   inProgress = false
@@ -84,7 +89,7 @@ export class MapComponent implements AfterViewInit {
     stopEvent: false,
     autoPan: true,
     // autoPanMargin: 75, ?????????? dne?
-    offset: [0, -10]
+    offset: [0, -10],
   })
   progress = { current: 0, total: 0, percent: 0, chunk: 0 }
   propertyBBLayer: VectorLayer
@@ -96,56 +101,52 @@ export class MapComponent implements AfterViewInit {
   taxlotCentroidLayer: VectorLayer
   type = this._route.snapshot.paramMap.get('type') as InventoryTypeGoal
 
-
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.defaultField = this.type === 'properties' ? 'property_display_field' : 'taxlot_display_field'
-    this.initPage()
-  }
-
-  selectCycle() {
-    this.currentUser.settings.cycleId = this.cycle.cycle_id
-    this.updateOrgUserSettings().pipe(
+    this.getDependencies().pipe(
+      filter(() => !!this.cycle),
       switchMap(() => this.initMap()),
     ).subscribe()
   }
 
-  updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.currentUser.id, this.orgId, this.currentUser.settings)
-  }
-
-  initPage() {
-    this._organizationService.currentOrganization$.pipe(
-      switchMap((org) => this.getDependencies(org)),
-      switchMap(() => this.initMap()),
-    ).subscribe()
-  }
-
-  getDependencies(org: Organization) {
-    this.orgId = org.id
-    this.cycles = org.cycles
-    // if only one call, just use switchmap
+  getDependencies() {
     return combineLatest([
       this._userService.currentUser$,
+      this._organizationService.currentOrganization$,
     ]).pipe(
-      tap(([currentUser]) => {
+      tap(([currentUser, org]) => {
+        this.orgId = org.id
+        this.cycles = org.cycles
         this.currentUser = currentUser
         this.cycle = this.cycles.find((c) => c.cycle_id === this.currentUser.settings.cycleId) ?? this.cycles[0]
       }),
     )
   }
 
+  refreshMap() {
+    this.initMap().subscribe()
+  }
+
+  resetMap() {
+    if (this.map) {
+      this.map.setTarget(null)
+    }
+  }
+
   initMap() {
-    console.log('initMap')
     this.inProgress = true
     this.progress = { current: 0, total: 0, percent: 0, chunk: 0 }
-
-    if (!this.cycle) return EMPTY
+    this.resetMap()
 
     return this.getTotalRecords().pipe(
       switchMap((totalPages) => this.fetchRecords(totalPages)),
-      tap(() => {
+      map(() => {
+        console.log('fetchRecords complete')
         this.geocodeRelated()
-        this.setLayers()
+        return
+      }),
+      switchMap(() => this.setLayers()),
+      tap(() => {
         this.renderMap()
         this.setMapOptions()
         this.zoomCenter(this.pointsSource().getSource())
@@ -194,7 +195,8 @@ export class MapComponent implements AfterViewInit {
           tap(() => { this.updateProgress() }),
         )
       }),
-      scan((allData: State[], pageData: State[]) => [...allData, ...pageData], []),
+      scan((allData: State[], pageData: State[]) => [...allData, ...pageData], []), // accumulate all pages
+      last(), // emit only the final result
       tap((allData: State[]) => {
         this.data = allData
         this.geocodedData = allData.filter(({ long_lat }) => long_lat)
@@ -210,7 +212,7 @@ export class MapComponent implements AfterViewInit {
     this.layers = {
       baseLayer: { zIndex: 0, visible: true },
       censusTractLayer: { zIndex: 1, visible: true },
-      hexbinLayer: { zIndex: 2, visible: this.type === 'properties' },
+      hexBinLayer: { zIndex: 2, visible: this.type === 'properties' },
       propertyBBLayer: { zIndex: 3, visible: this.type === 'properties' },
       propertyCentroidLayer: { zIndex: 4, visible: this.type === 'properties' },
       taxlotBBLayer: { zIndex: 5, visible: this.type !== 'properties' },
@@ -266,30 +268,26 @@ export class MapComponent implements AfterViewInit {
         })
       },
     })
-
-    this.setHexbinLayer()
+    this.setHexBinLayer()
   }
 
   renderMap() {
     console.log('renderMap')
-    let layers = Object.entries(this.layers).reduce((acc, [layerName, { visible }]) => {
-      const layer = this[layerName]
+    const layers = Object.entries(this.layers).reduce((acc: Layer[], [layerName, { visible }]) => {
+      const layer = this[layerName] as Layer
       if (visible && layer) acc.push(layer)
       return acc
     }, [])
-
     this.map = new Map({
       target: 'map',
       layers,
-      view: new View({
-        maxZoom: 19,
-        // center: [0, 0],
-        // zoom: 2,
-        // projection: 'EPSG:3857'
-      })
+      view: new View({ maxZoom: 19 }),
+      controls: defaultControls({
+        zoom: false,
+        attribution: false,
+        rotate: false,
+      }),
     })
-
-
   }
 
   setMapOptions() {
@@ -299,12 +297,12 @@ export class MapComponent implements AfterViewInit {
     this.map.addOverlay(this.popupOverlay)
     this.map.on('click', (event) => {
       const element = this.popupOverlay.getElement()
-      const points = []
-      
+      const points: Feature[] = []
+
       this.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-        // disregard hexbin/census clicks
-        if (![this.layers.hexbinLayer.zIndex, this.layers.censusTractLayer.zIndex, undefined].includes(layer.getProperties().zIndex)) {
-          points.push(...(feature.get('features') ?? []))
+        // disregard hexBin/census clicks
+        if (![this.layers.hexBinLayer.zIndex, this.layers.censusTractLayer.zIndex, undefined].includes(layer.getProperties().zIndex as number)) {
+          points.push(...(feature.get('features') as Feature[] ?? []))
         }
       })
 
@@ -341,33 +339,43 @@ export class MapComponent implements AfterViewInit {
     return uniqRelated
   }
 
-  setHexbinLayer() {
-    this.hexbinLayer = new VectorLayer({
-      source: this.hexbinSource(),
-      zIndex: this.layers.hexbinLayer.zIndex,
-      opacity: this.hexbinMaxOpacity,
+  // DEVELOPER NOTE: hexbin layer has serious type issues
+  setHexBinLayer() {
+    this.hexBinLayer = new VectorLayer({
+      source: this.hexBinSource() as VectorSource,
+      zIndex: this.layers.hexBinLayer.zIndex,
+      opacity: this.hexBinMaxOpacity,
       style: (feature: Feature) => {
-        const { features } = feature.getProperties()
-        const siteEUIKey = Object.keys(features[0].values_).find((key) => key.startsWith('site_eui'))
-        const siteEUIs = features.map((point) => point.values_[siteEUIKey])
-        const totalEUI = siteEUIs.reduce((acc, eui) => acc + eui, 0)
-        const opacity = Math.min(this.hexbinMinOpacity, totalEUI / this.hexagonSize)
-        const color = [...this.hexbinColor, opacity]
+        const properties = feature.getProperties() as { features?: unknown[] }
+        const features = properties.features || []
+        const siteEUIKey = Object.keys((features[0] as { values_: Record<string, unknown> })?.values_ || {}).find((key) => key.startsWith('site_eui'))
+        if (!siteEUIKey) {
+          console.error('No site EUI key found in feature properties')
+          return null
+        }
+        const siteEUIs = (features as { values_: Record<string, unknown> }[]).map((point) => {
+          const eui = point.values_?.[siteEUIKey]
+          return typeof eui === 'number' ? eui : 0
+        })
+        const totalEUI = siteEUIs.reduce((acc: number, eui: number) => acc + eui, 0)
+        const opacity = Math.max(this.hexBinMinOpacity, totalEUI / this.hexagonSize)
+        const color = [...this.hexBinColor, opacity]
+
         return [new Style({ fill: new Fill({ color }) })]
-      }
+      },
     })
   }
 
-  hexbinSource = (records = this.geocodedData) => new HexBin({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
+  hexBinSource = (records = this.geocodedData) => new HexBin({
     source: this.buildingSources(records),
     size: this.hexagonSize,
   })
 
-
-  hexbinInfoBarColor() {
-    const hexbinColorCode = this.hexbinColor.join(',')
-    const leftColor = `rgb(${hexbinColorCode},${this.hexbinMaxOpacity * this.hexbinMinOpacity})`
-    const rightColor = `rgb(${hexbinColorCode},${this.hexbinMaxOpacity})`
+  hexBinInfoBarColor() {
+    const hexBinColorCode = this.hexBinColor.join(',')
+    const leftColor = `rgb(${hexBinColorCode},${this.hexBinMaxOpacity * this.hexBinMinOpacity})`
+    const rightColor = `rgb(${hexBinColorCode},${this.hexBinMaxOpacity})`
     return { background: `linear-gradient(to right, ${leftColor}, ${rightColor})` }
   }
 
@@ -438,7 +446,7 @@ export class MapComponent implements AfterViewInit {
         const tractIds = geojson.features.reduce((acc: string[], feature: { properties: { GEOID10: string } }) => {
           return acc.concat(feature.properties.GEOID10)
         }, [])
-        await this._mapService.checkDisadvantagedStatus(tractIds as number[])
+        this._mapService.checkDisadvantagedStatus(tractIds as number[])
       }
     } catch (e) {
       console.error(e)
@@ -471,78 +479,101 @@ export class MapComponent implements AfterViewInit {
 
   layerVisible(zIndex: number) {
     const layers = this.map.getLayers().getArray()
-    return layers.some((layer) => layer.get('zIndex') === zIndex )
+    return layers.some((layer) => layer.get('zIndex') === zIndex)
   }
 
-  toggleLayer(layerName: string, visibility) {
+  toggleLayer(layerName: string, visibility: boolean) {
     const layer = this.layers[layerName]
     if (layer) {
       const updatedVisibility = visibility ?? !layer.visible
       this.layers[layerName].visible = updatedVisibility
       if (updatedVisibility) {
-        this.map.addLayer(this[layerName])
+        this.map.addLayer(this[layerName] as Layer)
       } else {
-        this.map.removeLayer(this[layerName])
+        this.map.removeLayer(this[layerName] as Layer)
       }
     }
   }
-  
-  toggleDACHighlight() {
+
+  toggleHighlightDACs() {
     this.highlightDACs = !this.highlightDACs
   }
 
-  detailPageIcon(pointInfo) {
+  detailPageIcon(pointInfo: { property_view_id?: number; taxlot_view_id?: number }) {
     const iconHtml = '<i class="ui-grid-icon-info-circled"></i>'
 
     if (this.type === 'properties') {
-      return `<a href="#/properties/${pointInfo.property_view_id}">${iconHtml}</a>`;
+      return `<a href="#/properties/${pointInfo.property_view_id}">${iconHtml}</a>`
     }
-    return `<a href="#/taxlots/${pointInfo.taxlot_view_id}">${iconHtml}</a>`;
+    return `<a href="#/taxlots/${pointInfo.taxlot_view_id}">${iconHtml}</a>`
   }
 
+  // DEVELOPER NOTE: popover element needs to be developed
   showPointInfo(point, element) {
     const popInfo = point.getProperties();
     const defaultKey = Object.keys(popInfo).find((key) => key.startsWith(this.defaultField))
     const coordinates = point.getGeometry().getCoordinates()
     const content = `${popInfo[defaultKey]} ${this.detailPageIcon(popInfo)}`
     this.popupOverlay.setPosition(coordinates)
-    console.log('need to develop a popover element')
+    console.log('TODO: need to develop a popover element')
   }
 
-  zoomOnCluster(points) {
+  zoomOnCluster(points: Feature[]) {
     const source = new VectorSource({ features: points })
     this.zoomCenter(source, { duration: 750 })
   }
 
-  zoomCenter(pointsSource, extraViewOptions = {}) {
+  zoomCenter(pointsSource: VectorSource, extraViewOptions = {}) {
     if (pointsSource.isEmpty()) {
       // Default view with no points is the middle of US
       const emptyView = new View({
         center: fromLonLat([-99.066067, 39.390897]),
-        zoom: 4.5
-      });
-      this.map.setView(emptyView);
+        zoom: 4.5,
+      })
+      this.map.setView(emptyView)
     } else {
       const extent = pointsSource.getExtent()
       const viewOptions = {
         size: this.map.getSize(),
         padding: [10, 10, 10, 10],
-        ...extraViewOptions
-      };
+        ...extraViewOptions,
+      }
       this.map.getView().fit(extent, viewOptions)
     }
   }
 
-  rerenderPoints(records) {
+  rerenderPoints(records: State[]) {
     this.filteredRecords = records.length
     this.pointsLayer.setSource(this.pointsSource(records))
     if (this.type === 'properties') {
-      this.hexbinLayer.setSource(this.hexbinSource(records))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      this.hexBinLayer.setSource(this.hexBinSource(records))
       this.propertyBBLayer.setSource(this.boundingBoxSource(records))
       this.propertyCentroidLayer.setSource(this.centroidSource(records))
     } else {
       this.taxlotBBLayer.setSource(this.boundingBoxSource(records))
       this.taxlotCentroidLayer.setSource(this.centroidSource(records))
     }
+  }
+
+  // page controls
+  selectCycle() {
+    this.currentUser.settings.cycleId = this.cycle.cycle_id
+    this.updateOrgUserSettings().pipe(
+      switchMap(() => this.initMap()),
+    ).subscribe()
+  }
+
+  updateOrgUserSettings() {
+    return this._organizationService.updateOrganizationUser(this.currentUser.id, this.orgId, this.currentUser.settings)
+  }
+
+  get progressMode() {
+    const mode = this.progress.current ? 'determinate' : 'indeterminate'
+    return mode as ProgressBarMode
+  }
+
+  rp() {
+    console.log('rp', this.highlightDACs)
   }
 }
