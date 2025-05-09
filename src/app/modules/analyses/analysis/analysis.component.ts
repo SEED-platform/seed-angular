@@ -85,10 +85,5 @@ export class AnalysisComponent implements OnInit {
     this.originalViews = this._route.snapshot.data.viewsPayload.original_views as OriginalView[]
     this.cycles = this._route.snapshot.data.cycles as Cycle[]
     this.messages = this._route.snapshot.data.messages as AnalysesMessage[]
-    console.log('analysis', this.analysis)
-    console.log('views', this.views)
-    console.log('originalViews', this.originalViews)
-    console.log('cycles:', this.cycles)
-    console.log('messages:', this.messages)
   }
 }

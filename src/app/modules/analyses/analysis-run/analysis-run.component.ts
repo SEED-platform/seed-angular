@@ -34,7 +34,7 @@ export class AnalysisRunComponent implements OnInit {
   analysis: Analysis
   view: View
   views: View[]
-  originalViews: OriginalView[]
+  originalView: OriginalView
   cycles: Cycle[]
   messages: AnalysesMessage[]
   currentUser: CurrentUser
@@ -49,8 +49,6 @@ export class AnalysisRunComponent implements OnInit {
   constructor(private _sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
-    console.log(`Analysis ${this.analysisId}`)
-    console.log(`Run ${this.runId}`)
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
       this.currentUser = currentUser
     })
@@ -61,7 +59,6 @@ export class AnalysisRunComponent implements OnInit {
   sanitizeUrl(url: string): SafeResourceUrl {
     // this is a local file path in the /media dir within SEED backend
     // TODO: we will need to retrieve it with a full path to backend?
-    console.log('URL: ', url)
     return this._sanitizer.bypassSecurityTrustResourceUrl(`http://127.0.0.1:8000${url}`)
   }
 
@@ -96,14 +93,8 @@ export class AnalysisRunComponent implements OnInit {
     this.analysis = this._route.snapshot.data.analysis as Analysis
     this.view = this._route.snapshot.data.viewPayload.view as View
     this.views = [this.view]
-    this.originalViews = [this._route.snapshot.data.viewPayload.original_view] as OriginalView[]
+    this.originalView = this._route.snapshot.data.viewPayload.original_view as OriginalView
     this.cycles = this._route.snapshot.data.cycles as Cycle[]
     this.messages = this._route.snapshot.data.messages as AnalysesMessage[]
-    console.log('analysis', this.analysis)
-    console.log('view', this.view)
-    console.log('originalViews', this.originalViews)
-    console.log('cycles:', this.cycles)
-    console.log('messages:', this.messages)
-    console.log(this.view.parsed_results)
   }
 }

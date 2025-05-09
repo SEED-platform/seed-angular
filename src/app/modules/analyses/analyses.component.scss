@@ -6,7 +6,7 @@ $cellBackground: #f2f2f2;
 
 
 .even-card {
-  background-color: $cellBackground !important;
+  background-color: var(--header-row-bg);
 }
 
 // .dynamic-grid {
@@ -38,11 +38,11 @@ $cellBackground: #f2f2f2;
   font-weight: bold;
   padding: 0 5px;
   box-sizing: border-box;
-  background-color: $cellBackground !important;
+  background-color: var(--header-row-bg);
 }
 
 .alt-row {
-  background-color: $cellBackground !important;
+  background-color: var(--header-row-bg);
 }
 
 .pad-row {
@@ -87,8 +87,18 @@ $cellBackground: #f2f2f2;
 }
 
 .mat-mdc-header-row {
-  background-color: $cellBackground;
+  background-color: var(--header-row-bg);
 }
+
+// #analysis-table .mat-mdc-row:hover, #analysis-table .mat-row:hover, #analysis-table tr:hover, #analysis-table td:hover {
+//   background-color: transparent !important;
+// }
+// tr.mat-mdc-row:hover, #analysis-table tr.mat-mdc-row:hover {
+//   background-color: transparent !important;
+// }
+// .mat-mdc-row:hover .mat-mdc-cell {
+//   background: unset!important;
+// }
 
 mat-icon.small-icon {
   width: 16px !important;

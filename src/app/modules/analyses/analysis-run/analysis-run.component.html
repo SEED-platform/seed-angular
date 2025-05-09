@@ -1,4 +1,4 @@
-<seed-page [config]="{ title: 'Analysis Run', titleIcon: 'fa-solid:chart-bar' }" *transloco="let t">
+<seed-page [config]="{ title: 'Analysis Run', titleIcon: 'fa-solid:chart-bar', breadcrumbs: ['Analyses', analysis.name] }" *transloco="let t">
   <div class="flex-auto pt-4 sm:pt-6">
     <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow sm:col-span-2 md:col-span-4">
       <div class="overflow-x-auto">
@@ -9,7 +9,7 @@
           </div>
           <div class="mx-auto mt-3 h-screen w-full max-w-screen-2xl">
             <mat-grid-list cols="11" gutterSize="0px" rowHeight="50px" class="justify-center max-h-2">
-              <mat-grid-tile [colspan]="1" class="header-row border-r-2">{{ t('Number of Runs') }}</mat-grid-tile>
+              <mat-grid-tile [colspan]="1" class="header-row border-r-2">{{ t('Runs') }}</mat-grid-tile>
               <mat-grid-tile class="header-row border-r-2">{{ t('Type') }}</mat-grid-tile>
               <mat-grid-tile [colspan]="3" class="header-row border-r-2">{{ t('Configuration') }}</mat-grid-tile>
               <mat-grid-tile class="header-row border-r-2">{{ t('Created') }}</mat-grid-tile>
@@ -53,7 +53,7 @@
                 <ng-container matColumnDef="property">
                   <th mat-header-cell *matHeaderCellDef> {{ t('Property') }} </th>
                   <td mat-cell *matCellDef="let view">
-                    <!-- <mat-icon svgIcon="fa-solid:right-from-bracket" class="ml-2 text-blue-400 small-icon"></mat-icon>--><a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/properties', originalViews[view.id]]">{{ view.display_name || 'Property ' + originalViews[view.id] }}</a>
+                    <!-- <mat-icon svgIcon="fa-solid:right-from-bracket" class="ml-2 text-blue-400 small-icon"></mat-icon>--><a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/properties', originalView]">{{ view.display_name || 'Property ' + originalView }}</a>
                   </td>
                 </ng-container>
                 <ng-container matColumnDef="messages">
