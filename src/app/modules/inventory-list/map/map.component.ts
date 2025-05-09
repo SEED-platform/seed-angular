@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { type Feature, Overlay } from 'ol'
 import { defaults as defaultControls } from 'ol/control'
+import { buffer } from 'ol/extent'
 import GeoJSON from 'ol/format/GeoJSON'
 import WKT from 'ol/format/WKT'
 import TileLayer from 'ol/layer/Tile'
@@ -29,16 +30,19 @@ import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
 import { combineLatest, filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
-import type { Label } from '@seed/api/label'
+import type { LabelOperator } from '@seed/api/label';
+import { type Label, LabelService } from '@seed/api/label'
 import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { MapService } from '@seed/services/map'
-import type { FilterResponse, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
+import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
+import { LabelsComponent } from './labels.component';
 
 type Layer = VectorLayer | TileLayer
+
 @Component({
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
@@ -49,12 +53,14 @@ type Layer = VectorLayer | TileLayer
     MatProgressBarModule,
     MatSelectModule,
     MatTooltipModule,
+    LabelsComponent,
   ],
 })
 export class MapComponent implements OnInit {
   private _inventoryService = inject(InventoryService)
-  private _organizationService = inject(OrganizationService)
+  private _labelService = inject(LabelService)
   private _mapService = inject(MapService)
+  private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
 
@@ -79,6 +85,7 @@ export class MapComponent implements OnInit {
   hexagonSize = 750
   highlightDACs = true
   inProgress = false
+  labels: Label[] = []
   layers: Record<string, { zIndex: number; visible: boolean }>
   map: Map
   orgId: number
@@ -120,6 +127,13 @@ export class MapComponent implements OnInit {
         this.currentUser = currentUser
         this.cycle = this.cycles.find((c) => c.cycle_id === this.currentUser.settings.cycleId) ?? this.cycles[0]
       }),
+      switchMap(() => this.getLabels()),
+    )
+  }
+
+  getLabels() {
+    return this._labelService.getInventoryLabels(this.orgId, null, this.cycle.cycle_id, this.type as InventoryType).pipe(
+      tap((labels) => { this.labels = labels.filter((l) => l.is_applied.length) }),
     )
   }
 
@@ -532,17 +546,20 @@ export class MapComponent implements OnInit {
       })
       this.map.setView(emptyView)
     } else {
+      const bufferedExtent = buffer(pointsSource.getExtent(), 500)
       const extent = pointsSource.getExtent()
       const viewOptions = {
         size: this.map.getSize(),
         padding: [10, 10, 10, 10],
         ...extraViewOptions,
       }
-      this.map.getView().fit(extent, viewOptions)
+      this.map.getView().fit(bufferedExtent, viewOptions)
+      // this.map.getView().fit(extent, viewOptions)
     }
   }
 
   rerenderPoints(records: State[]) {
+    console.log('rerenderPoints', records)
     this.filteredRecords = records.length
     this.pointsLayer.setSource(this.pointsSource(records))
     if (this.type === 'properties') {
@@ -560,6 +577,7 @@ export class MapComponent implements OnInit {
   selectCycle() {
     this.currentUser.settings.cycleId = this.cycle.cycle_id
     this.updateOrgUserSettings().pipe(
+      switchMap(() => this.getLabels()),
       switchMap(() => this.initMap()),
     ).subscribe()
   }
@@ -573,7 +591,28 @@ export class MapComponent implements OnInit {
     return mode as ProgressBarMode
   }
 
-  rp() {
-    console.log('rp', this.highlightDACs)
+  onLabelChange({ selectedLabelIds, operator }: { selectedLabelIds: number[]; operator: LabelOperator }) {
+    // reset geocodedData to all data
+    this.geocodedData = this.data.filter(({ long_lat }) => long_lat)
+
+    if (!selectedLabelIds.length) {
+      this.rerenderPoints(this.geocodedData)
+      return
+    }
+
+    if (operator === 'and') {
+      this.geocodedData = this.geocodedData.filter((record) => {
+        return selectedLabelIds.every((labelId) => record.labels.includes(labelId))
+      })
+    } else if (operator === 'or') {
+      this.geocodedData = this.geocodedData.filter((record) => {
+        return selectedLabelIds.some((labelId) => record.labels.includes(labelId))
+      })
+    } else if (operator === 'exclude') {
+      this.geocodedData = this.geocodedData.filter((record) => {
+        return !selectedLabelIds.some((labelId) => record.labels.includes(labelId))
+      })
+    }
+    this.rerenderPoints(this.geocodedData)
   }
 }

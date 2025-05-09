@@ -4,7 +4,7 @@
       <div class="my-auto mr-2 w-10 text-sm text-secondary">Filters</div>
       <mat-chip-set>
         @for (item of filterChips; track $index) {
-          <mat-chip class="filter-sort-chip"
+          <mat-chip class="seed-chip"
             >{{ item.displayName }}
             <mat-icon (click)="removeFilter(item.original)" matChipRemove>close</mat-icon>
           </mat-chip>
@@ -18,7 +18,7 @@
       <div class="my-auto mr-2 w-10 text-sm text-secondary">Sorts</div>
       <mat-chip-set>
         @for (item of sortChips; track $index) {
-          <mat-chip class="filter-sort-chip"
+          <mat-chip class="seed-chip"
             >{{ item.displayName }}
             <mat-icon (click)="removeSort(item.original)" matChipRemove>close</mat-icon>
           </mat-chip>

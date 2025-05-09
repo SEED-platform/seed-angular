@@ -1,0 +1,45 @@
+<div class="flex">
+   <!-- LABEL SELECT -->
+  <input
+    type="text"
+    matInput
+    [(ngModel)]="labelInput"
+    placeholder="Add a label"
+    (input)="labelInputChange($event)"
+    [matAutocomplete]="auto"
+    class="border border-gray-500 text-secondary text-sm h-[40px] rounded px-3 mr-4"
+    >
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (label of filteredLabels; track $index) {
+      <mat-option class="w-100" [value]="label" (click)="addLabel(label)">
+        <span class="border rounded-lg p-2 whitespace-nowrap" [style.background-color]="colorMap[label.color]">{{ label.name }}</span>
+      </mat-option>
+    }
+  </mat-autocomplete>
+
+  <!-- LABEL OPERATOR -->
+  <mat-select 
+    [value]="labelOperator"
+    class="text-secondary text-sm border border-gray-500 w-36 rounded px-3 mr-4 h-[40px]"
+    (selectionChange)="selectLabelOperator($event.value)"
+  >
+    @for (operator of labelOperators; track $index) {
+      <mat-option class="text-secondary text-sm" [value]="operator.value">
+        {{ operator.name }}
+      </mat-option>
+    }
+  </mat-select>
+
+  <!-- LABEL CHIPS -->
+  <mat-chip-set>
+    @for (label of selectedLabels; track $index) {
+    <mat-chip
+      class="seed-chip border-2"
+      [style.border-color]="colorMap[label.color]"
+      >
+      {{ label.name }}
+      <mat-icon (click)="removeLabel(label)" matChipRemove>close</mat-icon>
+    </mat-chip>
+    }
+  </mat-chip-set>
+</div>

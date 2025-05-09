@@ -8,17 +8,26 @@
 <!-- CONTENT -->
 <div class="mb-5 h-[calc(100vh-275px)]">
   <!-- CONFIG -->
-  <div class="flex gap-4 m-4">
-    <mat-label class="my-auto text-sm text-secondary">Cycle</mat-label>
-    <mat-select
-      [(value)]="cycle"
-      (selectionChange)="selectCycle()"
-      placeholder="Select Cycle"
-      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm">
-      @for(cycle of cycles; track cycle.cycle_id) {
-        <mat-option [value]="cycle">{{ cycle.name }}</mat-option>
-      }
-    </mat-select>
+  <div class="flex gap-8 m-4">
+    <!-- CYCLE -->
+    <div>
+      <mat-label class="mr-4 my-auto text-sm text-secondary">Cycle</mat-label>
+      <mat-select
+        [(value)]="cycle"
+        (selectionChange)="selectCycle()"
+        placeholder="Select Cycle"
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm">
+        @for(cycle of cycles; track cycle.cycle_id) {
+          <mat-option [value]="cycle">{{ cycle.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+    <!-- LABELS -->
+    <seed-inventory-list-map-labels
+      [labels]="labels"
+      [selectedLabels]="selectedLabels"
+      (labelChange)="onLabelChange($event)"
+    ></seed-inventory-list-map-labels>
   </div>
 
   <!-- PROGRESS -->

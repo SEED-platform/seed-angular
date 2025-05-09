@@ -233,6 +233,7 @@ export type State = {
   derived_data: Record<string, unknown>;
   extra_data: Record<string, unknown>;
   files: BuildingFile[];
+  labels: number[];
   measures: Record<string, unknown>[];
   related?: State[];
   scenarios: Scenario[];
