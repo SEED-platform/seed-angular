@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import type { Label } from '@seed/api/label'
+import { type Label } from '@seed/api/label'
 import { SharedImports } from '@seed/directives'
 
 @Component({

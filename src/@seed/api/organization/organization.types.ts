@@ -97,7 +97,7 @@ export type OrganizationUser = {
   number_of_orgs: number;
   role: UserRole;
   user_id: number;
-  settings: Record<string, unknown>;
+  settings: OrganizationUserSettings;
 }
 
 export type OrganizationUserSettings = {
@@ -106,6 +106,7 @@ export type OrganizationUserSettings = {
   profile_id?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
+  profile?: UserSettingsProfiles;
 }
 
 type UserSettingsFilters = {
@@ -116,6 +117,11 @@ type UserSettingsFilters = {
 type UserSettingsSorts = {
   properties?: string[];
   taxlots?: string[];
+}
+
+type UserSettingsProfiles = {
+  detail?: { properties?: number; taxlots?: number };
+  list?: { properties?: number; taxlots?: number };
 }
 
 export type OrganizationUsersResponse = {
@@ -184,4 +190,9 @@ export type UploadAccessLevelInstancesResponse = {
 
 export type StartSavingAccessLevelInstancesRequest = {
   filename: string;
+}
+
+export type MatchingCriteriaColumnsResponse = {
+  PropertyState: string[];
+  TaxLotState: string[];
 }

@@ -59,10 +59,12 @@
     <seed-inventory-grid
       #grid
       [columnDefs]="columnDefs"
+      [inventoryType]="type"
+      [labelMap]="labelMap"
       [pagination]="pagination"
       [rowData]="rowData"
-      [labelMap]="labelMap"
       [selectedViewIds]="selectedViewIds"
+      [type]="type"
       (pageChange)="onPageChange($event)"
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"

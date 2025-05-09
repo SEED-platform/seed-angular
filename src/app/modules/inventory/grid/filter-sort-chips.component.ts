@@ -58,6 +58,9 @@ export class FilterSortChipsComponent implements OnChanges {
       const direction = sort.startsWith('-') ? 'desc' : 'asc'
       sort = sort.replace(/^-/, '')
       const colDef = this.columnDefs.find(({ field }) => field === sort)
+
+      if (!colDef) return
+
       const chip = { field: colDef.field, displayName: `${colDef.headerName} ${direction}`, original: sort }
       this.sortChips.push(chip)
     }

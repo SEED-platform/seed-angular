@@ -8,6 +8,7 @@ export type Config = {
   action2Icon?: string;
   action2Text?: string;
   breadcrumbs?: string[];
+  sideNavToggle?: boolean;
   title: string;
   titleIcon?: string;
 }

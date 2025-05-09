@@ -1,4 +1,5 @@
 import type { Routes } from '@angular/router'
+import { PendingChangesGuard } from '@seed/guards/pending-changes.guard'
 import { DataTypesPropertiesComponent } from './data-types/data-types-properties.component'
 import { DataTypesTaxLotsComponent } from './data-types/data-types-taxlots.component'
 import { GeocodingPropertiesComponent } from './geocoding/geocoding-properties.component'
@@ -7,6 +8,7 @@ import { ImportSettingsPropertiesComponent } from './import-settings/import-sett
 import { ImportSettingsTaxLotsComponent } from './import-settings/import-settings-taxlots.component'
 import { ListPropertiesComponent } from './list/list-properties.component'
 import { ListTaxLotComponent } from './list/list-taxlots.component'
+import { MappingsComponent } from './mappings/mappings.component'
 
 export default [
   {
@@ -68,5 +70,11 @@ export default [
     path: 'import-settings/taxlots',
     title: 'Import Settings',
     component: ImportSettingsTaxLotsComponent,
+  },
+  {
+    path: 'mappings',
+    title: 'Column Mappings',
+    component: MappingsComponent,
+    canDeactivate: [PendingChangesGuard],
   },
 ] satisfies Routes
