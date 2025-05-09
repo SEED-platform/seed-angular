@@ -32,6 +32,7 @@ export type View = {
   cycle: number;
   display_name: string;
   output_files: Record<string, unknown>[];
+  parsed_results: Record<string, unknown>;
   property: number;
   property_state: number;
 }
@@ -54,6 +55,18 @@ export type AnalysisResponse = {
 export type AnalysesViews = {
   analyses: Analysis[];
   views: View[];
+}
+
+export type AnalysisViews = {
+  status: 'success';
+  views: View[];
+  original_views: OriginalView[];
+}
+
+export type AnalysisView = {
+  status: 'success';
+  view: View;
+  original_view: OriginalView;
 }
 
 export type AnalysesMessage = {

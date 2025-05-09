@@ -18,7 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { TranslocoService } from '@jsverse/transloco'
-import { ObjectRendererComponent, PageComponent, TableContainerComponent } from '@seed/components'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
 
@@ -27,7 +27,6 @@ import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
   templateUrl: './analyses.component.html',
   styleUrls: ['./analyses.component.scss'],
   imports: [
-    // AgGridAngular,
     CommonModule,
     MatCardModule,
     MatDialogModule,
@@ -35,10 +34,8 @@ import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
     MatIconModule,
     MatListModule,
     MatTabsModule,
-    ObjectRendererComponent,
     PageComponent,
     RouterLink,
-    TableContainerComponent,
     SharedImports,
   ],
 })
@@ -80,7 +77,7 @@ export class AnalysesComponent implements OnInit, OnDestroy {
       })
     })
 
-    // subscribe to the list of pending analyses. (call poll function with list of IDs)
+    // TODO - subscribe to the list of pending analyses. (call poll function with list of IDs)
     // function in tap that handles the function. figure out the list here (maintain the list)
     // I will update the observable when the status changes.
     // when it changes, remove from the list and change the status.
@@ -168,11 +165,6 @@ export class AnalysesComponent implements OnInit, OnDestroy {
     this.originalViews = this._route.snapshot.data.analyses.original_views as OriginalView[]
     this.cycles = this._route.snapshot.data.cycles as Cycle[]
     this.messages = this._route.snapshot.data.messages as AnalysesMessage[]
-    console.log('analyses', this.analyses)
-    console.log('views', this.views)
-    console.log('originalViews', this.originalViews)
-    console.log('cycles:', this.cycles)
-    console.log('messages:', this.messages)
 
     // go through the analyses and make a list of those analyses where analysis.status is any of the following statuses: "Pending Creation", "Creating", "Ready", "Queued", "Running"
     // then subscribe to "pollAnalyses" in the analysis service and when updated data comes in,

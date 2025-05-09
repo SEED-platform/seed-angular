@@ -1,24 +1,24 @@
-<seed-page [config]="{ title: 'Analyses', titleIcon: 'fa-solid:chart-bar' }">
+<seed-page [config]="{ title: 'Analyses', titleIcon: 'fa-solid:chart-bar' }" *transloco="let t">
   <div class="flex-auto pt-4 sm:pt-6">
     <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow sm:col-span-2 md:col-span-4">
       <div class="overflow-x-auto">
         <div class="mx-auto h-screen w-full max-w-screen-2xl">
           <mat-tab-group>
-            <mat-tab label="By Analysis">
+            <mat-tab label="{{ t('By Analysis') }}">
               <div class="mx-0 h-screen w-full max-w-screen-2xl">
                 <mat-grid-list cols="14" gutterSize="0px" rowHeight="1:1" class="justify-center">
-                  <mat-grid-tile [colspan]="2" class="header-row">Analysis Name</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Actions</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Number of Properties</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Type</mat-grid-tile>
-                  <mat-grid-tile [colspan]="3" class="header-row">Configuration</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Created</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Run Status</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Run Date</mat-grid-tile>
-                  <mat-grid-tile class="header-row">Run Duration</mat-grid-tile>
-                  <mat-grid-tile [colspan]="2" class="header-row">Run Cycle</mat-grid-tile>
+                  <mat-grid-tile [colspan]="2" class="header-row">{{ t('Analysis Name') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Actions') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Number of Properties') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Type') }}</mat-grid-tile>
+                  <mat-grid-tile [colspan]="3" class="header-row">{{ t('Configuration') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Created') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Run Status') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Run Date') }}</mat-grid-tile>
+                  <mat-grid-tile class="header-row">{{ t('Run Duration') }}</mat-grid-tile>
+                  <mat-grid-tile [colspan]="2" class="header-row">{{ t('Run Cycle') }}</mat-grid-tile>
                 </mat-grid-list>
-                <mat-grid-list cols="14" gutterSize="0px" rowHeight="1:3" class="dynamic-grid">
+                <mat-grid-list cols="14" gutterSize="0px" rowHeight="1:3">
                   @for (analysis of analyses; track trackByIdAndStatus(analysis)) {
                     <mat-grid-tile [colspan]="2" [class.alt-row]="$odd">
                       <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/analyses', analysis.id]">{{ analysis.name }}</a>
@@ -57,14 +57,9 @@
                     <mat-grid-tile [colspan]="2" [class.alt-row]="$odd">{{ cycle(analysis.cycles[0]) }}</mat-grid-tile>
                   }
                 </mat-grid-list>
-                <!-- <ag-grid-angular
-                style="width: 100%;"
-                [rowData]="rowData"
-                [gridOptions]="gridOptions">
-                </ag-grid-angular> -->
               </div>
             </mat-tab>
-            <mat-tab label="By Property">
+            <mat-tab label="{{ t('By Property') }}">
               <div>
                 @for (view of views; track view.id) {
                   <mat-card appearance="outlined" class="mb-2" [class.even-card]="$even">
@@ -104,7 +99,4 @@
       </div>
     </div>
   </div>
-
-
-
 </seed-page>

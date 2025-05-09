@@ -1,6 +1,16 @@
 // Styles from this file will override 'vendors.scss' and SEED's base styles.
 @tailwind utilities;
 
+// colors for text alerts
+:root {
+  --primary-text-color: rgb(29 78 216);
+  --success-text-color: rgb(21 128 61);
+  --info-text-color: theme('colors.cyan.600');
+  --warning-text-color: rgb(180 83 9);
+  --error-text-color: rgb(185 28 28);
+}
+
+
 .mat-mdc-snack-bar-container {
   &.success-snackbar  {
     --mat-snack-bar-button-color: #fff;
@@ -141,7 +151,7 @@
   }
 }
 
-.filter-sort-chip 
+.filter-sort-chip
 .mat-mdc-chip-action-label {
   @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
 }

@@ -6,7 +6,7 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 // import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, forkJoin, map, Observable, Subject, takeUntil, tap } from 'rxjs'
-import type { Analysis, AnalysisResponse, AnalysesMessage, AnalysesViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, View } from './analysis.types'
+import type { Analysis, AnalysisResponse, AnalysesMessage, AnalysesViews, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, View } from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -57,10 +57,10 @@ export class AnalysisService {
       )
   }
 
-  // get AnalysesMessages
-  getAnalysesMessages(): Observable<AnalysesMessage[]> {
+  // get AnalysesMessages (for all analyses or for a single one)
+  getMessages(_analysisId = '0'): Observable<AnalysesMessage[]> {
     return this._httpClient
-      .get<ListMessagesResponse>(`/api/v3/analyses/0/messages/?organization_id=${this.orgId}`)
+      .get<ListMessagesResponse>(`/api/v3/analyses/${_analysisId}/messages/?organization_id=${this.orgId}`)
       .pipe(
         map((response) => response.messages),
         tap((response) => {
@@ -78,6 +78,30 @@ export class AnalysisService {
       .get<AnalysisResponse>(`/api/v3/analyses/${_analysisId}?organization_id=${this.orgId}`)
       .pipe(
         map((response) => response.analysis),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses')
+        }),
+      )
+  }
+
+  // get single analysis view (from a single run)
+  getRun(_analysisId, _runId): Observable<AnalysisView> {
+    return this._httpClient
+      .get<AnalysisView>(`/api/v3/analyses/${_analysisId}/views/${_runId}?organization_id=${this.orgId}`)
+      .pipe(
+        map((response) => response),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analysis run')
+        }),
+      )
+  }
+
+  // get analysis views
+  getAnalysisViews(_analysisId): Observable<AnalysisViews> {
+    return this._httpClient
+      .get<AnalysisViews>(`/api/v3/analyses/${_analysisId}/views?organization_id=${this.orgId}`)
+      .pipe(
+        map((response) => response),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching analyses')
         }),
