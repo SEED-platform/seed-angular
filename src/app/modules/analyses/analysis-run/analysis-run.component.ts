@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import type { OnInit } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
@@ -21,21 +22,23 @@ import { TranslocoService } from '@jsverse/transloco'
 import { SharedImports } from '@seed/directives'
 
 @Component({
-  selector: 'seed-analyses-analysis',
-  templateUrl: './analysis.component.html',
+  selector: 'seed-analyses-analysis-run',
+  templateUrl: './analysis-run.component.html',
   styleUrls: ['../analyses.component.scss'],
   imports: [CommonModule, MatButtonModule, MatCardModule, MatGridListModule, MatIconModule, MatTableModule, PageComponent, RouterLink, SharedImports],
 })
-export class AnalysisComponent implements OnInit {
+export class AnalysisRunComponent implements OnInit {
   private _route = inject(ActivatedRoute)
   analysisId = Number(this._route.snapshot.paramMap.get('id'))
+  runId = Number(this._route.snapshot.paramMap.get('runId'))
   analysis: Analysis
+  view: View
   views: View[]
-  originalViews: OriginalView[]
+  originalView: OriginalView
   cycles: Cycle[]
   messages: AnalysesMessage[]
   currentUser: CurrentUser
-  columnsToDisplay = ['id', 'property', 'messages', 'outputs', 'actions']
+  columnsToDisplay = ['id', 'property', 'messages', 'outputs']
   private _router = inject(Router)
   private _analysisService = inject(AnalysisService)
   private _organizationService = inject(OrganizationService)
@@ -43,6 +46,7 @@ export class AnalysisComponent implements OnInit {
   private _userService = inject(UserService)
   private _transloco = inject(TranslocoService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  constructor(private _sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
@@ -50,6 +54,12 @@ export class AnalysisComponent implements OnInit {
     })
 
     this._init()
+  }
+
+  sanitizeUrl(url: string): SafeResourceUrl {
+    // this is a local file path in the /media dir within SEED backend
+    // TODO: we will need to retrieve it with a full path to backend?
+    return this._sanitizer.bypassSecurityTrustResourceUrl(`http://127.0.0.1:8000${url}`)
   }
 
   cycle(_id: number): string {
@@ -81,8 +91,9 @@ export class AnalysisComponent implements OnInit {
 
   private _init() {
     this.analysis = this._route.snapshot.data.analysis as Analysis
-    this.views = this._route.snapshot.data.viewsPayload.views as View[]
-    this.originalViews = this._route.snapshot.data.viewsPayload.original_views as OriginalView[]
+    this.view = this._route.snapshot.data.viewPayload.view as View
+    this.views = [this.view]
+    this.originalView = this._route.snapshot.data.viewPayload.original_view as OriginalView
     this.cycles = this._route.snapshot.data.cycles as Cycle[]
     this.messages = this._route.snapshot.data.messages as AnalysesMessage[]
   }
