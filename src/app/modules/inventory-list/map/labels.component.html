@@ -1,26 +1,26 @@
 <div class="flex">
-   <!-- LABEL SELECT -->
+  <!-- LABEL SELECT -->
   <input
+    class="text-secondary mr-4 h-[40px] rounded border border-gray-500 px-3 text-sm"
+    [(ngModel)]="labelInput"
+    [matAutocomplete]="auto"
+    (input)="labelInputChange($event)"
     type="text"
     matInput
-    [(ngModel)]="labelInput"
     placeholder="Add a label"
-    (input)="labelInputChange($event)"
-    [matAutocomplete]="auto"
-    class="border border-gray-500 text-secondary text-sm h-[40px] rounded px-3 mr-4"
-    >
+  />
   <mat-autocomplete #auto="matAutocomplete">
     @for (label of filteredLabels; track $index) {
       <mat-option class="w-100" [value]="label" (click)="addLabel(label)">
-        <span class="border rounded-lg p-2 whitespace-nowrap" [style.background-color]="colorMap[label.color]">{{ label.name }}</span>
+        <span class="whitespace-nowrap rounded-lg border p-2" [style.background-color]="colorMap[label.color]">{{ label.name }}</span>
       </mat-option>
     }
   </mat-autocomplete>
 
   <!-- LABEL OPERATOR -->
-  <mat-select 
+  <mat-select
+    class="text-secondary mr-4 h-[40px] w-36 rounded border border-gray-500 px-3 text-sm"
     [value]="labelOperator"
-    class="text-secondary text-sm border border-gray-500 w-36 rounded px-3 mr-4 h-[40px]"
     (selectionChange)="selectLabelOperator($event.value)"
   >
     @for (operator of labelOperators; track $index) {
@@ -33,13 +33,10 @@
   <!-- LABEL CHIPS -->
   <mat-chip-set>
     @for (label of selectedLabels; track $index) {
-    <mat-chip
-      class="seed-chip border-2"
-      [style.border-color]="colorMap[label.color]"
-      >
-      {{ label.name }}
-      <mat-icon (click)="removeLabel(label)" matChipRemove>close</mat-icon>
-    </mat-chip>
+      <mat-chip class="seed-chip border-2" [style.border-color]="colorMap[label.color]">
+        {{ label.name }}
+        <mat-icon (click)="removeLabel(label)" matChipRemove>close</mat-icon>
+      </mat-chip>
     }
   </mat-chip-set>
 </div>

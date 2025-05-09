@@ -31,7 +31,7 @@
                   @if (levels.length > 1) {
                     <mat-icon
                       class="icon-size-4"
-                      [ngClass]="{ 'cursor-pointer hover:text-gray-500 dark:hover:text-secondary': !submitted }"
+                      [ngClass]="{ 'cursor-pointer dark:hover:text-secondary hover:text-gray-500': !submitted }"
                       (click)="$event.stopPropagation(); !submitted && removeLevel($index)"
                       svgIcon="fa-solid:xmark"
                       matSuffix

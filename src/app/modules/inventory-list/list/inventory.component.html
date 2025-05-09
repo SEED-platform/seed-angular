@@ -2,7 +2,7 @@
   [config]="{
     title: pageTitle,
     titleIcon: 'fa-solid:building',
-    tabs: ['properties', 'taxlots']
+    tabs: ['properties', 'taxlots'],
   }"
 >
 </seed-page>
@@ -26,11 +26,7 @@
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
-      <seed-inventory-grid-config-selector 
-        [items]="cycles" 
-        [selectedId]="cycleId" 
-        (selectionChange)="onCycleChange($event)" 
-        label="Cycle">
+      <seed-inventory-grid-config-selector [items]="cycles" [selectedId]="cycleId" (selectionChange)="onCycleChange($event)" label="Cycle">
       </seed-inventory-grid-config-selector>
 
       <!-- Profiles -->

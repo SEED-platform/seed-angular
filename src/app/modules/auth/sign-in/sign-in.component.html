@@ -60,7 +60,14 @@
   </div>
 
   <div class="mt-1.5 flex w-full flex-col">
-    <mat-checkbox #termsCheckbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms" (keydown.enter)="termsCheckbox.toggle(); $event.preventDefault()">
+    <mat-checkbox
+      class="-ml-2"
+      #termsCheckbox
+      [class.mb-5]="!isTermsInvalid"
+      (keydown.enter)="termsCheckbox.toggle(); $event.preventDefault()"
+      color="primary"
+      formControlName="terms"
+    >
       <span>I agree with the</span>
       <a
         class="ml-1 cursor-pointer text-primary-500 hover:underline focus:underline"

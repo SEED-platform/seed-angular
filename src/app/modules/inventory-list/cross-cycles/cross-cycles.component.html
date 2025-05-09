@@ -1,43 +1,44 @@
-<seed-page [config]="{
+<seed-page
+  [config]="{
     title: 'Cross Cycles',
     titleIcon: 'fa-solid:shuffle',
     tabs: ['properties', 'taxlots'],
-  }">
+  }"
+>
 </seed-page>
 
 <!-- CONTENT -->
-<div class="m-5 flex flex-col gap-2 h-[calc(100vh-300px)]">
-
+<div class="m-5 flex h-[calc(100vh-300px)] flex-col gap-2">
   <!-- CONFIG -->
-  <div class="flex gap-4 mb-4">
-
+  <div class="mb-4 flex gap-4">
     <div class="mr-1 flex flex-col">
-      <mat-label class="text-sm text-secondary">Cycle</mat-label>
+      <mat-label class="text-secondary text-sm">Cycle</mat-label>
       <mat-select
-        multiple
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
         [(value)]="selectedCycleIds"
         (closed)="onSelectCycleClosed()"
+        multiple
         placeholder="Select Cycles"
-        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm">
-        @for(cycle of cycles; track cycle.cycle_id) {
+      >
+        @for (cycle of cycles; track cycle.cycle_id) {
           <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
         }
       </mat-select>
     </div>
 
     <div class="mr-1 flex flex-col">
-      <mat-label class="text-sm text-secondary">Profile</mat-label>
+      <mat-label class="text-secondary text-sm">Profile</mat-label>
       <mat-select
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
         [(value)]="selectedProfileId"
-        (selectionChange)="onSelectProfile()"
         [placeholder]="profiles?.length ? 'Select Profile' : '(No Profiles)'"
-        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm">
-        @for(profile of profiles; track profile.id) {
+        (selectionChange)="onSelectProfile()"
+      >
+        @for (profile of profiles; track profile.id) {
           <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
         }
       </mat-select>
     </div>
-
   </div>
 
   <!-- TABLE -->

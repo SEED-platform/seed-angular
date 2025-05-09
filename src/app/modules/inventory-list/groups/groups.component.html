@@ -1,13 +1,14 @@
-<seed-page [config]="{
+<seed-page
+  [config]="{
     title: 'Groups',
     titleIcon: 'fa-solid:sitemap',
     action: createGroup,
-    actionText: 'Create Group'
-  }">
+    actionText: 'Create Group',
+  }"
+>
 </seed-page>
 
 <div class="my-5">
-  
   @if (rowData.length) {
     <ag-grid-angular
       [columnDefs]="columnDefs"
@@ -17,5 +18,4 @@
       (gridReady)="onGridReady($event)"
     ></ag-grid-angular>
   }
-
 </div>

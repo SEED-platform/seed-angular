@@ -2,7 +2,7 @@
   <div>
     <!--  Actions -->
     <div class="m-1 flex flex-row gap-4">
-      <mat-label class="w-15 text-sm text-secondary">Actions</mat-label>
+      <mat-label class="text-secondary w-15 text-sm">Actions</mat-label>
       <mat-select
         class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
         #actionSelect
@@ -18,7 +18,7 @@
 
     <!--  Cycles -->
     <div class="m-1 flex flex-row gap-4">
-      <mat-label class="w-15 text-sm text-secondary">Cycle</mat-label>
+      <mat-label class="text-secondary w-15 text-sm">Cycle</mat-label>
       <mat-select
         class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
         [value]="selectedView.id"
@@ -34,7 +34,7 @@
     <!-- Profiles -->
     @if (profiles && profiles.length) {
       <div class="m-1 flex flex-row gap-4">
-        <mat-label class="w-15 text-sm text-secondary">Profile</mat-label>
+        <mat-label class="text-secondary w-15 text-sm">Profile</mat-label>
         <mat-select
           class="h-8 w-60 rounded border border-gray-500 p-3 text-sm"
           [value]="currentProfile.id"
@@ -50,7 +50,7 @@
 
     <!-- Labels -->
     @if (labels && labels.length) {
-      <div class="m-1 mt-2 flex text-secondary">
+      <div class="text-secondary m-1 mt-2 flex">
         <span class="mr-8 w-12">Labels</span>
         @for (label of labels; track $index) {
           <seed-label [label]="label"></seed-label>
@@ -61,7 +61,7 @@
     <!-- Groups -->
 
     @if (type === 'properties' && groupMappings.length) {
-      <div class="m-1 mt-2 flex text-secondary">
+      <div class="text-secondary m-1 mt-2 flex">
         <span class="my-auto mr-8 w-12">Groups</span>
         @for (group of groupMappings; track $index) {
           <a class="mr-2 !p-0" (click)="tempAction()" mat-stroked-button>

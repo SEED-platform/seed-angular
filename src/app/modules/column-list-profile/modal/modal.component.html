@@ -48,9 +48,9 @@
       <mat-form-field class="w-full">
         <mat-label>Profile Name</mat-label>
         <input matInput formControlName="name" placeholder="Profile Name" />
-          @if (form.controls.name?.hasError('valueExists')) {
-            <mat-error>This name already exists.</mat-error>
-          }
+        @if (form.controls.name?.hasError('valueExists')) {
+          <mat-error>This name already exists.</mat-error>
+        }
       </mat-form-field>
     </form>
   </div>
@@ -67,12 +67,9 @@
   </div>
 }
 
-
 <!-- DELETE -->
 @if (data.mode === 'delete') {
-  <div class="mx-4 my-10 flex justify-evenly">
-    Are you sure you want to delete this profile? This action cannot be undone.
-  </div>
+  <div class="mx-4 my-10 flex justify-evenly">Are you sure you want to delete this profile? This action cannot be undone.</div>
 
   <mat-divider></mat-divider>
 
@@ -85,7 +82,6 @@
     </mat-dialog-actions>
   </div>
 }
-
 
 <!-- RENAME -->
 @if (data.mode === 'rename') {
