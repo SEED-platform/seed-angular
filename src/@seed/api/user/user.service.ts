@@ -169,16 +169,28 @@ export class UserService implements OnDestroy {
 
   // applies defaults to an org users settings
   checkUserSettings(userSettings: OrganizationUserSettings) {
-    userSettings.profile = userSettings.profile || {}
-    userSettings.profile.detail = userSettings.profile.detail || {}
-    userSettings.profile.detail.properties = userSettings.profile.detail.properties || null
-    userSettings.profile.detail.taxlots = userSettings.profile.detail.taxlots || null
-    userSettings.profile.list = userSettings.profile.list || {}
-    userSettings.profile.list.properties = userSettings.profile.list.properties || null
-    userSettings.profile.list.taxlots = userSettings.profile.list.taxlots || null
-    userSettings.crossCycles = userSettings.crossCycles || {}
-    userSettings.crossCycles.properties = userSettings.crossCycles.properties || null
-    userSettings.crossCycles.taxlots = userSettings.crossCycles.taxlots || null
+    userSettings.profile ??= {}
+    userSettings.profile.detail ??= {}
+    userSettings.profile.detail.properties ??= null
+    userSettings.profile.detail.taxlots ??= null
+
+    userSettings.profile.list ??= {}
+    userSettings.profile.list.properties ??= null
+    userSettings.profile.list.taxlots ??= null
+
+    userSettings.crossCycles ??= {}
+    userSettings.crossCycles.properties ??= null
+    userSettings.crossCycles.taxlots ??= null
+
+    userSettings.sorts ??= {}
+    userSettings.sorts.properties ??= []
+    userSettings.sorts.taxlots ??= []
+
+    userSettings.filters ??= {}
+    userSettings.filters.properties ??= {}
+    userSettings.filters.taxlots ??= {}
+
+    userSettings.labels ??= { ids: [], operator: 'and' }
   }
 
   ngOnDestroy() {

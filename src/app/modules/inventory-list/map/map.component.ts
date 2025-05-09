@@ -217,7 +217,7 @@ export class MapComponent implements OnInit {
         this.filteredRecords = this.geocodedData.length
       }),
       finalize(() => {
-        this.inProgress = false
+        // this.inProgress = false
       }),
     )
   }
@@ -292,6 +292,8 @@ export class MapComponent implements OnInit {
       if (visible && layer) acc.push(layer)
       return acc
     }, [])
+    this.inProgress = false
+
     this.map = new Map({
       target: 'map',
       layers,

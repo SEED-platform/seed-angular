@@ -4,9 +4,8 @@
     tabs: ['properties', 'taxlots'],
   }">
 </seed-page>
-
 <!-- CONTENT -->
-<div class="mb-5 h-[calc(100vh-275px)]">
+<div class="h-full-page-tabs">
   <!-- CONFIG -->
   <div class="flex gap-8 m-4">
     <!-- CYCLE -->
@@ -24,6 +23,7 @@
     </div>
     <!-- LABELS -->
     <seed-inventory-list-map-labels
+      [currentUser]="currentUser"
       [labels]="labels"
       [selectedLabels]="selectedLabels"
       (labelChange)="onLabelChange($event)"
@@ -94,5 +94,17 @@
   <div id="map" class="w-full h-[calc(100%-100px)]">
     <div id="popup-element"></div>
   </div>
+
+  <!-- EUI GRADIENT -->
+   @if (!inProgress) {
+     <div class="absolute bottom-0 right-0 text-xs dark:bg-gray-900 opacity-100 dark:text-secondary bg-gray-100 text-secondary border border-opacity-0 rounded p-2">
+       <div class="flex">
+        <span class="mr-2">Total Site EUI (kBtu/ft²)</span>
+        <span>20 -</span>
+        <div class="w-20 h-3 border rounded-lg mx-2" [style]="hexBinInfoBarColor()"></div>
+        <span>+ 750</span>
+       </div>
+     </div>
+   }
   
 </div>
