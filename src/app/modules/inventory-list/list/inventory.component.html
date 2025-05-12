@@ -22,7 +22,7 @@
         [profiles]="profiles"
         [selectedViewIds]="selectedViewIds"
         [type]="type"
-        (refreshInventory)="refreshInventory()"
+        (refreshInventory)="refreshInventory$.next()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->

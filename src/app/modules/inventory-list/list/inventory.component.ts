@@ -12,13 +12,13 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { combineLatest, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
-import type { OrganizationUser, OrganizationUserSettings } from '@seed/api/organization'
+import type { OrganizationUserResponse, OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
@@ -67,6 +67,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   currentUser: CurrentUser
   cycle: Cycle
   cycleId: number
+  cycleId$ = new BehaviorSubject<number>(null)
   cycles: Cycle[]
   gridApi: GridApi
   labelMap: Record<number, Label> = {}
@@ -78,10 +79,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
   pagination: InventoryPagination
   profile: Profile
   profileId: number
+  profileId$ = new BehaviorSubject<number>(null)
   propertyProfiles: Profile[]
-  taxlotProfiles: Profile[]
+  refreshInventory$ = new Subject<void>()
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
+  taxlotProfiles: Profile[]
   userSettings: OrganizationUserSettings = {}
 
   /*
@@ -102,8 +105,38 @@ export class InventoryComponent implements OnDestroy, OnInit {
       map((results) => this.setDependencies(results)),
       switchMap((profile_id) => this.getProfile(profile_id)),
       switchMap(() => this.loadInventory()),
-      tap(() => { this.setFilterSorts() }),
+      tap(() => {
+        this.setFilterSorts()
+        this.initStreams()
+      }),
     ).subscribe()
+  }
+
+  initStreams() {
+    this.profileId$.pipe(
+      filter((profileId) => !!profileId),
+      takeUntil(this._unsubscribeAll$),
+      switchMap((id) => this.getProfile(id)),
+      switchMap(() => this.refreshInventory()),
+    ).subscribe()
+
+    this.cycleId$.pipe(
+      tap(() => {
+        console.log('cycleId$')
+      }),
+      takeUntil(this._unsubscribeAll$),
+      switchMap(() => this.refreshInventory()),
+    ).subscribe()
+
+    this.refreshInventory$.pipe(
+      switchMap(() => this.refreshInventory()),
+    ).subscribe()
+  }
+
+  refreshInventory() {
+    return this.updateOrgUserSettings().pipe(
+      switchMap(() => this.loadInventory()),
+    )
   }
 
   /*
@@ -211,10 +244,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ) as Observable<null>
   }
 
-  refreshInventory() {
-    this.loadInventory().subscribe()
-  }
-
   /*
   * on initial page load, set any filters and sorts from the user settings
   */
@@ -232,10 +261,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onProfileChange(id: number) {
-    this.getProfile(id).pipe(
-      switchMap(() => this.updateOrgUserSettings()),
-      switchMap(() => this.loadInventory()),
-    ).subscribe()
+    this.profileId$.next(id)
   }
 
   onCycleChange(id: number) {
@@ -243,31 +269,22 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.cycle = this.cycles.find((cycle) => cycle.id === id)
     this.page = 1
     this.userSettings.cycleId = id
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.loadInventory()),
-    ).subscribe()
+    this.cycleId$.next(id)
   }
 
-  updateOrgUserSettings(): Observable<OrganizationUser> {
-    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).pipe(
-      map((response) => response.data),
-      tap(({ settings }) => {
-        this.userSettings = settings
-      }),
-    )
+  updateOrgUserSettings(): Observable<OrganizationUserResponse> {
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
   }
 
   onGridReset() {
     this.userSettings.filters = {}
     this.userSettings.sorts = {}
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.loadInventory()),
-    ).subscribe()
+    this.refreshInventory$.next()
   }
 
   onPageChange(page: number) {
     this.page = page
-    this.refreshInventory()
+    this.refreshInventory$.next()
   }
 
   setFilters() {
@@ -308,7 +325,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
-    this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory())).subscribe()
+    this.refreshInventory$.next()
   }
 
   ngOnDestroy(): void {
