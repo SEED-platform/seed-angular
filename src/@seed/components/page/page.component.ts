@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, Input, OnInit, ViewEncapsulation } from '@angular/core'
+import type { OnInit } from '@angular/core'
+import { Component, inject, Input, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import { SharedImports } from '@seed/directives'
-import { DrawerService } from '../drawer'
-import type { Config } from './page.types'
 import { ActivatedRoute, Router } from '@angular/router'
-import { InventoryType } from 'app/modules/inventory'
+import { SharedImports } from '@seed/directives'
+import type { InventoryType } from 'app/modules/inventory'
+import { DrawerService } from '../drawer'
 import { InventoryTabComponent } from './inventory-tab'
+import type { Config } from './page.types'
 
 @Component({
   selector: 'seed-page',

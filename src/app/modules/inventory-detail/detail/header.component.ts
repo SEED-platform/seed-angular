@@ -71,6 +71,7 @@ export class HeaderComponent implements OnInit {
     { name: 'Run Analysis', action: () => { this.tempAction() }, disabled: true },
     { name: 'Update with Audit Template', action: () => { this.tempAction() }, disabled: true },
     { name: 'Update with BuildingSync', action: () => { this.tempAction() }, disabled: true },
+    // eslint-disable-next-line @cspell/spellchecker
     { name: 'Update with ESPM', action: () => { this.tempAction() }, disabled: true },
   ]
 

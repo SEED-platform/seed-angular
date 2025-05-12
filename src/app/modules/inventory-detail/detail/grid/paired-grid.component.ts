@@ -1,9 +1,10 @@
+/* eslint-disable @cspell/spellchecker */
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { of, Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'

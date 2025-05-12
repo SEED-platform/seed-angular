@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import type { OnDestroy, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -9,11 +9,11 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
-import { GroupsService } from '@seed/api/groups/groups.service';
-import type { InventoryGroup } from '@seed/api/groups/groups.types'
-import { OrganizationService, type AccessLevelInstancesByDepth, type AccessLevelsByDepth } from '@seed/api/organization'
-import { SEEDValidators } from '@seed/validators'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { GroupsService } from '@seed/api/groups/groups.service'
+import type { InventoryGroup } from '@seed/api/groups/groups.types'
+import { type AccessLevelInstancesByDepth, type AccessLevelsByDepth, OrganizationService } from '@seed/api/organization'
+import { SEEDValidators } from '@seed/validators'
 
 @Component({
   selector: 'seed-inventory-list-groups-form-modal',

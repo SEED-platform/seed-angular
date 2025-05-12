@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
-import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({

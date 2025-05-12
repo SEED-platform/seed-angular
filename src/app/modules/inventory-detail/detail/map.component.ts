@@ -1,3 +1,4 @@
+/* eslint-disable @cspell/spellchecker */
 // ol imports throw type errors
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'

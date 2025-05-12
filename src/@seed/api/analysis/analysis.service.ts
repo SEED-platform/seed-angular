@@ -1,9 +1,9 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { ErrorService } from '@seed/services/error/error.service'
 import type { Observable } from 'rxjs'
 import { catchError, Subject, takeUntil } from 'rxjs'
+import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
 import type { AnalysisSummary } from './analysis.types'
 

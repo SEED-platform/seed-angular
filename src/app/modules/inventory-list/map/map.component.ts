@@ -1,8 +1,9 @@
+/* eslint-disable @cspell/spellchecker */
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatIconModule } from '@angular/material/icon'
-import type { ProgressBarMode } from '@angular/material/progress-bar';
+import type { ProgressBarMode } from '@angular/material/progress-bar'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
@@ -15,8 +16,7 @@ import WKT from 'ol/format/WKT'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import Map from 'ol/Map'
-import { transformExtent } from 'ol/proj'
-import { fromLonLat } from 'ol/proj'
+import { fromLonLat, transformExtent } from 'ol/proj'
 import Cluster from 'ol/source/Cluster'
 import OSM from 'ol/source/OSM'
 import VectorSource from 'ol/source/Vector'
@@ -30,8 +30,8 @@ import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
 import { combineLatest, filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
-import type { LabelOperator } from '@seed/api/label';
-import { type Label, LabelService } from '@seed/api/label'
+import type { Label, LabelOperator } from '@seed/api/label'
+import { LabelService } from '@seed/api/label'
 import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
@@ -39,7 +39,7 @@ import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { MapService } from '@seed/services/map'
 import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
-import { LabelsComponent } from './labels.component';
+import { LabelsComponent } from './labels.component'
 
 type Layer = VectorLayer | TileLayer
 
@@ -355,7 +355,7 @@ export class MapComponent implements OnInit {
     return uniqRelated
   }
 
-  // DEVELOPER NOTE: hexbin layer has serious type issues
+  // DEVELOPER NOTE: hexBin layer has serious type issues
   setHexBinLayer() {
     this.hexBinLayer = new VectorLayer({
       source: this.hexBinSource() as VectorSource,
@@ -456,7 +456,7 @@ export class MapComponent implements OnInit {
       if (this.map?.getView().getZoom() >= 11) {
         const extents = this.map.getView().calculateExtent(this.map.getSize())
         const [west, south, east, north] = transformExtent(extents, this.map.getView().getProjection(), 'EPSG:4326')
-        const url = `https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/usa_november_2022/FeatureServer/0/query?where=1%3D1&outFields=GEOID10&geometry=${west}%2C${south}%2C${east}%2C${north}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson`;
+        const url = `https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/usa_november_2022/FeatureServer/0/query?where=1%3D1&outFields=GEOID10&geometry=${west}%2C${south}%2C${east}%2C${north}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson`
         geojson = await (await fetch(url)).json() as { type: string; features: { properties: { GEOID10: string } }[] }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const tractIds = geojson.features.reduce((acc: string[], feature: { properties: { GEOID10: string } }) => {
@@ -526,12 +526,12 @@ export class MapComponent implements OnInit {
 
   // DEVELOPER NOTE: popover element needs to be developed
   showPointInfo(point, element) {
-    const popInfo = point.getProperties();
-    const defaultKey = Object.keys(popInfo).find((key) => key.startsWith(this.defaultField))
-    const coordinates = point.getGeometry().getCoordinates()
-    const content = `${popInfo[defaultKey]} ${this.detailPageIcon(popInfo)}`
-    this.popupOverlay.setPosition(coordinates)
-    console.log('TODO: need to develop a popover element')
+    // const popInfo = point.getProperties();
+    // const defaultKey = Object.keys(popInfo).find((key) => key.startsWith(this.defaultField))
+    // const coordinates = point.getGeometry().getCoordinates()
+    // const content = `${popInfo[defaultKey]} ${this.detailPageIcon(popInfo)}`
+    // this.popupOverlay.setPosition(coordinates)
+    console.log('TODO: need to develop a popover element', point, element)
   }
 
   zoomOnCluster(points: Feature[]) {
@@ -549,7 +549,6 @@ export class MapComponent implements OnInit {
       this.map.setView(emptyView)
     } else {
       const bufferedExtent = buffer(pointsSource.getExtent(), 500)
-      const extent = pointsSource.getExtent()
       const viewOptions = {
         size: this.map.getSize(),
         padding: [10, 10, 10, 10],

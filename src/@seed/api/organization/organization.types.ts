@@ -1,6 +1,6 @@
 import type { UserRole } from '@seed/api/user'
 import type { Column } from '../column'
-import type { LabelOperator } from '../label';
+import type { LabelOperator } from '../label'
 
 export type OrgCycle = {
   name: string;

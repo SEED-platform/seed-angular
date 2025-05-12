@@ -1,6 +1,5 @@
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, inject, Input, Output } from '@angular/core'
-import { EventEmitter } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { MatButtonModule } from '@angular/material/button'
