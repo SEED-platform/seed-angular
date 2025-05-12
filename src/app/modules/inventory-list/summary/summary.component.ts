@@ -7,10 +7,10 @@ import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { combineLatest, Subject, switchMap, tap } from 'rxjs'
+import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { AnalysisService } from '@seed/api/analysis/analysis.service'
 import type { AnalysisSummary } from '@seed/api/analysis/analysis.types'
-import type { Organization, OrgCycle } from '@seed/api/organization'
+import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { type CurrentUser, UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
@@ -52,31 +52,34 @@ export class SummaryComponent implements OnDestroy, OnInit {
   totalRecords: string
   totalExtraData: string
 
-  ngOnInit(): void {
-    this.initPage()
+  ngOnInit() {
+    this.initPage().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
   }
 
   initPage() {
-    combineLatest([
-      this._userService.currentUser$,
-      this._organizationService.currentOrganization$,
-    ]).pipe(
-      switchMap(([user, org]) => this.getDependencies(user, org)),
+    return this._userService.currentUser$.pipe(
+      switchMap((user) => this.getDependencies(user)),
       tap(() => { this.setGrid() }),
-    ).subscribe()
+    )
   }
 
-  getDependencies(user: CurrentUser, org: Organization) {
+  getDependencies(user: CurrentUser) {
     this.currentUser = user
-    this.orgId = org.org_id
-    this.cycles = org.cycles
-    this.cycleId = user.settings.cycleId ?? org.cycles[0].cycle_id
-    return this._userService.currentUser$.pipe(
+    this.orgId = user.org_id
+    return this._organizationService.getById(this.orgId).pipe(
+      tap((org) => {
+        this.cycles = org.cycles
+        this.cycleId = this.currentUser.settings.cycleId ?? org.cycles[0].cycle_id
+      }),
       switchMap(() => this._analysisService.summary(this.orgId, this.cycleId)),
       tap((summary) => {
         this.totalRecords = summary.total_records.toLocaleString()
         this.totalExtraData = summary.number_extra_data_fields.toLocaleString()
         this.summary = summary
+      }),
+      catchError(() => {
+        this.rowData = []
+        return EMPTY
       }),
     )
   }
@@ -105,13 +108,13 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   selectCycle(cycleId: number) {
     this.currentUser.settings.cycleId = cycleId
-    this.updateOrgUserSettings().subscribe(() => {
-      this.initPage()
-    })
+    this.updateOrgUserSettings().pipe(
+      switchMap(() => this.initPage()),
+    ).subscribe()
   }
 
   updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.currentUser.id, this.orgId, this.currentUser.settings)
+    return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
   }
 
   ngOnDestroy(): void {

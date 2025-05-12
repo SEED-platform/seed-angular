@@ -95,7 +95,7 @@ export class LabelsComponent implements OnChanges {
 
   updateOrgUserSettings() {
     this.currentUser.settings.labels = { ids: this.selectedLabelIds, operator: this.labelOperator }
-    this._organizationService.updateOrganizationUser(this.currentUser.id, this.currentUser.org_id, this.currentUser.settings).subscribe()
+    this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.currentUser.org_id, this.currentUser.settings).subscribe()
   }
 
   // determine if a string is a subset of another string, preserving order

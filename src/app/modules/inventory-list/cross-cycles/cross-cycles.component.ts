@@ -132,7 +132,7 @@ export class CrossCyclesComponent implements OnInit {
   }
 
   updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.currentUser.id, this.orgId, this.currentUser.settings)
+    return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
   }
 
   onSelectCycleClosed() {

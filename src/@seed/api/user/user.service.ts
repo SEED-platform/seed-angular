@@ -17,7 +17,7 @@ import type {
   UserUpdateRequest,
 } from '@seed/api/user'
 import { ErrorService } from '@seed/services'
-import type { OrganizationUserSettings } from '../organization'
+import { type OrganizationUserSettings } from '../organization'
 
 @Injectable({ providedIn: 'root' })
 export class UserService implements OnDestroy {
@@ -169,6 +169,18 @@ export class UserService implements OnDestroy {
 
   // applies defaults to an org users settings
   checkUserSettings(userSettings: OrganizationUserSettings) {
+    userSettings.crossCycles ??= {}
+    userSettings.crossCycles.properties ??= null
+    userSettings.crossCycles.taxlots ??= null
+
+    userSettings.cycleId ??= null
+
+    userSettings.filters ??= {}
+    userSettings.filters.properties ??= {}
+    userSettings.filters.taxlots ??= {}
+
+    userSettings.labels ??= { ids: [], operator: 'and' }
+
     userSettings.profile ??= {}
     userSettings.profile.detail ??= {}
     userSettings.profile.detail.properties ??= null
@@ -178,19 +190,9 @@ export class UserService implements OnDestroy {
     userSettings.profile.list.properties ??= null
     userSettings.profile.list.taxlots ??= null
 
-    userSettings.crossCycles ??= {}
-    userSettings.crossCycles.properties ??= null
-    userSettings.crossCycles.taxlots ??= null
-
     userSettings.sorts ??= {}
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
-
-    userSettings.filters ??= {}
-    userSettings.filters.properties ??= {}
-    userSettings.filters.taxlots ??= {}
-
-    userSettings.labels ??= { ids: [], operator: 'and' }
   }
 
   ngOnDestroy() {

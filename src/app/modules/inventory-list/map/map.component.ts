@@ -28,7 +28,7 @@ import Style from 'ol/style/Style'
 import Text from 'ol/style/Text'
 import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
-import { combineLatest, filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
+import { filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label, LabelOperator } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -586,7 +586,7 @@ export class MapComponent implements OnInit {
   }
 
   updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.currentUser.id, this.orgId, this.currentUser.settings)
+    return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
   }
 
   get progressMode() {

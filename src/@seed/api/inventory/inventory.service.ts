@@ -3,15 +3,15 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CrossCyclesResponse, DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, InventoryTypeGoal, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
   private _httpClient = inject(HttpClient)
-  private _organizationService = inject(OrganizationService)
+  private _userService = inject(UserService)
   private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
@@ -23,10 +23,7 @@ export class InventoryService {
   columnListProfiles$ = this._columnListProfiles.asObservable()
 
   constructor() {
-    this._organizationService.currentOrganization$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-      ).subscribe(({ org_id }) => this.orgId = org_id)
+    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((id) => this.orgId = id)
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {

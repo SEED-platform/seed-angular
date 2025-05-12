@@ -9,10 +9,10 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { forkJoin, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
@@ -54,7 +54,6 @@ import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, In
 })
 export class InventoryComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
-  private _router = inject(Router)
   private _cycleService = inject(CycleService)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
@@ -97,9 +96,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   initPage() {
-    this._organizationService.currentOrganization$.pipe(
+    this._userService.currentOrganizationId$.pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap(({ org_id }) => this.getDependencies(org_id)),
+      switchMap((orgId) => this.getDependencies(orgId)),
       map((results) => this.setDependencies(results)),
       switchMap((profile_id) => this.getProfile(profile_id)),
       switchMap(() => this.loadInventory()),
@@ -113,18 +112,18 @@ export class InventoryComponent implements OnDestroy, OnInit {
   getDependencies(org_id: number) {
     this.orgId = org_id
 
-    return forkJoin({
-      currentUser: this._userService.currentUser$.pipe(take(1)),
-      cycles: this._cycleService.get(this.orgId),
-      labels: this._labelService.labels$.pipe(take(1)),
-      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-    })
+    return combineLatest([
+      this._userService.currentUser$,
+      this._cycleService.get(this.orgId),
+      this._labelService.labels$,
+      this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
+    ])
   }
 
   /*
   * set class variables: cycles, profiles, inventory. returns profile id
   */
-  setDependencies({ currentUser, cycles, labels, profiles }: InventoryDependencies) {
+  setDependencies([currentUser, cycles, labels, profiles]: InventoryDependencies) {
     if (!cycles) {
       return null
     }
@@ -161,6 +160,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   getProfile(id: number): Observable<Profile | null> {
     if (!id) {
+      this.profile = null
+      this.profileId = null
       return of(null)
     }
 

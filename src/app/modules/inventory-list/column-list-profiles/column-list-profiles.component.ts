@@ -15,7 +15,6 @@ import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
-import type { OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
@@ -58,11 +57,9 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   orgId: number
-  orgUserId: number
   profiles: Profile[]
   rowData: ProfileColumn[] = []
   type = this._route.snapshot.paramMap.get('type') as InventoryType
-  userSettings: OrganizationUserSettings
 
   gridOptions: GridOptions = {
     rowSelection: {
@@ -87,15 +84,13 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   initPage() {
     this.getDependencies().pipe(
-      tap(() => {
-        this.setGrid()
-      }),
+      takeUntil(this._unsubscribeAll$),
+      tap(() => { this.setGrid() }),
     ).subscribe()
   }
 
   getDependencies() {
     return this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
       tap((id) => this.orgId = id),
       switchMap(() => {
         const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
@@ -108,29 +103,23 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap(([columns, currentUser, profiles]) => {
         this.columns = columns
         this.currentUser = currentUser
-        console.log({ 'clp org': this.orgId, 'clp user org': currentUser.org_id })
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
       }),
+      switchMap(() => this.setProfile()),
     )
   }
 
   setProfile() {
-    const { org_user_id, settings } = this.currentUser
-    this.orgUserId = org_user_id
-    this.userSettings = settings
+    if (!this.currentUser.settings.profile) return
 
-    if (!settings.profile) return
-
-    const userProfileId = settings.profile.list[this.type]
+    const userProfileId = this.currentUser.settings.profile.list[this.type]
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
-    this.userSettings.profile.list[this.type] = this.currentProfile?.id
-    console.log('set profile')
-    this.updateOrgUserSettings().subscribe()
+    this.currentUser.settings.profile.list[this.type] = this.currentProfile?.id
+    return this.updateOrgUserSettings()
   }
 
   updateOrgUserSettings() {
-    // if (this.currentUser.org_id !== this.orgId) return
-    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
+    return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
   }
 
   setGrid() {
@@ -250,7 +239,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   selectProfile(event: MatSelectChange) {
     const profileId: number = event.value as number
     const profile = this.profiles.find((p) => p.id === profileId)
-    this.userSettings.profile.list[this.type] = profileId
+    this.currentUser.settings.profile.list[this.type] = profileId
     this.currentProfile = profile
     this.setRowData(new Set(profile.columns.map((c) => c.id)))
     this.updateOrgUserSettings().subscribe()
@@ -284,7 +273,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap((profiles) => {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
         this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null
-        this.userSettings.profile.list[this.type] = this.currentProfile?.id
+        this.currentUser.settings.profile.list[this.type] = this.currentProfile?.id
         this.setGrid()
       }),
       switchMap(() => this.updateOrgUserSettings()),
