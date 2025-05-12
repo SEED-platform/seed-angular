@@ -3,6 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
+import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
@@ -24,6 +25,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     AgGridModule,
     CommonModule,
     FormModalComponent,
+    MatIconModule,
     PageComponent,
   ],
 })

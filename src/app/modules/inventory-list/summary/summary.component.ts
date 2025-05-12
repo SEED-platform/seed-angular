@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
@@ -9,7 +10,6 @@ import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, Subject, switchMap, tap } from 'rxjs'
 import { AnalysisService } from '@seed/api/analysis/analysis.service'
 import type { AnalysisSummary } from '@seed/api/analysis/analysis.types'
-import { InventoryService } from '@seed/api/inventory'
 import type { Organization, OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { type CurrentUser, UserService } from '@seed/api/user'
@@ -25,6 +25,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
     AgGridModule,
     CommonModule,
     MatDividerModule,
+    MatIconModule,
     MatSelectModule,
     PageComponent,
   ],
@@ -32,7 +33,6 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 export class SummaryComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)
   private _configService = inject(ConfigService)
-  private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
@@ -68,9 +68,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   getDependencies(user: CurrentUser, org: Organization) {
     this.currentUser = user
-    this.cycleId = user.settings.cycleId
     this.orgId = org.org_id
     this.cycles = org.cycles
+    this.cycleId = user.settings.cycleId ?? org.cycles[0].cycle_id
     return this._userService.currentUser$.pipe(
       switchMap(() => this._analysisService.summary(this.orgId, this.cycleId)),
       tap((summary) => {

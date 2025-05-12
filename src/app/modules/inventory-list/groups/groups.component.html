@@ -17,5 +17,10 @@
       [style.height.px]="gridHeight"
       (gridReady)="onGridReady($event)"
     ></ag-grid-angular>
+  } @else {
+    <div class="mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800 flex justify-center space-x-2">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+      <div class="text-secondary text-xl font-medium">No Groups Found</div>
+    </div>
   }
 </div>

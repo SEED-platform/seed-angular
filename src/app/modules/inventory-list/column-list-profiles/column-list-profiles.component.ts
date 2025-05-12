@@ -94,9 +94,9 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   }
 
   getDependencies() {
-    return this._organizationService.currentOrganization$.pipe(
+    return this._userService.currentOrganizationId$.pipe(
       takeUntil(this._unsubscribeAll$),
-      tap(({ org_id }) => this.orgId = org_id),
+      tap((id) => this.orgId = id),
       switchMap(() => {
         const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
         return combineLatest([
@@ -108,8 +108,8 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       tap(([columns, currentUser, profiles]) => {
         this.columns = columns
         this.currentUser = currentUser
+        console.log({ 'clp org': this.orgId, 'clp user org': currentUser.org_id })
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
-        this.setProfile()
       }),
     )
   }
@@ -124,10 +124,12 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     const userProfileId = settings.profile.list[this.type]
     this.currentProfile = this.profiles.find((p) => p.id === userProfileId) ?? this.profiles[0]
     this.userSettings.profile.list[this.type] = this.currentProfile?.id
+    console.log('set profile')
     this.updateOrgUserSettings().subscribe()
   }
 
   updateOrgUserSettings() {
+    // if (this.currentUser.org_id !== this.orgId) return
     return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
   }
 

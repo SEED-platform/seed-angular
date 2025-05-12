@@ -18,6 +18,7 @@
         [(value)]="cycle"
         (selectionChange)="selectCycle()"
         placeholder="Select Cycle"
+        [disabled]="inProgress"
       >
         @for (cycle of cycles; track cycle.cycle_id) {
           <mat-option [value]="cycle">{{ cycle.name }}</mat-option>
@@ -48,6 +49,11 @@
 
       <!-- <span class="mx-auto text-secondary">Loading Inventory... ( {{ progress.current }} / {{ progress.total }} )</span> -->
       <mat-progress-bar [mode]="progressMode" [value]="progress.percent"></mat-progress-bar>
+    </div>
+  } @else if (data.length === 0) {
+    <div class="mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800 flex justify-center space-x-2">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+      <div class="text-secondary text-xl font-medium">No Inventory Found</div>
     </div>
   } @else {
     <div class="flex gap-3 bg-white px-2 dark:bg-gray-800">

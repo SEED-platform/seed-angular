@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { combineLatest, switchMap, tap } from 'rxjs'
+import { combineLatest, EMPTY, filter, switchMap, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -25,6 +26,7 @@ import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/i
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MatIconModule,
     MatSelectModule,
     PageComponent,
   ],
@@ -70,6 +72,8 @@ export class CrossCyclesComponent implements OnInit {
     this.org = org
     this.orgId = org.id
     this.cycles = org.cycles
+    if (!this.cycles.length) return EMPTY
+
     const columns$ = this.type === 'properties' ? this._columnService.propertyColumns$ : this._columnService.taxLotColumns$
     return combineLatest([
       this._userService.currentUser$,
@@ -83,7 +87,7 @@ export class CrossCyclesComponent implements OnInit {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
         this.selectedProfileId = this.currentUser.settings.profile.list[this.type]
         this.profile = profiles.find((p) => p.id === this.selectedProfileId)
-        this.selectedCycleIds = this.currentUser.settings.crossCycles[this.type]
+        this.selectedCycleIds = this.currentUser.settings.crossCycles[this.type] ?? [this.cycles[0].cycle_id]
         this.matchingColumns = new Set(matchingColumns)
         this.columnMap = new Map(columns.map((c) => [c.column_name, c.name]))
       }),
@@ -93,6 +97,11 @@ export class CrossCyclesComponent implements OnInit {
 
   setGrid() {
     return this._inventoryService.filterByCycle(this.orgId, this.selectedProfileId, this.selectedCycleIds, this.type).pipe(
+      filter((dataByCycle) => {
+        const noData = !dataByCycle
+        const emptyData = dataByCycle[Object.keys(dataByCycle)[0]]?.length === 0
+        return !noData && !emptyData
+      }),
       tap((dataByCycle) => {
         this.setColumnDefs()
         this.setRowData(dataByCycle)

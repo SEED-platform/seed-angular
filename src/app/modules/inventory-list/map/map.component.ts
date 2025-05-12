@@ -117,14 +117,14 @@ export class MapComponent implements OnInit {
   }
 
   getDependencies() {
-    return combineLatest([
-      this._userService.currentUser$,
-      this._organizationService.currentOrganization$,
-    ]).pipe(
-      tap(([currentUser, org]) => {
+    return this._userService.currentUser$.pipe(
+      tap((currentUser) => {
+        this.currentUser = currentUser
+      }),
+      switchMap(({ org_id }) => this._organizationService.getById(org_id)),
+      tap((org) => {
         this.orgId = org.id
         this.cycles = org.cycles
-        this.currentUser = currentUser
         this.cycle = this.cycles.find((c) => c.cycle_id === this.currentUser.settings.cycleId) ?? this.cycles[0]
       }),
       switchMap(() => this.getLabels()),
@@ -148,14 +148,17 @@ export class MapComponent implements OnInit {
   }
 
   initMap() {
-    this.inProgress = true
     this.progress = { current: 0, total: 0, percent: 0, chunk: 0 }
     this.resetMap()
 
     return this.getTotalRecords().pipe(
+      filter((totalPages) => {
+        this.inProgress = totalPages !== 0
+        if (!totalPages) this.data = []
+        return this.inProgress
+      }),
       switchMap((totalPages) => this.fetchRecords(totalPages)),
       map(() => {
-        console.log('fetchRecords complete')
         this.geocodeRelated()
         return
       }),
@@ -286,7 +289,6 @@ export class MapComponent implements OnInit {
   }
 
   renderMap() {
-    console.log('renderMap')
     const layers = Object.entries(this.layers).reduce((acc: Layer[], [layerName, { visible }]) => {
       const layer = this[layerName] as Layer
       if (visible && layer) acc.push(layer)
