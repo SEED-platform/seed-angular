@@ -58,6 +58,8 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   gridTheme$ = this._configService.gridTheme$
   orgId: number
   profiles: Profile[]
+  updateCLP$ = new Subject<unknown>()
+  updateOrgUserSettings$ = new Subject<void>()
   rowData: ProfileColumn[] = []
   type = this._route.snapshot.paramMap.get('type') as InventoryType
 
@@ -85,7 +87,21 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   initPage() {
     this.getDependencies().pipe(
       takeUntil(this._unsubscribeAll$),
-      tap(() => { this.setGrid() }),
+      tap(() => {
+        this.setGrid()
+        this.initStreams()
+      }),
+    ).subscribe()
+  }
+
+  initStreams() {
+    this.updateCLP$.pipe(
+      switchMap((data) => this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data)),
+      tap(() => { this.initPage() }),
+    ).subscribe()
+
+    this.updateOrgUserSettings$.pipe(
+      switchMap(() => this.updateOrgUserSettings()),
     ).subscribe()
   }
 
@@ -242,7 +258,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     this.currentUser.settings.profile.list[this.type] = profileId
     this.currentProfile = profile
     this.setRowData(new Set(profile.columns.map((c) => c.id)))
-    this.updateOrgUserSettings().subscribe()
+    this.updateOrgUserSettings$.next()
   }
 
   openProfileModal(mode: ProfileModalMode, columns: ProfileColumn[] = []) {
@@ -287,9 +303,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     }
 
     const data = { ...this.currentProfile, columns: this.gridApi.getSelectedRows() }
-    this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data).subscribe(() => {
-      this.initPage()
-    })
+    this.updateCLP$.next(data)
   }
 
   ngOnDestroy(): void {
