@@ -15,11 +15,11 @@
       <mat-label class="text-secondary my-auto mr-4 text-sm">Cycle</mat-label>
       <mat-select
         class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
-        panelClass="fit-content-select"
         [(value)]="cycle"
-        (selectionChange)="cycle$.next()"
-        placeholder="Select Cycle"
         [disabled]="inProgress"
+        (selectionChange)="cycle$.next()"
+        panelClass="fit-content-select"
+        placeholder="Select Cycle"
       >
         @for (cycle of cycles; track cycle.cycle_id) {
           <mat-option [value]="cycle">{{ cycle.name }}</mat-option>
@@ -52,7 +52,7 @@
       <mat-progress-bar [mode]="progressMode" [value]="progress.percent"></mat-progress-bar>
     </div>
   } @else if (data.length === 0) {
-    <div class="mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800 flex justify-center space-x-2">
+    <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
       <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
       <div class="text-secondary text-xl font-medium">No Inventory Found</div>
     </div>

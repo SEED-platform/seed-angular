@@ -96,6 +96,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
   initStreams() {
     this.updateCLP$.pipe(
+      filter(Boolean),
       takeUntil(this._unsubscribeAll$),
       switchMap((data) => this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data)),
       tap(() => { this.initPage() }),

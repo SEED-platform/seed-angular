@@ -114,13 +114,14 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   initStreams() {
     this.profileId$.pipe(
-      filter((profileId) => !!profileId),
+      filter(Boolean),
       takeUntil(this._unsubscribeAll$),
       switchMap((id) => this.getProfile(id)),
       switchMap(() => this.refreshInventory()),
     ).subscribe()
 
     this.cycleId$.pipe(
+      filter(Boolean),
       takeUntil(this._unsubscribeAll$),
       switchMap(() => this.refreshInventory()),
     ).subscribe()
