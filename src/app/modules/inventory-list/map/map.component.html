@@ -17,7 +17,7 @@
         class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
         panelClass="fit-content-select"
         [(value)]="cycle"
-        (selectionChange)="selectCycle()"
+        (selectionChange)="cycle$.next()"
         placeholder="Select Cycle"
         [disabled]="inProgress"
       >
@@ -61,7 +61,7 @@
       <!-- Refresh Map -->
       <mat-icon
         class="my-auto scale-75 cursor-pointer"
-        (click)="refreshMap()"
+        (click)="refreshMap$.next()"
         svgIcon="fa-solid:arrows-rotate"
         matTooltip="Reset map"
       ></mat-icon>

@@ -121,9 +121,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ).subscribe()
 
     this.cycleId$.pipe(
-      tap(() => {
-        console.log('cycleId$')
-      }),
       takeUntil(this._unsubscribeAll$),
       switchMap(() => this.refreshInventory()),
     ).subscribe()

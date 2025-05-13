@@ -1,5 +1,5 @@
 /* eslint-disable @cspell/spellchecker */
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatIconModule } from '@angular/material/icon'
@@ -28,7 +28,7 @@ import Style from 'ol/style/Style'
 import Text from 'ol/style/Text'
 import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
-import { filter, finalize, last, map, mergeMap, range, scan, switchMap, tap } from 'rxjs'
+import { filter, finalize, last, map, mergeMap, range, scan, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import type { Label, LabelOperator } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
@@ -56,13 +56,14 @@ type Layer = VectorLayer | TileLayer
     LabelsComponent,
   ],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnDestroy, OnInit {
   private _inventoryService = inject(InventoryService)
   private _labelService = inject(LabelService)
   private _mapService = inject(MapService)
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
+  private readonly _unsubscribeAll$ = new Subject<void>()
 
   baseLayer: TileLayer
   censusTractLayer: VectorLayer
@@ -70,6 +71,7 @@ export class MapComponent implements OnInit {
   chunk = 250
   cycles: OrgCycle[]
   cycle: OrgCycle
+  cycle$ = new Subject<void>()
   data: State[] = []
   defaultField: 'property_display_field' | 'taxlot_display_field'
   filteredRecords = 0
@@ -101,6 +103,7 @@ export class MapComponent implements OnInit {
   progress = { current: 0, total: 0, percent: 0, chunk: 0 }
   propertyBBLayer: VectorLayer
   propertyCentroidLayer: VectorLayer
+  refreshMap$ = new Subject<void>()
   requestParams: URLSearchParams
   requestData = {}
   selectedLabels: Label[] = []
@@ -111,8 +114,10 @@ export class MapComponent implements OnInit {
   ngOnInit(): void {
     this.defaultField = this.type === 'properties' ? 'property_display_field' : 'taxlot_display_field'
     this.getDependencies().pipe(
+      takeUntil(this._unsubscribeAll$),
       filter(() => !!this.cycle),
       switchMap(() => this.initMap()),
+      tap(() => { this.initStreams() }),
     ).subscribe()
   }
 
@@ -131,14 +136,25 @@ export class MapComponent implements OnInit {
     )
   }
 
+  initStreams() {
+    this.refreshMap$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap(() => this.initMap()),
+    ).subscribe()
+
+    this.cycle$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap(() => { this.currentUser.settings.cycleId = this.cycle.cycle_id }),
+      switchMap(() => this.updateOrgUserSettings()),
+      switchMap(() => this.getLabels()),
+      switchMap(() => this.initMap()),
+    ).subscribe()
+  }
+
   getLabels() {
     return this._labelService.getInventoryLabels(this.orgId, null, this.cycle.cycle_id, this.type as InventoryType).pipe(
       tap((labels) => { this.labels = labels.filter((l) => l.is_applied.length) }),
     )
-  }
-
-  refreshMap() {
-    this.initMap().subscribe()
   }
 
   resetMap() {
@@ -576,15 +592,6 @@ export class MapComponent implements OnInit {
     }
   }
 
-  // page controls
-  selectCycle() {
-    this.currentUser.settings.cycleId = this.cycle.cycle_id
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.getLabels()),
-      switchMap(() => this.initMap()),
-    ).subscribe()
-  }
-
   updateOrgUserSettings() {
     return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
   }
@@ -617,5 +624,10 @@ export class MapComponent implements OnInit {
       })
     }
     this.rerenderPoints(this.geocodedData)
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }
