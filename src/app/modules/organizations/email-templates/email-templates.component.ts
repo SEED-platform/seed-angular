@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -6,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
+import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NgxWigModule } from 'ngx-wig'
 import { combineLatest, map, Subject, takeUntil, tap } from 'rxjs'
@@ -19,7 +21,18 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-email-templates',
   templateUrl: './email-templates.component.html',
-  imports: [NgxWigModule, MatButtonModule, MatIconModule, MatInputModule, MatSelectModule, PageComponent, ReactiveFormsModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatSidenavModule,
+    MatSelectModule,
+    MatTooltipModule,
+    NgxWigModule,
+    PageComponent,
+    ReactiveFormsModule,
+  ],
 })
 export class EmailTemplatesComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
