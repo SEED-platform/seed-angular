@@ -1,0 +1,61 @@
+<seed-page
+  [config]="{
+    title: 'Cross Cycles',
+    titleIcon: 'fa-solid:shuffle',
+    tabs: ['properties', 'taxlots'],
+  }"
+>
+</seed-page>
+
+<!-- CONTENT -->
+<div class="m-5 flex h-[calc(100vh-300px)] flex-col gap-2">
+  <!-- CONFIG -->
+  <div class="mb-4 flex gap-4">
+    <div class="mr-1 flex flex-col">
+      <mat-label class="text-secondary text-sm">Cycle</mat-label>
+      <mat-select
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
+        [(value)]="selectedCycleIds"
+        (closed)="onSelectCycleClosed()"
+        multiple
+        placeholder="Select Cycles"
+      >
+        @for (cycle of cycles; track cycle.cycle_id) {
+          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    <div class="mr-1 flex flex-col">
+      <mat-label class="text-secondary text-sm">Profile</mat-label>
+      <mat-select
+        class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
+        [(value)]="selectedProfileId"
+        [placeholder]="profiles?.length ? 'Select Profile' : '(No Profiles)'"
+        (selectionChange)="onSelectProfile()"
+      >
+        @for (profile of profiles; track profile.id) {
+          <mat-option [value]="profile.id">{{ profile.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+    <div class="flex justify-center space-x-2 whitespace-nowrap">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+      <div class="text-secondary text-xl font-medium">Cross Cycles in Development...</div>
+    </div>
+    <div class="text-secondary mt-4 text-sm">See console error for more detail</div>
+  </div>
+
+  <!-- TABLE -->
+  <!-- <ag-grid-angular 
+    class="w-full"
+    [columnDefs]="columnDefs"
+    [rowData]="rowData"
+    [theme]="gridTheme$ | async"
+    (gridReady)="onGridReady($event)"
+    style="width: 100%; height: 100%;"
+  ></ag-grid-angular> -->
+</div>

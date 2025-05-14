@@ -3,15 +3,15 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type { CrossCyclesResponse, DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, InventoryTypeGoal, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
   private _httpClient = inject(HttpClient)
-  private _organizationService = inject(OrganizationService)
+  private _userService = inject(UserService)
   private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
@@ -23,14 +23,7 @@ export class InventoryService {
   columnListProfiles$ = this._columnListProfiles.asObservable()
 
   constructor() {
-    this._organizationService.currentOrganization$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(({ org_id }) => {
-          this.orgId = org_id
-        }),
-      )
-      .subscribe()
+    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((id) => this.orgId = id)
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
@@ -42,6 +35,17 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching properties')
+      }),
+    )
+  }
+
+  getRecordCount(organization_id: number, cycle_id: number, inventory_type: InventoryTypeGoal): Observable<number> {
+    const url = '/api/v4/tax_lot_properties/record_count/'
+    const params = { organization_id, cycle_id, inventory_type }
+    return this._httpClient.get<{ status: string; data: number }>(url, { params }).pipe(
+      map((response) => response.data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching record count')
       }),
     )
   }
@@ -90,9 +94,30 @@ export class InventoryService {
   createColumnListProfile(orgId: number, data: NewProfileData): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/?organization_id=${orgId}`
     return this._httpClient.post<ProfileResponse>(url, data).pipe(
+      tap(() => { this._snackBar.success('Profile created successfully') }),
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating column list profile')
+      }),
+    )
+  }
+
+  updateColumnListProfile(orgId: number, id: number, data: unknown): Observable<Profile> {
+    const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
+    return this._httpClient.put<ProfileResponse>(url, data).pipe(
+      tap(() => { this._snackBar.success('Profile updated successfully') }),
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating column list profile')
+      }),
+    )
+  }
+
+  deleteColumnListProfile(orgId: number, id: number): Observable<null> {
+    const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
+    return this._httpClient.delete<null>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting column list profile')
       }),
     )
   }
@@ -227,6 +252,24 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting Document')
+      }),
+    )
+  }
+
+  filterByCycle(orgId: number, profileId: number, cycleIds: number[], inventoryType: InventoryType): Observable<CrossCyclesResponse> {
+    const url = `/api/v3/${inventoryType}/filter_by_cycle/`
+    const data = {
+      organization_id: orgId,
+      profile_id: profileId,
+      cycle_ids: cycleIds,
+    }
+
+    return this._httpClient.post<CrossCyclesResponse>(url, data).pipe(
+      // map((response) => {
+      //   return response
+      // }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching ${inventoryType}`)
       }),
     )
   }

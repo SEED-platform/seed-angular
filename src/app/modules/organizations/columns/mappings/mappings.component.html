@@ -71,7 +71,7 @@
     class="ag-theme-alpine"
     [rowData]="rowData"
     [gridOptions]="gridOptions"
-    [theme]="gridTheme"
+    [theme]="gridTheme$ | async"
     (gridReady)="onGridReady($event)"
     (cellDoubleClicked)="onCellDoubleClicked($event)"
     style="width: 100%; height: 100%"

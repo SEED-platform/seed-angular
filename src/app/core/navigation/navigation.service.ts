@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 import { DatasetService } from '@seed/api/dataset'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
@@ -7,17 +8,104 @@ import { SeedNavigationService } from '@seed/components'
 export class NavigationService {
   private _datasetService = inject(DatasetService)
   private _seedNavigationService = inject(SeedNavigationService)
+  private _router = inject(Router)
+  private _route = inject(ActivatedRoute)
 
   private _badgeClasses = 'px-2 bg-primary-900 rounded-full'
 
-  readonly navigation: NavigationItem[] = [
+  inventoryChildrenProperties: NavigationItem[] = [
+    {
+      id: 'properties',
+      link: '/properties',
+      title: 'Properties',
+      icon: 'fa-solid:building',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/column-list-profiles',
+      link: '/properties/column-list-profiles',
+      title: 'Column Profiles',
+      icon: 'fa-solid:sliders',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/cross-cycles',
+      link: '/properties/cross-cycles',
+      title: 'Cross Cycles',
+      icon: 'fa-solid:shuffle',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/groups',
+      link: '/properties/groups',
+      title: 'Groups',
+      icon: 'fa-solid:sitemap',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/map',
+      link: '/properties/map',
+      title: 'Map',
+      icon: 'fa-solid:map-location-dot',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'properties/summary',
+      link: '/properties/summary',
+      title: 'Summary',
+      icon: 'fa-solid:clipboard-list',
+      type: 'basic',
+      exactMatch: true,
+    },
+  ]
+  inventoryChildrenTaxlots: NavigationItem[] = [
+    {
+      id: 'taxlots',
+      link: '/taxlots',
+      title: 'Tax Lots',
+      icon: 'fa-solid:building',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'taxlots/column-list-profiles',
+      link: '/taxlots/column-list-profiles',
+      title: 'Column Profiles',
+      icon: 'fa-solid:sliders',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'taxlots/cross-cycles',
+      link: '/taxlots/cross-cycles',
+      title: 'Cross Cycles',
+      icon: 'fa-solid:shuffle',
+      type: 'basic',
+      exactMatch: true,
+    },
+    {
+      id: 'taxlots/map',
+      link: '/taxlots/map',
+      title: 'Map',
+      icon: 'fa-solid:map-location-dot',
+      type: 'basic',
+      exactMatch: true,
+    },
+  ]
+
+  navigation: NavigationItem[] = [
     {
       id: 'inventory',
       title: 'Inventory',
-      type: 'basic',
+      type: 'collapsible',
       icon: 'fa-solid:building',
-      link: '/properties',
-      regexMatch: /^\/(properties|taxlots)/,
+      // regexMatch: /^\/(properties|taxlots)/,
+      children: this.inventoryChildrenProperties,
     },
     {
       id: 'data',
@@ -190,6 +278,17 @@ export class NavigationService {
         this.updateBadge('data', 'mainNavigation', count)
       })
     })
+    this.getNavigation()
+  }
+
+  getNavigation(): NavigationItem[] {
+    const currentUrl = this._router.url
+    if (currentUrl.toLowerCase().startsWith('/properties')) {
+      this.navigation[0].children = this.inventoryChildrenProperties
+    } else if (currentUrl.toLowerCase().startsWith('/taxlots')) {
+      this.navigation[0].children = this.inventoryChildrenTaxlots
+    }
+    return this.navigation
   }
 
   updateBadge(itemId: string, navigationName: string, title: string | number) {

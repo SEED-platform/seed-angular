@@ -75,6 +75,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
     this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames }) => {
       this.accessLevelNames = accessLevelNames
+      // set access level if null
+      const accessLevel = this.form.get('access_level')?.value ?? accessLevelNames.at(-1)
+      this.form.get('access_level')?.setValue(accessLevel)
     })
 
     this._organizationService.accessLevelInstancesByDepth$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelsByDepth) => {
