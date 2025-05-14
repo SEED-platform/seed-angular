@@ -24,6 +24,7 @@ import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { naturalSort } from '@seed/utils'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from '../grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../inventory.types'
@@ -62,9 +63,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  allProfiles: Profile[]
   chunk = 100
-  columnDefs: ColDef[]
+  columnDefs: ColDef[] = []
   currentUser: CurrentUser
   cycle: Cycle
   cycleId: number
@@ -110,17 +110,17 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.orgId = org_id
 
     return forkJoin({
-      cycles: this._cycleService.get(this.orgId),
-      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-      labels: this._labelService.labels$.pipe(take(1)),
       currentUser: this._userService.currentUser$.pipe(take(1)),
+      cycles: this._cycleService.get(this.orgId),
+      labels: this._labelService.labels$.pipe(take(1)),
+      profiles: this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
     })
   }
 
   /*
   * set class variables: cycles, profiles, columns, inventory. returns profile id
   */
-  setDependencies({ cycles, profiles, labels, currentUser }: InventoryDependencies) {
+  setDependencies({ currentUser, cycles, labels, profiles }: InventoryDependencies) {
     if (!cycles) {
       return null
     }
@@ -146,7 +146,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   get profiles() {
-    return this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
+    const profiles = this.type === 'properties' ? this.propertyProfiles : this.taxlotProfiles
+    if (!profiles) return
+    return profiles.sort((a, b) => naturalSort(a.name, b.name))
   }
 
   /*

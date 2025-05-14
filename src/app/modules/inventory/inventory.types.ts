@@ -1,10 +1,13 @@
-import type { ColDef } from 'ag-grid-community'
+import type { ColDef, ValueGetterParams } from 'ag-grid-community'
+import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { Label } from '@seed/api/label'
+import type { Scenario } from '@seed/api/scenario'
 import type { CurrentUser } from '@seed/api/user'
 
 export type InventoryType = 'properties' | 'taxlots'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
+export type InventoryDisplayType = 'Property' | 'Tax Lot'
 
 export type FilterResponse = {
   cycle_id?: number;
@@ -43,11 +46,23 @@ export type Profile = {
   columns?: ProfileColumn[];
 }
 
+export type NewProfileData = {
+  name: string;
+  profile_location: ProfileLocation;
+  inventory_type: InventoryDisplayType;
+  columns: Column[];
+  derived_columns: Column[];
+}
+
+export type ProfileLocation = 'Detail View Profile' | 'List View Profile'
+
 export type ProfileColumn = {
-  id: number;
-  pinned: boolean;
-  order: number;
   column_name: string;
+  display_name: string;
+  id: number;
+  name: string;
+  order: number;
+  pinned: boolean;
   table_name: string;
 }
 
@@ -93,3 +108,134 @@ export type InventoryDependencies = {
   labels: Label[];
   currentUser: CurrentUser;
 }
+
+type AccessLevelInstance = {
+  id: number;
+  lft: number;
+  rgt: number;
+  tree_id: number;
+  depth: number;
+  name: string;
+  path: Record<string, string>;
+  organization: number;
+}
+
+export type GenericRelatedInventory = {
+  cycle: Cycle;
+  id: number;
+  labels: number[];
+  state: State;
+  taxlot?: TaxLot;
+  property?: Property;
+}
+
+export type GenericView = {
+  cycle: Cycle;
+  id: number;
+  property_id?: number;
+  taxlot_id?: number;
+}
+
+export type GenericViewsResponse = {
+  status: string;
+  property_views?: GenericView[];
+  taxlot_views?: GenericView[];
+}
+
+// could combine property and taxlot into a generic Inventory type
+export type Property = {
+  access_level_instance: AccessLevelInstance;
+  created: string;
+  group_mappings: GroupMapping[];
+  id: number;
+  inventory_documents: InventoryDocument[];
+  organization: number;
+  parent_property: unknown;
+  updated: string;
+}
+
+export type TaxLot = {
+  access_level_instance: AccessLevelInstance;
+  created: string;
+  id: number;
+  organization: number;
+  updated: string;
+}
+
+export type ViewResponse = {
+  changed_fields: unknown;
+  cycle: Cycle;
+  date_edited: number;
+  filename: string;
+  history: History[];
+  labels: number[];
+  property?: Property;
+  properties?: GenericRelatedInventory[];
+  source: unknown;
+  state: State;
+  status: string;
+  taxlot?: TaxLot;
+  taxlots?: GenericRelatedInventory[];
+}
+
+type History = {
+  date_edited: number;
+  file: string;
+  filename: string;
+  source: string;
+  state: State;
+}
+
+export type ValueGetterParamsData = ValueGetterParams<Record<string, unknown>>
+
+export type GroupMapping = {
+  group_id: number;
+  group_name: string;
+  id: number;
+  property_id: number;
+  taxlot_id: number;
+}
+
+export type InventoryDocument = {
+  created: string;
+  file: string;
+  file_type: string;
+  filename: string;
+  id: number;
+  property?: number;
+  taxlot?: number;
+}
+
+export type BuildingFile = {
+  created: string;
+  file: string;
+  file_type: string;
+  filename: string;
+  id: number;
+  modified: string;
+  organization_id: number | null;
+  property_state: number;
+}
+
+export type State = {
+  [key: string]: unknown;
+  bounding_box: string;
+  centroid: string;
+  derived_data: Record<string, unknown>;
+  extra_data: Record<string, unknown>;
+  files: BuildingFile[];
+  measures: Record<string, unknown>[];
+  related?: State[];
+  scenarios: Scenario[];
+}
+
+export type UpdateInventoryResponse = {
+  match_link_count: number;
+  match_merged_count: number;
+  state: State;
+  status: string;
+  view_id: number;
+}
+
+export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
+export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'

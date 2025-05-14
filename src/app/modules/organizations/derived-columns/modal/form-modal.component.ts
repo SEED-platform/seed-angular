@@ -14,6 +14,7 @@ import { ColumnService } from '@seed/api/column'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
 import { SEEDValidators } from '@seed/validators'
+import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 import { DerivedColumnsValidator } from '../derived-columns.validator'
 
 @Component({
@@ -44,7 +45,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   data = inject(MAT_DIALOG_DATA) as {
     derivedColumn: DerivedColumn | null;
     orgId: number;
-    inventoryType: 'Property' | 'Tax Lot';
+    inventoryType: InventoryDisplayType;
     existingNames: string[];
   }
   form = new FormGroup({

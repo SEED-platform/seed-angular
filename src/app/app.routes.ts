@@ -9,8 +9,9 @@ import { HomeComponent } from './modules/main/home/home.component'
 import { ProfileComponent } from './modules/profile/profile.component'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
-  if (segments.length === 1 && ['properties', 'taxlots'].includes(segments[0].path)) {
-    return { consumed: segments, posParams: { type: segments[0] } }
+  const [type, ..._] = segments
+  if (['properties', 'taxlots'].includes(type.path)) {
+    return { consumed: [type], posParams: { type } }
   }
   return null
 }

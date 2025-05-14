@@ -6,9 +6,9 @@ import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
+import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryType, Profile } from '../inventory.types'
 import { DeleteModalComponent, MoreActionsModalComponent } from '../modal'
-import { PopulatedColumnsModalComponent } from '../modal/populated-columns-modal.component'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -95,15 +95,24 @@ export class ActionsComponent implements OnDestroy {
   }
 
   openShowPopulatedColumnsModal() {
-    this._dialog.open(PopulatedColumnsModalComponent, {
+    const dialogRef = this._dialog.open(ModalComponent, {
       width: '40rem',
       data: {
-        orgId: this.orgId,
-        columns: null,
-        profile: this.profile,
+        columns: [],
         cycleId: this.cycleId,
         inventoryType: this.type,
+        location: 'List View Profile',
+        mode: 'populate',
+        orgId: this.orgId,
+        profile: this.profile,
+        type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
       },
+    })
+
+    dialogRef.afterClosed().subscribe((message) => {
+      if (message === 'refresh') {
+        this.refreshInventory.emit()
+      }
     })
   }
 
