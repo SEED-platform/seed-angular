@@ -113,9 +113,7 @@
   @apply bg-gray-100
 }
 
-.dark .even-row {
-  @apply bg-slate-900
-}
+.dark 
 
 .inventory-grid {
   .ag-header-cell {
@@ -142,19 +140,23 @@
   @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
 }
 
-// NGX-Wig Editor
-.dark .nw-editor {
-  background-color: theme('colors.gray.700');
-}
-
+.dark 
 .fit-content-select.mat-mdc-select-panel {
   min-height: fit-content !important;
 }
 
 .dark {
+  .even-row {
+    @apply bg-slate-900
+  }
+
   .mat-mdc-option-active{
     .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
       color: lightblue !important;
     }
+  }
+
+  .nw-editor {
+    background-color: theme('colors.gray.800');
   }
 }
