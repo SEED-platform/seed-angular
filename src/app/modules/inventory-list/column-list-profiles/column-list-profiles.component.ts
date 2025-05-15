@@ -111,22 +111,19 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
   }
 
   getDependencies() {
-    return this._userService.currentOrganizationId$.pipe(
-      tap((id) => this.orgId = id),
-      switchMap(() => {
-        const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
-        return combineLatest([
-          columns$,
-          this._userService.currentUser$,
-          this._inventoryService.getColumnListProfiles('List View Profile', this.type),
-        ])
-      }),
-      tap(([columns, currentUser, profiles]) => {
-        this.columns = columns
+    const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+
+    return combineLatest([this._userService.currentOrganizationId$, this._userService.currentUser$, columns$]).pipe(
+      tap(([orgId, currentUser, columns]) => {
+        this.orgId = orgId
         this.currentUser = currentUser
-        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
+        this.columns = columns
       }),
-      switchMap(() => this.setProfile()),
+      switchMap(() => this._inventoryService.getColumnListProfiles('List View Profile', this.type)),
+      switchMap((profiles) => {
+        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
+        return this.setProfile()
+      }),
     )
   }
 
@@ -173,17 +170,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     // add icon to extra data and derived columns
     const iconName = derived_column ? 'link' : is_extra_data ? 'emergency' : null
     const textSize = derived_column ? 'text-sm' : 'text-xs'
-    return `
-    <ol>
-      <li> 1 </li>
-      <li> 2 </li>
-      <li> 3 </li>
-      <li> 4 </li>
-      <li>
-        ${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>
-      </li>
-    </ol>
-    `
+    return `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>`
   }
 
   // pinRenderer = () => {
