@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBar } from '@angular/material/progress-bar'
 import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent, ICellRendererParams } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { finalize, tap } from 'rxjs'
 import type { Column, GenericColumn } from '@seed/api/column'
@@ -23,6 +23,7 @@ import { EditStateModalComponent } from '../modal/edit-state.component'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
+type CellRendererParams = { value: string; data: { derived_column: number; is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-detail-history',
   templateUrl: './history-grid.component.html',
@@ -119,27 +120,10 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
 
   setColumnDefs() {
     this.columnDefs = [
-      {
-        field: 'field',
-        headerName: 'Field',
-        pinned: true,
-        cellRenderer: ({ value }: { value: string }) => {
-          // add 'link' icon to derived columns
-          const isDerived = this.derivedColumnNames.has(value)
-          return !isDerived
-            ? value
-            : `
-                <span style="display:inline-flex; align-items:center;">
-                  <span class="ag-icon ag-icon-linked" style="font-size: 16px; margin-right: 4px;"></span>
-                    ${value}
-                 </span>
-              `
-        },
-      },
-      {
-        field: 'state',
-        headerName: 'Main',
-      },
+      { field: 'field', headerName: 'Field', pinned: true, cellRenderer: this.fieldRenderer },
+      { field: 'state', headerName: 'Main' },
+      { field: 'derived_column', hide: true },
+      { field: 'is_extra_data', hide: true },
     ]
 
     for (const { filename } of this.view.history) {
@@ -152,6 +136,17 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
     }
   }
 
+  fieldRenderer = (params: CellRendererParams) => {
+    const value = params.value
+    const { derived_column, is_extra_data } = params.data
+    if (!derived_column && !is_extra_data) return value
+
+    // add icon to extra data and derived columns
+    const iconName = derived_column ? 'link' : is_extra_data ? 'emergency' : null
+    const textSize = derived_column ? 'text-sm' : 'text-xs'
+    return `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>`
+  }
+
   setRowData() {
     // Transposed data. Each row is a column name (address line 1, address line 2, etc.)
     this.rowData = []
@@ -159,8 +154,9 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
 
     for (const { column_name, display_name } of columnsSorted) {
       const isExtraData = this.extraDataColumnNames.has(column_name)
+      const isDerived = this.derivedColumnNames.has(column_name)
       let value = isExtraData ? this.view.state.extra_data[column_name] : this.view.state[column_name]
-      const row = { field: display_name, state: value }
+      const row = { field: display_name, state: value, is_extra_data: isExtraData, derived_column: isDerived }
       for (const item of this.view.history) {
         value = isExtraData ? item.state.extra_data[column_name] : item.state[column_name]
         row[item.filename] = value

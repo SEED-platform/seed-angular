@@ -24,6 +24,7 @@ import { naturalSort } from '@seed/utils'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryDisplayType, InventoryType, Profile, ProfileColumn, ProfileModalMode } from 'app/modules/inventory/inventory.types'
 
+type CellRendererParams = { value: string; data: { derived_column: number; is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-list-profiles',
   templateUrl: './column-list-profiles.component.html',
@@ -77,6 +78,7 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     filter: true,
     resizable: true,
     suppressMovable: true,
+    floatingFilter: true,
   }
 
   ngOnInit(): void {
@@ -154,26 +156,34 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
       { field: 'column_name', hide: true },
       { field: 'display_name', headerName: 'Column Name', cellRenderer: this.columnRenderer },
       { field: 'derived_column', hide: true },
+      { field: 'is_extra_data', hide: true },
       { field: 'id', hide: true },
       { field: 'name', hide: true },
       { field: 'order', hide: true },
       { field: 'pinned', hide: true },
       { field: 'table_name', hide: true },
-
     ]
   }
 
-  columnRenderer = (params: ICellRendererParams): string | number | null => {
-    const data = params.data as ProfileColumn
-    const value = params.value as string
-    return !data.derived_column
-      ? value
-      : `
-          <span style="display:inline-flex; align-items:center;">
-            <span class="ag-icon ag-icon-linked" style="font-size: 16px; margin-right: 4px;"></span>
-              ${value}
-            </span>
-        `
+  columnRenderer = (params: CellRendererParams) => {
+    const value = params.value
+    const { derived_column, is_extra_data } = params.data
+    if (!derived_column && !is_extra_data) return value
+
+    // add icon to extra data and derived columns
+    const iconName = derived_column ? 'link' : is_extra_data ? 'emergency' : null
+    const textSize = derived_column ? 'text-sm' : 'text-xs'
+    return `
+    <ol>
+      <li> 1 </li>
+      <li> 2 </li>
+      <li> 3 </li>
+      <li> 4 </li>
+      <li>
+        ${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>
+      </li>
+    </ol>
+    `
   }
 
   // pinRenderer = () => {
@@ -195,15 +205,18 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
 
     let idx = 0
     for (const col of this.columns) {
-      const { column_name, derived_column, display_name, id, name, table_name } = col
-      const data: ProfileColumn = {
+      const { column_name, derived_column, display_name, id, is_extra_data, name, table_name } = col
+      const data = {
         column_name,
         display_name,
+        derived_column: undefined,
         id,
+        is_extra_data,
         name,
-        table_name,
         order: undefined,
         pinned: undefined,
+        selected: false,
+        table_name,
       }
 
       if (derived_column) {

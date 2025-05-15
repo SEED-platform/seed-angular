@@ -1,4 +1,7 @@
 <div class="flex">
+
+  <mat-label class="text-secondary my-auto mr-4 text-sm">Labels</mat-label>
+
   <!-- LABEL SELECT -->
   <input
     class="text-secondary mr-4 h-[40px] rounded border border-gray-500 px-3 text-sm"
@@ -7,7 +10,7 @@
     (input)="labelInputChange($event)"
     type="text"
     matInput
-    placeholder="Add a label"
+    placeholder="Filter by label"
   />
   <mat-autocomplete #auto="matAutocomplete">
     @for (label of filteredLabels; track $index) {
