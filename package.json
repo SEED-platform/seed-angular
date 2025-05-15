@@ -58,6 +58,7 @@
     "lodash-es": "^4.17.21",
     "luxon": "^3.5.0",
     "material-icons": "^1.13.14",
+    "ngx-wig": "^19.0.7",
     "ol": "^10.5.0",
     "ol-ext": "^4.0.31",
     "perfect-scrollbar": "^1.5.6",

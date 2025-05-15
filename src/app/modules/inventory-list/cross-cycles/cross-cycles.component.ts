@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { combineLatest, EMPTY, filter, switchMap, tap } from 'rxjs'
+import { combineLatest, EMPTY, switchMap, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -96,17 +96,19 @@ export class CrossCyclesComponent implements OnInit {
   }
 
   setGrid() {
-    return this._inventoryService.filterByCycle(this.orgId, this.selectedProfileId, this.selectedCycleIds, this.type).pipe(
-      filter((dataByCycle) => {
-        const noData = !dataByCycle
-        const emptyData = dataByCycle[Object.keys(dataByCycle)[0]]?.length === 0
-        return !noData && !emptyData
-      }),
-      tap((dataByCycle) => {
-        this.setColumnDefs()
-        this.setRowData(dataByCycle)
-      }),
-    )
+    return EMPTY
+    // DEVELOPER NOTE: Cross cycles is not yet implemented. This is a placeholder for the future
+    // return this._inventoryService.filterByCycle(this.orgId, this.selectedProfileId, this.selectedCycleIds, this.type).pipe(
+    //   filter((dataByCycle: Record<number, Record<string, unknown>[]>) => {
+    //     const noData = !dataByCycle
+    //     const emptyData = dataByCycle[Object.keys(dataByCycle)[0]]?.length === 0
+    //     return !noData && !emptyData
+    //   }),
+    //   tap((dataByCycle) => {
+    //     this.setColumnDefs()
+    //     this.setRowData(dataByCycle)
+    //   }),
+    // )
   }
 
   setColumnDefs() {
