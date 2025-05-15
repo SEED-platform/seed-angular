@@ -16,6 +16,7 @@ import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -138,12 +139,20 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
   }
 
   delete() {
-    if (confirm(`Are you sure you want to delete template ${this.selectedTemplate.name}?`)) {
-      this._postOfficeService.delete(this.selectedTemplate.id, this._orgId).pipe(
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { template: this.selectedTemplate, organization_id: this._orgId },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshTemplates(null) }),
-      ).subscribe()
-    }
+        tap(() => {
+          this.refreshTemplates(null)
+        }),
+      )
+      .subscribe()
   }
 
   save() {
