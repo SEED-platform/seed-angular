@@ -5,14 +5,16 @@ import type { Label } from '@seed/api/label'
 import type { Scenario } from '@seed/api/scenario'
 import type { CurrentUser } from '@seed/api/user'
 
+export type InventoryDisplayType = 'Property' | 'Tax Lot'
+export type InventoryStateType = 'PropertyState' | 'TaxLotState'
 export type InventoryType = 'properties' | 'taxlots'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
-export type InventoryDisplayType = 'Property' | 'Tax Lot'
 
 export type FilterResponse = {
   cycle_id?: number;
   pagination?: InventoryPagination;
-  results: Inventory[] | number[];
+  results: State[] | number[];
+  // results: Inventory[] | number[];
   column_defs?: ColDef[];
 }
 
@@ -40,7 +42,7 @@ export type ProfileResponse = {
 
 export type Profile = {
   id: number;
-  inventory_type: number;
+  inventory_type: number | 'Tax Lot' | 'Property';
   name: string;
   profile_location: number;
   columns?: ProfileColumn[];
@@ -64,7 +66,11 @@ export type ProfileColumn = {
   order: number;
   pinned: boolean;
   table_name: string;
+  selected?: boolean;
+  derived_column?: number;
 }
+
+export type ProfileModalMode = 'create' | 'delete' | 'rename' | 'populate'
 
 export type FiltersSorts = {
   sorts: string[];
@@ -78,7 +84,8 @@ export type DeleteParams = {
 
 export type AgFilterResponse = {
   pagination: InventoryPagination;
-  results: Inventory[];
+  results: State[];
+  // results: Inventory[];
   column_defs: ColDef[];
 }
 
@@ -102,12 +109,7 @@ export type FilterSortChip = {
   original: string;
 }
 
-export type InventoryDependencies = {
-  cycles: Cycle[];
-  profiles: Profile[];
-  labels: Label[];
-  currentUser: CurrentUser;
-}
+export type InventoryDependencies = [CurrentUser, Cycle[], Label[], Profile[]]
 
 type AccessLevelInstance = {
   id: number;
@@ -219,11 +221,13 @@ export type BuildingFile = {
 
 export type State = {
   [key: string]: unknown;
+  id: number;
   bounding_box: string;
   centroid: string;
   derived_data: Record<string, unknown>;
   extra_data: Record<string, unknown>;
   files: BuildingFile[];
+  labels: number[];
   measures: Record<string, unknown>[];
   related?: State[];
   scenarios: Scenario[];
@@ -239,3 +243,5 @@ export type UpdateInventoryResponse = {
 
 export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
+
+export type CrossCyclesResponse = Record<string, Record<string, unknown>[]>

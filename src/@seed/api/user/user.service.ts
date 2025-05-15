@@ -17,6 +17,7 @@ import type {
   UserUpdateRequest,
 } from '@seed/api/user'
 import { ErrorService } from '@seed/services'
+import { type OrganizationUserSettings } from '../organization'
 
 @Injectable({ providedIn: 'root' })
 export class UserService implements OnDestroy {
@@ -47,6 +48,7 @@ export class UserService implements OnDestroy {
   getCurrentUser(): Observable<CurrentUser> {
     return this._httpClient.get<CurrentUser>('/api/v3/users/current/').pipe(
       tap((user) => {
+        this.checkUserSettings(user.settings)
         this._currentUser.next(user)
         this._currentOrganizationId.next(user.org_id)
       }),
@@ -163,6 +165,34 @@ export class UserService implements OnDestroy {
         return this._errorService.handleError(error, 'Error checking user authorization')
       }),
     )
+  }
+
+  // applies defaults to an org users settings
+  checkUserSettings(userSettings: OrganizationUserSettings) {
+    userSettings.crossCycles ??= {}
+    userSettings.crossCycles.properties ??= null
+    userSettings.crossCycles.taxlots ??= null
+
+    userSettings.cycleId ??= null
+
+    userSettings.filters ??= {}
+    userSettings.filters.properties ??= {}
+    userSettings.filters.taxlots ??= {}
+
+    userSettings.labels ??= { ids: [], operator: 'and' }
+
+    userSettings.profile ??= {}
+    userSettings.profile.detail ??= {}
+    userSettings.profile.detail.properties ??= null
+    userSettings.profile.detail.taxlots ??= null
+
+    userSettings.profile.list ??= {}
+    userSettings.profile.list.properties ??= null
+    userSettings.profile.list.taxlots ??= null
+
+    userSettings.sorts ??= {}
+    userSettings.sorts.properties ??= []
+    userSettings.sorts.taxlots ??= []
   }
 
   ngOnDestroy() {

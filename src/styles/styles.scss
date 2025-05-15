@@ -113,8 +113,6 @@
   @apply bg-gray-100
 }
 
-.dark 
-
 .inventory-grid {
   .ag-header-cell {
     .cell-menu {
@@ -135,9 +133,9 @@
   }
 }
 
-.filter-sort-chip 
+.seed-chip 
 .mat-mdc-chip-action-label {
-  @apply inline !text-gray-700 dark:!text-gray-400 !text-xs;
+  @apply inline !text-gray-700 dark:!text-secondary !text-xs;
 }
 
 .dark 
@@ -145,12 +143,13 @@
   min-height: fit-content !important;
 }
 
+// MAT dark components
 .dark {
   .even-row {
     @apply bg-slate-900
   }
 
-  .mat-mdc-option-active{
+  .mat-mdc-option-active {
     .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
       color: lightblue !important;
     }
@@ -159,4 +158,16 @@
   .nw-editor {
     background-color: theme('colors.gray.800');
   }
+  
+  .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked {
+    background: white !important;
+  }
+}
+
+.h-full-page {
+  height: calc(100vh - 235px)
+}
+
+.h-full-page-tabs {
+  height: calc(100vh - 265px)
 }
