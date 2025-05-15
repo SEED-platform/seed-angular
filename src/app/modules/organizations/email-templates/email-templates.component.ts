@@ -10,9 +10,9 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NgxWigModule } from 'ngx-wig'
-import { combineLatest, map, Subject, takeUntil, tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type EmailTemplate, PostOfficeService } from '@seed/api/postoffice'
+import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -37,9 +37,9 @@ import { FormModalComponent } from './modal/form-modal.component'
 export class EmailTemplatesComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
   private _orgId: number
-  private _organizationService = inject(OrganizationService)
   private _postOfficeService = inject(PostOfficeService)
   private _snackBarService = inject(SnackBarService)
+  private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   helpOpened = false
   templates: EmailTemplate[]
@@ -53,18 +53,27 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
   })
 
   ngOnInit(): void {
-    combineLatest([
-      this._organizationService.currentOrganization$,
-      this._postOfficeService.emailTemplates$.pipe(map((templates) => templates.sort((a, b) => naturalSort(a.name, b.name)))),
-    ])
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(([organization, templates]) => {
-        this._orgId = organization.id
+    this._userService.currentOrganizationId$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((orgId) => { this._orgId = orgId }),
+      switchMap(() => this._postOfficeService.emailTemplates$),
+      map((templates) => templates.sort((a, b) => naturalSort(a.name, b.name))),
+      tap((templates) => {
         this.templates = templates
         this.selectedTemplate = this.templates[0]
-        this.selectedTemplateForm.get('selectedTemplate').setValue(this.selectedTemplate.id)
-        this.selectTemplate()
-      })
+        this.setForm()
+      }),
+    ).subscribe()
+  }
+
+  setForm() {
+    if (this.selectedTemplate) {
+      this.selectedTemplateForm.get('selectedTemplate').setValue(this.selectedTemplate.id)
+      this.selectTemplate()
+    } else {
+      this.selectedTemplateForm.reset()
+      this.templateForm.reset()
+    }
   }
 
   ngOnDestroy(): void {

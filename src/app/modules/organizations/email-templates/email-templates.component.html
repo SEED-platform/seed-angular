@@ -52,14 +52,14 @@
       </mat-form-field>
     </form>
     <!-- template actions -->
-    <a class="flex" (click)="rename()" mat-stroked-button matTooltip="Rename">
+    <a class="flex" (click)="rename()" [disabled]="!selectedTemplate" mat-stroked-button matTooltip="Rename">
       <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
     </a>
-    <a class="flex" (click)="delete()" mat-stroked-button matTooltip="Delete">
+    <a class="flex" (click)="delete()" [disabled]="!selectedTemplate" mat-stroked-button matTooltip="Delete">
       <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
     </a>
     <a class="flex" (click)="create()" mat-stroked-button matTooltip="Create New">
-      <mat-icon class="fill-blue-300 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
+      <mat-icon class="fill-blue-600 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
     </a>
   </div>
 
