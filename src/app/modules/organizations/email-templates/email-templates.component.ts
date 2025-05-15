@@ -72,7 +72,7 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
       this.selectTemplate()
     } else {
       this.selectedTemplateForm.reset()
-      this.templateForm.reset()
+      this.templateForm.reset({}, { emitEvent: false })
     }
   }
 
