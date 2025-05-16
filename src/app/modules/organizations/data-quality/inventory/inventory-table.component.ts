@@ -131,7 +131,7 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
     })
     dialogRef.afterClosed().pipe(
       takeUntil(this._unsubscribeAll$),
-      tap(() => { this.getRules.emit()}),
+      tap(() => { this.getRules.emit() }),
     ).subscribe()
   }
 

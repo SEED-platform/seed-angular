@@ -5,7 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
-import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
 import { UserService } from '@seed/api/user'
@@ -114,6 +114,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
     })
 
     dialogRef.afterClosed().pipe(
+      filter(Boolean),
       switchMap(() => this._derivedColumnService.delete({ orgId: this._orgId, id: derivedColumn.id })),
       tap(() => { this.getDerivedColumns() }),
     ).subscribe()

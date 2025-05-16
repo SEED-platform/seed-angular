@@ -6,13 +6,14 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
 import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
-import { DeleteModalComponent, FormModalComponent } from './modal'
+import { DeleteModalComponent } from '@seed/components'
+import { FormModalComponent } from './modal'
 
 @Component({
   selector: 'seed-organizations-labels',
@@ -87,18 +88,15 @@ export class LabelsComponent implements OnInit, OnDestroy {
   delete(label: Label) {
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { label },
+      data: { model: 'Label', instance: label.name },
     })
 
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.refreshLabels()
-        }),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => this._labelService.delete(label)),
+      tap(() => { this.refreshLabels() }),
+    ).subscribe()
   }
 
   create = () => {

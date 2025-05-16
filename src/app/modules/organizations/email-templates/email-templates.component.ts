@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { NgxWigModule } from 'ngx-wig'
-import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type EmailTemplate, PostOfficeService } from '@seed/api/postoffice'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
@@ -146,6 +146,7 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
 
     dialogRef.afterClosed().pipe(
       takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
       switchMap(() => this._postOfficeService.delete(this.selectedTemplate.id, this._orgId)),
       tap(() => {
         this.refreshTemplates(null)

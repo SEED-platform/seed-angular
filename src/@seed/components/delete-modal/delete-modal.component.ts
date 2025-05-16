@@ -19,10 +19,10 @@ export class DeleteModalComponent {
   data = inject(MAT_DIALOG_DATA) as { instance: string; model: string }
 
   onSubmit() {
-    this.close('delete')
+    this.close(true)
   }
 
-  close(message = '') {
-    this._dialogRef.close(message)
+  close(success = false) {
+    this._dialogRef.close(success)
   }
 }
