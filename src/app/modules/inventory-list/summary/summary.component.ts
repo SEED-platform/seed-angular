@@ -105,7 +105,6 @@ export class SummaryComponent implements OnDestroy, OnInit {
     return !is_extra_data ? value : `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary text-xs">emergency</span>`
   }
 
-
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
     this.gridApi.sizeColumnsToFit()

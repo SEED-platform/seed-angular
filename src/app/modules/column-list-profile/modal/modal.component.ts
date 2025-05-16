@@ -118,13 +118,6 @@ export class ModalComponent {
     ).subscribe()
   }
 
-  onDelete() {
-    this._inventoryService.deleteColumnListProfile(this.data.orgId, this.data.profile.id).subscribe(() => {
-      console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-      this.close(-1)
-    })
-  }
-
   onRename() {
     this.data.profile.name = this.form.get('name')?.value
     this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, this.data.profile).subscribe(() => {

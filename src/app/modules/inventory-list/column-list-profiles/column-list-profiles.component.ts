@@ -10,7 +10,7 @@ import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridOptions, GridReadyEvent, ICellRendererParams, RowSelectedEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
@@ -18,7 +18,7 @@ import { InventoryService } from '@seed/api/inventory'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { PageComponent } from '@seed/components'
+import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
@@ -32,6 +32,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    DeleteModalComponent,
     PageComponent,
     MatButtonModule,
     MatIconModule,
@@ -262,6 +263,22 @@ export class ColumnListProfilesComponent implements OnDestroy, OnInit {
     this.currentProfile = profile
     this.setRowData(new Set(profile.columns.map((c) => c.id)))
     this.updateOrgUserSettings$.next()
+  }
+
+  openDeleteModal() {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'Column List Profile', instance: this.currentProfile.name },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      tap(() => {
+        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
+      }),
+      switchMap(() => this._inventoryService.deleteColumnListProfile(this.orgId, this.currentProfile.id)),
+      tap(() => { this.initPage() }),
+    ).subscribe()
   }
 
   openProfileModal(mode: ProfileModalMode, columns: ProfileColumn[] = []) {

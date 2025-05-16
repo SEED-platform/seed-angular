@@ -30,7 +30,7 @@
     <a class="flex" [disabled]="!currentProfile" (click)="openProfileModal('rename')" mat-stroked-button matTooltip="Rename this Profile">
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
     </a>
-    <a class="flex" [disabled]="!currentProfile" (click)="openProfileModal('delete')" mat-stroked-button matTooltip="Delete this Profile">
+    <a class="flex" [disabled]="!currentProfile" (click)="openDeleteModal()" mat-stroked-button matTooltip="Delete this Profile">
       <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
     </a>
     <a
