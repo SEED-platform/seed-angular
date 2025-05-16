@@ -32,7 +32,6 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
     AgGridAngular,
     AgGridModule,
     CommonModule,
-    DeleteModalComponent,
     PageComponent,
     MatButtonModule,
     MatIconModule,

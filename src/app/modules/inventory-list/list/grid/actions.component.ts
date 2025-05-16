@@ -4,16 +4,18 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
+import { DeleteModalComponent } from '@seed/components'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { DeleteModalComponent, MoreActionsModalComponent } from '../modal'
+import { MoreActionsModalComponent } from '../modal'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
   imports: [
+    DeleteModalComponent,
     MatFormFieldModule,
     MatSelectModule,
   ],
@@ -83,16 +85,14 @@ export class ActionsComponent implements OnDestroy {
   deletePropertyStates = () => {
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { orgId: this.orgId, viewIds: this.selectedViewIds },
+      data: { model: `${this.selectedViewIds.length} Property States`, instance: '' },
     })
 
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => { this.refreshInventory.emit() }),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
+      tap(() => { this.refreshInventory.emit() }),
+    ).subscribe()
   }
 
   openShowPopulatedColumnsModal() {
