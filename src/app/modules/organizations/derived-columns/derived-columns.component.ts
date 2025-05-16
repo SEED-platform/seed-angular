@@ -5,14 +5,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
-import { map, Subject, takeUntil } from 'rxjs'
+import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
+import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
+import { DeleteModalComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
 import type { InventoryDisplayType, InventoryType } from '../../inventory/inventory.types'
-import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -34,6 +35,7 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _dialog = inject(MatDialog)
+  private _userService = inject(UserService)
   private _derivedColumnService = inject(DerivedColumnService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _orgId: number
@@ -45,18 +47,17 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   derivedColumnColumns = ['name', 'expression', 'actions']
 
   ngOnInit(): void {
-    this._derivedColumnService.derivedColumns$
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
-      )
-
-      .subscribe((derivedColumns) => {
+    this._userService.currentOrganizationId$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((orgId) => { this._orgId = orgId }),
+      switchMap(() => this._derivedColumnService.derivedColumns$),
+      map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
+      tap((derivedColumns) => {
         this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
         this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
         this.derivedColumnDataSource.data = this.derivedColumns
-        this._orgId = derivedColumns[0]?.organization
-      })
+      }),
+    ).subscribe()
   }
 
   getDerivedColumns() {
@@ -109,12 +110,13 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   deleteDerivedColumn(derivedColumn: DerivedColumn) {
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { derivedColumn, orgId: this._orgId },
+      data: { model: 'Derived Column', instance: derivedColumn.name },
     })
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.getDerivedColumns()
-    })
+    dialogRef.afterClosed().pipe(
+      switchMap(() => this._derivedColumnService.delete({ orgId: this._orgId, id: derivedColumn.id })),
+      tap(() => { this.getDerivedColumns() }),
+    ).subscribe()
   }
 
   trackByFn(_index: number, { id }: DerivedColumn) {

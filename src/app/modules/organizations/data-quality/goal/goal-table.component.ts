@@ -13,8 +13,8 @@ import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
-import { DataQualityUtils } from '../data-quality.utils'
 import { DeleteModalComponent } from '@seed/components'
+import { DataQualityUtils } from '../data-quality.utils'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
