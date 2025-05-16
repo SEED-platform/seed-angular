@@ -11,9 +11,10 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
-import { combineLatest, type Observable, Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
+import { DeleteModalComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { type ComponentCanDeactivate } from '@seed/guards/pending-changes.guard'
 import { ConfigService } from '@seed/services'
@@ -21,7 +22,6 @@ import { naturalSort } from '@seed/utils'
 import { ActionButtonsComponent } from './action-buttons.component'
 import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
-import { DeleteModalComponent } from './modal/delete-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
 
@@ -50,6 +50,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   private _mappableColumnService = inject(MappableColumnService)
   protected readonly _unsubscribeAll$ = new Subject<void>()
   private _gridApi!: GridApi<RenderMapping>
+  orgId: number
   profiles: ColumnMappingProfile[]
   mappablePropertyColumns: Column[]
   mappableTaxlotColumns: Column[]
@@ -168,6 +169,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .subscribe(([taxLotColumns, propertyColumns, profiles]) => {
         this.mappableTaxlotColumns = taxLotColumns
         this.mappablePropertyColumns = propertyColumns
+        this.orgId = this.mappablePropertyColumns[0].organization_id
         this.profiles = profiles.sort((a, b) => naturalSort(a.name, b.name))
         this.selectedProfile = profiles.sort((a, b) => a.id - b.id)[0]
         this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
@@ -312,7 +314,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   editMapping(mapping: ColumnMapping, node: IRowNode): void {
     const dialogRef = this._dialog.open(EditModalComponent, {
       width: '80rem',
-      data: { profile: this.selectedProfile, mapping, org_id: this.mappablePropertyColumns[0].organization_id, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
+      data: { profile: this.selectedProfile, mapping, org_id: this.orgId, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
     })
     dialogRef
       .afterClosed()
@@ -333,7 +335,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     const dialogRef = this._dialog.open(CreateModalComponent, {
       width: '80rem',
       maxHeight: '75vh',
-      data: { org_id: this.mappablePropertyColumns[0].organization_id, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
+      data: { org_id: this.orgId, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
     })
 
     dialogRef
@@ -342,7 +344,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
         takeUntil(this._unsubscribeAll$),
         tap((newProfileId: number) => {
           if (newProfileId) {
-            this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe((_profiles) => {
+            this._columnMappingProfileService.getProfiles(this.orgId).subscribe((_profiles) => {
               this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
               this.selectProfile(newProfileId)
               this._gridApi.redrawRows()
@@ -358,7 +360,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   copy_profile() {
     const dialogRef = this._dialog.open(CopyModalComponent, {
       width: '40rem',
-      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', mappings: this.getMappingsFromGrid(), org_id: this.mappablePropertyColumns[0].organization_id },
+      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', mappings: this.getMappingsFromGrid(), org_id: this.orgId },
     })
 
     dialogRef
@@ -366,7 +368,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((newProfileId: number) => {
-          this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe(
+          this._columnMappingProfileService.getProfiles(this.orgId).subscribe(
             () => {
               if (newProfileId) {
                 this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
@@ -386,22 +388,19 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     }
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { profile: profileToDelete, org_id: this.mappablePropertyColumns[0].organization_id },
+      data: { model: 'Column Mapping Profile', instance: this.selectedProfile.name },
     })
 
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap((deleted: boolean) => {
-          if (deleted) {
-            this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
-            this.selectProfile()
-            this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe()
-          }
-        }),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => this._columnMappingProfileService.delete(this.orgId, this.selectedProfile.id)),
+      tap(() => {
+        this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
+        this.selectProfile()
+        this._columnMappingProfileService.getProfiles(this.orgId).subscribe()
+      }),
+    ).subscribe()
   }
 
   rename() {
@@ -409,7 +408,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
     const dialogRef = this._dialog.open(RenameModalComponent, {
       width: '40rem',
-      data: { profile: profileToUpdate, org_id: this.mappablePropertyColumns[0].organization_id },
+      data: { profile: profileToUpdate, org_id: this.orgId },
     })
 
     dialogRef
@@ -417,7 +416,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap(() => {
-          this._columnMappingProfileService.getProfiles(this.mappablePropertyColumns[0].organization_id).subscribe(() => {
+          this._columnMappingProfileService.getProfiles(this.orgId).subscribe(() => {
             this.selectedProfileForm.get('selectedProfile').setValue(profileToUpdate.id)
             this.selectProfile()
           })
@@ -431,7 +430,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       return
     }
     const filename = `column_mapping_profile_${this.selectedProfile.id}.csv`
-    this._columnMappingProfileService.export(this.mappablePropertyColumns[0].organization_id, this.selectedProfile.id)
+    this._columnMappingProfileService.export(this.orgId, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
         saveAs(blob, filename) // eslint-disable-line @typescript-eslint/no-unsafe-call
@@ -440,7 +439,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
   suggest() {
     const headers = this.selectedProfile.mappings.map((m) => m.from_field)
-    this._columnMappingProfileService.suggestions(this.mappablePropertyColumns[0].organization_id, headers)
+    this._columnMappingProfileService.suggestions(this.orgId, headers)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((suggestions) => {
         for (const k of Object.keys(suggestions)) {
@@ -460,7 +459,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   }
 
   save() {
-    const orgId = this.mappablePropertyColumns[0].organization_id
+    const orgId = this.orgId
     this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, this.getMappingsFromGrid()).subscribe((updatedProfile) => {
       const i = this.profiles.indexOf(this.selectedProfile)
       this.profiles[i] = updatedProfile

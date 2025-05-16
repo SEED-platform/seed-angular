@@ -36,7 +36,6 @@ export class CreateModalComponent implements OnInit {
     this.profile.mappings = []
     this.columns = this.data.columns
     this.addMapping()
-    this.addMapping()
   }
 
   getToField(index: number) {
