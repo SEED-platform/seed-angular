@@ -9,13 +9,15 @@ import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { AnalysisService } from '@seed/api/analysis/analysis.service'
-import type { AnalysisSummary } from '@seed/api/analysis/analysis.types'
+import type { AnalysisSummary, AnalysisSummaryStats } from '@seed/api/analysis/analysis.types'
 import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { type CurrentUser, UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
+
+type CellRendererParams = { value: string; data: { is_extra_data: boolean } }
 
 @Component({
   selector: 'seed-inventory-list-summary',
@@ -46,7 +48,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   orgId: number
-  rowData: Record<string, unknown>[] = []
+  rowData: AnalysisSummaryStats[] = []
   summary: AnalysisSummary
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   totalRecords: string
@@ -91,10 +93,18 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   setColumnDefs() {
     this.columnDefs = [
-      { field: 'field', headerName: 'Field', filter: true, floatingFilter: true },
+      { field: 'display_name', headerName: 'Field', filter: true, floatingFilter: true, cellRenderer: this.columnRenderer},
       { field: 'count', headerName: 'Count' },
+      { field: 'is_extra_data', hide: true },
     ]
   }
+
+  columnRenderer = (params: CellRendererParams) => {
+    const value = params.value
+    const { is_extra_data } = params.data
+    return !is_extra_data ? value : `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary text-xs">emergency</span>`
+  }
+
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
@@ -102,8 +112,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   }
 
   setRowData() {
-    this.rowData = []
-    this.rowData = Object.entries(this.summary['column_settings fields and counts']).map(([field, count]) => ({ field, count }))
+    this.rowData = this.summary.stats
   }
 
   selectCycle(cycleId: number) {
