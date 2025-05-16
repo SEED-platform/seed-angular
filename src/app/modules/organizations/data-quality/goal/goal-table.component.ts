@@ -8,13 +8,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
 import { DataQualityUtils } from '../data-quality.utils'
-import { DeleteModalComponent } from '../modal/delete-modal.component'
+import { DeleteModalComponent } from '@seed/components'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -80,28 +80,25 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
       width: '50rem',
       data: { rule, orgId: this._orgId, tableName, currentRules: this.currentRules },
     })
-    this.fetchRules(dialogRef)
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap(() => { this.getRules.emit() }),
+    ).subscribe()
   }
 
   deleteRule(rule: Rule) {
     const displayName = `${this.dataTypeLookup[rule.data_type]} ${DataQualityUtils.getCriteria(rule)}`
     const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { rule, orgId: this._orgId, displayName },
+      data: { model: 'Rule', instance: displayName },
     })
-    this.fetchRules(dialogRef)
-  }
 
-  fetchRules(dialogRef: MatDialogRef<unknown, boolean>) {
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.getRules.emit()
-        }),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
+      tap(() => { this.getRules.emit() }),
+    ).subscribe()
   }
 
   toggleEnable(index: number) {
