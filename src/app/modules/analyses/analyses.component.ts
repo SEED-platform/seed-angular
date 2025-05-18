@@ -9,17 +9,18 @@ import { MatListModule } from '@angular/material/list'
 import { MatTabsModule } from '@angular/material/tabs'
 import { RouterLink } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
 import { from, map, Observable, Subject, skip, switchMap, takeUntil, tap } from 'rxjs'
 import type { AnalysesMessage, Analysis, OriginalView, View } from '@seed/api/analysis'
 import { AnalysisService } from '@seed/api/analysis'
 import type { Cycle } from '@seed/api/cycle'
 import { OrganizationService } from '@seed/api/organization'
-import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { TranslocoService } from '@jsverse/transloco'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+
 import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
 
 @Component({
@@ -52,8 +53,8 @@ export class AnalysesComponent implements OnInit, OnDestroy {
   private _analysisService = inject(AnalysisService)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
-  private _userService = inject(UserService)
   private _transloco = inject(TranslocoService)
+  private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {

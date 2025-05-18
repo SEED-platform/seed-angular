@@ -17,7 +17,6 @@ import { OrganizationService } from '@seed/api/organization'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { TranslocoService } from '@jsverse/transloco'
 import { SharedImports } from '@seed/directives'
 
 @Component({
@@ -41,7 +40,6 @@ export class AnalysisComponent implements OnInit {
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
-  private _transloco = inject(TranslocoService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {

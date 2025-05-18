@@ -6,7 +6,7 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 // import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, forkJoin, map, Observable, Subject, takeUntil, tap } from 'rxjs'
-import type { Analysis, AnalysisResponse, AnalysesMessage, AnalysesViews, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, View } from './analysis.types'
+import type { Analysis, AnalysisResponse, AnalysesMessage, AnalysesViews, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, PropertyAnalysesResponse, View } from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -80,6 +80,18 @@ export class AnalysisService {
         map((response) => response.analysis),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching analyses')
+        }),
+      )
+  }
+
+  // get analyses for a property (by property ID)
+  getPropertyAnalyses(_propertyId): Observable<Analysis[]> {
+    return this._httpClient
+      .get<PropertyAnalysesResponse>(`/api/v3/properties/${_propertyId}/analyses/?organization_id=${this.orgId}`)
+      .pipe(
+        map((response) => response.analyses),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses for this property')
         }),
       )
   }

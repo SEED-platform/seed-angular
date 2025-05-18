@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import type { Analysis } from '@seed/api/analysis'
+import { AnalysisService } from '@seed/api/analysis'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
@@ -17,9 +19,11 @@ import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, Profile, ViewResponse } from '../inventory.types'
 import {
+  AnalysesGridComponent,
   BuildingFilesGridComponent,
   DocumentsGridComponent,
   HeaderComponent,
@@ -34,6 +38,7 @@ import {
   imports: [
     AgGridAngular,
     AgGridModule,
+    AnalysesGridComponent,
     BuildingFilesGridComponent,
     CommonModule,
     DocumentsGridComponent,
@@ -44,10 +49,12 @@ import {
     PageComponent,
     PairedGridComponent,
     ScenariosGridComponent,
+    SharedImports,
   ],
 })
 export class DetailComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
+  private _analysisService = inject(AnalysisService)
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _inventoryService = inject(InventoryService)
@@ -56,6 +63,7 @@ export class DetailComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  analyses: Analysis[]
   columns: Column[]
   currentUser: CurrentUser
   currentProfile: Profile
@@ -86,6 +94,7 @@ export class DetailComponent implements OnDestroy, OnInit {
       switchMap(() => this.getDependencies()),
       switchMap(() => this.updateOrgUserSettings()),
       switchMap(() => this.loadView()),
+      switchMap(() => this.getAnalyses()),
     ).subscribe()
   }
 
@@ -130,6 +139,15 @@ export class DetailComponent implements OnDestroy, OnInit {
       }),
       tap((labels: Label[]) => {
         this.labels = labels.filter((label) => label.is_applied.includes(this.selectedView.id))
+      }),
+    )
+  }
+
+  // retrieve analyses for this property, filtered by the selected cycle
+  getAnalyses(): Observable<Analysis[]> {
+    return this._analysisService.getPropertyAnalyses(this.view.property.id).pipe(
+      tap((analyses: Analysis[]) => {
+        this.analyses = analyses.filter((analysis) => analysis.cycles.includes(this.view.cycle.id))
       }),
     )
   }

@@ -53,6 +53,14 @@
     ></seed-inventory-detail-paired-grid>
   }
 
+  <!-- ANALYSES -->
+  @if ( analyses?.length) {
+    <mat-divider></mat-divider>
+    <seed-inventory-detail-analyses-grid
+      [analyses]="analyses"
+    ></seed-inventory-detail-analyses-grid>
+  }
+
   <!-- INVENTORY DOCUMENTS -->
   @if (view?.property) {
     <mat-divider></mat-divider>

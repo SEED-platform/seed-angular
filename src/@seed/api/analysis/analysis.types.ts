@@ -52,6 +52,11 @@ export type AnalysisResponse = {
   analysis: Analysis;
 }
 
+export type PropertyAnalysesResponse = {
+  status: 'success';
+  analyses: Analysis[];
+}
+
 export type AnalysesViews = {
   analyses: Analysis[];
   views: View[];
