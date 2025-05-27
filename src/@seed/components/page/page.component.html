@@ -1,27 +1,38 @@
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <div
     class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
+    [style.padding-bottom]="config.tabs ? '15px !important' : null"
   >
     <div class="min-w-0 flex-1">
-      @if (config.breadcrumbs?.length > 0) {
-        <div class="flex flex-wrap items-center gap-x-1 font-medium">
-          @for (breadcrumb of config.breadcrumbs; track $index) {
-            <div class="flex items-center gap-x-1 whitespace-nowrap">
-              @if (!$first) {
-                <mat-icon class="text-secondary icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon>
-              }
-              <span class="text-secondary">{{ breadcrumb }}</span>
-            </div>
-          }
-        </div>
-      }
+      <div class="flex" [class]="config.sideNavToggle ? '-ml-10 -mt-3' : ''">
+        @if (config.sideNavToggle) {
+          <button (click)="toggleDrawer()" mat-icon-button>
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+        @if (config.breadcrumbs?.length > 0) {
+          <div class="flex flex-wrap items-center gap-x-1 font-medium">
+            @for (breadcrumb of config.breadcrumbs; track $index) {
+              <div class="flex items-center gap-x-1 whitespace-nowrap">
+                @if (!$first) {
+                  <mat-icon class="text-secondary icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon>
+                }
+                <span class="text-secondary">{{ breadcrumb }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <div [ngClass]="{ 'mt-2': config.breadcrumbs?.length > 0 }">
-        <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
-          @if (config.titleIcon) {
-            <mat-icon class="text-primary-900 icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
-          }
-          {{ t(config.title) }}
-        </h2>
+        <div class="flex">
+          <h2 class="truncate text-3xl font-bold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+            @if (config.titleIcon) {
+              <mat-icon class="text-primary-900 icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
+            }
+            {{ t(config.title) }}
+          </h2>
+        </div>
       </div>
     </div>
     <!-- Actions -->
@@ -64,5 +75,13 @@
       }
     </div>
   </div>
+  @if (config.tabs) {
+    <div class="bg-card">
+      <div class="mx-auto flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
+        <!-- Tabs -->
+        <seed-page-inventory-tab [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
+      </div>
+    </div>
+  }
   <ng-content></ng-content>
 </div>

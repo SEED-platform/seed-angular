@@ -1,7 +1,8 @@
 import type { UserRole } from '@seed/api/user'
 import type { Column } from '../column'
+import type { LabelOperator } from '../label'
 
-type OrgCycle = {
+export type OrgCycle = {
   name: string;
   cycle_id: number;
   num_properties: number;
@@ -97,15 +98,17 @@ export type OrganizationUser = {
   number_of_orgs: number;
   role: UserRole;
   user_id: number;
-  settings: Record<string, unknown>;
+  settings: OrganizationUserSettings;
 }
 
 export type OrganizationUserSettings = {
   [key: string]: unknown;
-  cycle_id?: number;
-  profile_id?: number;
+  cycleId?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
+  profile?: UserSettingsProfiles;
+  crossCycles?: UserSettingsCrossCycles;
+  labels?: UserLabelSettings;
 }
 
 type UserSettingsFilters = {
@@ -117,6 +120,18 @@ type UserSettingsSorts = {
   properties?: string[];
   taxlots?: string[];
 }
+
+type UserSettingsProfiles = {
+  detail?: { properties?: number; taxlots?: number };
+  list?: { properties?: number; taxlots?: number };
+}
+
+type UserSettingsCrossCycles = {
+  properties?: number[];
+  taxlots?: number[];
+}
+
+type UserLabelSettings = { ids: number[]; operator: LabelOperator }
 
 export type OrganizationUsersResponse = {
   users: OrganizationUser[];
@@ -184,4 +199,9 @@ export type UploadAccessLevelInstancesResponse = {
 
 export type StartSavingAccessLevelInstancesRequest = {
   filename: string;
+}
+
+export type MatchingCriteriaColumnsResponse = {
+  PropertyState: string[];
+  TaxLotState: string[];
 }

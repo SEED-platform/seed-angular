@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
+import type { MatDrawer } from '@angular/material/sidenav'
 import type { DrawerComponent } from '@seed/components'
 
 @Injectable({ providedIn: 'root' })
 export class DrawerService {
   private _componentRegistry: Map<string, DrawerComponent> = new Map<string, DrawerComponent>()
+  private _drawerRef?: MatDrawer
 
   /**
    * Register drawer component
@@ -31,5 +33,13 @@ export class DrawerService {
    */
   getComponent(name: string): DrawerComponent | undefined {
     return this._componentRegistry.get(name)
+  }
+
+  setDrawer(drawer: MatDrawer) {
+    this._drawerRef = drawer
+  }
+
+  toggle() {
+    void this._drawerRef?.toggle()
   }
 }

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common'
 import { Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -8,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
-import { AllCommunityModule, colorSchemeDarkBlue, colorSchemeLight, ModuleRegistry, themeAlpine } from 'ag-grid-community'
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
 import { combineLatest, type Observable, Subject, takeUntil, tap } from 'rxjs'
 import { type Column, MappableColumnService } from '@seed/api/column'
@@ -40,7 +41,7 @@ type RenderMapping = ColumnMapping & {
   selector: 'seed-organizations-column-mappings',
   templateUrl: './mappings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [AgGridAngular, SharedImports, MatButtonModule, MatIcon, MatFormFieldModule, ReactiveFormsModule, MatSelectModule, MatTooltipModule],
+  imports: [AgGridAngular, CommonModule, SharedImports, MatButtonModule, MatIcon, MatFormFieldModule, ReactiveFormsModule, MatSelectModule, MatTooltipModule],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -142,7 +143,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     suppressCellFocus: true,
   }
   darkMode: boolean
-  gridTheme = themeAlpine.withPart(colorSchemeLight)
+  gridTheme$ = this._configService.gridTheme$
   gridReady = false
   changesToSave = false
 
@@ -162,20 +163,15 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       this._mappableColumnService.taxLotColumns$,
       this._mappableColumnService.propertyColumns$,
       this._columnMappingProfileService.profiles$,
-      this._configService.config$,
     ])
       .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(([taxLotColumns, propertyColumns, profiles, config]) => {
+      .subscribe(([taxLotColumns, propertyColumns, profiles]) => {
         this.mappableTaxlotColumns = taxLotColumns
         this.mappablePropertyColumns = propertyColumns
         this.profiles = profiles.sort((a, b) => naturalSort(a.name, b.name))
         this.selectedProfile = profiles.sort((a, b) => a.id - b.id)[0]
         this.selectedProfileForm.get('selectedProfile').setValue(this.selectedProfile.id)
         this.rowData = this.buildRenderMappings(this.selectedProfile.mappings)
-        const theme = config.scheme === 'auto'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-          : config.scheme
-        this.gridTheme = themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)
       })
     this.isLoaded = true
   }

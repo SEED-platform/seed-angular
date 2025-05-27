@@ -1,0 +1,69 @@
+<seed-page
+  [config]="{
+    title: pageTitle,
+    titleIcon: 'fa-solid:building',
+    tabs: ['properties', 'taxlots'],
+  }"
+>
+</seed-page>
+
+<div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
+  <!-- Main -->
+  <div class="z-1 -mt-px flex-auto border-t pt-2">
+    <!-- GRID CONFIG -->
+    <div class="m-2 flex">
+      <!-- Actions -->
+      <seed-inventory-grid-actions
+        [cycleId]="cycleId"
+        [gridApi]="gridApi"
+        [inventory]="inventory"
+        [orgId]="orgId"
+        [profile]="profile"
+        [profiles]="profiles"
+        [selectedViewIds]="selectedViewIds"
+        [type]="type"
+        (refreshInventory)="refreshInventory$.next()"
+      ></seed-inventory-grid-actions>
+
+      <!-- Cycles -->
+      <seed-inventory-grid-config-selector [items]="cycles" [selectedId]="cycleId" (selectionChange)="onCycleChange($event)" label="Cycle">
+      </seed-inventory-grid-config-selector>
+
+      <!-- Profiles -->
+      <seed-inventory-grid-config-selector
+        [items]="profiles"
+        [selectedId]="profileId"
+        (selectionChange)="onProfileChange($event)"
+        label="Profile"
+      >
+      </seed-inventory-grid-config-selector>
+    </div>
+
+    <!-- Filter and Sort chips -->
+    @if (gridApi && columnDefs) {
+      <seed-inventory-filter-sort-chips
+        [gridApi]="gridApi"
+        [columnDefs]="columnDefs"
+        [type]="type"
+        [userSettings]="userSettings"
+      ></seed-inventory-filter-sort-chips>
+    }
+
+    <!-- INVENTORY GRID -->
+    <seed-inventory-grid
+      #grid
+      [columnDefs]="columnDefs"
+      [inventoryType]="type"
+      [labelMap]="labelMap"
+      [pagination]="pagination"
+      [rowData]="rowData"
+      [selectedViewIds]="selectedViewIds"
+      [type]="type"
+      (pageChange)="onPageChange($event)"
+      (filterSortChange)="onFilterSortChange($event)"
+      (gridReady)="onGridReady($event)"
+      (selectionChanged)="onSelectionChanged()"
+      (gridReset)="onGridReset()"
+    ></seed-inventory-grid>
+  </div>
+</div>

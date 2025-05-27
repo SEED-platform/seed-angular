@@ -1,7 +1,9 @@
+import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
+
 export type DerivedColumn = {
   expression: string;
   id: number;
-  inventory_type: 'Property' | 'Tax Lot';
+  inventory_type: InventoryDisplayType;
   name: string;
   organization: number;
   parameters: Parameter[];

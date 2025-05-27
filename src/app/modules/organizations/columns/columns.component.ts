@@ -1,12 +1,14 @@
 import { CommonModule, Location } from '@angular/common'
-import { Component, inject, type OnInit, type Type } from '@angular/core'
+import type { AfterViewInit, OnInit, Type } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
+import type { MatDrawer } from '@angular/material/sidenav'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Title } from '@angular/platform-browser'
 import { Router, RouterOutlet } from '@angular/router'
-import { type NavigationItem, VerticalNavigationComponent } from '@seed/components'
+import { DrawerService, type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ColumnDataTypesHelpComponent } from './data-types/help.component'
@@ -32,7 +34,9 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: 
     RouterOutlet,
   ],
 })
-export class ColumnsComponent implements OnInit {
+export class ColumnsComponent implements AfterViewInit, OnInit {
+  @ViewChild('drawer') drawer!: MatDrawer
+  private _drawerService = inject(DrawerService)
   private _title = inject(Title)
   private _router = inject(Router)
   private _location = inject(Location)
@@ -111,6 +115,10 @@ export class ColumnsComponent implements OnInit {
 
   ngOnInit(): void {
     this.setTitle()
+  }
+
+  ngAfterViewInit() {
+    this._drawerService.setDrawer(this.drawer)
   }
 
   currentType(): string {
