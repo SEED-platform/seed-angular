@@ -3,8 +3,9 @@ import { Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIcon } from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { map } from 'rxjs'
@@ -16,7 +17,18 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, MatIcon, MatInputModule, MatSelectModule, ReactiveFormsModule, SharedImports, SeedHeaderAutocompleteComponent],
+  imports: [
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    SharedImports,
+    SeedHeaderAutocompleteComponent,
+  ],
 })
 export class CreateModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)

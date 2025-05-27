@@ -360,7 +360,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   copy_profile() {
     const dialogRef = this._dialog.open(CopyModalComponent, {
       width: '40rem',
-      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', mappings: this.getMappingsFromGrid(), org_id: this.orgId },
+      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', selectedProfileName: this.selectedProfile.name, mappings: this.getMappingsFromGrid(), org_id: this.orgId },
     })
 
     dialogRef

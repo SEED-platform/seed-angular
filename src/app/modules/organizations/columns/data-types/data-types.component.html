@@ -1,4 +1,3 @@
-<div class="prose my-4">This allows the user to set the type, such as Text, Number, Date for Extra Data Fields.</div>
 @if (columns && columns.length === 0) {
   <div class="my-4 text-lg">No extra data columns have been created yet.</div>
 }
@@ -18,7 +17,7 @@
         <ng-container matColumnDef="data_type">
           <th class="w-1/3" *matHeaderCellDef mat-header-cell>Data Type</th>
           <td class="w-1/3" *matCellDef="let c" mat-cell>
-            <mat-select formControlName="{{ c.id }}">
+            <mat-select formControlName="{{ c.id }}" class="text-secondary">
               @for (type of dataTypes; track type.id) {
                 <mat-option [value]="type.id">{{ type.label }}</mat-option>
               }

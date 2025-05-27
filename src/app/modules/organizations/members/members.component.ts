@@ -94,7 +94,7 @@ export class MembersComponent implements OnDestroy, OnInit {
       takeUntil(this._unsubscribeAll$),
       filter(Boolean),
       switchMap(() => this._organizationService.deleteOrganizationUser(member.user_id, this._organization.id)),
-      tap(() => { this.getMembers(this._organization.org_id) })
+      tap(() => { this.getMembers(this._organization.org_id) }),
     ).subscribe()
   }
 

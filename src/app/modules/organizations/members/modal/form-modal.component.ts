@@ -4,7 +4,9 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatButtonModule } from '@angular/material/button'
 import { MatOptionModule } from '@angular/material/core'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import type { Observable } from 'rxjs'
@@ -22,8 +24,10 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     FormsModule,
     MatButtonModule,
     MatDialogModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
     MatOptionModule,
     MatSelectModule,
     ReactiveFormsModule,
@@ -45,13 +49,38 @@ export class FormModalComponent implements OnDestroy, OnInit {
     first_name: new FormControl<string | null>('', Validators.required),
     last_name: new FormControl<string | null>('', Validators.required),
     email: new FormControl<string | null>('', [Validators.required, Validators.email]),
-    access_level: new FormControl<string | null>('', Validators.required),
+    access_level: new FormControl<string | null>(null, Validators.required),
     access_level_instance_id: new FormControl<number | null>(null, Validators.required),
     role: new FormControl<UserRole | null>('member', Validators.required),
   })
   create = true
 
   ngOnInit(): void {
+    this.patchForm()
+    this.getALITree()
+    this.watchForm()
+  }
+
+  getALITree() {
+    this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames }) => {
+      this.accessLevelNames = accessLevelNames
+      // suggest access level if null
+      if (!this.form.get('access_level')?.value) {
+        this.form.get('access_level')?.setValue(accessLevelNames.at(-1))
+      }
+    })
+
+    this._organizationService.accessLevelInstancesByDepth$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelsByDepth) => {
+      this.accessLevelInstancesByDepth = accessLevelsByDepth
+      this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+      // suggest access level instance if null
+      if (!this.form.get('access_level_instance_id')?.value) {
+        this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
+      }
+    })
+  }
+
+  patchForm() {
     this.form.patchValue(this.data.member)
     // disable name and email if editing existing member
     if (this.data.member) {
@@ -60,30 +89,18 @@ export class FormModalComponent implements OnDestroy, OnInit {
       this.form.get('last_name')?.disable()
       this.form.get('email')?.disable()
     }
+  }
+
+  watchForm() {
     // watch for changes to access level and repopulate access level instances
-    this.form
-      .get('access_level')
-      ?.valueChanges.pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap((accessLevel) => {
-          this.getPossibleAccessLevelInstances(accessLevel)
-          // default to first access level instance
-          this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
-        }),
-      )
-      .subscribe()
-
-    this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames }) => {
-      this.accessLevelNames = accessLevelNames
-      // set access level if null
-      const accessLevel = this.form.get('access_level')?.value ?? accessLevelNames.at(-1)
-      this.form.get('access_level')?.setValue(accessLevel)
-    })
-
-    this._organizationService.accessLevelInstancesByDepth$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelsByDepth) => {
-      this.accessLevelInstancesByDepth = accessLevelsByDepth
-      this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-    })
+    this.form.get('access_level')?.valueChanges.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((accessLevel) => {
+        this.getPossibleAccessLevelInstances(accessLevel)
+        // default to first access level instance
+        this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
+      }),
+    ).subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {

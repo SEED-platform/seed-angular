@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import { DeleteModalComponent } from '@seed/components'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
@@ -90,6 +90,7 @@ export class ActionsComponent implements OnDestroy {
 
     dialogRef.afterClosed().pipe(
       takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
       switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
       tap(() => { this.refreshInventory.emit() }),
     ).subscribe()
