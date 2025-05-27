@@ -93,7 +93,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   setColumnDefs() {
     this.columnDefs = [
-      { field: 'display_name', headerName: 'Field', filter: true, floatingFilter: true, cellRenderer: this.columnRenderer},
+      { field: 'display_name', headerName: 'Field', filter: true, floatingFilter: true, cellRenderer: this.columnRenderer },
       { field: 'count', headerName: 'Count' },
       { field: 'is_extra_data', hide: true },
     ]

@@ -1,6 +1,6 @@
 <div class="mt-4 flex gap-4" mat-dialog-title>
   <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
-  <div class="text-2xl font-medium leading-6">{{ data.member ? 'Edit' : 'Invite'}} Member</div>
+  <div class="text-2xl font-medium leading-6">{{ data.member ? 'Edit' : 'Invite' }} Member</div>
 </div>
 <mat-divider class="mb-8"></mat-divider>
 <form class="flex flex-col gap-4" [formGroup]="form">
@@ -54,7 +54,9 @@
 <!-- Actions -->
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">{{ data.member ? 'Submit' : 'Invite'}}</button>
+    <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">
+      {{ data.member ? 'Submit' : 'Invite' }}
+    </button>
   </mat-dialog-actions>
   <mat-dialog-actions>
     <button (click)="dismiss()" mat-stroked-button>Dismiss</button>

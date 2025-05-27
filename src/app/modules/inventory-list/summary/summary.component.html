@@ -38,7 +38,6 @@
 
   <!-- INDIVIDUAL STATS -->
   @if (rowData.length) {
-
     <ag-grid-angular
       class="filter-border"
       [columnDefs]="columnDefs"
@@ -49,10 +48,9 @@
       style="width: 100%; height: 100%"
     ></ag-grid-angular>
 
-    <div class="ml-4 italic text-sm text-gray-500">
+    <div class="ml-4 text-sm italic text-gray-500">
       <span class="mr-4"><span class="material-icons align-middle ml-1 text-md text-gray-500">emergency</span>Extra Data Column</span>
     </div>
-
   } @else {
     <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
       <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>

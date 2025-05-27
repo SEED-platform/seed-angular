@@ -11,8 +11,7 @@ import type { Label } from '@seed/api/label'
 import { LabelService } from '@seed/api/label'
 import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
-import { LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
-import { DeleteModalComponent } from '@seed/components'
+import { DeleteModalComponent, LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { FormModalComponent } from './modal'
 
 @Component({

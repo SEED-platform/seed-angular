@@ -17,7 +17,7 @@
         <ng-container matColumnDef="data_type">
           <th class="w-1/3" *matHeaderCellDef mat-header-cell>Data Type</th>
           <td class="w-1/3" *matCellDef="let c" mat-cell>
-            <mat-select formControlName="{{ c.id }}" class="text-secondary">
+            <mat-select class="text-secondary" formControlName="{{ c.id }}">
               @for (type of dataTypes; track type.id) {
                 <mat-option [value]="type.id">{{ type.label }}</mat-option>
               }

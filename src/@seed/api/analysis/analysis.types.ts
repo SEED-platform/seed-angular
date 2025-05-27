@@ -1,5 +1,5 @@
 export type AnalysisSummary = {
-  stats: AnalysisSummaryStats[]
+  stats: AnalysisSummaryStats[];
   number_extra_data_fields: number;
   status: string;
   total_records: number;
