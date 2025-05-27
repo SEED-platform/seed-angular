@@ -8,7 +8,7 @@ import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTabsModule } from '@angular/material/tabs'
 import { Title } from '@angular/platform-browser'
 import { Router, RouterOutlet } from '@angular/router'
-import { DrawerService, type NavigationItem, VerticalNavigationComponent } from '@seed/components'
+import { DrawerService, InventoryTabComponent, type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ColumnDataTypesHelpComponent } from './data-types/help.component'
@@ -17,6 +17,7 @@ import { ColumnImportSettingsHelpComponent } from './import-settings/help.compon
 import { ColumnListHelpComponent } from './list/help.component'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
 import { ColumnMatchingCriteriaHelpComponent } from './matching-criteria/help.component'
+import { InventoryType } from 'app/modules/inventory'
 
 type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: Type<Component> | null }
 @Component({
@@ -25,6 +26,7 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: 
   imports: [
     CommonModule,
     SharedImports,
+    InventoryTabComponent,
     MatButtonModule,
     MatIconModule,
     MatSidenavModule,
@@ -121,15 +123,14 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
     this._drawerService.setDrawer(this.drawer)
   }
 
-  currentType(): string {
-    return this._location.path().split('/').pop()
+  currentType() {
+    return this._location.path().split('/').pop() as InventoryType
   }
 
-  async navigateTo(type: string) {
+  async navigateTo(type: InventoryType) {
     const loc = this._location.path()
-    if (loc.includes(type)) {
-      return
-    }
+    if (loc.includes(type)) return
+
     const newPath = loc.replace(this.inverseType(type), type)
     await this._router.navigateByUrl(newPath).then(() => {
       this.setTitle()

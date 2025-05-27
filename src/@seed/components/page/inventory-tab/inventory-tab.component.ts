@@ -15,12 +15,13 @@ import type { Config } from './inventory-tab.types'
 export class InventoryTabComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   @Input() config: Config
+  @Input() inputType?: InventoryType // special case for organization columns
   type: InventoryType
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
     this._route.paramMap.subscribe((params) => {
-      this.type = params.get('type') as InventoryType
+      this.type = params.get('type') as InventoryType || this.inputType
     })
   }
 

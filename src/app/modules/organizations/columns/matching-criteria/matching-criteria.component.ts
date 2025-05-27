@@ -1,11 +1,11 @@
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
-import { Subject, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { type Organization, OrganizationService } from '@seed/api/organization'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { ConfirmModalComponent } from './modal/confirm-modal.component'
 
 @Component({
