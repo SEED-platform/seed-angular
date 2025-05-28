@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges } from '@angular/core'
+import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Subject } from 'rxjs'

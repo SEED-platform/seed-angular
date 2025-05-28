@@ -1,20 +1,57 @@
-<div class="text-right">
-  <button (click)="save()" color="primary" mat-raised-button>Save Changes</button>
-</div>
 
 <!-- Current -->
-<h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Current Criteria</h2>
-<div class="flex flex-col">
-  <seed-matching-criteria-list [columns]="matchingColumns" (removeColumnEvent)="removeColumn($event)" />
+<div class="ml-4 mb-4 flex items-center text-lg font-medium">
+  <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+  <span class="ml-4">Current Criteria</span>
 </div>
 
+<div class="mb-10">
+  @if (rowDataCurrent.length) {
+  <ag-grid-angular 
+    [columnDefs]="columnDefsCurrent"
+    [defaultColDef]="defaultColDef"
+    [rowData]="rowDataCurrent"
+    [style.height.px]="gridHeightCurrent"
+    [theme]="gridTheme$ | async"
+    (gridReady)="onCurrentReady($event)"
+    ></ag-grid-angular>
+  }
+</div>
+
+<mat-divider></mat-divider>
+
 <!-- Pending -->
-<h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">Pending Changes</h2>
-<div class="flex flex-col">
-  <seed-matching-criteria-list [columns]="addedColumns" (removeColumnEvent)="removeColumn($event)" />
-  <form class="flex w-1/2 flex-col" [formGroup]="addForm" (ngSubmit)="addColumn()">
-    
-    <mat-form-field class="max-h-500">
+@if (rowDataPending.length) {
+
+  <div class="flex justify-between mt-2">
+    <div class="ml-4 my-4 flex items-center text-lg font-medium">
+      <mat-icon svgIcon="fa-solid:pen-to-square"></mat-icon>
+      <span class="ml-4">Pending Changes</span>
+    </div>
+
+    <button class="my-2" (click)="save()" color="primary" mat-raised-button>Save Changes</button>
+
+  </div>
+  
+  <div class="mb-10">
+    <ag-grid-angular 
+      [columnDefs]="columnDefsPending"
+      [defaultColDef]="defaultColDef"
+      [rowData]="rowDataPending"
+      [style.height.px]="gridHeightPending"
+      [theme]="gridTheme$ | async"
+      (gridReady)="onPendingReady($event)"
+      ></ag-grid-angular>
+  </div>
+  
+  <mat-divider></mat-divider>
+}
+
+
+<form class="flex w-1/2 flex-col mt-4" [formGroup]="addForm" (ngSubmit)="addColumn()">
+  <div class="flex gap-4">
+
+    <mat-form-field class="w-full" hideRequiredMarker>
       <mat-label>Add Column</mat-label>
       <mat-select formControlName="columnToAdd">
         @for (c of availableColumns; track c.id) {
@@ -23,6 +60,7 @@
       </mat-select>
     </mat-form-field>
 
-    <button class="flex" mat-stroked-button>Add</button>
-  </form>
-</div>
+    <button class="flex my-auto" mat-stroked-button [disabled]="!addForm.get('columnToAdd').value">Add</button>
+
+  </div>
+</form>
