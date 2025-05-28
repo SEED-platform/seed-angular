@@ -6,12 +6,12 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import { type ProgressResponse } from '@seed/api/progress'
 import { AlertComponent } from '@seed/components'
 import { type ProgressBarObj, UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-columns-matching-criteria-confirm-modal',

@@ -1,19 +1,18 @@
-
 <!-- Current -->
-<div class="ml-4 mb-4 flex items-center text-lg font-medium">
+<div class="mb-4 ml-4 flex items-center text-lg font-medium">
   <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
   <span class="ml-4">Current Criteria</span>
 </div>
 
 <div class="mb-10">
   @if (rowDataCurrent.length) {
-  <ag-grid-angular 
-    [columnDefs]="columnDefsCurrent"
-    [defaultColDef]="defaultColDef"
-    [rowData]="rowDataCurrent"
-    [style.height.px]="gridHeightCurrent"
-    [theme]="gridTheme$ | async"
-    (gridReady)="onCurrentReady($event)"
+    <ag-grid-angular
+      [columnDefs]="columnDefsCurrent"
+      [defaultColDef]="defaultColDef"
+      [rowData]="rowDataCurrent"
+      [style.height.px]="gridHeightCurrent"
+      [theme]="gridTheme$ | async"
+      (gridReady)="onCurrentReady($event)"
     ></ag-grid-angular>
   }
 </div>
@@ -22,35 +21,31 @@
 
 <!-- Pending -->
 @if (rowDataPending.length) {
-
-  <div class="flex justify-between mt-2">
-    <div class="ml-4 my-4 flex items-center text-lg font-medium">
+  <div class="mt-2 flex justify-between">
+    <div class="my-4 ml-4 flex items-center text-lg font-medium">
       <mat-icon svgIcon="fa-solid:pen-to-square"></mat-icon>
       <span class="ml-4">Pending Changes</span>
     </div>
 
     <button class="my-2" (click)="save()" color="primary" mat-raised-button>Save Changes</button>
-
   </div>
-  
+
   <div class="mb-10">
-    <ag-grid-angular 
+    <ag-grid-angular
       [columnDefs]="columnDefsPending"
       [defaultColDef]="defaultColDef"
       [rowData]="rowDataPending"
       [style.height.px]="gridHeightPending"
       [theme]="gridTheme$ | async"
       (gridReady)="onPendingReady($event)"
-      ></ag-grid-angular>
+    ></ag-grid-angular>
   </div>
-  
+
   <mat-divider></mat-divider>
 }
 
-
-<form class="flex w-1/2 flex-col mt-4" [formGroup]="addForm" (ngSubmit)="addColumn()">
+<form class="mt-4 flex w-1/2 flex-col" [formGroup]="addForm" (ngSubmit)="addColumn()">
   <div class="flex gap-4">
-
     <mat-form-field class="w-full" hideRequiredMarker>
       <mat-label>Add Column</mat-label>
       <mat-select formControlName="columnToAdd">
@@ -60,7 +55,6 @@
       </mat-select>
     </mat-form-field>
 
-    <button class="flex my-auto" mat-stroked-button [disabled]="!addForm.get('columnToAdd').value">Add</button>
-
+    <button class="my-auto flex" [disabled]="!addForm.get('columnToAdd').value" mat-stroked-button>Add</button>
   </div>
 </form>

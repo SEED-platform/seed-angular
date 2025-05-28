@@ -11,13 +11,13 @@ import { Router, RouterOutlet } from '@angular/router'
 import { DrawerService, InventoryTabComponent, type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import type { InventoryType } from 'app/modules/inventory'
 import { ColumnDataTypesHelpComponent } from './data-types/help.component'
 import { ColumnGeocodingHelpComponent } from './geocoding/help.component'
 import { ColumnImportSettingsHelpComponent } from './import-settings/help.component'
 import { ColumnListHelpComponent } from './list/help.component'
 import { ColumnMappingHelpComponent } from './mappings/help.component'
 import { ColumnMatchingCriteriaHelpComponent } from './matching-criteria/help.component'
-import { InventoryType } from 'app/modules/inventory'
 
 type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: Type<Component> | null }
 @Component({
