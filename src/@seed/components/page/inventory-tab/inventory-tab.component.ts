@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnDestroy, OnInit } from '@angular/core'
+import type { OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Subject } from 'rxjs'
@@ -12,7 +12,7 @@ import type { Config } from './inventory-tab.types'
   templateUrl: './inventory-tab.component.html',
   imports: [CommonModule, SharedImports],
 })
-export class InventoryTabComponent implements OnDestroy, OnInit {
+export class InventoryTabComponent implements OnChanges, OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   @Input() config: Config
   @Input() inputType?: InventoryType // special case for organization columns
@@ -23,6 +23,12 @@ export class InventoryTabComponent implements OnDestroy, OnInit {
     this._route.paramMap.subscribe((params) => {
       this.type = params.get('type') as InventoryType || this.inputType
     })
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.inputType && this.inputType) {
+      this.type = this.inputType
+    }
   }
 
   ngOnDestroy(): void {

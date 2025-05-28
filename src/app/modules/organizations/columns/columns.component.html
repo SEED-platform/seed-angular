@@ -23,7 +23,10 @@
       >
         @if (useTabs) {
           {{ currentType() }}
-        <seed-page-inventory-tab [config]="{ tabs: ['properties', 'taxlots'], action: navigateTo.bind(this) }" [inputType]="currentType()"></seed-page-inventory-tab>
+          <seed-page-inventory-tab
+            [config]="{ tabs: ['properties', 'taxlots'], action: navigateTo.bind(this) }" 
+            [inputType]="currentType()"
+          ></seed-page-inventory-tab>
         }
 
         <mat-tab-nav-panel class="p-4" #tabPanel>
