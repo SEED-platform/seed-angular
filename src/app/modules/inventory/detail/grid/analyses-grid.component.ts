@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output, isDevMode } from '@angular/core';
+import type { OnInit } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 // import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
@@ -53,7 +53,7 @@ export class AnalysesGridComponent implements OnInit {
       { field: 'id', hide: true },
       { field: 'run_id', headerName: 'Run ID', width: 60 },
       { field: 'service', headerName: 'Type', width: 100 },
-      { field: 'status', headerName: 'Status', width: 100 },
+      { field: 'status', headerName: 'Status', width: 100, cellRenderer: this.statusRenderer },
       {
         field: 'created_at',
         headerName: 'Created',
@@ -74,10 +74,19 @@ export class AnalysesGridComponent implements OnInit {
     }
   }
 
+  statusRenderer = ({ value }: { value: string }) => {
+    // default to no background
+    const colorMap = {
+      Completed: 'bg-green-800',
+      Failed: 'bg-red-800',
+    }
+
+    return `<div class="${colorMap[value]} px-2 rounded-lg">${value}</div>`
+  }
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer" data-action="view" aria-label="View Full Analysis">logout</span>
+        <span class="material-icons action-icon cursor-pointer" data-action="view" title="View Analysis" aria-label="View Full Analysis">logout</span>
       </div>
     `
   }
@@ -133,15 +142,14 @@ export class AnalysesGridComponent implements OnInit {
 
   get gridHeight() {
     const headerHeight = 50
-    const height = this.rowData.length * 42 + headerHeight
+    const rowHeights = this.rowData.map((row: Analysis) => Math.max(42, row.highlights.length * 25))
+    const rowsHeight = rowHeights.reduce((acc, num) => acc + num, 0)
+    const height = rowsHeight + headerHeight
     return Math.min(height, 500)
   }
 
-  getRowHeight = (params: any) => {
-    if (params.data && params.data.highlights) {
-      return 100 // Adjust this value based on your content
-    }
-    return 42 // Default row height
+  getRowHeight = (params: { data: Analysis }) => {
+    return Math.max(42, params.data.highlights.length * 25) // Adjust based on the number of highlights
   }
 
   onGridReady(agGrid: GridReadyEvent) {
@@ -154,9 +162,10 @@ export class AnalysesGridComponent implements OnInit {
     if (event.colDef.field !== 'actions') return
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action')
+    const { data } = event.data as { data: { id: number; run_id: number } }
 
-    const id: number = event.data.id
-    const _run_id: number = event.data.run_id
+    const id: number = data.id
+    const _run_id: number = data.run_id
 
     if (action === 'view') {
       // take user to analysis run page at /analyses/:id/runs/:runId

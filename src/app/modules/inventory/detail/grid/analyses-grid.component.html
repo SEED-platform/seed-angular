@@ -12,8 +12,8 @@
     [rowData]="rowData"
     [theme]="gridTheme$ | async"
     [getRowHeight]="getRowHeight"
-    [domLayout]="'autoHeight'"
     (gridReady)="onGridReady($event)"
+    [style.height.px]="gridHeight"
     (cellClicked)="onCellClicked($event)"
     ></ag-grid-angular>
   }
