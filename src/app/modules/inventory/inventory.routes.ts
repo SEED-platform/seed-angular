@@ -6,6 +6,8 @@ import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapCo
 import { CrossCyclesComponent } from '../inventory-list/cross-cycles/cross-cycles.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
 import type { InventoryType } from './inventory.types'
+import { DetailLayoutComponent } from '../inventory-detail/detail-layout.component'
+import { NotesComponent } from '../inventory-detail/notes/notes.component'
 
 type NewType = {
   type: InventoryType;
@@ -49,14 +51,27 @@ export default [
     title: 'Summary',
     component: SummaryComponent,
   },
+  // {
+  //   path: ':id',
+  //   title: (route) => {
+  //     const type = (route.params as InventoryParam).type
+  //     console.log('x')
+  //     return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
+  //   },
+  //   component: DetailComponent,
+  //   canActivate: [integerId],
+  // },
   {
     path: ':id',
     title: (route) => {
       const type = (route.params as InventoryParam).type
       return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
     },
-    component: DetailComponent,
-    canActivate: [integerId],
+    component: DetailLayoutComponent,
+    children: [
+      { path: '', component: DetailComponent },
+      { path: 'notes', title: 'Notes', component: NotesComponent },
+    ],
   },
   {
     path: '',
