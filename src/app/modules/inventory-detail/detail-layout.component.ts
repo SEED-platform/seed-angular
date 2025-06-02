@@ -26,41 +26,101 @@ export class DetailLayoutComponent implements AfterViewInit {
   private _activatedRoute = inject(ActivatedRoute)
   id = this._activatedRoute.snapshot.paramMap.get('id')
   type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-  typeMap = {
-    properties: {
-      displayName: 'Property',
-    },
-    taxlots: {
-      displayName: 'Tax Lot',
-    },
+  displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
+
+  analyses: NavigationItem = {
+    id: `properties/${this.id}}/analyses`,
+    link: `/properties/${this.id}/analyses`,
+    exactMatch: true,
+    title: 'Detail',
+    type: 'basic',
   }
+
+  detail: NavigationItem = {
+    id: `${this.type}/${this.id}}/`,
+    link: `/${this.type}/${this.id}/`,
+    exactMatch: true,
+    title: 'Detail',
+    type: 'basic',
+  }
+
+  columnListProfiles: NavigationItem = {
+    id: `${this.type}/${this.id}/column-list-profiles`,
+    link: `/${this.type}/${this.id}/column-list-profiles`,
+    title: 'Column List Profiles',
+    type: 'basic',
+  }
+
+  crossCycles: NavigationItem = {
+    id: `${this.type}/${this.id}/cross-cycles`,
+    link: `/${this.type}/${this.id}/cross-cycles`,
+    title: 'Cross Cycles',
+    type: 'basic',
+  }
+
+  meters: NavigationItem = {
+    id: `properties/${this.id}}/meters`,
+    link: `/properties/${this.id}/meters`,
+    exactMatch: true,
+    title: 'Meters',
+    type: 'basic',
+  }
+
+  notes: NavigationItem = {
+    id: `${this.type}/${this.id}/notes`,
+    link: `/${this.type}/${this.id}/notes`,
+    title: 'Notes',
+    type: 'basic',
+  }
+
+  sensors: NavigationItem = {
+    id: `properties/${this.id}}/sensors`,
+    link: `/properties/${this.id}/sensors`,
+    exactMatch: true,
+    title: 'Sensors',
+    type: 'basic',
+  }
+
+  timeline: NavigationItem = {
+    id: `properties/${this.id}}/timeline`,
+    link: `/properties/${this.id}/timeline`,
+    exactMatch: true,
+    title: 'Timeline',
+    type: 'basic',
+  }
+
+  ubids: NavigationItem = {
+    id: `${this.type}/${this.id}}/ubids`,
+    link: `/${this.type}/${this.id}/ubids`,
+    exactMatch: true,
+    title: 'UBIDs',
+    type: 'basic',
+  }
+
+  propertyChildren: NavigationItem[] = [
+    this.analyses,
+    this.columnListProfiles,
+    this.crossCycles,
+    this.meters,
+    this.notes,
+    this.sensors,
+    this.timeline,
+    this.ubids,
+  ]
+
+  taxlotChildren: NavigationItem[] = [
+    this.columnListProfiles,
+    this.crossCycles,
+    this.notes,
+    this.ubids,
+  ]
 
   readonly detailNavigationMenu: NavigationItem[] = [
     {
-      id: 'property/detail',
-      title: this.typeMap[this.type].displayName,
+      id: `${this.type}/detail`,
+      title: this.displayName,
       type: 'group',
-      children: [
-        {
-          id: `properties/${this.id}}/`,
-          link: `/properties/${this.id}/`,
-          exactMatch: true,
-          title: 'Detail',
-          type: 'basic',
-        },
-        {
-          id: `properties/${this.id}/meters`,
-          link: `/properties/${this.id}/meters`,
-          title: 'Meters',
-          type: 'basic',
-        },
-        {
-          id: `properties/${this.id}/notes`,
-          link: `/properties/${this.id}/notes`,
-          title: 'Notes',
-          type: 'basic',
-        },
-      ],
+      children: this.type === 'taxlots' ? this.taxlotChildren : this.propertyChildren,
     },
   ]
 

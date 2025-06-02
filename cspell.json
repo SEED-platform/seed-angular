@@ -18,5 +18,17 @@
     "/.spelling.dic",
     "/pnpm-lock.yaml"
   ],
-  "useGitignore": true
+  "useGitignore": true,
+  "words": [
+    "eeej",
+    "EPSG",
+    "FEMP",
+    "movened",
+    "overlaycontainer",
+    "SRID",
+    "ubids",
+    "unpair",
+    "Unpair",
+    "unpairing",
+  ]
 }

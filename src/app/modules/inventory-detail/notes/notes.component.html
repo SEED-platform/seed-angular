@@ -4,5 +4,18 @@
     breadcrumbs: [breadCrumbMain, 'Notes'],
     sideNavToggle: true
   }">
-  NOTES!
+  <div id="content" class="h-full-page-tabs">
+    @if (rowData.length) {
+        <ag-grid-angular
+          [rowData]="rowData"
+          [columnDefs]="columnDefs"
+          [theme]="gridTheme$ | async"
+          [style.height.px]="gridHeight"
+          [getRowHeight]="getRowHeight"
+          (gridReady)="onGridReady($event)">
+        </ag-grid-angular>
+      } @else {
+        <div>no notes</div>
+      }
+  </div>
   </seed-page>
