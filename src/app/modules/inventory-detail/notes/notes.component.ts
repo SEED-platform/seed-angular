@@ -1,16 +1,21 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { switchMap, tap } from 'rxjs'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { combineLatest, switchMap, tap } from 'rxjs'
 import { NoteService } from '@seed/api/notes'
 import type { Note } from '@seed/api/notes/notes.types'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import type { InventoryStateType, InventoryType } from 'app/modules/inventory/inventory.types'
+import { ColumnService } from '@seed/api/column'
+// import { DeleteModalComponent } from './modal/delete-modal.component'
+import { MatDialog } from '@angular/material/dialog'
+
 
 @Component({
   selector: 'seed-inventory-detail-notes',
@@ -19,16 +24,20 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MatIconModule,
     PageComponent,
   ],
 })
 export class NotesComponent implements OnInit {
+  private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
+  private _dialog = inject(MatDialog)
   private _notesService = inject(NoteService)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
-  breadCrumbMain: string
+  displayName: string
   columnDefs: ColDef[]
+  columnMap: Record<string, string> = {}
   id: number
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
@@ -36,12 +45,13 @@ export class NotesComponent implements OnInit {
   orgId: number
   pageTitle: string
   rowData: Record<string, unknown>[] = []
+  tableName: InventoryStateType
   type: InventoryType
 
   ngOnInit(): void {
     this.getParams().pipe(
       switchMap(() => this._userService.currentOrganizationId$),
-      switchMap((orgId) => this.getNotes(orgId)),
+      switchMap((orgId) => this.getDependencies(orgId)),
       tap(() => { this.setGrid() }),
     ).subscribe()
   }
@@ -52,20 +62,29 @@ export class NotesComponent implements OnInit {
         this.id = parseInt(params.get('id'))
         this.type = params.get('type') as InventoryType
         this.pageTitle = this.type === 'properties' ? 'Property Notes' : 'Tax Lot Notes'
-        this.breadCrumbMain = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
+        this.displayName = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
+        this.tableName = this.type === 'taxlots' ? 'TaxLotState' : 'PropertyState'
       }),
     )
   }
 
-  getNotes(orgId: number) {
+  getDependencies(orgId: number) {
     this.orgId = orgId
+    const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
+
     return this._notesService.list(this.orgId, this.id, this.type).pipe(
-      tap((notes) => { this.notes = notes }),
+      switchMap(() => combineLatest([this._notesService.notes$, columns$])),
+      tap(([notes, columns]) => {
+        this.notes = notes
+        const typeColumns = columns.filter((c) => c.table_name === this.tableName)
+        this.columnMap = Object.fromEntries(typeColumns.map((c) => [c.column_name, c.display_name]))
+      }),
     )
   }
 
   setGrid() {
     this.setColumnDefs()
+    console.log(this.columnMap)
     this.setRowData()
   }
 
@@ -105,9 +124,11 @@ export class NotesComponent implements OnInit {
     const content: string[] = []
     if (note.log_data?.length) {
       for (const log of note.log_data) {
-        const new_value = typeof log.new_value === 'object' ? JSON.stringify(log.new_value) : log.new_value
-        const previous_value = typeof log.previous_value === 'object' ? JSON.stringify(log.previous_value) : log.previous_value
-        content.push(`<li>${log.field} : <span class="text-secondary">${previous_value} → ${new_value}</span></li>`)
+        const displayName = this.columnMap[log.field] ?? log.field
+        console.log(displayName)
+        const newValue = typeof log.new_value === 'object' ? JSON.stringify(log.new_value) : log.new_value
+        const previousValue = typeof log.previous_value === 'object' ? JSON.stringify(log.previous_value) : log.previous_value
+        content.push(`<li>${displayName} : <span class="text-secondary">${previousValue} → ${newValue}</span></li>`)
       }
     }
     return content
@@ -117,11 +138,12 @@ export class NotesComponent implements OnInit {
     return `<ul>${params.value.map((log) => `<li>${log}</li>`).join('')}</ul>`
   }
 
-  actionRenderer = () => {
+  actionRenderer = (params: { data: { type: 'Manually Created' } }) => {
+    const canEdit = params.data.type === 'Manually Created'
     return `
       <div class="flex gap-2 mt-2 align-center">
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="download">cloud_download</span>
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="delete">clear</span>
+      <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${canEdit ? '<span class="material-icons-outlined action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }
@@ -129,6 +151,21 @@ export class NotesComponent implements OnInit {
   onGridReady(event: GridReadyEvent) {
     this.gridApi = event.api
     this.gridApi.sizeColumnsToFit()
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+  }
+
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'actions') return
+
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action')
+    const { id } = event.data as { id: number }
+
+    if (action === 'edit') {
+      this.editNote(id)
+    } else if (action === 'delete') {
+      this.deleteNote(id)
+    }
   }
 
   getRowHeight = (params: { data: { content: string[] } }) => {
@@ -139,5 +176,21 @@ export class NotesComponent implements OnInit {
   get gridHeight() {
     const divHeight = document.querySelector('#content').getBoundingClientRect().height
     return Math.min(this.rowData.length * 42 + 50, divHeight)
+  }
+
+  createNote = () => {
+    console.log('Add Note')
+  }
+
+  deleteNote(id: number) {
+    // const dialogref = this._dialog.open(DeleteModalComponent, {
+    //   width: '40rem',
+    //   data: {}
+    // })
+    console.log('Delete Note', id)
+  }
+
+  editNote(id: number) {
+    console.log('Edit Note', id)
   }
 }

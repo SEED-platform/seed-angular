@@ -1,8 +1,11 @@
 <seed-page [config]="{
     title: pageTitle,
     titleIcon: 'fa-solid:note-sticky',
-    breadcrumbs: [breadCrumbMain, 'Notes'],
-    sideNavToggle: true
+    breadcrumbs: [displayName, 'Notes'],
+    sideNavToggle: true,
+    actionIcon: 'fa-solid:plus',
+    actionText: 'Create a Note',
+    action: createNote,
   }">
   <div id="content" class="h-full-page-tabs">
     @if (rowData.length) {
@@ -15,7 +18,10 @@
           (gridReady)="onGridReady($event)">
         </ag-grid-angular>
       } @else {
-        <div>no notes</div>
+        <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+          <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+          <div class="text-secondary text-xl font-medium">No Notes Found</div>
+          </div>
       }
   </div>
   </seed-page>

@@ -4,14 +4,14 @@ import { inject, Injectable } from '@angular/core'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
-import { BehaviorSubject, catchError, type Observable, Subject, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '../organization'
 import type { Note } from './notes.types'
 
 @Injectable({ providedIn: 'root' })
 export class NoteService {
   private _errorService = inject(ErrorService)
-  private _notes = new BehaviorSubject<unknown>([])
+  private _notes = new BehaviorSubject<Note[]>([])
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
@@ -32,6 +32,19 @@ export class NoteService {
       tap((notes) => { this._notes.next(notes) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching notes')
+      }),
+    )
+  }
+
+  delete(orgId: number, viewId: number, noteId: number, type: InventoryType): Observable<unknown> {
+    const url = `/api/v3/${type}/${viewId}/notes/${noteId}/?organization_id=${orgId}`
+    return this._httpClient.delete(url).pipe(
+      tap(() => {
+        this._snackBar.success('Note deleted successfully')
+      }),
+      switchMap(() => this.list(orgId, viewId, type)),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting note')
       }),
     )
   }

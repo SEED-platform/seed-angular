@@ -73,8 +73,8 @@ export class DetailComponent implements OnDestroy, OnInit {
   viewId: number
   views: GenericView[]
 
-  pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
-  breadCrumbMain = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
+  displayName = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
+  pageTitle = `${this.displayName} Detail`
 
   ngOnInit(): void {
     console.log('init')

@@ -142,25 +142,14 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   actionRenderer = (value, icon: string, action: string) => {
-    console.log('value', value)
-    if (!value && action !== 'notes') return ''
+    if (!value) return ''
+
     const cursorClass = action ? 'cursor-pointer' : ''
     return `
       <div class="flex gap-2 mt-2 align-center">
         <span class="material-icons-outlined ${cursorClass}" data-action="${action}">${icon}</span>
       </div>
     `
-  }
-
-  buildCellRenderer(className: string, action: () => void = null) {
-    const eGui = document.createElement('div')
-    eGui.style.cssText = 'height: 100%; display: flex; align-items: center;'
-    const icon = document.createElement('span')
-    icon.className = className
-    icon.style.margin = 'auto'
-    if (action) icon.addEventListener('click', action)
-    eGui.appendChild(icon)
-    return eGui
   }
 
   buildLabelsCell() {

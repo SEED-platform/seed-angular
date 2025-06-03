@@ -32,7 +32,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     id: `properties/${this.id}}/analyses`,
     link: `/properties/${this.id}/analyses`,
     exactMatch: true,
-    title: 'Detail',
+    title: 'Analyses',
     type: 'basic',
   }
 
@@ -98,6 +98,7 @@ export class DetailLayoutComponent implements AfterViewInit {
   }
 
   propertyChildren: NavigationItem[] = [
+    this.detail,
     this.analyses,
     this.columnListProfiles,
     this.crossCycles,
@@ -109,6 +110,7 @@ export class DetailLayoutComponent implements AfterViewInit {
   ]
 
   taxlotChildren: NavigationItem[] = [
+    this.detail,
     this.columnListProfiles,
     this.crossCycles,
     this.notes,
