@@ -3,6 +3,8 @@ import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
@@ -15,7 +17,15 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatProgressBarModule],
+  imports: [
+    AlertComponent,
+    CommonModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule,
+    MatProgressBarModule,
+  ],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _columnService = inject(ColumnService)

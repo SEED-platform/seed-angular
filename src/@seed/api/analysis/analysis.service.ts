@@ -23,7 +23,7 @@ export class AnalysisService {
   }
 
   summary(orgId: number, cycleId: number): Observable<AnalysisSummary> {
-    const url = `/api/v3/analyses/stats/?cycle_id=${cycleId}&organization_id=${orgId}`
+    const url = `/api/v4/analyses/stats/?cycle_id=${cycleId}&organization_id=${orgId}`
     return this._httpClient.get<AnalysisSummary>(url).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching analysis summary')

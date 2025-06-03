@@ -11,15 +11,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
-import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import { DataQualityService, type Rule } from '@seed/api/data-quality'
 import { LabelService } from '@seed/api/label'
 import { OrganizationService } from '@seed/api/organization'
-import { LabelComponent } from '@seed/components'
+import { DeleteModalComponent, LabelComponent } from '@seed/components'
 import type { InventoryTypeGoal } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
-import { DeleteModalComponent } from '../modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -129,28 +128,25 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
       width: '50rem',
       data: { rule, orgId: this._orgId, columns$, tableName, currentRules: this.currentRules },
     })
-    this.fetchRules(dialogRef)
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap(() => { this.getRules.emit() }),
+    ).subscribe()
   }
 
   deleteRule(rule: Rule) {
     const displayName = `${this.getFieldName(rule.field)} ${DataQualityUtils.getCriteria(rule)}`
     const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { rule, orgId: this._orgId, displayName },
+      data: { model: 'Rule', instance: displayName },
     })
-    this.fetchRules(dialogRef)
-  }
 
-  fetchRules(dialogRef: MatDialogRef<unknown, boolean>) {
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.getRules.emit()
-        }),
-      )
-      .subscribe()
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
+      tap(() => { this.getRules.emit() }),
+    ).subscribe()
   }
 
   trackByFn(index: number) {
