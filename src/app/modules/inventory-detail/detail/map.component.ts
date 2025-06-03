@@ -30,7 +30,7 @@ import type { InventoryType, State } from 'app/modules/inventory/inventory.types
     MatTooltipModule,
   ],
 })
-export class MapComponent implements AfterViewInit, OnDestroy {
+export class MapComponent implements AfterViewInit {
   @Input() state: State
   @Input() type: InventoryType
 
@@ -318,9 +318,5 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (overlay) {
       overlay.style.display = 'none'
     }
-  }
-
-  ngOnDestroy() {
-    console.log('map destroy')
   }
 }

@@ -7,6 +7,7 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { naturalSort } from '../../utils'
+import { InventoryService } from '../inventory'
 import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type {
@@ -45,6 +46,7 @@ export class OrganizationService {
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
+  private _inventoryService = inject(InventoryService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   organizations$ = this._organizations.asObservable()
@@ -282,6 +284,21 @@ export class OrganizationService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching matching columns')
+      }),
+    )
+  }
+
+  getViewDisplayField(viewId: number, type: InventoryType): Observable<string> {
+    return this.currentOrganization$.pipe(
+      switchMap((org: Organization) =>
+        this._inventoryService.getView(org.org_id, viewId, type).pipe(
+          map((view) => ({ org, view })),
+        ),
+      ),
+      map(({ org, view }) => {
+        const displayFieldKey = type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
+        const displayField = view.state[displayFieldKey] as string
+        return displayField
       }),
     )
   }

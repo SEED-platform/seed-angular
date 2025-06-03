@@ -1,19 +1,22 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { combineLatest, switchMap, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, tap } from 'rxjs'
 import { ColumnService } from '@seed/api/column'
 import { NoteService } from '@seed/api/notes'
 import type { Note } from '@seed/api/notes/notes.types'
+import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { PageComponent } from '@seed/components'
+import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryStateType, InventoryType } from 'app/modules/inventory/inventory.types'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-inventory-detail-notes',
@@ -26,25 +29,30 @@ import type { InventoryStateType, InventoryType } from 'app/modules/inventory/in
     PageComponent,
   ],
 })
-export class NotesComponent implements OnInit {
+export class NotesComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
+  private _organizationService = inject(OrganizationService)
   private _notesService = inject(NoteService)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
+  private readonly _unsubscribeAll$ = new Subject<void>()
+
   displayName: string
   columnDefs: ColDef[]
   columnMap: Record<string, string> = {}
   viewId: number
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
+  gridHeight: number
   notes: Note[]
   orgId: number
   pageTitle: string
   rowData: Record<string, unknown>[] = []
   tableName: InventoryStateType
   type: InventoryType
+  viewDisplayField$: Observable<string>
 
   ngOnInit(): void {
     this.getParams().pipe(
@@ -59,19 +67,19 @@ export class NotesComponent implements OnInit {
       tap((params) => {
         this.viewId = parseInt(params.get('id'))
         this.type = params.get('type') as InventoryType
-        this.pageTitle = this.type === 'properties' ? 'Property Notes' : 'Tax Lot Notes'
-        this.displayName = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
+        this.displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
         this.tableName = this.type === 'taxlots' ? 'TaxLotState' : 'PropertyState'
+        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, this.type)
       }),
     )
   }
 
   getDependencies(orgId: number) {
     this.orgId = orgId
+    this._notesService.list(this.orgId, this.viewId, this.type)
     const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
 
-    return this._notesService.list(this.orgId, this.viewId, this.type).pipe(
-      switchMap(() => combineLatest([this._notesService.notes$, columns$])),
+    return combineLatest([this._notesService.notes$, columns$]).pipe(
       tap(([notes, columns]) => {
         this.notes = notes
         const typeColumns = columns.filter((c) => c.table_name === this.tableName)
@@ -82,15 +90,15 @@ export class NotesComponent implements OnInit {
 
   setGrid() {
     this.setColumnDefs()
-    console.log(this.columnMap)
     this.setRowData()
+    this.updateGridHeight()
   }
 
   setColumnDefs() {
     this.columnDefs = [
       { field: 'id', hide: true },
       { field: 'created', headerName: 'Created', cellClass: 'text-secondary' },
-      { field: 'content', headerName: 'Note', cellRenderer: this.noteTextRenderer },
+      { field: 'content', headerName: 'Note', cellRenderer: this.noteTextRenderer, valueFormatter: ({ value }) => JSON.stringify(value) },
       { field: 'type', headerName: 'Type', cellClass: 'text-secondary' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
@@ -123,7 +131,6 @@ export class NotesComponent implements OnInit {
     if (note.log_data?.length) {
       for (const log of note.log_data) {
         const displayName = this.columnMap[log.field] ?? log.field
-        console.log(displayName)
         const newValue = typeof log.new_value === 'object' ? JSON.stringify(log.new_value) : log.new_value
         const previousValue = typeof log.previous_value === 'object' ? JSON.stringify(log.previous_value) : log.previous_value
         content.push(`<li>${displayName} : <span class="text-secondary">${previousValue} → ${newValue}</span></li>`)
@@ -167,31 +174,58 @@ export class NotesComponent implements OnInit {
   }
 
   getRowHeight = (params: { data: { content: string[] } }) => {
-    const contentLength = params.data.content.length ?? 1
+    const contentLength = params.data.content.length
     return Math.max(contentLength * 40, 42)
   }
 
-  get gridHeight() {
-    const divHeight = document.querySelector('#content').getBoundingClientRect().height
-    return Math.min(this.rowData.length * 42 + 50, divHeight)
+  updateGridHeight() {
+    const div = document.querySelector('#content')
+    if (!div) return 0
+
+    const divHeight = div.getBoundingClientRect().height ?? 1
+    this.gridHeight = Math.min(this.rowData.length * 42 + 50, divHeight)
   }
 
   createNote = () => {
-    console.log('Add Note')
-  }
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewId: this.viewId, type: this.type, note: null },
 
-  deleteNote(id: number) {
-    // const dialogref = this._dialog.open(DeleteModalComponent, {
-    //   width: '40rem',
-    //   data: {}
-    // })
-    if (confirm('Are you sure you want to delete this note?')) {
-      this._notesService.delete(this.orgId, this.viewId, id, this.type).subscribe()
-    }
-    console.log('Delete Note', id)
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      tap(() => { this.updateGridHeight() }),
+    ).subscribe()
   }
 
   editNote(id: number) {
-    console.log('Edit Note', id)
+    const note = this.notes.find((n) => n.id === id)
+
+    this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewId: this.viewId, type: this.type, note },
+    })
+  }
+
+  deleteNote(id: number) {
+    const note = this.notes.find((n) => n.id === id)
+    const noteDate = `from ${this.formatDate(note.created)}`
+
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'Note', instance: noteDate },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._notesService.delete(this.orgId, this.viewId, id, this.type)),
+      tap(() => { this.updateGridHeight() }),
+    ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

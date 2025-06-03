@@ -31,6 +31,9 @@
               <mat-icon class="text-primary-900 icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
             }
             {{ t(config.title) }}
+            @if (config.displayField) {
+              <span class="text-secondary text-2xl font-normal ml-2">({{ config.displayField }})</span>
+            }
           </h2>
         </div>
       </div>

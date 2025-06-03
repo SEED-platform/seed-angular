@@ -1,5 +1,6 @@
 <seed-page [config]="{
-    title: pageTitle,
+    title: displayName,
+    displayField: viewDisplayField$ | async,
     titleIcon: 'fa-solid:note-sticky',
     breadcrumbs: [displayName, 'Notes'],
     sideNavToggle: true,

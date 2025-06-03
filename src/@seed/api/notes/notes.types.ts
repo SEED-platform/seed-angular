@@ -17,3 +17,9 @@ export type NoteLogData = {
   previous_value: string | null;
   state_id: number;
 }
+
+export type NoteData = {
+  name: string;
+  note_type: 'Note' | 'Log';
+  text: string;
+}
