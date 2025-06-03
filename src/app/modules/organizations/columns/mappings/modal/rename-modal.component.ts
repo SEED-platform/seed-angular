@@ -3,14 +3,23 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
 
 @Component({
   selector: 'seed-column-mappings-rename-modal',
   templateUrl: './rename-modal.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+  imports: [
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    ReactiveFormsModule],
 })
 export class RenameModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)

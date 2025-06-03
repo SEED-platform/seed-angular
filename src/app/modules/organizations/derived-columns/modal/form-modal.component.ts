@@ -4,6 +4,7 @@ import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Va
 import { MatButtonModule } from '@angular/material/button'
 import { MatOptionModule } from '@angular/material/core'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
@@ -13,6 +14,7 @@ import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { DerivedColumn } from '@seed/api/derived-column'
 import { DerivedColumnService } from '@seed/api/derived-column'
+import { naturalSort } from '@seed/utils'
 import { SEEDValidators } from '@seed/validators'
 import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
 import { DerivedColumnsValidator } from '../derived-columns.validator'
@@ -24,6 +26,7 @@ import { DerivedColumnsValidator } from '../derived-columns.validator'
     FormsModule,
     MatButtonModule,
     MatDialogModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -163,7 +166,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((propertyColumns) => {
-          this.propertyColumns = propertyColumns
+          this.propertyColumns = propertyColumns.sort((a, b) => naturalSort(a.display_name, b.display_name))
         }),
       )
       .subscribe()
@@ -172,7 +175,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((taxLotColumns) => {
-          this.taxLotColumns = taxLotColumns
+          this.taxLotColumns = taxLotColumns.sort((a, b) => naturalSort(a.display_name, b.display_name))
         }),
       )
       .subscribe()

@@ -1,7 +1,9 @@
-<h2 class="text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl" mat-dialog-title>
-  {{ create ? 'Create' : 'Edit' }} a Cycle
-</h2>
-<!-- <mat-dialog-content>content?</mat-dialog-content> -->
+<div class="mt-4 flex gap-4" mat-dialog-title>
+  <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
+  <div class="text-2xl font-medium leading-6">{{ create ? 'Create' : 'Edit' }} Cycle</div>
+</div>
+<mat-divider class="mb-8"></mat-divider>
+
 <form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
     <mat-label>Cycle Name</mat-label>

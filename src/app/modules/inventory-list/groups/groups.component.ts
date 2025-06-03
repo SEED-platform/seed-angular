@@ -12,7 +12,7 @@ import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { GroupsService } from '@seed/api/groups/groups.service'
 import type { InventoryGroup } from '@seed/api/groups/groups.types'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
+import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -24,6 +24,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    DeleteModalComponent,
     FormModalComponent,
     MatIconModule,
     PageComponent,
@@ -130,7 +131,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
     if (action === 'edit') {
       this.editGroup(id)
     } else if (action === 'delete') {
-      this.deleteGroup(id, name)
+      this.openDeleteModal(id, name)
     }
   }
 
@@ -152,19 +153,25 @@ export class GroupsComponent implements OnDestroy, OnInit {
     })
 
     dialogRef.afterClosed().pipe(
-      filter((id) => !!id),
+      filter(Boolean),
       tap(() => { this.initPage() }),
     ).subscribe()
   }
 
-  deleteGroup(id: number, name: string) {
-    if (confirm(`Are you sure you want to delete group "${name}"?`)) {
-      this._groupsService.delete(this.orgId, id).pipe(
-        tap(() => {
-          console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-        }),
-      ).subscribe()
-    }
+  openDeleteModal(id: number, name: string) {
+    const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'Group', instance: name },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      tap(() => {
+        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
+      }),
+      switchMap(() => this._groupsService.delete(this.orgId, id)),
+      tap(() => { this.initPage() }),
+    ).subscribe()
   }
 
   ngOnDestroy(): void {

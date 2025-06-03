@@ -171,3 +171,17 @@
 .h-full-page-tabs {
   height: calc(100vh - 265px)
 }
+
+.filter-border {
+  .ag-floating-filter-input {
+    outline: 1px solid #cecece;
+    border-radius: 4px;
+    margin: 7px 0;
+  }
+  
+  .dark & {
+    .ag-floating-filter-input {
+      outline: 1px solid #484848;
+    }
+  }
+}

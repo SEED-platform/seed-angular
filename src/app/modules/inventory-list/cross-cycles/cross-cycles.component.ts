@@ -84,7 +84,7 @@ export class CrossCyclesComponent implements OnInit {
     ]).pipe(
       tap(([currentUser, profiles, matchingColumns, columns]: [CurrentUser, Profile[], string[], Column[]]) => {
         this.currentUser = currentUser
-        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
+        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType && p.profile_location === 'List View Profile')
         this.selectedProfileId = this.currentUser.settings.profile.list[this.type]
         this.profile = profiles.find((p) => p.id === this.selectedProfileId)
         this.selectedCycleIds = this.currentUser.settings.crossCycles[this.type] ?? [this.cycles[0].cycle_id]

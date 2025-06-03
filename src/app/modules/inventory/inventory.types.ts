@@ -44,7 +44,7 @@ export type Profile = {
   id: number;
   inventory_type: number | 'Tax Lot' | 'Property';
   name: string;
-  profile_location: number;
+  profile_location: number | 'Detail View Profile' | 'List View Profile';
   columns?: ProfileColumn[];
 }
 
