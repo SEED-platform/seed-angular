@@ -1,21 +1,19 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, switchMap, tap } from 'rxjs'
+import { ColumnService } from '@seed/api/column'
 import { NoteService } from '@seed/api/notes'
 import type { Note } from '@seed/api/notes/notes.types'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryStateType, InventoryType } from 'app/modules/inventory/inventory.types'
-import { ColumnService } from '@seed/api/column'
-// import { DeleteModalComponent } from './modal/delete-modal.component'
-import { MatDialog } from '@angular/material/dialog'
-
 
 @Component({
   selector: 'seed-inventory-detail-notes',
@@ -38,7 +36,7 @@ export class NotesComponent implements OnInit {
   displayName: string
   columnDefs: ColDef[]
   columnMap: Record<string, string> = {}
-  id: number
+  viewId: number
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   notes: Note[]
@@ -59,7 +57,7 @@ export class NotesComponent implements OnInit {
   getParams() {
     return this._route.parent.paramMap.pipe(
       tap((params) => {
-        this.id = parseInt(params.get('id'))
+        this.viewId = parseInt(params.get('id'))
         this.type = params.get('type') as InventoryType
         this.pageTitle = this.type === 'properties' ? 'Property Notes' : 'Tax Lot Notes'
         this.displayName = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
@@ -72,7 +70,7 @@ export class NotesComponent implements OnInit {
     this.orgId = orgId
     const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
 
-    return this._notesService.list(this.orgId, this.id, this.type).pipe(
+    return this._notesService.list(this.orgId, this.viewId, this.type).pipe(
       switchMap(() => combineLatest([this._notesService.notes$, columns$])),
       tap(([notes, columns]) => {
         this.notes = notes
@@ -187,6 +185,9 @@ export class NotesComponent implements OnInit {
     //   width: '40rem',
     //   data: {}
     // })
+    if (confirm('Are you sure you want to delete this note?')) {
+      this._notesService.delete(this.orgId, this.viewId, id, this.type).subscribe()
+    }
     console.log('Delete Note', id)
   }
 
