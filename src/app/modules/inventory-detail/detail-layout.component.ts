@@ -44,10 +44,10 @@ export class DetailLayoutComponent implements AfterViewInit {
     type: 'basic',
   }
 
-  columnListProfiles: NavigationItem = {
-    id: `${this.type}/${this.id}/column-list-profiles`,
-    link: `/${this.type}/${this.id}/column-list-profiles`,
-    title: 'Column List Profiles',
+  columnDetailProfiles: NavigationItem = {
+    id: `${this.type}/${this.id}/column-detail-profiles`,
+    link: `/${this.type}/${this.id}/column-detail-profiles`,
+    title: 'Column Detail Profiles',
     type: 'basic',
   }
 
@@ -100,7 +100,7 @@ export class DetailLayoutComponent implements AfterViewInit {
   propertyChildren: NavigationItem[] = [
     this.detail,
     this.analyses,
-    this.columnListProfiles,
+    this.columnDetailProfiles,
     this.crossCycles,
     this.meters,
     this.notes,
@@ -111,7 +111,7 @@ export class DetailLayoutComponent implements AfterViewInit {
 
   taxlotChildren: NavigationItem[] = [
     this.detail,
-    this.columnListProfiles,
+    this.columnDetailProfiles,
     this.crossCycles,
     this.notes,
     this.ubids,

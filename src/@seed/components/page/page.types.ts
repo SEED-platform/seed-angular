@@ -10,7 +10,7 @@ export type Config = {
   action2Icon?: string;
   action2Text?: string;
   breadcrumbs?: string[];
-  displayField?: string;
+  subTitle?: string;
   sideNavToggle?: boolean;
   tabs?: InventoryType[];
   title: string;
