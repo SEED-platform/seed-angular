@@ -5,6 +5,7 @@ import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.comp
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
 import { ColumnDetailProfilesComponent } from '../inventory-detail/column-detail-profile/column-detail-profiles.component'
 import { DetailLayoutComponent } from '../inventory-detail/detail-layout.component'
+import { MetersComponent } from '../inventory-detail/meters/meters.component'
 import { NotesComponent } from '../inventory-detail/notes/notes.component'
 import { CrossCyclesComponent } from '../inventory-list/cross-cycles/cross-cycles.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
@@ -64,6 +65,7 @@ export default [
       { path: '', component: DetailComponent },
       { path: 'notes', title: 'Notes', component: NotesComponent },
       { path: 'column-detail-profiles', title: 'Column Detail Profiles', component: ColumnDetailProfilesComponent },
+      { path: 'meters', title: 'Meters', component: MetersComponent },
     ],
   },
   {
