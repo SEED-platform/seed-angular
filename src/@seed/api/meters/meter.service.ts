@@ -5,7 +5,7 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { BehaviorSubject, catchError, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '../organization'
-import type { Meter, MeterUsage } from './meter.types'
+import type { Meter, MeterConfig, MeterUsage } from './meter.types'
 
 @Injectable({ providedIn: 'root' })
 export class MeterService {
@@ -46,5 +46,41 @@ export class MeterService {
         return this._errorService.handleError(error, 'Error fetching meter usage')
       }),
     ).subscribe()
+  }
+
+  delete(orgId: number, viewId: number, meterId: number) {
+    const url = `/api/v3/properties/${viewId}/meters/${meterId}/?organization_id=${orgId}`
+    return this._httpClient.delete(url).pipe(
+      tap(() => {
+        this._snackBar.success('Meter deleted successfully')
+        this.list(orgId, viewId)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting meter')
+      }),
+    )
+  }
+
+  updateMeterConnection(orgId: number, meterId: number, meter_config: MeterConfig, viewId: number = null, groupId: number = null) {
+    if (!viewId && !groupId) {
+      throw new Error('Either viewId or groupId is required')
+    }
+    const url = viewId
+      ? `/api/v3/properties/${viewId}/meters/${meterId}/update_connection/?organization_id=${orgId}`
+      : `/api/v3/inventory_groups/${groupId}/meters/${meterId}/update_connection/?organization_id=${orgId}`
+
+    return this._httpClient.put(url, { meter_config }).pipe(
+      tap(() => {
+        this._snackBar.success('Meter connection updated successfully')
+        if (viewId) {
+          this.list(orgId, viewId)
+        } else if (groupId) {
+          console.log('todo: get group meters')
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating meter connection')
+      }),
+    )
   }
 }

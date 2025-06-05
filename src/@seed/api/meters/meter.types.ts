@@ -1,6 +1,6 @@
 export type Meter = {
   alias: string;
-  config: Record<string, unknown>;
+  config: MeterConfig;
   connection_type: string;
   id: number;
   is_virtual: boolean;
@@ -20,8 +20,8 @@ export type Meter = {
 }
 
 export type MeterConfig = {
-  connection: string;
-  direction: string;
+  connection: 'outside' | 'service';
+  direction: 'exported' | 'imported';
   group_id: null;
   service_id: null;
   system_id: null;

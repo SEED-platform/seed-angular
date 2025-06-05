@@ -1,4 +1,5 @@
-<seed-page [config]="{
+<seed-page
+  [config]="{
     title: displayName,
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:sliders',
@@ -6,12 +7,7 @@
     sideNavToggle: true,
     action: onSave,
     actionText: 'Save Profile',
-  }">
-
-  <seed-column-profiles 
-    #columnProfiles
-    [profileType]="'detail'"
-    [type]="type"
-  ></seed-column-profiles>
-
+  }"
+>
+  <seed-column-profiles #columnProfiles [profileType]="'detail'" [type]="type"></seed-column-profiles>
 </seed-page>

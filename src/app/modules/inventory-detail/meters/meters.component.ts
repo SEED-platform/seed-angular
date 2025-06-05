@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
@@ -12,12 +13,14 @@ import type { Meter, MeterUsage } from '@seed/api/meters'
 import { MeterService } from '@seed/api/meters'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { PageComponent } from '@seed/components'
+import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import type { ViewResponse } from 'app/modules/inventory/inventory.types'
-import { type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { FormModalComponent } from './modal/form-modal.component'
+import { InventoryService } from '@seed/api/inventory'
 
 @Component({
   selector: 'seed-inventory-detail-meters',
@@ -35,16 +38,19 @@ import { type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 })
 export class MetersComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
-  private _organizationService = inject(OrganizationService)
-  private _userService = inject(UserService)
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
+  private _dialog = inject(MatDialog)
+  private _inventoryService = inject(InventoryService)
   private _meterService = inject(MeterService)
+  private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
+  private _userService = inject(UserService)
   cycles: Cycle[]
   excludedIds: number[] = []
   gridTheme$ = this._configService.gridTheme$
   interval: 'Exact' | 'Year' | 'Month' = 'Exact'
+  groupIds: number[]
   meterDefs: ColDef[] = []
   meterData: Record<string, unknown>[] = []
   meterGridApi: GridApi
@@ -81,7 +87,12 @@ export class MetersComponent implements OnDestroy, OnInit {
     this.getParams().pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap(() => this._userService.currentOrganizationId$),
-      tap((orgId) => { this.getDependencies(orgId) }),
+      tap((orgId) => { this.orgId = orgId }),
+      switchMap(() => this._inventoryService.getPropertyView(this.orgId, this.viewId)),
+      tap((view) => {
+        this.groupIds = view.property.group_mappings.map((g) => g.group_id)
+        this.getDependencies()
+      }),
     ).subscribe()
   }
 
@@ -94,8 +105,7 @@ export class MetersComponent implements OnDestroy, OnInit {
     )
   }
 
-  getDependencies(orgId: number) {
-    this.orgId = orgId
+  getDependencies() {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
 
@@ -150,7 +160,7 @@ export class MetersComponent implements OnDestroy, OnInit {
     return `
       <div class="flex gap-2 mt-2 align-center">
       <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
-      <span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+      ${this.groupIds.length ? '<span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }
@@ -196,11 +206,46 @@ export class MetersComponent implements OnDestroy, OnInit {
   onMeterGridReady(agGrid: GridReadyEvent) {
     this.meterGridApi = agGrid.api
     this.meterGridApi.sizeColumnsToFit()
-    // this.meterGridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    this.meterGridApi.addEventListener('cellClicked', this.onMeterCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
   onReadingGridReady(agGrid: GridReadyEvent) {
     this.readingGridApi = agGrid.api
     this.readingGridApi.sizeColumnsToFit()
+  }
+
+  onMeterCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'actions') return
+
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action')
+    const { id } = event.data as { id: number }
+
+    const meter = this.meters.find((m) => m.id === id)
+
+    if (action === 'edit') {
+      this.editMeter(meter)
+    } else if (action === 'delete') {
+      this.deleteMeter(meter)
+    }
+  }
+
+  deleteMeter(meter: Meter) {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'Meter', name: meter.alias },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._meterService.delete(this.orgId, this.viewId, meter.id)),
+    ).subscribe()
+  }
+
+  editMeter(meter: Meter) {
+    this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { meter, orgId: this.orgId, groupIds: this.groupIds, groupId: null, viewId: this.viewId, },
+    })
   }
 
   intervalChange() {

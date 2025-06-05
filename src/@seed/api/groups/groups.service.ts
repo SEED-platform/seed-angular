@@ -10,7 +10,7 @@ import type { InventoryGroup, InventoryGroupResponse, InventoryGroupsResponse } 
 @Injectable({ providedIn: 'root' })
 export class GroupsService {
   private _errorService = inject(ErrorService)
-  private _groups = new BehaviorSubject<unknown>([])
+  private _groups = new BehaviorSubject<InventoryGroup[]>([])
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
@@ -25,9 +25,9 @@ export class GroupsService {
       .subscribe(({ org_id }) => this.orgId = org_id)
   }
 
-  list(orgId: number): Observable<InventoryGroup[]> {
+  list(orgId: number) {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
-    return this._httpClient.get<InventoryGroupsResponse>(url).pipe(
+    this._httpClient.get<InventoryGroupsResponse>(url).pipe(
       map(({ data }) => {
         this._groups.next(data)
         return data
@@ -35,7 +35,21 @@ export class GroupsService {
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching groups')
       }),
-    )
+    ).subscribe()
+  }
+
+  listForInventory(orgId: number, inventoryIds: number[]) {
+    const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=properties`
+    const body = { selected: inventoryIds }
+    this._httpClient.post<InventoryGroupsResponse>(url, body).pipe(
+      map(({ data }) => {
+        this._groups.next(data)
+        return data
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching groups for inventory')
+      }),
+    ).subscribe()
   }
 
   create(orgId: number, data: InventoryGroup): Observable<InventoryGroup> {
@@ -43,6 +57,7 @@ export class GroupsService {
     return this._httpClient.post<InventoryGroupResponse>(url, data).pipe(
       map(({ data }) => {
         this._snackBar.success('Group created successfully')
+        this.list(orgId)
         return data
       }),
       catchError((error: HttpErrorResponse) => {
@@ -56,6 +71,7 @@ export class GroupsService {
     return this._httpClient.put<InventoryGroupResponse>(url, data).pipe(
       map(({ data }) => {
         this._snackBar.success('Group updated successfully')
+        this.list(orgId)
         return data
       }),
       catchError((error: HttpErrorResponse) => {
@@ -67,7 +83,10 @@ export class GroupsService {
   delete(orgId: number, id: number): Observable<unknown> {
     const url = `/api/v3/inventory_groups/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
-      tap(() => { this._snackBar.success('Group deleted successfully') }),
+      tap(() => {
+        this._snackBar.success('Group deleted successfully')
+        this.list(orgId)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting group')
       }),

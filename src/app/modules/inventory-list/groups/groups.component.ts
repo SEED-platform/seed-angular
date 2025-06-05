@@ -24,7 +24,6 @@ import { FormModalComponent } from './modal/form-modal.component'
     AgGridAngular,
     AgGridModule,
     CommonModule,
-    DeleteModalComponent,
     FormModalComponent,
     MatIconModule,
     PageComponent,
@@ -62,11 +61,10 @@ export class GroupsComponent implements OnDestroy, OnInit {
 
   getDependencies(orgId: number): Observable<unknown> {
     this.orgId = orgId
+    this._groupsService.list(orgId)
 
-    return this._groupsService.list(orgId).pipe(
-      tap((groups: InventoryGroup[]) => {
-        this.groups = groups
-      }),
+    return this._groupsService.groups$.pipe(
+      tap((groups: InventoryGroup[]) => { this.groups = groups }),
     )
   }
 

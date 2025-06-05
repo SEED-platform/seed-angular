@@ -1,4 +1,5 @@
-<seed-page [config]="{
+<seed-page
+  [config]="{
     title: displayName,
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:note-sticky',
@@ -7,22 +8,24 @@
     actionIcon: 'fa-solid:plus',
     actionText: 'Create a Note',
     action: createNote,
-  }">
-  <div id="content" class="h-full-page-tabs">
+  }"
+>
+  <div class="h-full-page-tabs" id="content">
     @if (rowData.length) {
-        <ag-grid-angular
-          [rowData]="rowData"
-          [columnDefs]="columnDefs"
-          [theme]="gridTheme$ | async"
-          [style.height.px]="gridHeight"
-          [getRowHeight]="getRowHeight"
-          (gridReady)="onGridReady($event)">
-        </ag-grid-angular>
-      } @else {
-        <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
-          <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
-          <div class="text-secondary text-xl font-medium">No Notes Found</div>
-        </div>
-      }
+      <ag-grid-angular
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        [theme]="gridTheme$ | async"
+        [style.height.px]="gridHeight"
+        [getRowHeight]="getRowHeight"
+        (gridReady)="onGridReady($event)"
+      >
+      </ag-grid-angular>
+    } @else {
+      <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+        <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+        <div class="text-secondary text-xl font-medium">No Notes Found</div>
+      </div>
+    }
   </div>
-  </seed-page>
+</seed-page>

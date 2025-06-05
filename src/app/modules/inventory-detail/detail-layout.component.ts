@@ -34,6 +34,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     exactMatch: true,
     title: 'Analyses',
     type: 'basic',
+    disabled: true,
   }
 
   detail: NavigationItem = {
@@ -56,6 +57,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     link: `/${this.type}/${this.id}/cross-cycles`,
     title: 'Cross Cycles',
     type: 'basic',
+    disabled: true,
   }
 
   meters: NavigationItem = {
@@ -79,6 +81,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     exactMatch: true,
     title: 'Sensors',
     type: 'basic',
+    disabled: true,
   }
 
   timeline: NavigationItem = {
@@ -87,6 +90,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     exactMatch: true,
     title: 'Timeline',
     type: 'basic',
+    disabled: true,
   }
 
   ubids: NavigationItem = {
@@ -95,6 +99,7 @@ export class DetailLayoutComponent implements AfterViewInit {
     exactMatch: true,
     title: 'UBIDs',
     type: 'basic',
+    disabled: true,
   }
 
   propertyChildren: NavigationItem[] = [

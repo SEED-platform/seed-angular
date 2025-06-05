@@ -112,7 +112,7 @@ export class InventoryGridComponent implements OnChanges {
       this.buildShortcutColumn('merged_indicator', 'Merged', 85, 'share'),
       this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'bolt', 'meters'),
       this.buildShortcutColumn('notes_count', 'Notes', 80, 'mode_comment', 'notes'),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'check'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'G'),
       this.buildLabelsCell(),
     ]
     return shortcutColumns
@@ -143,6 +143,10 @@ export class InventoryGridComponent implements OnChanges {
 
   actionRenderer = (value, icon: string, action: string) => {
     if (!value) return ''
+    // Allow a single letter to be passed as an indicator
+    if (icon.length === 1) {
+      return `<span class="font-bold text-lg">${icon}</span>`
+    }
 
     const cursorClass = action ? 'cursor-pointer' : ''
     return `
