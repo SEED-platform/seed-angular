@@ -34,59 +34,25 @@ export class CyclesComponent implements OnDestroy, OnInit {
     })
   }
 
-  refreshCycles(): void {
-    this._cycleService.get(this._orgId).subscribe()
-  }
-
   createCycle = () => {
-    const dialogRef = this._dialog.open(FormModalComponent, {
+    this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { cycle: null, orgId: this._orgId, existingNames: this._existingNames },
     })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.refreshCycles()
-        }),
-      )
-      .subscribe()
   }
 
   editCycle(cycle: Cycle): void {
-    const dialogRef = this._dialog.open(FormModalComponent, {
+    this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { cycle, orgId: this._orgId, existingNames: this._existingNames },
     })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.refreshCycles()
-        }),
-      )
-      .subscribe()
   }
 
   deleteCycle(cycle: Cycle): void {
-    const dialogRef = this._dialog.open(DeleteModalComponent, {
+    this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { cycle, orgId: this._orgId },
     })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        takeUntil(this._unsubscribeAll$),
-        tap(() => {
-          this.refreshCycles()
-        }),
-      )
-      .subscribe()
   }
 
   trackByFn(_index: number, { id }: Cycle) {

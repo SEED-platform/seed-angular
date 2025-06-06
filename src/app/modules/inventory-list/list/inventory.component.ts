@@ -142,10 +142,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   getDependencies(org_id: number) {
     this.orgId = org_id
+    this._cycleService.get(this.orgId)
 
     return combineLatest([
       this._userService.currentUser$,
-      this._cycleService.get(this.orgId),
+      this._cycleService.cycles$,
       this._labelService.labels$,
       this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
     ])

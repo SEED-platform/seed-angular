@@ -1,13 +1,15 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import type { CheckProgressLoopParams, UpdateProgressBarObjParams } from './uploader.types'
+import { ErrorService } from '../error'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
   private _httpClient = inject(HttpClient)
+  private _errorService = inject(ErrorService)
 
   /*
    * Checks a progress key for updates until it completes
@@ -48,6 +50,19 @@ export class UploaderService {
       catchError((error) => {
         console.error('Error fetching progress:', error)
         return of(null)
+      }),
+    )
+  }
+
+  greenButtonMetersPreview(fileId: number, orgId: number, viewId: number, systemId: number): Observable<unknown> {
+    const url = `/api/v3/import_files/${fileId}/greenbutton_meters_preview/`
+    const params = { organization_id: orgId, view_id: viewId, system_id: systemId }
+    return this._httpClient.get(url, { params }).pipe(
+      tap((results) => {
+        console.log('gb', results)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching greenButton preview')
       }),
     )
   }

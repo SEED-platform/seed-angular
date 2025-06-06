@@ -22,6 +22,8 @@ import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } f
 import type { ViewResponse } from 'app/modules/inventory/inventory.types'
 import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { FormModalComponent } from './modal/form-modal.component'
+import { GreenButtonUploadModalComponent } from './modal/green-button-upload-modal.component'
+import { Dataset, DatasetService } from '@seed/api/dataset'
 
 @Component({
   selector: 'seed-inventory-detail-meters',
@@ -42,12 +44,14 @@ export class MetersComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
   private _dialog = inject(MatDialog)
+  private _datasetService = inject(DatasetService)
   private _groupsService = inject(GroupsService)
   private _meterService = inject(MeterService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
   private _userService = inject(UserService)
   cycles: Cycle[]
+  datasets: Dataset[]
   excludedIds: number[] = []
   gridTheme$ = this._configService.gridTheme$
   interval: 'Exact' | 'Year' | 'Month' = 'Exact'
@@ -108,8 +112,7 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
     this._groupsService.listForInventory(this.orgId, [this.viewId])
-
-    this._cycleService.cycles$.subscribe((cycles) => this.cycles = cycles)
+    this._cycleService.get(this.orgId)
 
     this._meterService.meters$.pipe(
       tap((meters) => {
@@ -131,6 +134,14 @@ export class MetersComponent implements OnDestroy, OnInit {
         this.groupIds = groups.map((g) => g.id)
         this.services = groups.map((g) => g.systems || []).flat().map((sys) => sys.services || []).flat()
       }),
+    ).subscribe()
+
+    this._cycleService.cycles$.pipe(
+      tap((cycles) => { this.cycles = cycles }),
+    ).subscribe()
+
+    this._datasetService.listDatasets(this.orgId).pipe(
+      tap((datasets) => { this.datasets = datasets }),
     ).subscribe()
   }
 
@@ -258,6 +269,19 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { meter, orgId: this.orgId, groupId: null, viewId: this.viewId },
+    })
+  }
+
+  uploadGreenButtonData = () => {
+    this._dialog.open(GreenButtonUploadModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewId: this.viewId,
+        fillerCycle: this.cycles[0].id,
+        systemId: null,
+        datasets: this.datasets,
+      },
     })
   }
 

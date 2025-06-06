@@ -1,0 +1,55 @@
+<div class="flex flex-auto flex-col items-center p-8 pb-0 sm:flex-row sm:items-start mb-5">
+  <div
+    class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 sm:mr-4 dark:bg-primary-600 dark:text-primary-50">
+    <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
+  </div>
+
+  <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
+    <div class="text-xl font-medium leading-6">Upload an Green Button Data</div>
+  </div>
+</div>
+<mat-divider></mat-divider>
+
+<mat-stepper #stepper [linear]="true" class="stepper-disable-hover">
+  <!-- STEP 1 -->
+   <ng-container>
+
+     <mat-step [stepControl]="step1.form" [editable]="false">
+      <ng-template matStepLabel>Select Data</ng-template>
+      <seed-green-button-step1
+        #step1
+        [data]="data"
+        [stepper]="stepper"
+        (fileSelected)="onFileSelected($event)"
+      ></seed-green-button-step1>
+     </mat-step>
+   </ng-container>
+
+  <mat-step>
+    <ng-template matStepLabel>Review</ng-template>
+    <div>
+      step 2
+    </div>
+    <!-- buttons -->
+    <div class="flex justify-between mt-4">
+      <button mat-stroked-button matStepperPrevious color="">Back</button>
+      <button [disabled]="false" (click)="onStep2()" mat-raised-button matStepperNext color="primary">Next</button>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Upload</ng-template>
+    <div>
+      step 3
+    </div>
+
+    <button mat-stroked-button matStepperPrevious color="">Back</button>
+    <button [disabled]="false" (click)="onStep3()" mat-stroked-button matStepperNext color="primary">Finish</button>
+  </mat-step>
+</mat-stepper>
+
+<!-- <div class="flex justify-end mt-4">
+  <mat-dialog-actions>
+    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+  </mat-dialog-actions>
+
+</div> -->
