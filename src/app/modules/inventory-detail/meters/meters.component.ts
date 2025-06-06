@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
+import type { GroupService } from '@seed/api/groups'
+import { GroupsService } from '@seed/api/groups'
 import type { Meter, MeterUsage } from '@seed/api/meters'
 import { MeterService } from '@seed/api/meters'
 import { OrganizationService } from '@seed/api/organization'
@@ -20,7 +22,6 @@ import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } f
 import type { ViewResponse } from 'app/modules/inventory/inventory.types'
 import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { FormModalComponent } from './modal/form-modal.component'
-import { InventoryService } from '@seed/api/inventory'
 
 @Component({
   selector: 'seed-inventory-detail-meters',
@@ -41,7 +42,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
   private _dialog = inject(MatDialog)
-  private _inventoryService = inject(InventoryService)
+  private _groupsService = inject(GroupsService)
   private _meterService = inject(MeterService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
@@ -60,6 +61,8 @@ export class MetersComponent implements OnDestroy, OnInit {
   readingDefs: ColDef[] = []
   readingData: Record<string, unknown>[] = []
   readingGridApi: GridApi
+  readingGridHeight = 0
+  services: GroupService[] = []
   view: ViewResponse
   viewId: number
   viewDisplayField$: Observable<string>
@@ -84,19 +87,15 @@ export class MetersComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.getParams().pipe(
+    this.getUrlParams().pipe(
       takeUntil(this._unsubscribeAll$),
       switchMap(() => this._userService.currentOrganizationId$),
       tap((orgId) => { this.orgId = orgId }),
-      switchMap(() => this._inventoryService.getPropertyView(this.orgId, this.viewId)),
-      tap((view) => {
-        this.groupIds = view.property.group_mappings.map((g) => g.group_id)
-        this.getDependencies()
-      }),
+      tap(() => { this.setStreams() }),
     ).subscribe()
   }
 
-  getParams() {
+  getUrlParams() {
     return this._route.parent.paramMap.pipe(
       tap((params) => {
         this.viewId = parseInt(params.get('id'))
@@ -105,9 +104,10 @@ export class MetersComponent implements OnDestroy, OnInit {
     )
   }
 
-  getDependencies() {
+  setStreams() {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
+    this._groupsService.listForInventory(this.orgId, [this.viewId])
 
     this._cycleService.cycles$.subscribe((cycles) => this.cycles = cycles)
 
@@ -124,6 +124,14 @@ export class MetersComponent implements OnDestroy, OnInit {
         this.setReadingGrid()
       }),
     ).subscribe((meterReadings) => this.meterReadings = meterReadings)
+
+    this._groupsService.groups$.pipe(
+      filter(Boolean),
+      tap((groups) => {
+        this.groupIds = groups.map((g) => g.id)
+        this.services = groups.map((g) => g.systems || []).flat().map((sys) => sys.services || []).flat()
+      }),
+    ).subscribe()
   }
 
   setMeterGrid() {
@@ -144,7 +152,7 @@ export class MetersComponent implements OnDestroy, OnInit {
       { field: 'source', headerName: 'Source' }, // needed? alias combines type, source, source id
       { field: 'source_id', headerName: 'Source ID' }, // needed?
       { field: 'direction', headerName: 'Direction' },
-      { field: 'service', headerName: 'Service ID' },
+      { field: 'service', headerName: 'Service' },
       { field: 'is_virtual', headerName: 'Is Virtual' },
       { field: 'scenario_id', headerName: 'Scenario ID' }, // needed?
       { field: 'scenario_name', headerName: 'Scenario Name' },
@@ -179,28 +187,33 @@ export class MetersComponent implements OnDestroy, OnInit {
 
   setMeterData() {
     this.meterData = this.meters.map((m: Meter) => {
-      return { ...m, direction: m.config.direction, service: m.config.service_id }
+      const serviceName = this.services.find((s) => s.id === m.config.service_id)?.name || ''
+      return { ...m, direction: m.config.direction, service: serviceName }
     })
     setTimeout(() => {
-      this.meterGridApi?.selectAll()
+      if (this.meterGridApi && !this.meterGridApi.isDestroyed()) {
+        this.meterGridApi?.selectAll()
+      }
     }, 100)
   }
 
   setReadingData() {
     if (!this.meterReadings) return
     this.readingData = this.meterReadings.readings
+    this.getReadingGridHeight()
   }
 
   get meterGridHeight() {
+    if (!this.meterData.length) return 0
     return Math.min(this.meterData.length * 34 + 50, 500)
   }
 
-  get readingGridHeight() {
+  getReadingGridHeight() {
     const div = document.querySelector('#content')
-    if (!div) return 0
+    if (!div || !this.readingData?.length) return
 
     const divHeight = div.getBoundingClientRect().height ?? 1
-    return Math.min(this.readingData.length * 29 + 97, divHeight * 0.9)
+    this.readingGridHeight = Math.min(this.readingData.length * 29 + 97, divHeight * 0.9)
   }
 
   onMeterGridReady(agGrid: GridReadyEvent) {
@@ -208,9 +221,9 @@ export class MetersComponent implements OnDestroy, OnInit {
     this.meterGridApi.sizeColumnsToFit()
     this.meterGridApi.addEventListener('cellClicked', this.onMeterCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
+
   onReadingGridReady(agGrid: GridReadyEvent) {
     this.readingGridApi = agGrid.api
-    this.readingGridApi.sizeColumnsToFit()
   }
 
   onMeterCellClicked(event: CellClickedEvent) {
@@ -244,7 +257,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   editMeter(meter: Meter) {
     this._dialog.open(FormModalComponent, {
       width: '40rem',
-      data: { meter, orgId: this.orgId, groupIds: this.groupIds, groupId: null, viewId: this.viewId, },
+      data: { meter, orgId: this.orgId, groupId: null, viewId: this.viewId },
     })
   }
 
@@ -262,7 +275,19 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
   }
 
+  destroyGrids() {
+    if (this.meterGridApi) {
+      this.meterGridApi.destroy()
+      this.meterGridApi = null
+    }
+    if (this.readingGridApi) {
+      this.readingGridApi.destroy()
+      this.readingGridApi = null
+    }
+  }
+
   ngOnDestroy(): void {
+    // this.destroyGrids()
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }

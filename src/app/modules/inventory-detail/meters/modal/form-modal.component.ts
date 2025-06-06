@@ -42,7 +42,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   private _userService = inject(UserService)
   private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
-  data = inject(MAT_DIALOG_DATA) as { meter: Meter; orgId: number; groupIds: number[]; groupId: number | null; viewId: number | null }
+  data = inject(MAT_DIALOG_DATA) as { meter: Meter; orgId: number; groupId: number | null; viewId: number | null }
   groups: InventoryGroup[]
   systems: GroupSystem[]
   services: GroupService[]
