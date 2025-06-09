@@ -16,11 +16,13 @@ export class InventoryService {
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
   private _columnListProfiles = new BehaviorSubject<unknown>([])
+  private _view = new BehaviorSubject<ViewResponse>(null)
   private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
 
-  properties$ = this._properties.asObservable()
   columnListProfiles$ = this._columnListProfiles.asObservable()
+  properties$ = this._properties.asObservable()
+  view$ = this._view.asObservable()
 
   constructor() {
     this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((id) => this.orgId = id)
@@ -147,6 +149,7 @@ export class InventoryService {
     const url = `/api/v3/properties/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
+      tap((view) => { this._view.next(view) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
@@ -157,6 +160,7 @@ export class InventoryService {
     const url = `/api/v3/taxlots/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
+      tap((view) => { this._view.next(view) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),

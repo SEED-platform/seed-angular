@@ -1,9 +1,12 @@
-import type { AfterViewInit } from '@angular/core'
+import type { AfterViewInit, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { ActivatedRoute, RouterOutlet } from '@angular/router'
+import { switchMap, tap } from 'rxjs'
+import { InventoryService } from '@seed/api/inventory'
+import { UserService } from '@seed/api/user'
 import type { NavigationItem } from '@seed/components'
 import { DrawerService, VerticalNavigationComponent } from '@seed/components'
 import { ScrollResetDirective } from '@seed/directives'
@@ -20,78 +23,80 @@ import type { InventoryType } from '../inventory/inventory.types'
     VerticalNavigationComponent,
   ],
 })
-export class DetailLayoutComponent implements AfterViewInit {
+export class DetailLayoutComponent implements AfterViewInit, OnInit {
   @ViewChild('drawer') drawer!: MatDrawer
   private _drawerService = inject(DrawerService)
   private _activatedRoute = inject(ActivatedRoute)
-  id = this._activatedRoute.snapshot.paramMap.get('id')
+  private _userService = inject(UserService)
+  private _inventoryService = inject(InventoryService)
+  viewId = this._activatedRoute.snapshot.paramMap.get('id')
   type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
   displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
 
   analyses: NavigationItem = {
-    id: `properties/${this.id}}/analyses`,
-    link: `/properties/${this.id}/analyses`,
+    id: `properties/${this.viewId}}/analyses`,
+    link: `/properties/${this.viewId}/analyses`,
     exactMatch: true,
     title: 'Analyses',
     type: 'basic',
   }
 
   detail: NavigationItem = {
-    id: `${this.type}/${this.id}}/`,
-    link: `/${this.type}/${this.id}/`,
+    id: `${this.type}/${this.viewId}}/`,
+    link: `/${this.type}/${this.viewId}/`,
     exactMatch: true,
     title: 'Detail',
     type: 'basic',
   }
 
   columnDetailProfiles: NavigationItem = {
-    id: `${this.type}/${this.id}/column-detail-profiles`,
-    link: `/${this.type}/${this.id}/column-detail-profiles`,
+    id: `${this.type}/${this.viewId}/column-detail-profiles`,
+    link: `/${this.type}/${this.viewId}/column-detail-profiles`,
     title: 'Column Detail Profiles',
     type: 'basic',
   }
 
   crossCycles: NavigationItem = {
-    id: `${this.type}/${this.id}/cross-cycles`,
-    link: `/${this.type}/${this.id}/cross-cycles`,
+    id: `${this.type}/${this.viewId}/cross-cycles`,
+    link: `/${this.type}/${this.viewId}/cross-cycles`,
     title: 'Cross Cycles',
     type: 'basic',
   }
 
   meters: NavigationItem = {
-    id: `properties/${this.id}}/meters`,
-    link: `/properties/${this.id}/meters`,
+    id: `properties/${this.viewId}}/meters`,
+    link: `/properties/${this.viewId}/meters`,
     exactMatch: true,
     title: 'Meters',
     type: 'basic',
   }
 
   notes: NavigationItem = {
-    id: `${this.type}/${this.id}/notes`,
-    link: `/${this.type}/${this.id}/notes`,
+    id: `${this.type}/${this.viewId}/notes`,
+    link: `/${this.type}/${this.viewId}/notes`,
     title: 'Notes',
     type: 'basic',
   }
 
   sensors: NavigationItem = {
-    id: `properties/${this.id}}/sensors`,
-    link: `/properties/${this.id}/sensors`,
+    id: `properties/${this.viewId}}/sensors`,
+    link: `/properties/${this.viewId}/sensors`,
     exactMatch: true,
     title: 'Sensors',
     type: 'basic',
   }
 
   timeline: NavigationItem = {
-    id: `properties/${this.id}}/timeline`,
-    link: `/properties/${this.id}/timeline`,
+    id: `properties/${this.viewId}}/timeline`,
+    link: `/properties/${this.viewId}/timeline`,
     exactMatch: true,
     title: 'Timeline',
     type: 'basic',
   }
 
   ubids: NavigationItem = {
-    id: `${this.type}/${this.id}}/ubids`,
-    link: `/${this.type}/${this.id}/ubids`,
+    id: `${this.type}/${this.viewId}}/ubids`,
+    link: `/${this.type}/${this.viewId}/ubids`,
     exactMatch: true,
     title: 'UBIDs',
     type: 'basic',
@@ -125,6 +130,12 @@ export class DetailLayoutComponent implements AfterViewInit {
       children: this.type === 'taxlots' ? this.taxlotChildren : this.propertyChildren,
     },
   ]
+
+  ngOnInit() {
+    this._userService.currentOrganizationId$.pipe(
+      switchMap((orgId) => this._inventoryService.getView(orgId, parseInt(this.viewId), this.type)),
+    ).subscribe()
+  }
 
   ngAfterViewInit() {
     this._drawerService.setDrawer(this.drawer)

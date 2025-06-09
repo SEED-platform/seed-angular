@@ -9,8 +9,14 @@
     actionText: 'Create Ubid',
   }">
 
-  <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
-    <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
-    <div class="text-secondary text-xl font-medium">UBIDs...</div>
+    @if (enableMap) {
+    <div class="m-10 h-80">
+      <seed-inventory-detail-map [state]="view.state" [type]="type"></seed-inventory-detail-map>
+    </div>
+    }
+
+    <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+      <div class="text-secondary text-xl font-medium">UBIDs...</div>
     </div>
   </seed-page>
