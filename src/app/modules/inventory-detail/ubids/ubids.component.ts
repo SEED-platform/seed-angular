@@ -1,17 +1,23 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core';
-import { Component, inject } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { filter, switchMap, tap } from 'rxjs'
+import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
+import type { Ubid } from '@seed/api/ubid'
+import { UbidService } from '@seed/api/ubid/ubid.service'
+import { UserService } from '@seed/api/user'
+import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { MapComponent } from '../detail'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-inventory-detial-ubis',
@@ -25,22 +31,32 @@ import { MapComponent } from '../detail'
     PageComponent,
   ],
 })
-export class UbidsComponent implements OnInit {
+export class UbidsComponent implements OnDestroy, OnInit {
+  @ViewChild(MapComponent) mapComponent!: MapComponent
+  private _configService = inject(ConfigService)
+  private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
+  private _ubidService = inject(UbidService)
+  private _userService = inject(UserService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[]
   gridApi: GridApi
+  gridHeight = 0
+  gridTheme$ = this._configService.gridTheme$
   enableMap = false
   rowData: Record<string, unknown>[] = []
+  orgId: number
   type: InventoryType
+  ubids: Ubid[]
   view: ViewResponse
   viewId: number
   viewDisplayField$: Observable<string>
 
   ngOnInit() {
     this.getUrlParams().pipe(
-      switchMap(() => this.getView()),
+      tap(() => { this.getStreams() }),
     ).subscribe()
   }
 
@@ -50,22 +66,150 @@ export class UbidsComponent implements OnInit {
         this.viewId = parseInt(params.get('id'))
         this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, 'properties')
         this.type = params.get('type') as InventoryType
-        console.log('ubids type', this.type)
       }),
     )
   }
 
-  getView() {
-    return this._inventoryService.view$.pipe(
+  getStreams() {
+    this._inventoryService.view$.pipe(
+      takeUntil(this._unsubscribeAll$),
       filter(Boolean),
       tap((view) => {
         this.view = view
-        this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
+        setTimeout(() => {
+          this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
+          this.mapComponent?.initMap()
+        })
       }),
-    )
+    ).subscribe()
+
+    this._userService.currentOrganizationId$.subscribe((orgId) => this.orgId = orgId)
+    this._ubidService.ubids$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      tap((ubids) => {
+        ubids.sort((a, b) => Number(b.preferred) - Number(a.preferred))
+        this.ubids = ubids
+        this.setGrid()
+      }),
+    ).subscribe()
+  }
+
+  setGrid() {
+    this.setColumnDefs()
+    this.setRowData()
+  }
+
+  setColumnDefs() {
+    this.columnDefs = [
+      { field: 'id', hide: true },
+      { field: 'property', hide: true },
+      { field: 'taxlot', hide: true },
+      { field: 'ubid', headerName: 'UBID' },
+      { field: 'preferred', headerName: 'Preferred', cellRenderer: this.preferredRenderer },
+      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
+    ]
+  }
+
+  preferredRenderer({ value }: { value: boolean }) {
+    if (!value) return ''
+
+    return `
+      <div class="flex gap-2 mt-2 align-center">
+        <span class="material-icons action-icon cursor-pointer text-secondary">check_circle</span>
+      </div>
+    `
+  }
+
+  actionRenderer = () => {
+    return `
+      <div class="flex gap-2 mt-2 align-center">
+        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="edit">edit</span>
+        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="delete">clear</span>
+      </div>
+    `
+  }
+
+  setRowData() {
+    this.rowData = this.ubids
+    this.gridHeight = this.rowData.length * 42 + 50
+  }
+
+  onGridReady(agGrid: GridReadyEvent) {
+    this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+  }
+
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'actions') return
+
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action')
+
+    if (action === 'edit') {
+      this.editUbid(event.data as Ubid)
+    } else if (action === 'delete') {
+      this.deleteUbid(event.data as Ubid)
+    }
+  }
+
+  getRowClass = ({ data }: { data: Ubid }) => {
+    return data.preferred ? 'bg-primary text-white' : ''
   }
 
   createUbid = () => {
-    console.log('create ubid')
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewId: this.viewId,
+        stateId: this.view.state.id,
+        ubid: null,
+        type: this.type,
+        existingUbids: this.ubids.map((u) => u.ubid),
+      },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
+    ).subscribe()
+  }
+
+  editUbid(ubid: Ubid) {
+    const dialogRef = this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewId: this.viewId,
+        stateId: this.view.state.id,
+        ubid,
+        type: this.type,
+        existingUbids: this.ubids.filter((u) => u.id !== ubid.id).map((u) => u.ubid),
+      },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
+    ).subscribe()
+  }
+
+  deleteUbid(ubid: Ubid) {
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'UBID', instance: ubid.ubid },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._ubidService.delete(this.orgId, this.viewId, ubid.id, this.type)),
+    ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

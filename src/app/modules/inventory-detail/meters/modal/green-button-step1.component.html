@@ -1,11 +1,10 @@
 <form [formGroup]="form">
-  
   <!-- Select Dataset -->
-  <mat-form-field hideRequiredMarker class="w-full">
+  <mat-form-field class="w-full" hideRequiredMarker>
     <mat-label class="text-secondary">Data Set</mat-label>
     <mat-select formControlName="dataset" placeholder="(no datasets)">
       @for (dataset of data.datasets; track $index) {
-      <mat-option [value]="dataset">{{ dataset.name }}</mat-option>
+        <mat-option [value]="dataset">{{ dataset.name }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -14,14 +13,15 @@
   <div class="text-secondary my-4">Accepted File Types: .xml</div>
 
   <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
-    <input 
+    <input
       class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
       id="file-input"
       #fileInput
       [multiple]="false"
       [accept]="allowedTypes"
       (change)="onSelectFile(fileInput.files)"
-      type="file" />
+      type="file"
+    />
 
     <button class="flex items-center gap-x-2" (click)="fileInput.click()" mat-flat-button color="primary">
       <mat-icon class="text-white icon-size-5" svgIcon="fa-solid:file"></mat-icon>
@@ -32,13 +32,7 @@
     </div>
   </div>
 
-  <div class="flex justify-end mt-4">
-    <button 
-      type="submit" 
-      [disabled]="form.invalid"
-      (click)="onSubmit()" 
-      mat-raised-button 
-      matStepperNext
-      color="primary">Next</button>
+  <div class="mt-4 flex justify-end">
+    <button [disabled]="form.invalid" (click)="onSubmit()" type="submit" mat-raised-button matStepperNext color="primary">Next</button>
   </div>
 </form>

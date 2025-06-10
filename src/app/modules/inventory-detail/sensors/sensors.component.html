@@ -1,14 +1,15 @@
-<seed-page [config]="{
-  title: 'Property',
-  subTitle: viewDisplayField$ | async,
-  titleIcon: 'fa-solid:temperature-half',
-  breadcrumbs: ['Property', 'Sensors'],
-  sideNavToggle: true,
-  action: createSensor,
-  actionIcon: 'fa-solid:plus',
-  actionText: 'Create Sensor',
-}">
-
+<seed-page
+  [config]="{
+    title: 'Property',
+    subTitle: viewDisplayField$ | async,
+    titleIcon: 'fa-solid:temperature-half',
+    breadcrumbs: ['Property', 'Sensors'],
+    sideNavToggle: true,
+    action: createSensor,
+    actionIcon: 'fa-solid:plus',
+    actionText: 'Create Sensor',
+  }"
+>
   <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
     <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
     <div class="text-secondary text-xl font-medium">Sensors in development...</div>

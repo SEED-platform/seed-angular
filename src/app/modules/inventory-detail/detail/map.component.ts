@@ -1,7 +1,7 @@
 /* eslint-disable @cspell/spellchecker */
 // ol imports throw type errors
 import { CommonModule } from '@angular/common'
-import type { AfterViewInit, OnDestroy } from '@angular/core'
+import type { AfterViewInit } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'

@@ -4,8 +4,9 @@ import { MatIconModule } from '@angular/material/icon'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { ActivatedRoute, RouterOutlet } from '@angular/router'
-import { switchMap, tap } from 'rxjs'
+import { filter, forkJoin, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
+import { UbidService } from '@seed/api/ubid/ubid.service'
 import { UserService } from '@seed/api/user'
 import type { NavigationItem } from '@seed/components'
 import { DrawerService, VerticalNavigationComponent } from '@seed/components'
@@ -28,9 +29,11 @@ export class DetailLayoutComponent implements AfterViewInit, OnInit {
   private _drawerService = inject(DrawerService)
   private _activatedRoute = inject(ActivatedRoute)
   private _userService = inject(UserService)
+  private _ubidService = inject(UbidService)
   private _inventoryService = inject(InventoryService)
-  viewId = this._activatedRoute.snapshot.paramMap.get('id')
+  viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id'))
   type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  orgId: number
   displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
 
   analyses: NavigationItem = {
@@ -132,8 +135,21 @@ export class DetailLayoutComponent implements AfterViewInit, OnInit {
   ]
 
   ngOnInit() {
+    this.initStreams()
+  }
+
+  initStreams() {
     this._userService.currentOrganizationId$.pipe(
-      switchMap((orgId) => this._inventoryService.getView(orgId, parseInt(this.viewId), this.type)),
+      tap((orgId) => { this.orgId = orgId }),
+      // endpoints that return observables and initiate streams
+      filter(() => Boolean(this.orgId && this.viewId && this.type)),
+      switchMap(() => forkJoin([
+        this._inventoryService.getView(this.orgId, this.viewId, this.type),
+      ])),
+      // endpoints that initiate streams
+      tap(() => {
+        this._ubidService.list(this.orgId, this.viewId, this.type)
+      }),
     ).subscribe()
   }
 

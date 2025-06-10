@@ -8,6 +8,7 @@ import type { CurrentUser } from '@seed/api/user'
 export type InventoryDisplayType = 'Property' | 'Tax Lot'
 export type InventoryStateType = 'PropertyState' | 'TaxLotState'
 export type InventoryType = 'properties' | 'taxlots'
+export type InventoryTypeSingular = 'property' | 'taxlot'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
 
 export type FilterResponse = {
