@@ -1,0 +1,22 @@
+@if (readings.length) {
+  <div>
+    <mat-divider></mat-divider>
+    <div class="my-5 flex items-center text-lg font-medium">
+      <mat-icon svgIcon="fa-solid:list "></mat-icon>
+      <span class="ml-4">Readings</span>
+    </div>
+    <div class="my-5">
+      <ag-grid-angular
+        [columnDefs]="columnDefs"
+        [rowData]="readings"
+        [gridOptions]="gridOptions"
+        [theme]="gridTheme$ | async"
+        [pagination]="true"
+        [paginationPageSize]="500"
+        [style.height.px]="gridHeight"
+        [style.--ag-spacing.px]="6"
+        (gridReady)="onGridReady($event)"
+      ></ag-grid-angular>
+    </div>
+  </div>
+}

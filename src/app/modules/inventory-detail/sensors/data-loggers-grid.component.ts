@@ -1,0 +1,134 @@
+import { CommonModule } from '@angular/common'
+import type { OnChanges, SimpleChanges } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, Theme } from 'ag-grid-community'
+import type { Observable } from 'rxjs'
+import type { DataLogger } from '@seed/api/sensor'
+
+@Component({
+  selector: 'seed-inventory-detail-sensors-data-loggers-grid',
+  templateUrl: './data-loggers-grid.component.html',
+  imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
+    MatDividerModule,
+    MatIconModule,
+  ],
+})
+export class DataLoggersGridComponent implements OnChanges {
+  @Input() dataLoggers: DataLogger[]
+  @Input() gridTheme$: Observable<Theme>
+  @Output() excludedIdsChange = new EventEmitter<number[]>()
+  excludedIds: number[] = []
+  gridApi: GridApi
+  gridHeight = 0
+  gridOptions: GridOptions = {
+    rowSelection: {
+      mode: 'multiRow',
+      checkboxes: true,
+      headerCheckbox: true,
+    },
+    onSelectionChanged: () => { this.selectionChanged() },
+  }
+
+  columnDefs: ColDef[] = [
+    { field: 'id', hide: true },
+    { field: 'display_name', headerName: 'Display Name' },
+    { field: 'identifier', headerName: 'Data Logger ID', hide: true },
+    { field: 'location_description', headerName: 'Location Description' },
+    { field: 'manufacturer_name', headerName: 'Manufacturer Name' },
+    { field: 'model_name', headerName: 'Model Name' },
+    { field: 'serial_number', headerName: 'Serial Number' },
+    { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer, width: 300 },
+  ]
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.dataLoggers) {
+      this.gridHeight = Math.min(this.dataLoggers.length * 43 + 50, 400)
+
+      // hide column if all values are falsey
+      const constantCols = new Set(['id', 'display_name', 'location_description', 'actions'])
+      const showColumn = (field: string, rowData: Record<string, unknown>[]) => rowData.some((row) => !!row[field])
+      this.columnDefs = this.columnDefs.filter((colDef) => constantCols.has(colDef.field) || showColumn(colDef.field, this.dataLoggers))
+
+      // select all on grid load
+      setTimeout(() => {
+        if (this.gridApi && !this.gridApi.isDestroyed()) {
+          this.gridApi?.selectAll()
+        }
+      }, 100)
+    }
+  }
+
+  actionRenderer() {
+    return `
+      <div class="flex gap-2 align-center">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900" title="Add Sensors" data-action="addSensors">
+          <span class="material-icons text-base">add</span>
+          <span class="text-sm">Sensors</span>
+        </span>
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addSensors">
+          <span class="material-icons text-base">add</span>
+          <span class="text-sm">Readings</span>
+        </span>
+        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      </div>
+    `
+  }
+
+  onGridReady(agGrid: GridReadyEvent) {
+    this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+  }
+
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field !== 'actions') return
+
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action')
+    const { id } = event.data as { id: number }
+    const dataLogger = this.dataLoggers.find((dl) => dl.id === id)
+
+    if (action === 'edit') {
+      this.editDataLogger(dataLogger)
+    } else if (action === 'delete') {
+      this.deleteDataLogger(dataLogger)
+    } else if (action === 'addSensors') {
+      this.addSensors(dataLogger)
+    } else if (action === 'addReadings') {
+      this.addReadings(dataLogger)
+    }
+  }
+
+  addSensors(dataLogger: DataLogger) {
+    console.log('Add Sensors clicked', dataLogger)
+  }
+
+  addReadings(dataLogger: DataLogger) {
+    console.log('Add Readings clicked', dataLogger)
+  }
+
+  editDataLogger(dataLogger: DataLogger) {
+    console.log('Edit Data Logger clicked', dataLogger)
+  }
+
+  deleteDataLogger(dataLogger: DataLogger) {
+    console.log('Delete Data Logger clicked', dataLogger)
+  }
+
+  selectionChanged() {
+    const allIds = this.dataLoggers.map((dl: DataLogger) => dl.id)
+    const selectedIds = this.gridApi.getSelectedRows().map((r: { id: number }) => r.id)
+    const newExcludedIds = allIds.filter((id) => !selectedIds.includes(id))
+    if (newExcludedIds.length === this.excludedIds.length) return
+
+    this.excludedIds = newExcludedIds
+    this.excludedIdsChange.emit(this.excludedIds)
+  }
+}

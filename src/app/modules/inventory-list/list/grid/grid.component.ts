@@ -7,7 +7,7 @@ import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridR
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryPagination, InventoryType } from '../../../inventory/inventory.types'
+import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
 // import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
@@ -28,7 +28,7 @@ export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
   @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
-  @Input() pagination!: InventoryPagination
+  @Input() pagination!: Pagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType

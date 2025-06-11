@@ -311,7 +311,6 @@ export class MetersComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    // this.destroyGrids()
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
