@@ -1,10 +1,25 @@
 @if (readings.length) {
   <div>
     <mat-divider></mat-divider>
-    <div class="my-5 flex items-center text-lg font-medium">
-      <mat-icon svgIcon="fa-solid:table-list"></mat-icon>
-      <span class="ml-4">Readings</span>
+
+    <div class="flex justify-between">
+      <div class="my-5 ml-4 flex items-center text-lg font-medium">
+        <mat-icon svgIcon="fa-solid:table-list"></mat-icon>
+        <span class="ml-4">Readings</span>
+      </div>
+      <!-- Interval select -->
+      <div class="m-1 my-auto flex flex-row gap-4">
+        <mat-label class="text-secondary my-auto">Interval</mat-label>
+        <mat-select class="h-8 w-40 rounded border border-gray-500 p-3 text-sm" [(value)]="interval"
+          (selectionChange)="intervalChange()">
+          <mat-option value="Exact">Exact</mat-option>
+          <mat-option value="Year">Year</mat-option>
+          <mat-option value="Month">Month</mat-option>
+        </mat-select>
+      </div>
     </div>
+
+    <!-- Grid -->
     <div class="my-5">
       <ag-grid-angular
         [columnDefs]="columnDefs"

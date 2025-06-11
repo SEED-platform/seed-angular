@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, Input } from '@angular/core'
+import { Component, inject, Input } from '@angular/core'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import { MatSelectModule } from '@angular/material/select'
+import type { SensorUsageRequestConfig} from '@seed/api/sensor'
+import { type SensorReading, SensorService, type SensorUsage } from '@seed/api/sensor'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
-import type { Observable } from 'rxjs'
-import type { SensorReading, SensorUsage } from '@seed/api/sensor'
-import type { Pagination } from 'app/modules/inventory/inventory.types'
 import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
+import type { Observable } from 'rxjs'
+import type { Pagination } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',
@@ -19,15 +21,21 @@ import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
     CommonModule,
     MatDividerModule,
     MatIconModule,
+    MatSelectModule,
     InventoryGridControlsComponent,
   ],
 })
 export class SensorReadingsGridComponent implements OnChanges {
   @Input() usage: SensorUsage
   @Input() gridTheme$: Observable<Theme>
+  @Input() excludedSensorIds: number[] = []
+  @Input() orgId: number
+  @Input() viewId: number
+  private _sensorService = inject(SensorService)
   gridApi: GridApi
   gridHeight = 0
   columnDefs: ColDef[]
+  interval: 'Exact' | 'Year' | 'Month' = 'Exact'
   readings: SensorReading[] = []
   pagination: Pagination
   gridOptions = {
@@ -44,10 +52,6 @@ export class SensorReadingsGridComponent implements OnChanges {
         headerName: cd.displayName,
       }))
 
-      if (this.gridApi) {
-      // if (this.gridApi && !this.gridApi.isDestroyed()) {
-        this.gridApi.sizeColumnsToFit()
-      }
       this.getGridHeight()
     }
   }
@@ -71,7 +75,6 @@ export class SensorReadingsGridComponent implements OnChanges {
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
@@ -88,5 +91,15 @@ export class SensorReadingsGridComponent implements OnChanges {
       // Handle delete action
       console.log('Delete action clicked for sensor:', event.data)
     }
+  }
+
+  intervalChange() {
+    const config: SensorUsageRequestConfig = {
+      excluded_sensor_ids: this.excludedSensorIds,
+      interval: this.interval,
+    }
+    if (this.interval === 'Exact') config.page = this.pagination?.page ?? 1
+
+    this._sensorService.listSensorUsage(this.orgId, this.viewId, config)
   }
 }

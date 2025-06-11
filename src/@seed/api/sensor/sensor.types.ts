@@ -18,7 +18,7 @@ export type Sensor = {
   display_name: string;
   id: number;
   location_description: string;
-  type: string;
+  sensor_type: string;
   units: string;
 }
 

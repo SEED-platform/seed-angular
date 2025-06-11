@@ -16,6 +16,8 @@
       <seed-inventory-detail-sensors-data-loggers-grid
         [dataLoggers]="dataLoggers"
         [gridTheme$]="gridTheme$"
+        [orgId]="orgId"
+        [viewId]="viewId"
         (excludedIdsChange)="onDataLoggerExcludedIdsChange($event)"
       >
       </seed-inventory-detail-sensors-data-loggers-grid>
@@ -24,13 +26,21 @@
       <seed-inventory-detail-sensors-grid
         [sensors]="sensors"
         [gridTheme$]="gridTheme$"
+        [orgId]="orgId"
+        [viewId]="viewId"
         [excludedDataLoggerIds]="excludedDataLoggerIds"
         (excludedIdsChange)="onSensorExcludedIdsChange($event)"
       >
       </seed-inventory-detail-sensors-grid>
 
       <!-- SENSOR READINGS -->
-      <seed-inventory-detail-sensor-readings-grid [usage]="usage" [gridTheme$]="gridTheme$"> </seed-inventory-detail-sensor-readings-grid>
+      <seed-inventory-detail-sensor-readings-grid
+        [usage]="usage"
+        [gridTheme$]="gridTheme$"
+        [excludedSensorIds]="excludedSensorIds"
+        [orgId]="orgId"
+        [viewId]="viewId"
+        > </seed-inventory-detail-sensor-readings-grid>
     } @else {
       <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
         <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>

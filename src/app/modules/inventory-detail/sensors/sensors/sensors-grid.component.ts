@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import { type Sensor, SensorService } from '@seed/api/sensor'
+import { DeleteModalComponent } from '@seed/components'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowNode, Theme } from 'ag-grid-community'
-import type { Observable } from 'rxjs'
-import type { Sensor } from '@seed/api/sensor'
+import { filter, type Observable, switchMap } from 'rxjs'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-inventory-detail-sensors-grid',
@@ -23,7 +26,11 @@ export class SensorsGridComponent implements OnChanges {
   @Input() sensors: Sensor[]
   @Input() gridTheme$: Observable<Theme>
   @Input() excludedDataLoggerIds: number[] = []
+  @Input() orgId: number
+  @Input() viewId: number
   @Output() excludedIdsChange = new EventEmitter<number[]>()
+  private _dialog = inject(MatDialog)
+  private _sensorService = inject(SensorService)
   excludedIds: number[] = []
   gridApi: GridApi
   gridHeight = 0
@@ -40,7 +47,7 @@ export class SensorsGridComponent implements OnChanges {
     { field: 'id', hide: true },
     { field: 'display_name', headerName: 'Display Name' },
     { field: 'data_logger', headerName: 'Data Logger' },
-    { field: 'type', headerName: 'Type' },
+    { field: 'sensor_type', headerName: 'Type' },
     { field: 'location_description', headerName: 'Location Description' },
     { field: 'units', headerName: 'Units' },
     { field: 'column_name', headerName: 'Column Name' },
@@ -85,7 +92,6 @@ export class SensorsGridComponent implements OnChanges {
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
@@ -105,13 +111,25 @@ export class SensorsGridComponent implements OnChanges {
   }
 
   editSensor(sensor: Sensor) {
-    // Logic to edit the sensor
-    console.log('Edit sensor:', sensor)
+    const otherSensors = this.sensors.filter((s) => s.id !== sensor.id)
+    const existingColumnNames = otherSensors.map((s) => s.column_name)
+    const existingDisplayNames = otherSensors.map((s) => s.display_name)
+    this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewId: this.viewId, sensor, existingColumnNames, existingDisplayNames },
+    })
   }
 
   deleteSensor(sensor: Sensor) {
-    // Logic to delete the sensor
-    console.log('Delete sensor:', sensor)
+    const dialogRef = this._dialog.open(DeleteModalComponent, {
+      width: '40rem',
+      data: { model: 'Sensor', instance: sensor.display_name },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      switchMap(() => this._sensorService.deleteSensor(this.orgId, this.viewId, sensor.id)),
+    ).subscribe()
   }
 
   selectionChanged() {

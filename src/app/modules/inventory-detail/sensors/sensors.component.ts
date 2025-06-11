@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
@@ -13,6 +14,7 @@ import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { DataLoggersGridComponent } from './data-loggers/data-loggers-grid.component'
+import { FormModalComponent } from './data-loggers/modal/form-modal.component'
 import { SensorReadingsGridComponent } from './sensor-readings/sensor-readings-grid.component'
 import { SensorsGridComponent } from './sensors/sensors-grid.component'
 
@@ -32,6 +34,7 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
 })
 export class SensorsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
+  private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
   private _sensorService = inject(SensorService)
@@ -82,7 +85,11 @@ export class SensorsComponent implements OnDestroy, OnInit {
   }
 
   createDataLogger = () => {
-    console.log('create Data Logger')
+    const existingDisplayNames = this.dataLoggers.map((dl) => dl.display_name)
+    this._dialog.open(FormModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewId: this.viewId, dataLogger: null, existingDisplayNames },
+    })
   }
 
   onDataLoggerExcludedIdsChange = (excludedIds: number[]) => {
@@ -91,6 +98,7 @@ export class SensorsComponent implements OnDestroy, OnInit {
   }
 
   onSensorExcludedIdsChange = (excludedIds: number[]) => {
+    this.excludedSensorIds = excludedIds
     const config = {
       excluded_sensor_ids: excludedIds,
     }

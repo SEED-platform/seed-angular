@@ -256,7 +256,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   deleteMeter(meter: Meter) {
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { model: 'Meter', name: meter.alias },
+      data: { model: 'Meter', instance: meter.alias },
     })
 
     dialogRef.afterClosed().pipe(
