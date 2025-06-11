@@ -11,7 +11,7 @@
   }"
 >
   <div class="h-full-page-tabs p-5" id="content">
-    @if (!dataLoggers.length) {
+    @if (dataLoggers.length) {
       <!-- DATA LOGGERS -->
       <seed-inventory-detail-sensors-data-loggers-grid
         [dataLoggers]="dataLoggers"

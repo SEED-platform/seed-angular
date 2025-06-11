@@ -44,7 +44,8 @@ export class SensorReadingsGridComponent implements OnChanges {
         headerName: cd.displayName,
       }))
 
-      if (this.gridApi && !this.gridApi.isDestroyed()) {
+      if (this.gridApi) {
+      // if (this.gridApi && !this.gridApi.isDestroyed()) {
         this.gridApi.sizeColumnsToFit()
       }
       this.getGridHeight()

@@ -12,9 +12,9 @@ import { SensorService } from '@seed/api/sensor'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import { DataLoggersGridComponent } from './data-loggers-grid.component'
-import { SensorReadingsGridComponent } from './sensor-readings-grid.component'
-import { SensorsGridComponent } from './sensors-grid.component'
+import { DataLoggersGridComponent } from './data-loggers/data-loggers-grid.component'
+import { SensorReadingsGridComponent } from './sensor-readings/sensor-readings-grid.component'
+import { SensorsGridComponent } from './sensors/sensors-grid.component'
 
 @Component({
   selector: 'seed-inventory-detial-sensors',
