@@ -9,9 +9,17 @@
       </div>
       <!-- Interval select -->
       <div class="m-1 my-auto flex flex-row gap-4">
+        <span class="text-secondary my-auto">Occupied Hours only</span>
+        <mat-checkbox 
+          [(ngModel)]="occupiedHoursOnly"
+          (ngModelChange)="occupiedHoursOnlyChange.emit($event)"
+        ></mat-checkbox>
         <mat-label class="text-secondary my-auto">Interval</mat-label>
-        <mat-select class="h-8 w-40 rounded border border-gray-500 p-3 text-sm" [(value)]="interval"
-          (selectionChange)="intervalChange()">
+        <mat-select 
+          class="h-8 w-40 rounded border border-gray-500 p-3 mt-1 text-sm"
+          [(value)]="interval"
+          (selectionChange)="intervalChange.emit($event.value)"
+        >
           <mat-option value="Exact">Exact</mat-option>
           <mat-option value="Year">Year</mat-option>
           <mat-option value="Month">Month</mat-option>

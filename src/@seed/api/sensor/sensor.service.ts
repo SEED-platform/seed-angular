@@ -54,7 +54,7 @@ export class SensorService {
       interval = 'Exact',
       showOnlyOccupiedReadings = false,
       page = 1,
-      per_page = 500,
+      per_page = 100000000000, // not an expensive request, just retrieve all (was 500)
       excluded_sensor_ids = [],
     } = config
 

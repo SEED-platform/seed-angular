@@ -40,6 +40,8 @@
         [excludedSensorIds]="excludedSensorIds"
         [orgId]="orgId"
         [viewId]="viewId"
+        (occupiedHoursOnlyChange)="onOccupiedOnlyChanged($event)"
+        (intervalChange)="intervalChanged($event)"
         > </seed-inventory-detail-sensor-readings-grid>
     } @else {
       <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">

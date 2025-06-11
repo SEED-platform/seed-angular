@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
-import type { SensorUsageRequestConfig} from '@seed/api/sensor'
+import type { ReadingInterval } from '@seed/api/sensor'
 import { type SensorReading, SensorService, type SensorUsage } from '@seed/api/sensor'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
+import type { Pagination } from 'app/modules/inventory/inventory.types'
 import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
 import type { Observable } from 'rxjs'
-import type { Pagination } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',
@@ -19,10 +21,12 @@ import type { Pagination } from 'app/modules/inventory/inventory.types'
     AgGridAngular,
     AgGridModule,
     CommonModule,
+    MatCheckboxModule,
     MatDividerModule,
     MatIconModule,
     MatSelectModule,
     InventoryGridControlsComponent,
+    FormsModule,
   ],
 })
 export class SensorReadingsGridComponent implements OnChanges {
@@ -31,11 +35,14 @@ export class SensorReadingsGridComponent implements OnChanges {
   @Input() excludedSensorIds: number[] = []
   @Input() orgId: number
   @Input() viewId: number
+  @Output() occupiedHoursOnlyChange = new EventEmitter<boolean>()
+  @Output() intervalChange = new EventEmitter<ReadingInterval>()
   private _sensorService = inject(SensorService)
   gridApi: GridApi
   gridHeight = 0
   columnDefs: ColDef[]
-  interval: 'Exact' | 'Year' | 'Month' = 'Exact'
+  interval: ReadingInterval = 'Exact'
+  occupiedHoursOnly = false
   readings: SensorReading[] = []
   pagination: Pagination
   gridOptions = {
@@ -93,13 +100,13 @@ export class SensorReadingsGridComponent implements OnChanges {
     }
   }
 
-  intervalChange() {
-    const config: SensorUsageRequestConfig = {
-      excluded_sensor_ids: this.excludedSensorIds,
-      interval: this.interval,
-    }
-    if (this.interval === 'Exact') config.page = this.pagination?.page ?? 1
+  // intervalChange(interval) {
+  //   console.log('child Interval changed:', this.interval)
+  //   this.intervalChanged.emit(this.interval)
+  // }
 
-    this._sensorService.listSensorUsage(this.orgId, this.viewId, config)
-  }
+  // occupiedHoursOnlyChange() {
+  //   console.log('child occupiedHoursOnly changed:', this.occupiedHoursOnly)
+  //   this.occupiedHoursOnlyChanged.emit(this.occupiedHoursOnly)
+  // }
 }

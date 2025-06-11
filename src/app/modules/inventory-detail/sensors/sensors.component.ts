@@ -8,7 +8,7 @@ import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import type { DataLogger, Sensor, SensorUsage } from '@seed/api/sensor';
+import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api/sensor';
 import { SensorService } from '@seed/api/sensor'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
@@ -45,6 +45,8 @@ export class SensorsComponent implements OnDestroy, OnInit {
   excludedSensorIds: number[] = []
   excludedDataLoggerIds: number[] = []
   gridTheme$ = this._configService.gridTheme$
+  interval: ReadingInterval = 'Exact'
+  showOnlyOccupiedReadings = false
   orgId: number
   viewId: number
   viewDisplayField$: Observable<string>
@@ -103,6 +105,24 @@ export class SensorsComponent implements OnDestroy, OnInit {
       excluded_sensor_ids: excludedIds,
     }
     this._sensorService.listSensorUsage(this.orgId, this.viewId, config)
+  }
+
+  onOccupiedOnlyChanged(value: boolean) {
+    this.showOnlyOccupiedReadings = value
+    this._sensorService.listSensorUsage(this.orgId, this.viewId, this.getConfig())
+  }
+
+  intervalChanged(interval: ReadingInterval) {
+    this.interval = interval
+    this._sensorService.listSensorUsage(this.orgId, this.viewId, this.getConfig())
+  }
+
+  getConfig(): SensorUsageRequestConfig {
+    return {
+      interval: this.interval,
+      showOnlyOccupiedReadings: this.showOnlyOccupiedReadings,
+      excluded_sensor_ids: this.excludedSensorIds,
+    }
   }
 
   ngOnDestroy(): void {
