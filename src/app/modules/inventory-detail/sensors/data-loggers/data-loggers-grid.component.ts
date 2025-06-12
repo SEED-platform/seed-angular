@@ -10,6 +10,7 @@ import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, Theme } from 'ag-grid-community'
 import { filter, type Observable, switchMap } from 'rxjs'
 import { FormModalComponent } from './modal/form-modal.component'
+import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 
 @Component({
   selector: 'seed-inventory-detail-sensors-data-loggers-grid',
@@ -23,7 +24,9 @@ import { FormModalComponent } from './modal/form-modal.component'
   ],
 })
 export class DataLoggersGridComponent implements OnChanges {
+  @Input() cycleId: number
   @Input() dataLoggers: DataLogger[]
+  @Input() datasetId: string
   @Input() gridTheme$: Observable<Theme>
   @Input() orgId: number
   @Input() viewId: number
@@ -44,13 +47,13 @@ export class DataLoggersGridComponent implements OnChanges {
 
   columnDefs: ColDef[] = [
     { field: 'id', hide: true },
+    { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer, width: 300 },
     { field: 'display_name', headerName: 'Display Name' },
     { field: 'identifier', headerName: 'Data Logger ID', hide: true },
     { field: 'location_description', headerName: 'Location Description' },
     { field: 'manufacturer_name', headerName: 'Manufacturer Name' },
     { field: 'model_name', headerName: 'Model Name' },
     { field: 'serial_number', headerName: 'Serial Number' },
-    { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer, width: 300 },
   ]
 
   ngOnChanges(changes: SimpleChanges) {
@@ -78,7 +81,7 @@ export class DataLoggersGridComponent implements OnChanges {
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Sensors</span>
         </span>
-        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addSensors">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addReadings">
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Readings</span>
         </span>
@@ -97,7 +100,7 @@ export class DataLoggersGridComponent implements OnChanges {
     if (event.colDef.field !== 'actions') return
 
     const target = event.event.target as HTMLElement
-    const action = target.getAttribute('data-action')
+    const action = target.closest('[data-action]')?.getAttribute('data-action')
     const { id } = event.data as { id: number }
     const dataLogger = this.dataLoggers.find((dl) => dl.id === id)
 
@@ -113,7 +116,16 @@ export class DataLoggersGridComponent implements OnChanges {
   }
 
   addSensors(dataLogger: DataLogger) {
-    console.log('Add Sensors clicked', dataLogger)
+    this._dialog.open(SensorsUploadModalComponent, {
+      width: '60rem',
+      data: {
+        dataLoggerId: dataLogger.id,
+        datasetId: this.datasetId,
+        cycleId: this.cycleId,
+        orgId: this.orgId,
+        viewId: this.viewId,
+      },
+    })
   }
 
   addReadings(dataLogger: DataLogger) {
@@ -129,7 +141,6 @@ export class DataLoggersGridComponent implements OnChanges {
   }
 
   deleteDataLogger(dataLogger: DataLogger) {
-    console.log('Delete Data Logger clicked', dataLogger)
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
       data: { model: 'Sensor', instance: dataLogger.display_name },

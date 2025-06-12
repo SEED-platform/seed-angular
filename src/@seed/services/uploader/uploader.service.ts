@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
-import type { CheckProgressLoopParams, UpdateProgressBarObjParams } from './uploader.types'
+import type { CheckProgressLoopParams, SensorPreviewResponse, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
 import { ErrorService } from '../error'
 
 @Injectable({ providedIn: 'root' })
@@ -63,6 +63,41 @@ export class UploaderService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching greenButton preview')
+      }),
+    )
+  }
+
+  fileUpload(orgId: number, file: File, sourceType: string, importRecordId: string): Observable<UploadResponse> {
+    const url = `/api/v3/upload/?organization_id=${orgId}`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    formData.append('source_type', sourceType)
+    formData.append('import_record', importRecordId)
+
+    return this._httpClient.post<UploadResponse>(url, formData).pipe(
+      tap(() => { console.log('File uploaded successfully') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error uploading file')
+      }),
+    )
+  }
+
+  sensorPreview(orgId: number, viewId: number, dataLoggerId: number, fileId: number): Observable<SensorPreviewResponse> {
+    const url = `/api/v3/import_files/${fileId}/sensors_preview/`
+    const params = { organization_id: orgId, view_id: viewId, data_logger_id: dataLoggerId }
+    return this._httpClient.get <SensorPreviewResponse>(url, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching sensor preview')
+      }),
+    )
+  }
+
+  saveRawData(orgId: number, cycleId: number, fileId: number, multipleCycleUpload = false): Observable<unknown> {
+    const url = `/api/v3/import_files/${fileId}/start_save_data/?organization_id=${orgId}`
+    const body = { cycle_id: cycleId, multiple_cycle_upload: multipleCycleUpload }
+    return this._httpClient.post(url, body).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error saving raw data')
       }),
     )
   }

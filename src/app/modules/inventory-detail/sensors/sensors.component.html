@@ -14,7 +14,9 @@
     @if (dataLoggers.length) {
       <!-- DATA LOGGERS -->
       <seed-inventory-detail-sensors-data-loggers-grid
+        [cycleId]="cycleId"
         [dataLoggers]="dataLoggers"
+        [datasetId]="datasetId"
         [gridTheme$]="gridTheme$"
         [orgId]="orgId"
         [viewId]="viewId"

@@ -1,0 +1,75 @@
+<div class="flex flex-between">
+  <div class="flex flex-auto flex-col items-center p-8 pb-0 sm:flex-row sm:items-start">
+    <div
+      class="flex h-10 w-10 flex-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 sm:mr-4 dark:bg-primary-600 dark:text-primary-50">
+      <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:arrow-up-from-bracket"></mat-icon>
+    </div>
+  
+    <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
+      <div class="text-xl font-medium leading-6">Upload Sensor Metadata</div>
+    </div>
+  </div>
+
+  <div class="flex h-10 w-10 flex-0 items-center justify-center border rounded-full cursor-pointer dark:hover:bg-gray-900 hover:bg-gray-100" (click)="dismiss()">
+    <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:xmark" ></mat-icon>
+  </div>
+
+</div>
+
+<mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
+
+  <mat-step [completed]="completed[1]" label="File Select">
+    <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
+      <input 
+        class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+        id="file-input" 
+        #fileInput
+        [multiple]="false" 
+        [accept]="allowedTypes"
+        (change)="step1(fileInput.files)" 
+        type="file" />
+  
+      <button 
+        class="flex items-center gap-x-2" 
+        (click)="fileInput.click()" 
+        mat-flat-button 
+        color="primary"
+      >
+        <mat-icon class="text-white icon-size-5" svgIcon="fa-solid:file"></mat-icon>
+        <span>Choose file</span>
+      </button>
+      <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
+        {{ file?.name ?? 'No file selected' }}
+      </div>
+    </div>
+    <div class="mt-10 flex justify-end">
+      <button [disabled]="!completed[1]" (click)="stepper.next()" mat-raised-button color="primary">Next</button>
+    </div>
+
+  </mat-step>
+
+  <mat-step [completed]="completed[2]" label="Review">
+    @if(proposedImports.length) {
+      <ag-grid-angular
+      [columnDefs]="columnDefs"
+      [rowData]="proposedImports"
+      [theme]="gridTheme$ | async"
+      [style.height.px]="gridHeight"
+      (gridReady)="onGridReady($event)"
+    ></ag-grid-angular>
+    }
+    <div class="mt-10 flex justify-between">
+      <button  (click)="stepper.previous()" mat-stroked-button>Previous</button>
+      <button [disabled]="!completed[2]" (click)="step2()" mat-raised-button color="primary">Next</button>
+    </div>
+  </mat-step>
+  
+  <mat-step [completed]="completed[3]" label="Upload">
+    @if (inProgress) {
+      <div class="m-10">
+        <mat-progress-bar [value]="progressBarObj.progress" mode="determinate"></mat-progress-bar> 
+      </div>
+    }
+  </mat-step>
+
+</mat-stepper>

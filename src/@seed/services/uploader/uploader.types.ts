@@ -1,4 +1,5 @@
 import type { ProgressResponse } from '@seed/api/progress'
+import type { Sensor } from '@seed/api/sensor'
 
 export type ProgressBarObj = {
   message: string;
@@ -25,4 +26,14 @@ export type UpdateProgressBarObjParams = {
   offset: number;
   multiplier: number;
   progressBarObj: ProgressBarObj;
+}
+
+export type UploadResponse = {
+  success: boolean;
+  import_file_id?: number;
+  message?: string;
+}
+
+export type SensorPreviewResponse = {
+  proposed_imports: Sensor[];
 }

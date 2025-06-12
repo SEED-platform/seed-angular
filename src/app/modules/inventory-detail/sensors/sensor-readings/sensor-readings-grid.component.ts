@@ -50,7 +50,7 @@ export class SensorReadingsGridComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.usage.currentValue) {
+    if (changes.usage?.currentValue) {
       this.readings = this.usage.readings
       this.pagination = this.usage.pagination
       // this.columnDefs = this.usage.column_defs // would require a new v4 endpoint (just for displayName -> headerName)
@@ -99,14 +99,4 @@ export class SensorReadingsGridComponent implements OnChanges {
       console.log('Delete action clicked for sensor:', event.data)
     }
   }
-
-  // intervalChange(interval) {
-  //   console.log('child Interval changed:', this.interval)
-  //   this.intervalChanged.emit(this.interval)
-  // }
-
-  // occupiedHoursOnlyChange() {
-  //   console.log('child occupiedHoursOnly changed:', this.occupiedHoursOnly)
-  //   this.occupiedHoursOnlyChanged.emit(this.occupiedHoursOnly)
-  // }
 }

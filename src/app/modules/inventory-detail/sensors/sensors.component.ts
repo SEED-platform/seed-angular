@@ -7,6 +7,8 @@ import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { CycleService } from '@seed/api/cycle/cycle.service'
+import { DatasetService } from '@seed/api/dataset'
 import { OrganizationService } from '@seed/api/organization'
 import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api/sensor';
 import { SensorService } from '@seed/api/sensor'
@@ -34,6 +36,8 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
 })
 export class SensorsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
+  private _cycleService = inject(CycleService)
+  private _datasetService = inject(DatasetService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
@@ -41,7 +45,9 @@ export class SensorsComponent implements OnDestroy, OnInit {
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
-  dataLoggers: DataLogger[]
+  cycleId: number
+  dataLoggers: DataLogger[] = []
+  datasetId: string
   excludedSensorIds: number[] = []
   excludedDataLoggerIds: number[] = []
   gridTheme$ = this._configService.gridTheme$
@@ -56,7 +62,7 @@ export class SensorsComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.getUrlParams().pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.getOrg()),
+      switchMap(() => this.getOrgData()),
       tap(() => { this.setStreams() }),
     ).subscribe()
   }
@@ -70,9 +76,14 @@ export class SensorsComponent implements OnDestroy, OnInit {
     )
   }
 
-  getOrg() {
+  getOrgData() {
     return this._userService.currentOrganizationId$.pipe(
       tap((orgId) => { this.orgId = orgId }),
+      tap(() => { this._cycleService.get(this.orgId) }),
+      switchMap(() => this._cycleService.cycles$),
+      tap((cycles) => { this.cycleId = cycles.length ? cycles[0].id : null }),
+      switchMap(() => this._datasetService.listDatasets(this.orgId)),
+      tap((datasets) => { this.datasetId = datasets.length ? datasets[0].id.toString() : null }),
     )
   }
 
@@ -81,9 +92,17 @@ export class SensorsComponent implements OnDestroy, OnInit {
     this._sensorService.listSensors(this.orgId, this.viewId)
     this._sensorService.listSensorUsage(this.orgId, this.viewId)
 
-    this._sensorService.dataLoggers$.subscribe((dataLoggers) => this.dataLoggers = dataLoggers)
-    this._sensorService.sensors$.subscribe((sensors) => this.sensors = sensors)
-    this._sensorService.usage$.subscribe((usage) => this.usage = usage)
+    this._sensorService.dataLoggers$.pipe(
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe((dataLoggers) => this.dataLoggers = dataLoggers)
+
+    this._sensorService.sensors$.pipe(
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe((sensors) => this.sensors = sensors)
+
+    this._sensorService.usage$.pipe(
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe((usage) => this.usage = usage)
   }
 
   createDataLogger = () => {
