@@ -10,13 +10,10 @@
       <!-- Interval select -->
       <div class="m-1 my-auto flex flex-row gap-4">
         <span class="text-secondary my-auto">Occupied Hours only</span>
-        <mat-checkbox 
-          [(ngModel)]="occupiedHoursOnly"
-          (ngModelChange)="occupiedHoursOnlyChange.emit($event)"
-        ></mat-checkbox>
+        <mat-checkbox [(ngModel)]="occupiedHoursOnly" (ngModelChange)="occupiedHoursOnlyChange.emit($event)"></mat-checkbox>
         <mat-label class="text-secondary my-auto">Interval</mat-label>
-        <mat-select 
-          class="h-8 w-40 rounded border border-gray-500 p-3 mt-1 text-sm"
+        <mat-select
+          class="mt-1 h-8 w-40 rounded border border-gray-500 p-3 text-sm"
           [(value)]="interval"
           (selectionChange)="intervalChange.emit($event.value)"
         >

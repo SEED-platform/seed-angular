@@ -15,7 +15,7 @@ import { ProgressBarObj, UploaderService } from '@seed/services/uploader'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-detail-sensors-upload',
@@ -124,7 +124,6 @@ export class SensorsUploadModalComponent implements OnDestroy {
       takeUntil(this._unsubscribeAll$),
       tap((response: ProgressResponse) => { this.progressBarObj.progress = response.progress }),
       switchMap((data) => {
-        // console.log('progress', this.progressBarObj.progress)
         return this._uploaderService.checkProgressLoop({
           progressKey: data.progress_key,
           offset: 0,

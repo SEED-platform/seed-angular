@@ -5,12 +5,11 @@
 <mat-divider class="mb-8"></mat-divider>
 
 <form class="flex flex-col gap-4" [formGroup]="form">
-
   <mat-form-field>
     <mat-label>Display Name</mat-label>
     <input matInput formControlName="display_name" />
     @if (form.get('display_name')?.hasError('valueExists')) {
-    <mat-error>Display name must be unique.</mat-error>
+      <mat-error>Display name must be unique.</mat-error>
     }
   </mat-form-field>
 
@@ -38,12 +37,10 @@
     <mat-label>Column Name</mat-label>
     <input matInput formControlName="column_name" />
     @if (form.get('column_name')?.hasError('valueExists')) {
-    <mat-error>Column name must be unique.</mat-error>
+      <mat-error>Column name must be unique.</mat-error>
     }
   </mat-form-field>
-
 </form>
-
 
 <div class="flex justify-end">
   <mat-dialog-actions>
