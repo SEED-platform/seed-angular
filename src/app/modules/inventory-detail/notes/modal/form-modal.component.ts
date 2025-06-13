@@ -6,10 +6,10 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
+import { Subject, takeUntil, tap } from 'rxjs'
 import { NoteService } from '@seed/api/notes'
 import type { Note, NoteData } from '@seed/api/notes/notes.types'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-inventory-notes-form-modal',

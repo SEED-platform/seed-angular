@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
@@ -59,11 +59,11 @@ export class GreenButtonUploadModalComponent implements AfterViewInit, OnInit {
   }
 
   onStep2() {
-    console.log('onstep2')
+    console.log('onStep2')
   }
 
   onStep3() {
-    console.log('onstep3')
+    console.log('onStep3')
   }
 
   dismiss() {

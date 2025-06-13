@@ -1,11 +1,11 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import type { Observable } from 'rxjs'
+import { catchError, map, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, InventoryTypeSingular } from 'app/modules/inventory/inventory.types'
-import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
 import { UserService } from '../user'
 import type { Ubid, UbidDetails, UbidResponse, ValidateUbidResponse } from './ubid.types'
 

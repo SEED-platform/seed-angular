@@ -1,4 +1,3 @@
-/* eslint-disable @cspell/spellchecker */
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'

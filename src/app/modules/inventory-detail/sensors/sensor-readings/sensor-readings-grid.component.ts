@@ -6,13 +6,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
-import type { ReadingInterval } from '@seed/api/sensor'
-import { type SensorReading, SensorService, type SensorUsage } from '@seed/api/sensor'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
+import type { Observable } from 'rxjs'
+import type { ReadingInterval, SensorReading, SensorUsage } from '@seed/api/sensor'
+import { SensorService } from '@seed/api/sensor'
 import type { Pagination } from 'app/modules/inventory/inventory.types'
 import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
-import type { Observable } from 'rxjs'
 
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',

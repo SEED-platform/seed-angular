@@ -20,7 +20,7 @@ import { MapComponent } from '../detail'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
-  selector: 'seed-inventory-detial-ubis',
+  selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
   imports: [
     AgGridAngular,

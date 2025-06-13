@@ -10,7 +10,6 @@ export class MapService {
   checkDisadvantagedStatus(tractIds: number[]) {
     const idsToFetch = tractIds.filter((id) => !(id in this.disadvantaged))
     if (idsToFetch.length) {
-      // eslint-disable-next-line @cspell/spellchecker
       const url = '/api/v3/eeej/filter_disadvantaged_tracts/'
       this._httpClient.post<{ status: string; disadvantaged: number[] }>(url, { tract_ids: tractIds }).pipe(
         map(({ disadvantaged }) => disadvantaged),

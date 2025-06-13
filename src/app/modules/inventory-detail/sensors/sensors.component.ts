@@ -10,7 +10,7 @@ import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { DatasetService } from '@seed/api/dataset'
 import { OrganizationService } from '@seed/api/organization'
-import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api/sensor';
+import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api/sensor'
 import { SensorService } from '@seed/api/sensor'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
@@ -21,7 +21,7 @@ import { SensorReadingsGridComponent } from './sensor-readings/sensor-readings-g
 import { SensorsGridComponent } from './sensors/sensors-grid.component'
 
 @Component({
-  selector: 'seed-inventory-detial-sensors',
+  selector: 'seed-inventory-detail-sensors',
   templateUrl: './sensors.component.html',
   imports: [
     AgGridAngular,

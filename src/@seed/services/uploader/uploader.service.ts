@@ -1,10 +1,11 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
-import type { CheckProgressLoopParams, SensorPreviewResponse, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
 import { ErrorService } from '../error'
+import type { CheckProgressLoopParams, SensorPreviewResponse, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {

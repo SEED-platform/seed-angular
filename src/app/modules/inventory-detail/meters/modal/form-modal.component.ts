@@ -9,14 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { GroupService, GroupSystem, InventoryGroup } from '@seed/api/groups'
 import { GroupsService } from '@seed/api/groups'
-import type { Meter, MeterConfig} from '@seed/api/meters'
+import type { Meter, MeterConfig } from '@seed/api/meters'
 import { MeterService } from '@seed/api/meters'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',

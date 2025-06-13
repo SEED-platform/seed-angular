@@ -31,7 +31,6 @@ export class MoreActionsModalComponent implements OnDestroy {
   ]
   actionsColumn2 = [
     { name: 'Export to AT', action: this.tempAction, disabled: !this.data.viewIds.length },
-    // eslint-disable-next-line @cspell/spellchecker
     { name: 'FEMP CTS Reporting Export', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Geocode', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Merge', action: this.tempAction, disabled: !this.data.viewIds.length },

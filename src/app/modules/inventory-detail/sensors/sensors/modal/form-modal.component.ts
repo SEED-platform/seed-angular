@@ -8,9 +8,9 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
+import { tap } from 'rxjs'
 import { type Sensor, SensorService } from '@seed/api/sensor'
 import { SEEDValidators } from '@seed/validators'
-import { tap } from 'rxjs'
 
 @Component({
   selector: 'seed-inventory-detail-sensors-form-modal',

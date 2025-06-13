@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Dataset } from '@seed/api/dataset'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 @Component({
   selector: 'seed-green-button-step2',
@@ -42,7 +42,7 @@ export class GreenButtonStep2Component implements OnInit {
 
   getFileData() {
     console.log('this.file', this.file)
-    // this._uploaderSerice.greenButtonMetersPreview(this.file.file_id, )
+    // this._uploaderService.greenButtonMetersPreview(this.file.file_id, )
   }
 
   setGrid() {

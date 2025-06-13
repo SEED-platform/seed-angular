@@ -3,14 +3,15 @@ import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import { Observable, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { tap } from 'rxjs'
+import { OrganizationService } from '@seed/api/organization'
+import { PageComponent } from '@seed/components'
 
 @Component({
-  selector: 'seed-inventory-detial-analyses',
+  selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
   imports: [
     AgGridAngular,

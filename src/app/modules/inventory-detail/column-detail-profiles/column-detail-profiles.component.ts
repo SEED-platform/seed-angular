@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { type Observable, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { PageComponent } from '@seed/components'
 import { ColumnProfilesComponent } from '@seed/components/column-profiles/column-profiles.component'
 import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/inventory.types'
-import { type Observable, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-inventory-detail-profiles',

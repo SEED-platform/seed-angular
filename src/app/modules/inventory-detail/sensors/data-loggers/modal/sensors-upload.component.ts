@@ -1,21 +1,24 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, OnDestroy, ViewChild } from '@angular/core'
+import type { OnDestroy } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
-import type { MatStepper } from '@angular/material/stepper';
+import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
-import { InventoryService } from '@seed/api/inventory'
-import { ProgressResponse } from '@seed/api/progress'
-import { Sensor, SensorService } from '@seed/api/sensor'
-import { ConfigService } from '@seed/services'
-import { ProgressBarObj, UploaderService } from '@seed/services/uploader'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { InventoryService } from '@seed/api/inventory'
+import type { ProgressResponse } from '@seed/api/progress'
+import type { Sensor } from '@seed/api/sensor'
+import { SensorService } from '@seed/api/sensor'
+import { ConfigService } from '@seed/services'
+import type { ProgressBarObj } from '@seed/services/uploader'
+import { UploaderService } from '@seed/services/uploader'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-detail-sensors-upload',
@@ -72,7 +75,7 @@ export class SensorsUploadModalComponent implements OnDestroy {
     { field: 'description', headerName: 'Description' },
   ]
 
-  data = inject(MAT_DIALOG_DATA) as { 
+  data = inject(MAT_DIALOG_DATA) as {
     cycleId: number;
     dataLoggerId: number;
     datasetId: string;
