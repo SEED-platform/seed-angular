@@ -85,6 +85,7 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   onCollapsibleItemCollapsed = new ReplaySubject<NavigationItem>(1)
   onCollapsibleItemExpanded = new ReplaySubject<NavigationItem>(1)
   onRefreshed = new ReplaySubject<boolean>(1)
+  showScrollbar: boolean
 
   private _animationsEnabled = false
   private _asideOverlay: HTMLElement
@@ -151,6 +152,17 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
   @HostListener('mouseleave') private _onMouseleave(): void {
     this._enableAnimations()
     this._hovered = false
+  }
+
+  @HostListener('window:resize') private _onResize() {
+    this.checkScrollNeeded()
+  }
+
+  checkScrollNeeded() {
+    const el = document.querySelector('#navigationContent')
+    if (!el) return
+
+    this.showScrollbar = el.scrollHeight > el.clientHeight
   }
 
   ngOnInit(): void {
@@ -238,6 +250,8 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
         }
       }
     })
+
+    this.checkScrollNeeded()
   }
 
   ngOnChanges(changes: SimpleChanges): void {

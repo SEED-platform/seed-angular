@@ -3,7 +3,8 @@ import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/rou
 import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
-import { CrossCyclesComponent } from '../inventory-list/cross-cycles/cross-cycles.component'
+import { AnalysesComponent, CrossCyclesComponent, DetailLayoutComponent, MetersComponent, NotesComponent, SensorsComponent, TimelineComponent, UbidsComponent } from '../inventory-detail'
+import { ColumnDetailProfilesComponent } from '../inventory-detail/column-detail-profiles/column-detail-profiles.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
 import type { InventoryType } from './inventory.types'
 
@@ -55,8 +56,19 @@ export default [
       const type = (route.params as InventoryParam).type
       return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
     },
-    component: DetailComponent,
+    component: DetailLayoutComponent,
     canActivate: [integerId],
+    children: [
+      { path: '', component: DetailComponent },
+      { path: 'analyses', title: 'Analyses', component: AnalysesComponent },
+      { path: 'cross-cycles', title: 'Cross Cycles', component: CrossCyclesComponent },
+      { path: 'column-detail-profiles', title: 'Column Detail Profiles', component: ColumnDetailProfilesComponent },
+      { path: 'meters', title: 'Meters', component: MetersComponent },
+      { path: 'notes', title: 'Notes', component: NotesComponent },
+      { path: 'sensors', title: 'Sensors', component: SensorsComponent },
+      { path: 'timeline', title: 'Timeline', component: TimelineComponent },
+      { path: 'ubids', title: 'UBIDs', component: UbidsComponent },
+    ],
   },
   {
     path: '',

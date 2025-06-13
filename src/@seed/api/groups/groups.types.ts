@@ -18,6 +18,26 @@ export type InventoryGroup = {
   inventory_type: InventoryDisplayType;
   name: string;
   organization: number;
-  systems: Record<string, unknown>[];
+  systems: GroupSystem[];
   views_list: number[];
+}
+
+export type GroupSystem = {
+  cooling_capacity: number | null;
+  count: number;
+  des_type: string;
+  group_id: number;
+  heating_capacity: number | null;
+  id: number;
+  mode: string;
+  name: string;
+  services: GroupService[];
+  type: string;
+}
+
+export type GroupService = {
+  emission_factor: number;
+  id: number;
+  name: string;
+  properties: number[];
 }

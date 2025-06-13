@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, ReplaySubject } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
 import type {
@@ -17,7 +17,6 @@ export class AuditTemplateService {
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
   private _errorService = inject(ErrorService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
   private _reportTypes = new ReplaySubject<AuditTemplateReportType[]>(1)
   private _auditTemplateConfig = new ReplaySubject<AuditTemplateConfig>(1)
   reportTypes$ = this._reportTypes.asObservable()
@@ -48,7 +47,7 @@ export class AuditTemplateService {
       { name: 'WA Commerce Clean Buildings - Form D Report' },
       { name: 'WA Commerce Grants Report' },
     ])
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
+    this._userService.currentOrganizationId$.subscribe((organizationId) => {
       this.getConfigs(organizationId).subscribe()
     })
   }

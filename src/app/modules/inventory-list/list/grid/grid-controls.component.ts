@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import type { InventoryPagination } from '../../../inventory/inventory.types'
+import type { Pagination } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-controls',
@@ -9,7 +9,7 @@ import type { InventoryPagination } from '../../../inventory/inventory.types'
   imports: [MatIconModule, MatTooltipModule],
 })
 export class InventoryGridControlsComponent {
-  @Input() pagination!: InventoryPagination
+  @Input() pagination!: Pagination
   @Input() resetGrid: () => void
   @Input() selectedViewIds: number[]
   @Output() pageChange = new EventEmitter<number>()
