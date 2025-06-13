@@ -5,7 +5,7 @@ import type { Observable } from 'rxjs'
 import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
-import type { CheckProgressLoopParams, SensorPreviewResponse, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
+import type { CheckProgressLoopParams, SensorPreviewResponse, SensorReadingPreview, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
@@ -72,7 +72,6 @@ export class UploaderService {
     formData.append('import_record', importRecordId)
 
     return this._httpClient.post<UploadResponse>(url, formData).pipe(
-      tap(() => { console.log('File uploaded successfully') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error uploading file')
       }),
@@ -85,6 +84,16 @@ export class UploaderService {
     return this._httpClient.get <SensorPreviewResponse>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching sensor preview')
+      }),
+    )
+  }
+
+  sensorReadingsPreview(orgId: number, viewId: number, dataLoggerId: number, fileId: number): Observable<SensorReadingPreview[]> {
+    const url = `/api/v3/import_files/${fileId}/sensor_readings_preview/`
+    const params = { organization_id: orgId, view_id: viewId, data_logger_id: dataLoggerId }
+    return this._httpClient.get<SensorReadingPreview[]>(url, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching sensor readings preview')
       }),
     )
   }

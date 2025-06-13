@@ -36,9 +36,20 @@ export class PageComponent implements OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   loading: boolean
+  hasLoaded: boolean
 
   constructor() {
-    this._loadingService.show$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((loading) => this.loading = loading)
+    // show loading only once
+    this._loadingService.show$.pipe(
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe((loading) => {
+      if (!this.hasLoaded && !loading) {
+        this.loading = false
+        this.hasLoaded = true
+      } else if (!this.hasLoaded) {
+        this.loading = true
+      }
+    })
   }
 
   toggleDrawer() {

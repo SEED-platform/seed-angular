@@ -5,7 +5,7 @@
       <div class="text-secondary text-xl font-medium leading-6">{{ title }}</div>
     </div>
     @if (progressMode === 'determinate') {
-      <div class="text-secondary flex flex-col justify-end">{{ progress }} / {{ total }}</div>
+      <div class="text-secondary flex flex-col justify-end">{{ progress | number: '1.0-0' }} / {{ total | number: '1.0-0' }}</div>
     }
   </div>
 

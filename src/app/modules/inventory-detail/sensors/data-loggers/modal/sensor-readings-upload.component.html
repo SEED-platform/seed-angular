@@ -7,7 +7,7 @@
     </div>
 
     <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start sm:pr-8">
-      <div class="text-xl font-medium leading-6">Upload Sensor Metadata</div>
+      <div class="text-xl font-medium leading-6">Upload Sensor Readings</div>
     </div>
   </div>
 
@@ -41,12 +41,11 @@
         {{ file?.name ?? 'No file selected' }}
       </div>
     </div>
-
     @if (uploading) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     } @else {
       <div class="mt-10 flex justify-end">
-        <button [disabled]="!completed[1] && !file" (click)="stepper.next()" mat-raised-button color="primary">Next</button>
+        <button [disabled]="!completed[1] || !file" (click)="stepper.next()" mat-raised-button color="primary">Next</button>
       </div>
     }
   </mat-step>
@@ -55,19 +54,16 @@
   <mat-step [completed]="completed[2]" label="Review">
     @if (proposedImports.length) {
       <ag-grid-angular
-        [columnDefs]="columnDefs"
+        [columnDefs]="proposedDefs"
         [rowData]="proposedImports"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
         (gridReady)="onGridReady($event)"
       ></ag-grid-angular>
     }
-
     <div class="mt-10 flex justify-between">
       <button (click)="stepper.previous()" mat-stroked-button>Previous</button>
-      @if (completed[2]) {
-        <button (click)="step2()" mat-raised-button color="primary">Next</button>
-      }
+      <button [disabled]="!completed[2]" (click)="step2()" mat-raised-button color="primary">Next</button>
     </div>
   </mat-step>
 
@@ -86,8 +82,8 @@
   <mat-step [completed]="completed[3]" label="Review">
     @if (proposedImports.length) {
       <ag-grid-angular
-        [columnDefs]="columnDefs"
-        [rowData]="importedSensors"
+        [columnDefs]="reviewDefs"
+        [rowData]="importedReadings"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
         (gridReady)="onGridReady($event)"

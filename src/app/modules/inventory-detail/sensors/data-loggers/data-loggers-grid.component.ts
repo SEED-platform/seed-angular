@@ -10,6 +10,7 @@ import { filter, type Observable, switchMap } from 'rxjs'
 import { type DataLogger, SensorService } from '@seed/api/sensor'
 import { DeleteModalComponent } from '@seed/components'
 import { FormModalComponent } from './modal/form-modal.component'
+import { SensorReadingsUploadModalComponent } from './modal/sensor-readings-upload.component'
 import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 
 @Component({
@@ -129,7 +130,16 @@ export class DataLoggersGridComponent implements OnChanges {
   }
 
   addReadings(dataLogger: DataLogger) {
-    console.log('Add Readings clicked', dataLogger)
+    this._dialog.open(SensorReadingsUploadModalComponent, {
+      width: '60rem',
+      data: {
+        dataLoggerId: dataLogger.id,
+        datasetId: this.datasetId,
+        cycleId: this.cycleId,
+        orgId: this.orgId,
+        viewId: this.viewId,
+      },
+    })
   }
 
   editDataLogger(dataLogger: DataLogger) {

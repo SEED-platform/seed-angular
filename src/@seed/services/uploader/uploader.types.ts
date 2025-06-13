@@ -38,3 +38,5 @@ export type UploadResponse = {
 export type SensorPreviewResponse = {
   proposed_imports: Sensor[];
 }
+
+export type SensorReadingPreview = { column_name: string; exists: boolean; num_readings: number }
