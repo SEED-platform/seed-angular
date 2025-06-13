@@ -2,7 +2,7 @@ import type { ProgressResponse } from '@seed/api/progress'
 import type { Sensor } from '@seed/api/sensor'
 
 export type ProgressBarObj = {
-  message: string;
+  message: unknown;
   progress: number;
   complete: boolean;
   statusMessage: string;

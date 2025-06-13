@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, finalize, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
 import type { CheckProgressLoopParams, SensorPreviewResponse, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
@@ -23,17 +23,13 @@ export class UploaderService {
     failureFn,
     progressBarObj,
   }: CheckProgressLoopParams): Observable<ProgressResponse> {
+    const isCompleted = (status: string) => ['error', 'success', 'warning'].includes(status)
+
     return interval(750).pipe(
-      // poll every 750ms
-      switchMap(() => this.checkProgress(progressKey)), // check progress each poll period
-      tap((response) => {
-        this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
-      }),
-      takeWhile((response) => response.progress < 100, true), // end stream
-      finalize(() => {
-        // TODO Since this is in finalize, on error successFn is called after failureFn
-        successFn()
-      }),
+      switchMap(() => this.checkProgress(progressKey)),
+      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj }) }),
+      takeWhile((response) => !isCompleted(response.status), true), // end stream
+      tap((response) => { if (response.status === 'success') successFn() }),
       catchError(() => {
         // TODO the interval needs to continue if the error was network-related
         failureFn()
@@ -124,5 +120,6 @@ export class UploaderService {
     }
     progressBarObj.progress = newProgressValue
     progressBarObj.statusMessage = data.status_message
+    progressBarObj.message = data.message
   }
 }
