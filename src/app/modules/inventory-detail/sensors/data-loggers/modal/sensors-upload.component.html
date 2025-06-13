@@ -20,6 +20,7 @@
 </div>
 
 <mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
+  <!-- STEP 1 -->
   <mat-step [completed]="completed[1]" label="File Select">
     <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
       <input
@@ -45,6 +46,7 @@
     </div>
   </mat-step>
 
+  <!-- STEP 2 -->
   <mat-step [completed]="completed[2]" label="Review">
     @if (proposedImports.length) {
       <ag-grid-angular
@@ -61,11 +63,13 @@
     </div>
   </mat-step>
 
+  <!-- STEP 3 -->
   <mat-step [completed]="completed[3]" label="Upload">
     @if (inProgress) {
-      <div class="m-10">
+      <seed-progress-bar title="Uploading Sensor Data..." [progress]="progressBarObj.progress" [total]="progressBarObj.total"></seed-progress-bar>
+      <!-- <div class="m-10">
         <mat-progress-bar [value]="progressBarObj.progress" mode="determinate"></mat-progress-bar>
-      </div>
+      </div> -->
     }
   </mat-step>
 </mat-stepper>

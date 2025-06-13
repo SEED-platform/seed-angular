@@ -37,20 +37,7 @@
 
   <!-- PROGRESS -->
   @if (inProgress) {
-    <div class="mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800">
-      <div class="flex justify-between">
-        <div class="mb-5 flex items-center space-x-2">
-          <mat-icon class="text-primary-600" svgIcon="fa-solid:hourglass-half"></mat-icon>
-          <div class="text-secondary text-xl font-medium leading-6">Loading Inventory...</div>
-        </div>
-        @if (progress.current && progress.current < progress.total) {
-          <div class="text-secondary flex flex-col justify-end">{{ progress.current }} / {{ progress.total }}</div>
-        }
-      </div>
-
-      <!-- <span class="mx-auto text-secondary">Loading Inventory... ( {{ progress.current }} / {{ progress.total }} )</span> -->
-      <mat-progress-bar [mode]="progressMode" [value]="progress.percent"></mat-progress-bar>
-    </div>
+    <seed-progress-bar [progress]="progress.current" [total]="progress.total" title="Loading Inventory..." [outline]="true"></seed-progress-bar>
   } @else if (data.length === 0) {
     <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
       <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>

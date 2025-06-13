@@ -1,0 +1,14 @@
+<div [ngClass]="outline ? 'mx-auto mt-20 w-1/2 rounded-xl border bg-white p-10 dark:bg-gray-800' : 'm-10'">
+
+  <div class="flex justify-between">
+    <div class="mb-5 flex items-center space-x-2">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:hourglass-half"></mat-icon>
+      <div class="text-secondary text-xl font-medium leading-6">{{ title }}</div>
+    </div>
+    @if (progressMode === 'determinate') { <div class="text-secondary flex flex-col justify-end">
+      {{ progress }} / {{ total }}
+  </div>
+  }
+</div>
+
+<mat-progress-bar [mode]="progressMode" [value]="percent"></mat-progress-bar>

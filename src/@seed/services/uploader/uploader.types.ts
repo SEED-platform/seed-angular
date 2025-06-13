@@ -10,6 +10,7 @@ export type ProgressBarObj = {
   progressLastChecked: number | null;
   totalRecords?: number | null;
   completedRecords?: number | null;
+  total?: number;
 }
 
 export type CheckProgressLoopParams = {

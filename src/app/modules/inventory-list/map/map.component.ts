@@ -36,7 +36,7 @@ import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { PageComponent } from '@seed/components'
+import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { MapService } from '@seed/services/map'
 import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
 import { LabelsComponent } from './labels.component'
@@ -54,6 +54,7 @@ type Layer = VectorLayer | TileLayer
     MatSelectModule,
     MatTooltipModule,
     LabelsComponent,
+    ProgressBarComponent,
   ],
 })
 export class MapComponent implements OnDestroy, OnInit {

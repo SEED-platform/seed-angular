@@ -15,6 +15,7 @@ import { InventoryService } from '@seed/api/inventory'
 import type { ProgressResponse } from '@seed/api/progress'
 import type { Sensor } from '@seed/api/sensor'
 import { SensorService } from '@seed/api/sensor'
+import { ProgressBarComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
@@ -33,6 +34,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     MatIconModule,
     MatStepperModule,
     MatProgressBarModule,
+    ProgressBarComponent,
   ],
 })
 export class SensorsUploadModalComponent implements OnDestroy {
@@ -60,6 +62,7 @@ export class SensorsUploadModalComponent implements OnDestroy {
   progressBarObj: ProgressBarObj = {
     message: '',
     progress: 0,
+    total: 100,
     complete: false,
     statusMessage: '',
     progressLastUpdated: null,
