@@ -1,7 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, map, type Observable, Subject, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, type Observable, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { OrganizationService } from '../organization'
@@ -14,20 +14,13 @@ export class GroupsService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   groups$ = this._groups.asObservable()
-  orgId: number
-
-  constructor() {
-    this._organizationService.currentOrganization$
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(({ org_id }) => this.orgId = org_id)
-  }
 
   list(orgId: number) {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
     this._httpClient.get<InventoryGroupsResponse>(url).pipe(
+      take(1),
       map(({ data }) => {
         this._groups.next(data)
         return data
@@ -42,6 +35,7 @@ export class GroupsService {
     const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=properties`
     const body = { selected: inventoryIds }
     this._httpClient.post<InventoryGroupsResponse>(url, body).pipe(
+      take(1),
       map(({ data }) => {
         this._groups.next(data)
         return data

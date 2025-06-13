@@ -1,7 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, type Observable, Subject, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, type Observable, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
@@ -15,20 +15,13 @@ export class NoteService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   notes$ = this._notes.asObservable()
-  orgId: number
-
-  constructor() {
-    this._organizationService.currentOrganization$
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(({ org_id }) => this.orgId = org_id)
-  }
 
   list(orgId: number, viewId: number, type: InventoryType) {
     const url = `/api/v3/${type}/${viewId}/notes/?organization_id=${orgId}`
     this._httpClient.get<Note[]>(url).pipe(
+      take(1),
       tap((notes) => { this._notes.next(notes) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching notes')

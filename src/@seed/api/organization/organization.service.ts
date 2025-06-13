@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
@@ -47,7 +47,6 @@ export class OrganizationService {
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
   private _inventoryService = inject(InventoryService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
@@ -59,7 +58,6 @@ export class OrganizationService {
     // Fetch current org data whenever user org id changes
     this._userService.currentOrganizationId$
       .pipe(
-        takeUntil(this._unsubscribeAll$),
         switchMap((organizationId) => {
           return combineLatest([
             this.getById(organizationId),

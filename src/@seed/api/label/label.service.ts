@@ -2,7 +2,7 @@ import type { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, ReplaySubject, switchMap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -16,16 +16,15 @@ export class LabelService {
   private _userService = inject(UserService)
   private _labels = new ReplaySubject<Label[]>(1)
   private _errorService = inject(ErrorService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
   private _snackBar = inject(SnackBarService)
 
   labels$ = this._labels.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
-      this.getByOrgId(organizationId).subscribe()
-    })
+    this._userService.currentOrganizationId$.pipe(
+      switchMap((organizationId) => this.getByOrgId(organizationId)),
+    ).subscribe()
   }
 
   getByOrgId(organizationId: number): Observable<Label[]> {

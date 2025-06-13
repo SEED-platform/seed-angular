@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, ReplaySubject } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
@@ -26,14 +26,13 @@ export class SalesforceService {
 
   private _config = new ReplaySubject<SalesforceConfig>(1)
   private _mappings = new ReplaySubject<SalesforceMapping[]>(1)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   config$ = this._config.asObservable()
   mappings$ = this._mappings.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
+    this._userService.currentOrganizationId$.subscribe((organizationId) => {
       this.getConfig(organizationId).subscribe()
       this.getMappings(organizationId).subscribe()
     })

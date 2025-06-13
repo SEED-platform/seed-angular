@@ -1,7 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, Subject, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { OrganizationService } from '../organization'
@@ -16,22 +16,15 @@ export class SensorService {
   private _usage = new BehaviorSubject<SensorUsage>(null)
   private _sensors = new BehaviorSubject<Sensor[]>([])
   private _snackBar = inject(SnackBarService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   dataLoggers$ = this._dataLoggers.asObservable()
   usage$ = this._usage.asObservable()
   sensors$ = this._sensors.asObservable()
-  orgId: number
-
-  constructor() {
-    this._organizationService.currentOrganization$
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe(({ org_id }) => this.orgId = org_id)
-  }
 
   listDataLoggers(orgId: number, viewId: number) {
     const url = `/api/v3/data_loggers/?organization_id=${orgId}&property_view_id=${viewId}`
     this._httpClient.get<DataLogger[]>(url).pipe(
+      take(1),
       tap((dataLoggers) => { this._dataLoggers.next(dataLoggers) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching data loggers')
@@ -42,6 +35,7 @@ export class SensorService {
   listSensors(orgId: number, viewId: number) {
     const url = `/api/v3/properties/${viewId}/sensors/?organization_id=${orgId}`
     this._httpClient.get<Sensor[]>(url).pipe(
+      take(1),
       tap((sensors) => { this._sensors.next(sensors) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching sensors')
@@ -70,6 +64,7 @@ export class SensorService {
     const body = { interval, showOnlyOccupiedReadings, excluded_sensor_ids }
 
     this._httpClient.post<SensorUsage>(url, body).pipe(
+      take(1),
       tap((usage) => { this._usage.next(usage) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching sensor usage')
