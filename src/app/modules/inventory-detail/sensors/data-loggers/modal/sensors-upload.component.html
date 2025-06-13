@@ -63,21 +63,25 @@
   <!-- STEP 3 -->
   <mat-step [completed]="completed[3]" label="Upload">
     @if (inProgress) {
-      <seed-progress-bar title="Uploading Sensor Data..." [progress]="progressBarObj.progress" [total]="progressBarObj.total"></seed-progress-bar>
+      <seed-progress-bar
+        [progress]="progressBarObj.progress"
+        [total]="progressBarObj.total"
+        title="Uploading Sensor Data..."
+      ></seed-progress-bar>
     }
   </mat-step>
 
   <!-- STEP 4 -->
   <mat-step [completed]="completed[3]" label="Review">
-
     @if (proposedImports.length) {
-    <ag-grid-angular
-      [columnDefs]="columnDefs"
-      [rowData]="importedSensors"
-      [theme]="gridTheme$ | async"
-      [style.height.px]="gridHeight"
-      (gridReady)="onGridReady($event)">
-    </ag-grid-angular>
+      <ag-grid-angular
+        [columnDefs]="columnDefs"
+        [rowData]="importedSensors"
+        [theme]="gridTheme$ | async"
+        [style.height.px]="gridHeight"
+        (gridReady)="onGridReady($event)"
+      >
+      </ag-grid-angular>
     }
     <div class="mt-10 flex justify-end">
       <button (click)="close()" mat-raised-button color="primary">Finish</button>

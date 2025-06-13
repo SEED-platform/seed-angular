@@ -90,7 +90,7 @@
   <!-- Loading or content -->
   <div class="relative">
     @if (loading) {
-      <div class="absolute h-[100vh] w-[100vw] animate-pulse bg-gray-300 dark:bg-gray-700"></div> 
+      <div class="absolute h-[100vh] w-[100vw] animate-pulse bg-gray-300 dark:bg-gray-700"></div>
     }
     <div [class.opacity-0]="loading" [class.pointer-events-none]="loading">
       <ng-content></ng-content>
