@@ -11,7 +11,6 @@ import { MatStepperModule } from '@angular/material/stepper'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
 import type { ProgressResponse } from '@seed/api/progress'
 import type { Sensor } from '@seed/api/sensor'
 import { SensorService } from '@seed/api/sensor'
@@ -41,7 +40,6 @@ export class SensorsUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
   private _dialogRef = inject(MatDialogRef<SensorsUploadModalComponent>)
   private _configService = inject(ConfigService)
-  private _inventoryService = inject(InventoryService)
   private _uploaderService = inject(UploaderService)
   private _sensorService = inject(SensorService)
   private _snackBar = inject(SnackBarService)
@@ -53,14 +51,15 @@ export class SensorsUploadModalComponent implements OnDestroy {
   ]
   file?: File
   fileId: number
-  completed = { 1: false, 2: false }
+  completed = { 1: false, 2: false, 3: false }
   gridApi: GridApi
   proposedImports: Sensor[] = []
+  importedSensors: Sensor[] = []
   gridHeight = 0
   gridTheme$ = this._configService.gridTheme$
   inProgress = false
   progressBarObj: ProgressBarObj = {
-    message: '',
+    message: [],
     progress: 0,
     total: 100,
     complete: false,
@@ -121,9 +120,13 @@ export class SensorsUploadModalComponent implements OnDestroy {
     }
 
     const successFn = () => {
+      this.completed[3] = true
       this._sensorService.listSensors(orgId, viewId)
       this._snackBar.success('Sensors uploaded successfully')
-      this.close(true)
+      this.importedSensors = this.progressBarObj.message as Sensor[]
+      setTimeout(() => {
+        this.stepper.next()
+      })
     }
 
     this._uploaderService.saveRawData(orgId, cycleId, this.fileId).pipe(

@@ -22,7 +22,7 @@
 <mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
   <!-- STEP 1 -->
   <mat-step [completed]="completed[1]" label="File Select">
-    <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
+    <div class="my-10 flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
       <input
         class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
         id="file-input"
@@ -40,9 +40,6 @@
       <div class="text-secondary max-w-[21rem] cursor-default items-center truncate pl-3 pr-2">
         {{ file?.name ?? 'No file selected' }}
       </div>
-    </div>
-    <div class="mt-10 flex justify-end">
-      <button [disabled]="!completed[1]" (click)="stepper.next()" mat-raised-button color="primary">Next</button>
     </div>
   </mat-step>
 
@@ -67,9 +64,23 @@
   <mat-step [completed]="completed[3]" label="Upload">
     @if (inProgress) {
       <seed-progress-bar title="Uploading Sensor Data..." [progress]="progressBarObj.progress" [total]="progressBarObj.total"></seed-progress-bar>
-      <!-- <div class="m-10">
-        <mat-progress-bar [value]="progressBarObj.progress" mode="determinate"></mat-progress-bar>
-      </div> -->
     }
+  </mat-step>
+
+  <!-- STEP 4 -->
+  <mat-step [completed]="completed[3]" label="Review">
+
+    @if (proposedImports.length) {
+    <ag-grid-angular
+      [columnDefs]="columnDefs"
+      [rowData]="importedSensors"
+      [theme]="gridTheme$ | async"
+      [style.height.px]="gridHeight"
+      (gridReady)="onGridReady($event)">
+    </ag-grid-angular>
+    }
+    <div class="mt-10 flex justify-end">
+      <button (click)="close()" mat-raised-button color="primary">Finish</button>
+    </div>
   </mat-step>
 </mat-stepper>
