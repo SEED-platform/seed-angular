@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, of, ReplaySubject } from 'rxjs'
 import { UserService } from '../user'
 import type { CountDatasetsResponse, Dataset, ListDatasetsResponse } from './dataset.types'
 
@@ -11,13 +11,12 @@ export class DatasetService {
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
 
-  private readonly _unsubscribeAll$ = new Subject<void>()
   private _datasetCount = new ReplaySubject<number>(1)
   datasetCount$ = this._datasetCount.asObservable()
 
   constructor() {
     // Refresh dataset count only when the organization ID changes
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
+    this._userService.currentOrganizationId$.subscribe((organizationId) => {
       this.countDatasets(organizationId).subscribe()
     })
   }

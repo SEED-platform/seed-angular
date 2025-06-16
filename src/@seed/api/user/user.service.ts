@@ -1,9 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
-import type { OnDestroy } from '@angular/core'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, map, ReplaySubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { catchError, distinctUntilChanged, map, ReplaySubject, switchMap, take, tap } from 'rxjs'
 import type {
   Action,
   CreateUserRequest,
@@ -20,13 +19,12 @@ import { ErrorService } from '@seed/services'
 import { type OrganizationUserSettings } from '../organization'
 
 @Injectable({ providedIn: 'root' })
-export class UserService implements OnDestroy {
+export class UserService {
   private _httpClient = inject(HttpClient)
   private _currentOrganizationId = new ReplaySubject<number>(1)
   private _currentUser = new ReplaySubject<CurrentUser>(1)
   private _auth = new ReplaySubject<UserAuth>(1)
   private _errorService = inject(ErrorService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   currentOrganizationId$ = this._currentOrganizationId.asObservable().pipe(distinctUntilChanged())
   currentUser$ = this._currentUser.asObservable()
@@ -34,7 +32,6 @@ export class UserService implements OnDestroy {
 
   constructor() {
     this.currentUser$.pipe(
-      takeUntil(this._unsubscribeAll$),
       switchMap(({ id, org_id }) => {
         const actions: Action[] = ['can_invite_member', 'can_remove_member', 'requires_owner', 'requires_member', 'requires_superuser']
         return this.getUserAuthorization(org_id, id, actions)
@@ -193,10 +190,5 @@ export class UserService implements OnDestroy {
     userSettings.sorts ??= {}
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
-  }
-
-  ngOnDestroy() {
-    this._unsubscribeAll$.next()
-    this._unsubscribeAll$.complete()
   }
 }

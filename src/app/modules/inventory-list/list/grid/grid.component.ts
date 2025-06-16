@@ -3,11 +3,11 @@ import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryPagination, InventoryType } from '../../../inventory/inventory.types'
+import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
 // import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
@@ -28,7 +28,7 @@ export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
   @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
-  @Input() pagination!: InventoryPagination
+  @Input() pagination!: Pagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
@@ -77,6 +77,25 @@ export class InventoryGridComponent implements OnChanges {
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+  }
+
+  onCellClicked(event: CellClickedEvent) {
+    const clickableField = new Set(['property_view_id', 'taxlot_view_id', 'notes_count', 'meters_exist_indicator'])
+    if (!clickableField.has(event.colDef.field)) return
+
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
+    if (!action) return
+    const { id } = event.data as { id: string; file: string; filename: string }
+
+    const urlMap = {
+      detail: [`/${this.inventoryType}`, id],
+      notes: [`/${this.inventoryType}`, id, 'notes'],
+      meters: [`/${this.inventoryType}`, id, 'meters'],
+    }
+
+    return void this._router.navigate(urlMap[action])
   }
 
   onSelectionChanged() { this.selectionChanged.emit() }
@@ -89,31 +108,25 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   getShortcutColumns(): ColDef[] {
-    const tempAction = (message: string) => {
-      console.log(message)
-    }
-
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 85, 'ag-icon ag-icon-tick'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'ag-icon ag-icon-tick cursor-pointer', () => { tempAction('meters') }),
-      this.buildShortcutColumn('notes_count', 'Notes', 80, 'ag-icon ag-icon-tick cursor-pointer', () => { tempAction('notes') }),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'ag-icon ag-icon-tick cursor-pointer'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', 85, 'share'),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'bolt', 'meters'),
+      this.buildShortcutColumn('notes_count', 'Notes', 80, 'mode_comment', 'notes'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'G'),
       this.buildLabelsCell(),
     ]
     return shortcutColumns
   }
 
-  buildShortcutColumn(field: string, headerName: string, width: number, className: string, action: () => void = null): ColDef {
+  buildShortcutColumn(field: string, headerName: string, width: number, icon: string, action: string = null): ColDef {
     return {
       field,
       headerName,
       width,
       filter: false,
       sortable: false,
-      cellRenderer: ({ value }) => {
-        return value ? this.buildCellRenderer(className, action) : ''
-      },
+      cellRenderer: ({ value }) => this.actionRenderer(value, icon, action),
     }
   }
 
@@ -125,31 +138,23 @@ export class InventoryGridComponent implements OnChanges {
       filter: false,
       sortable: false,
       width: 60,
-      cellRenderer: ({ value }) => {
-        const eGui = document.createElement('a')
-        eGui.textContent = 'i'
-        eGui.className = 'cursor-pointer truncate border border-gray-400 dark:border-white'
-        eGui.style.cssText = 'border-radius: 20px; padding: 2px 8px 2px 9px; font-weight: normal;'
-
-        eGui.addEventListener('click', (event) => {
-          event.preventDefault()
-          void this._router.navigate([`/${this.inventoryType}`, value])
-        })
-
-        return eGui
-      },
+      cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
     }
   }
 
-  buildCellRenderer(className: string, action: () => void = null) {
-    const eGui = document.createElement('div')
-    eGui.style.cssText = 'height: 100%; display: flex; align-items: center;'
-    const icon = document.createElement('span')
-    icon.className = className
-    icon.style.margin = 'auto'
-    if (action) icon.addEventListener('click', action)
-    eGui.appendChild(icon)
-    return eGui
+  actionRenderer = (value, icon: string, action: string) => {
+    if (!value) return ''
+    // Allow a single letter to be passed as an indicator
+    if (icon.length === 1) {
+      return `<span class="font-bold text-lg">${icon}</span>`
+    }
+
+    const cursorClass = action ? 'cursor-pointer' : ''
+    return `
+      <div class="flex gap-2 mt-2 align-center">
+        <span class="material-icons-outlined ${cursorClass}" data-action="${action}">${icon}</span>
+      </div>
+    `
   }
 
   buildLabelsCell() {

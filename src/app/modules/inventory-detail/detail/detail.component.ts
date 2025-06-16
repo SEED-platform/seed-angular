@@ -72,11 +72,12 @@ export class DetailComponent implements OnDestroy, OnInit {
   view: ViewResponse
   viewId: number
   views: GenericView[]
+  viewDisplayField$: Observable<string>
 
-  pageTitle = this.type === 'taxlots' ? 'Tax Lot Detail' : 'Property Detail'
+  displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
+  pageTitle = `${this.displayName} Detail`
 
   ngOnInit(): void {
-    console.log('init')
     this.initDetail()
   }
 
@@ -116,6 +117,8 @@ export class DetailComponent implements OnDestroy, OnInit {
   }
 
   loadView(): Observable<Label[]> {
+    this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, this.type)
+
     return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
       switchMap((view) => {
         this.view = view

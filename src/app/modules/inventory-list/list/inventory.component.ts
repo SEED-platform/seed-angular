@@ -25,7 +25,7 @@ import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryPagination, InventoryType, Profile } from '../../inventory/inventory.types'
+import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryType, Pagination, Profile } from '../../inventory/inventory.types'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 
@@ -76,7 +76,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   orgUserId: number
   page = 1
   pageTitle = this.type === 'taxlots' ? 'Tax Lots' : 'Properties'
-  pagination: InventoryPagination
+  pagination: Pagination
   profile: Profile
   profileId: number
   profileId$ = new BehaviorSubject<number>(null)
@@ -142,10 +142,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   */
   getDependencies(org_id: number) {
     this.orgId = org_id
+    this._cycleService.get(this.orgId)
 
     return combineLatest([
       this._userService.currentUser$,
-      this._cycleService.get(this.orgId),
+      this._cycleService.cycles$,
       this._labelService.labels$,
       this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
     ])

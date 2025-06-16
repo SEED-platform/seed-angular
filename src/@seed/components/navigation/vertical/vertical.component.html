@@ -7,8 +7,9 @@
   <!-- Content -->
   <div
     class="seed-vertical-navigation-content"
+    id="navigationContent"
     #navigationContent
-    [seedScrollbar]="true"
+    [seedScrollbar]="showScrollbar"
     [seedScrollbarOptions]="{
       wheelPropagation: inner(),
       suppressScrollX: true,

@@ -8,17 +8,18 @@ import type { CurrentUser } from '@seed/api/user'
 export type InventoryDisplayType = 'Property' | 'Tax Lot'
 export type InventoryStateType = 'PropertyState' | 'TaxLotState'
 export type InventoryType = 'properties' | 'taxlots'
+export type InventoryTypeSingular = 'property' | 'taxlot'
 export type InventoryTypeGoal = 'properties' | 'taxlots' | 'goal'
 
 export type FilterResponse = {
   cycle_id?: number;
-  pagination?: InventoryPagination;
+  pagination?: Pagination;
   results: State[] | number[];
   // results: Inventory[] | number[];
   column_defs?: ColDef[];
 }
 
-export type InventoryPagination = {
+export type Pagination = {
   end: number;
   has_next: boolean;
   has_previous: boolean;
@@ -83,7 +84,7 @@ export type DeleteParams = {
 }
 
 export type AgFilterResponse = {
-  pagination: InventoryPagination;
+  pagination: Pagination;
   results: State[];
   // results: Inventory[];
   column_defs: ColDef[];

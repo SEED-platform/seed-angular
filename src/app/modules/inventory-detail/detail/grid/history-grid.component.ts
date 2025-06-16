@@ -10,7 +10,7 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { finalize, tap } from 'rxjs'
+import { finalize, Subject, tap } from 'rxjs'
 import type { Column, GenericColumn } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
 import type { OrganizationUserSettings } from '@seed/api/organization'
@@ -54,6 +54,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   private _inventoryService = inject(InventoryService)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[]
   derivedColumnNames: Set<string>
   extraDataColumnNames: Set<string>
@@ -219,6 +220,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('destroy history')
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

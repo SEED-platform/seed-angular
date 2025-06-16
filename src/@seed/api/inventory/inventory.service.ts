@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, Subject, takeUntil, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CrossCyclesResponse, DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, InventoryTypeGoal, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
@@ -16,14 +16,15 @@ export class InventoryService {
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
   private _columnListProfiles = new BehaviorSubject<unknown>([])
-  private readonly _unsubscribeAll$ = new Subject<void>()
+  private _view = new BehaviorSubject<ViewResponse>(null)
   orgId: number
 
-  properties$ = this._properties.asObservable()
   columnListProfiles$ = this._columnListProfiles.asObservable()
+  properties$ = this._properties.asObservable()
+  view$ = this._view.asObservable()
 
   constructor() {
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((id) => this.orgId = id)
+    this._userService.currentOrganizationId$.subscribe((id) => this.orgId = id)
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
@@ -147,6 +148,7 @@ export class InventoryService {
     const url = `/api/v3/properties/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
+      tap((view) => { this._view.next(view) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
@@ -157,6 +159,7 @@ export class InventoryService {
     const url = `/api/v3/taxlots/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
+      tap((view) => { this._view.next(view) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
