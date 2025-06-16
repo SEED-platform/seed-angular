@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef } from 'ag-grid-community'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import type { Sensor } from '@seed/api/sensor'
@@ -54,7 +54,6 @@ export class SensorsUploadModalComponent implements OnDestroy {
   fileId: number
   validFile = false
   completed = { 1: false, 2: false, 3: false }
-  gridApi: GridApi
   proposedImports: Sensor[] = []
   importedSensors: Sensor[] = []
   gridHeight = 0
@@ -122,7 +121,7 @@ export class SensorsUploadModalComponent implements OnDestroy {
     }
   }
 
-  step2() {
+  step3() {
     this.stepper.next()
     this.inProgress = true
     const { orgId, viewId, cycleId } = this.data
@@ -157,16 +156,8 @@ export class SensorsUploadModalComponent implements OnDestroy {
     ).subscribe()
   }
 
-  onGridReady(agGrid: GridReadyEvent) {
-    this.gridApi = agGrid.api
-  }
-
   dismiss() {
     this._dialogRef.close()
-  }
-
-  close(success = false) {
-    this._dialogRef.close(success)
   }
 
   ngOnDestroy(): void {

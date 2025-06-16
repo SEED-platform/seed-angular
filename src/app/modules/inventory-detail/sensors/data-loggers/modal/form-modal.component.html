@@ -41,7 +41,7 @@
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button (click)="onSubmit()" mat-raised-button color="primary">Submit</button>
+    <button (click)="onSubmit()" [disabled]="form.invalid" mat-raised-button color="primary">Submit</button>
   </mat-dialog-actions>
   <mat-dialog-actions>
     <button (click)="close()" mat-stroked-button>Dismiss</button>

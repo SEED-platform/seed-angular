@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
@@ -37,12 +37,12 @@ export class FormModalComponent implements OnInit {
     existingDisplayNames: string[];
   }
   form = new FormGroup({
-    display_name: new FormControl<string>('', SEEDValidators.uniqueValue(this.data.existingDisplayNames)),
-    identifier: new FormControl<string>(''),
-    location_description: new FormControl<string>(''),
-    manufacturer_name: new FormControl<string>(''),
-    model_name: new FormControl<string>(''),
-    serial_number: new FormControl<string>(''),
+    display_name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingDisplayNames)]),
+    identifier: new FormControl<string>('', Validators.required),
+    location_description: new FormControl<string>('', Validators.required),
+    manufacturer_name: new FormControl<string>('', Validators.required),
+    model_name: new FormControl<string>('', Validators.required),
+    serial_number: new FormControl<string>('', Validators.required),
   })
   create = !this.data.dataLogger
 

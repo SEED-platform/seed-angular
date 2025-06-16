@@ -279,9 +279,11 @@ export class MetersComponent implements OnDestroy, OnInit {
       data: {
         orgId: this.orgId,
         viewId: this.viewId,
-        fillerCycle: this.cycles[0].id,
+        cycleId: this.cycles[0].id,
         systemId: null,
-        datasets: this.datasets,
+        datasetId: this.datasets[0].id ?? null,
+        interval: this.interval,
+        excludedIds: this.excludedIds,
       },
     })
   }

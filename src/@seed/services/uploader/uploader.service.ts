@@ -5,7 +5,7 @@ import type { Observable } from 'rxjs'
 import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
-import type { CheckProgressLoopParams, SensorPreviewResponse, SensorReadingPreview, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
+import type { CheckProgressLoopParams, GreenButtonMeterPreview, SensorPreviewResponse, SensorReadingPreview, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
@@ -51,13 +51,16 @@ export class UploaderService {
     )
   }
 
-  greenButtonMetersPreview(fileId: number, orgId: number, viewId: number, systemId: number): Observable<unknown> {
+  greenButtonMetersPreview(orgId: number, viewId: number, systemId: number, fileId: number): Observable<GreenButtonMeterPreview> {
     const url = `/api/v3/import_files/${fileId}/greenbutton_meters_preview/`
-    const params = { organization_id: orgId, view_id: viewId, system_id: systemId }
-    return this._httpClient.get(url, { params }).pipe(
-      tap((results) => {
-        console.log('gb', results)
-      }),
+    const params: Record<string, number> = { organization_id: orgId }
+    if (viewId) {
+      params.view_id = viewId
+    } else if (systemId) {
+      params.system_id = systemId
+    }
+
+    return this._httpClient.get<GreenButtonMeterPreview>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching greenButton preview')
       }),

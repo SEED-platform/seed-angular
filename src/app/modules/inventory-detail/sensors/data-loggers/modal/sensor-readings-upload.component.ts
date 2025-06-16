@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef } from 'ag-grid-community'
 import { catchError, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { SensorService } from '@seed/api/sensor'
@@ -51,7 +51,6 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
   file?: File
   fileId: number
   completed = { 1: false, 2: false, 3: false }
-  gridApi: GridApi
   proposedImports: SensorReadingPreview[] = []
   importedReadings: SensorReadingPreview[] = []
   gridHeight = 0
@@ -68,16 +67,18 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
     progressLastChecked: null,
   }
 
-  proposedDefs: ColDef[] = [
-    { field: 'column_name', headerName: 'Column Name' },
-    { field: 'num_readings', headerName: 'Number of Readings' },
-    { field: 'exists', headerName: 'Exists' },
-  ]
-  reviewDefs: ColDef[] = [
-    { field: 'column_name', headerName: 'Column Name' },
-    { field: 'num_readings', headerName: 'Number of Readings' },
-    { field: 'errors', headerName: 'Errors' },
-  ]
+  columnDefs: Record<string, ColDef[]> = {
+    step2: [
+      { field: 'column_name', headerName: 'Column Name' },
+      { field: 'num_readings', headerName: 'Number of Readings' },
+      { field: 'exists', headerName: 'Exists' },
+    ],
+    step4: [
+      { field: 'column_name', headerName: 'Column Name' },
+      { field: 'num_readings', headerName: 'Number of Readings' },
+      { field: 'errors', headerName: 'Errors' },
+    ],
+  }
 
   data = inject(MAT_DIALOG_DATA) as {
     cycleId: number;
@@ -153,17 +154,8 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
     ).subscribe()
   }
 
-  onGridReady(agGrid: GridReadyEvent) {
-    this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
-  }
-
   dismiss() {
     this._dialogRef.close()
-  }
-
-  close(success = false) {
-    this._dialogRef.close(success)
   }
 
   ngOnDestroy(): void {

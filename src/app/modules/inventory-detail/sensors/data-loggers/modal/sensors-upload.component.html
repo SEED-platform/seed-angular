@@ -63,14 +63,13 @@
         [rowData]="proposedImports"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
-        (gridReady)="onGridReady($event)"
       ></ag-grid-angular>
     }
 
     <div class="mt-10 flex justify-between">
       <button (click)="stepper.previous()" mat-stroked-button>Previous</button>
       @if (completed[2]) {
-        <button (click)="step2()" mat-raised-button color="primary">Next</button>
+        <button (click)="step3()" mat-raised-button color="primary">Next</button>
       }
     </div>
   </mat-step>
@@ -94,12 +93,11 @@
         [rowData]="importedSensors"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
-        (gridReady)="onGridReady($event)"
       >
       </ag-grid-angular>
     }
     <div class="mt-10 flex justify-end">
-      <button (click)="close()" mat-raised-button color="primary">Finish</button>
+      <button (click)="dismiss()" mat-raised-button color="primary">Finish</button>
     </div>
   </mat-step>
 </mat-stepper>

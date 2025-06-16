@@ -57,11 +57,10 @@
   <mat-step [completed]="completed[2]" label="Review">
     @if (proposedImports.length) {
       <ag-grid-angular
-        [columnDefs]="proposedDefs"
+        [columnDefs]="columnDefs.step2"
         [rowData]="proposedImports"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
-        (gridReady)="onGridReady($event)"
       ></ag-grid-angular>
     }
     <div class="mt-10 flex justify-between">
@@ -85,16 +84,15 @@
   <mat-step [completed]="completed[3]" label="Review">
     @if (proposedImports.length) {
       <ag-grid-angular
-        [columnDefs]="reviewDefs"
+        [columnDefs]="columnDefs.step4"
         [rowData]="importedReadings"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
-        (gridReady)="onGridReady($event)"
       >
       </ag-grid-angular>
     }
     <div class="mt-10 flex justify-end">
-      <button (click)="close()" mat-raised-button color="primary">Finish</button>
+      <button (click)="dismiss()" mat-raised-button color="primary">Finish</button>
     </div>
   </mat-step>
 </mat-stepper>

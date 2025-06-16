@@ -40,3 +40,22 @@ export type SensorPreviewResponse = {
 }
 
 export type SensorReadingPreview = { column_name: string; exists: boolean; num_readings: number }
+
+export type GreenButtonMeterPreview = {
+  proposed_imports: ProposedMeterImport[];
+  validated_type_units: ValidatedTypeUnit[];
+}
+
+export type ProposedMeterImport = {
+  incoming: number;
+  property_id: number;
+  source_id: string;
+  systemId: number;
+  type: string;
+  successfully_imported?: number;
+}
+
+export type ValidatedTypeUnit = {
+  parsed_type: string;
+  parsed_unit: string;
+}
