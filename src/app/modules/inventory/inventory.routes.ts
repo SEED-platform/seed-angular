@@ -1,6 +1,7 @@
 import { inject } from '@angular/core'
 import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/router'
 import { Router } from '@angular/router'
+import { InventoryResolver } from '@seed/resolvers/inventory.resolver'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
 import { AnalysesComponent, CrossCyclesComponent, DetailLayoutComponent, MetersComponent, NotesComponent, SensorsComponent, TimelineComponent, UbidsComponent } from '../inventory-detail'
@@ -57,6 +58,7 @@ export default [
       return type === 'properties' ? 'Property Detail' : 'Tax Lot Detail'
     },
     component: DetailLayoutComponent,
+    resolve: { view: InventoryResolver },
     canActivate: [integerId],
     children: [
       { path: '', component: DetailComponent },

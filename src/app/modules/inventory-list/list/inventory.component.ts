@@ -127,6 +127,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ).subscribe()
 
     this.refreshInventory$.pipe(
+      takeUntil(this._unsubscribeAll$),
       switchMap(() => this.refreshInventory()),
     ).subscribe()
   }

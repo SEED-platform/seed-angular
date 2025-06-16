@@ -3,7 +3,8 @@ import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
-import { Subject, takeUntil } from 'rxjs'
+import { Router } from '@angular/router'
+import { Subject, take, takeUntil } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization/organization.service'
 import type { BriefOrganization } from '@seed/api/organization/organization.types'
 import type { CurrentUser } from '@seed/api/user'
@@ -19,6 +20,7 @@ import { UserService } from '@seed/api/user'
 export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
+  private _router = inject(Router)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   currentUser: CurrentUser
@@ -34,7 +36,7 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   }
 
   selectOrganization(organizationId: number) {
-    this._userService.setDefaultOrganization(organizationId).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
+    this._userService.setDefaultOrganization(organizationId).pipe(take(1)).subscribe(() => void this._router.navigate(['dashboard']))
   }
 
   ngOnDestroy(): void {
