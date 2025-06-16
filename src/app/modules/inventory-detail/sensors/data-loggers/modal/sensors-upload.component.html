@@ -23,9 +23,8 @@
   <!-- STEP 1 -->
   <mat-step [completed]="completed[1]" label="File Select">
     <div class="m-10">
-      <div class="text-secondary ml-4 mb-4">Accepted File Types: .csv, .xls, .xlsx</div>
+      <div class="text-secondary mb-4 ml-4">Accepted File Types: .csv, .xls, .xlsx</div>
       <div class="flex w-full items-center rounded-full border border-gray-300 dark:border-gray-600">
-  
         <input
           class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
           id="file-input"
@@ -35,7 +34,7 @@
           (change)="step1(fileInput.files)"
           type="file"
         />
-  
+
         <button class="flex items-center gap-x-2" (click)="fileInput.click()" mat-flat-button color="primary">
           <mat-icon class="text-white icon-size-5" svgIcon="fa-solid:file"></mat-icon>
           <span>Choose file</span>
@@ -88,12 +87,7 @@
   <!-- STEP 4 -->
   <mat-step [completed]="completed[3]" label="Review">
     @if (proposedImports.length) {
-      <ag-grid-angular
-        [columnDefs]="columnDefs"
-        [rowData]="importedSensors"
-        [theme]="gridTheme$ | async"
-        [style.height.px]="gridHeight"
-      >
+      <ag-grid-angular [columnDefs]="columnDefs" [rowData]="importedSensors" [theme]="gridTheme$ | async" [style.height.px]="gridHeight">
       </ag-grid-angular>
     }
     <div class="mt-10 flex justify-end">
