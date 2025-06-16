@@ -86,7 +86,6 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
     orgId: number;
     viewId: number;
   }
-  dragging = false
 
   // select file
   step1(fileList: FileList) {
@@ -125,7 +124,7 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
     const { orgId, viewId, cycleId } = this.data
 
     const failureFn = () => {
-      this._snackBar.alert('Failed to delete column')
+      this._snackBar.alert('File Upload Failed')
     }
 
     const successFn = () => {

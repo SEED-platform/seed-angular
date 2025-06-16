@@ -45,9 +45,10 @@ export class SensorsUploadModalComponent implements OnDestroy {
   private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly allowedTypes = [
-    'text/plain',
+    'application/vnd.ms-excel', // .xls
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
     'text/csv',
+    'text/plain',
   ]
   file?: File
   fileId: number
@@ -86,7 +87,6 @@ export class SensorsUploadModalComponent implements OnDestroy {
     orgId: number;
     viewId: number;
   }
-  dragging = false
 
   // select file
   step1(fileList: FileList) {
@@ -128,7 +128,7 @@ export class SensorsUploadModalComponent implements OnDestroy {
     const { orgId, viewId, cycleId } = this.data
 
     const failureFn = () => {
-      this._snackBar.alert('Failed to delete column')
+      this._snackBar.alert('File Upload Failed')
     }
 
     const successFn = () => {

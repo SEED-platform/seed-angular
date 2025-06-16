@@ -30,7 +30,6 @@ export class DocumentUploadModalComponent {
   }
 
   data = inject(MAT_DIALOG_DATA) as { orgId: number; viewId: number }
-  dragging = false
 
   onUpload() {
     if (!this.file) return
