@@ -26,7 +26,11 @@ export class ErrorService {
     // Handle different error response structures
     const err: unknown = error.error
 
-    if (typeof err === 'string') return err
+    const isStr = typeof err === 'string'
+
+    // If the string is too long (likely html '<!DOCTYPE html>...'), return the default message
+    if (isStr && err.length > 1000) return defaultMessage
+    if (isStr) return err
 
     const isObj = typeof err === 'object' && err !== null
     if (isObj) {

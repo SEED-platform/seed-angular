@@ -86,6 +86,7 @@ export class InventoryGridComponent implements OnChanges {
 
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
+    if (!action) return
     const { id } = event.data as { id: string; file: string; filename: string }
 
     const urlMap = {
