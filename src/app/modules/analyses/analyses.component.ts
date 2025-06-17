@@ -22,12 +22,16 @@ import { SharedImports } from '@seed/directives'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
+import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { AgGridAngular } from 'ag-grid-angular'
+import { ConfigService } from '@seed/services'
 
 @Component({
   selector: 'seed-analyses',
   templateUrl: './analyses.component.html',
   styleUrls: ['./analyses.component.scss'],
   imports: [
+    AgGridAngular,
     CommonModule,
     MatCardModule,
     MatDialogModule,
@@ -41,12 +45,7 @@ import { DeleteAnalysisDialogComponent } from './delete-analysis-dialog'
   ],
 })
 export class AnalysesComponent implements OnInit, OnDestroy {
-  analyses: Analysis[]
-  views: View[]
-  originalViews: OriginalView[]
-  cycles: Cycle[]
-  messages: AnalysesMessage[]
-  currentUser: CurrentUser
+  private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
@@ -56,6 +55,34 @@ export class AnalysesComponent implements OnInit, OnDestroy {
   private _transloco = inject(TranslocoService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  analyses: Analysis[]
+  views: View[]
+  originalViews: OriginalView[]
+  cycles: Cycle[]
+  messages: AnalysesMessage[]
+  currentUser: CurrentUser
+  gridTheme$ = this._configService.gridTheme$
+  gridApi: GridApi
+
+  columnDefs: ColDef[] = [
+    { field: 'name', headerName: 'Name' },
+    { field: 'service', headerName: 'Service' },
+  ]
+
+  rowData = [
+    { name: 'n1', service: 's1' },
+    { name: 'n2', service: 's2' },
+    { name: 'n3', service: 's3' },
+    { name: 'n4', service: 's4' },
+    { name: 'n5', service: 's5' },
+  ]
+
+  gridHeight = 500
+
+  onGridReady(agGrid: GridReadyEvent) {
+    this.gridApi = agGrid.api
+    this.gridApi.sizeColumnsToFit()
+  }
 
   ngOnInit(): void {
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
