@@ -1,7 +1,7 @@
 import { inject } from '@angular/core'
 import type { Routes } from '@angular/router'
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router'
-import { switchMap, take } from 'rxjs'
+import { ActivatedRouteSnapshot } from '@angular/router'
+import { switchMap, take, tap } from 'rxjs'
 import { AnalysisService } from '@seed/api/analysis'
 import { CycleService } from '@seed/api/cycle'
 import { UserService } from '@seed/api/user'
@@ -38,9 +38,8 @@ export default [
         const userService = inject(UserService)
         return userService.currentOrganizationId$.pipe(
           take(1),
-          switchMap((orgId) => {
-            return cycleService.get(orgId)
-          }),
+          tap((orgId) => cycleService.get(orgId)),
+          switchMap(() => cycleService.cycles$),
         )
       },
     },
@@ -99,9 +98,8 @@ export default [
         const userService = inject(UserService)
         return userService.currentOrganizationId$.pipe(
           take(1),
-          switchMap((orgId) => {
-            return cycleService.get(orgId)
-          }),
+          tap((orgId) => cycleService.get(orgId)),
+          switchMap(() => cycleService.cycles$),
         )
       },
     },
@@ -164,9 +162,8 @@ export default [
         const userService = inject(UserService)
         return userService.currentOrganizationId$.pipe(
           take(1),
-          switchMap((orgId) => {
-            return cycleService.get(orgId)
-          }),
+          tap((orgId) => cycleService.get(orgId)),
+          switchMap(() => cycleService.cycles$),
         )
       },
     },
