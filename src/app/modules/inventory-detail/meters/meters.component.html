@@ -1,0 +1,83 @@
+<seed-page
+  [config]="{
+    title: 'Property',
+    subTitle: viewDisplayField$ | async,
+    titleIcon: 'fa-solid:bolt',
+    breadcrumbs: ['Property', 'Meters'],
+    sideNavToggle: true,
+    action: uploadGreenButtonData,
+    actionIcon: 'fa-solid:arrow-up-from-bracket',
+    actionText: 'GreenButton Data',
+  }"
+>
+  <div class="h-full-page-tabs p-5" id="content">
+    <!-- METERS -->
+    <div>
+      <div class="my-5 ml-4 flex items-center text-lg font-medium">
+        <mat-icon svgIcon="fa-solid:bolt"></mat-icon>
+        <span class="ml-4">Meters</span>
+      </div>
+      @if (meterData.length) {
+        <ag-grid-angular
+          [columnDefs]="meterDefs"
+          [gridOptions]="gridOptions"
+          [rowData]="meterData"
+          [style.height.px]="meterGridHeight"
+          [style.--ag-spacing.px]="6"
+          [theme]="gridTheme$ | async"
+          (gridReady)="onMeterGridReady($event)"
+        ></ag-grid-angular>
+      } @else {
+        <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+          <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+          <div class="text-secondary text-xl font-medium">No Meters Found</div>
+        </div>
+      }
+    </div>
+
+    @if (meterData.length) {
+      <!-- READINGS -->
+      <div class="mt-5">
+        <mat-divider></mat-divider>
+        <div class="flex justify-between">
+          <div class="my-5 ml-4 flex items-center text-lg font-medium">
+            <mat-icon svgIcon="fa-solid:table-list"></mat-icon>
+            <span class="ml-4">Readings</span>
+          </div>
+          <!-- Interval select -->
+          <div class="m-1 my-auto flex flex-row gap-4">
+            <mat-label class="text-secondary my-auto">Interval</mat-label>
+            <mat-select
+              class="h-8 w-40 rounded border border-gray-500 p-3 text-sm"
+              [(value)]="interval"
+              (selectionChange)="intervalChange()"
+            >
+              <mat-option value="Exact">Exact</mat-option>
+              <mat-option value="Year">Year</mat-option>
+              <mat-option value="Month">Month</mat-option>
+            </mat-select>
+          </div>
+        </div>
+
+        @if (readingData.length) {
+          <ag-grid-angular
+            [columnDefs]="readingDefs"
+            [defaultColDef]="defaultColDef"
+            [pagination]="true"
+            [paginationPageSize]="100"
+            [rowData]="readingData"
+            [style.height.px]="readingGridHeight"
+            [style.--ag-spacing.px]="6"
+            [theme]="gridTheme$ | async"
+            (gridReady)="onReadingGridReady($event)"
+          ></ag-grid-angular>
+        } @else {
+          <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
+            <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
+            <div class="text-secondary text-xl font-medium">No Readings Found</div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</seed-page>

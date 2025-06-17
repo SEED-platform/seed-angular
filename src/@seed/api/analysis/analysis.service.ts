@@ -1,12 +1,12 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import { BehaviorSubject, catchError, forkJoin, map, Observable, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-// import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, forkJoin, map, Observable, Subject, takeUntil, tap } from 'rxjs'
-import type { Analysis, AnalysisResponse, AnalysesMessage, AnalysesViews, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, PropertyAnalysesResponse, View } from './analysis.types'
+import type { AnalysesMessage, AnalysesViews, Analysis, AnalysisResponse, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, PropertyAnalysesResponse, View } from './analysis.types'
+import type { AnalysisSummary } from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -163,7 +163,7 @@ export class AnalysisService {
             // Remove analyses that have reached a completion status
             remainingAnalyses = remainingAnalyses.filter(
               (analysis) => !updatedAnalyses.some(
-                (updated) => updated.id === analysis.id && completionStatuses.includes(updated.status)
+                (updated) => updated.id === analysis.id && completionStatuses.includes(updated.status),
               ),
             )
             // If all analyses have reached a completion status, complete the observable
@@ -183,5 +183,14 @@ export class AnalysisService {
         })
       }, 5000) // Poll every 5 seconds
     })
+  }
+
+  summary(orgId: number, cycleId: number): Observable<AnalysisSummary> {
+    const url = `/api/v4/analyses/stats/?cycle_id=${cycleId}&organization_id=${orgId}`
+    return this._httpClient.get<AnalysisSummary>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching analysis summary')
+      }),
+    )
   }
 }

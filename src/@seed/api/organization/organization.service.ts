@@ -2,11 +2,12 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { naturalSort } from '../../utils'
+import { InventoryService } from '../inventory'
 import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type {
@@ -45,7 +46,7 @@ export class OrganizationService {
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
-  private readonly _unsubscribeAll$ = new Subject<void>()
+  private _inventoryService = inject(InventoryService)
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
@@ -57,7 +58,6 @@ export class OrganizationService {
     // Fetch current org data whenever user org id changes
     this._userService.currentOrganizationId$
       .pipe(
-        takeUntil(this._unsubscribeAll$),
         switchMap((organizationId) => {
           return combineLatest([
             this.getById(organizationId),
@@ -282,6 +282,21 @@ export class OrganizationService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching matching columns')
+      }),
+    )
+  }
+
+  getViewDisplayField(viewId: number, type: InventoryType): Observable<string> {
+    return this.currentOrganization$.pipe(
+      switchMap((org: Organization) =>
+        this._inventoryService.getView(org.org_id, viewId, type).pipe(
+          map((view) => ({ org, view })),
+        ),
+      ),
+      map(({ org, view }) => {
+        const displayFieldKey = type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
+        const displayField = view.state[displayFieldKey] as string
+        return displayField
       }),
     )
   }

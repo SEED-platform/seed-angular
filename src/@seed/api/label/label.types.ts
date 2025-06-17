@@ -6,3 +6,5 @@ export type Label = {
   show_in_list: boolean;
   is_applied?: number[];
 }
+
+export type LabelOperator = 'and' | 'or' | 'exclude'

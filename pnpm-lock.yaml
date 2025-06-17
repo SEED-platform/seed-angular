@@ -77,9 +77,15 @@ importers:
       material-icons:
         specifier: ^1.13.14
         version: 1.13.14
+      ngx-wig:
+        specifier: ^19.0.7
+        version: 19.0.7(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(@angular/forms@19.2.1(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.1(@angular/animations@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2))
       ol:
         specifier: ^10.5.0
         version: 10.5.0
+      ol-ext:
+        specifier: ^4.0.31
+        version: 4.0.31(ol@10.5.0)
       perfect-scrollbar:
         specifier: ^1.5.6
         version: 1.5.6
@@ -135,6 +141,9 @@ importers:
       '@types/decompress':
         specifier: ^4.2.7
         version: 4.2.7
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
       '@types/jasmine':
         specifier: ~5.1.5
         version: 5.1.7
@@ -2196,6 +2205,9 @@ packages:
 
   '@types/express@4.17.21':
     resolution: {integrity: sha512-ejlPM315qwLpaQlQDTjPdsUFSc6ZsP4AN6AlWnogPjQ7CVi7PYF3YVz+CY3jE2pwYf7E/7HlDAN0rV2GxTG0HQ==}
+
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
@@ -4741,6 +4753,13 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
+  ngx-wig@19.0.7:
+    resolution: {integrity: sha512-s97gjs4blI1dO6QEV9OKWNS1RSv8RnCCEdaABRS6hIryMBFpjWBf+4c9qpKKPv0r+LySo94Y/W+DAKS7znsbTg==}
+    peerDependencies:
+      '@angular/common': ^19.0.5
+      '@angular/core': ^19.0.5
+      '@angular/forms': ^19.0.5
+
   nice-try@1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
 
@@ -4860,6 +4879,11 @@ packages:
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
+
+  ol-ext@4.0.31:
+    resolution: {integrity: sha512-byh26JcXZggkLUY79+c29cxf2ovkkwz5niWJzOIN+dLPDJ+ogSn0y4Wl8fIS9O2JtQff5/cInHRImgZBvl+N1g==}
+    peerDependencies:
+      ol: '>= 5.3.0'
 
   ol@10.5.0:
     resolution: {integrity: sha512-nHFx8gkGmvYImsa7iKkwUnZidd5gn1XbMZd9GNOorvm9orjW9gQvT3Naw/MjIasVJ3cB9EJUdCGR2EFAulMHsQ==}
@@ -8509,6 +8533,8 @@ snapshots:
       '@types/qs': 6.9.18
       '@types/serve-static': 1.15.7
 
+  '@types/geojson@7946.0.16': {}
+
   '@types/http-errors@2.0.4': {}
 
   '@types/http-proxy@1.17.16':
@@ -11408,6 +11434,13 @@ snapshots:
 
   neo-async@2.6.2: {}
 
+  ngx-wig@19.0.7(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(@angular/forms@19.2.1(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.1(@angular/animations@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)):
+    dependencies:
+      '@angular/common': 19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2)
+      '@angular/core': 19.2.1(rxjs@7.8.2)(zone.js@0.15.0)
+      '@angular/forms': 19.2.1(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.1(@angular/animations@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.1(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0)))(rxjs@7.8.2)
+      tslib: 2.8.1
+
   nice-try@1.0.5: {}
 
   node-addon-api@6.1.0:
@@ -11556,6 +11589,10 @@ snapshots:
       es-object-atoms: 1.1.1
 
   obuf@1.1.2: {}
+
+  ol-ext@4.0.31(ol@10.5.0):
+    dependencies:
+      ol: 10.5.0
 
   ol@10.5.0:
     dependencies:

@@ -1,7 +1,8 @@
 import type { UserRole } from '@seed/api/user'
 import type { Column } from '../column'
+import type { LabelOperator } from '../label'
 
-type OrgCycle = {
+export type OrgCycle = {
   name: string;
   cycle_id: number;
   num_properties: number;
@@ -102,11 +103,12 @@ export type OrganizationUser = {
 
 export type OrganizationUserSettings = {
   [key: string]: unknown;
-  cycle_id?: number;
-  profile_id?: number;
+  cycleId?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
   profile?: UserSettingsProfiles;
+  crossCycles?: UserSettingsCrossCycles;
+  labels?: UserLabelSettings;
 }
 
 type UserSettingsFilters = {
@@ -123,6 +125,13 @@ type UserSettingsProfiles = {
   detail?: { properties?: number; taxlots?: number };
   list?: { properties?: number; taxlots?: number };
 }
+
+type UserSettingsCrossCycles = {
+  properties?: number[];
+  taxlots?: number[];
+}
+
+type UserLabelSettings = { ids: number[]; operator: LabelOperator }
 
 export type OrganizationUsersResponse = {
   users: OrganizationUser[];

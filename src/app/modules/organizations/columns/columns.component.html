@@ -14,7 +14,7 @@
       <seed-page
         [config]="{
           title: pageTitle,
-          titleIcon: 'fa-solid:sitemap',
+          titleIcon: 'fa-solid:sliders',
           action: toggleHelp,
           actionIcon: 'fa-solid:circle-question',
           breadcrumbs: ['Organization Columns'],
@@ -22,12 +22,12 @@
         }"
       >
         @if (useTabs) {
-          <nav [tabPanel]="tabPanel" mat-tab-nav-bar>
-            @for (tab of tabs; track tab.label) {
-              <a [active]="tab.route === currentType()" (click)="navigateTo(tab.route)" mat-tab-link>{{ tab.label }}</a>
-            }
-          </nav>
+          <seed-page-inventory-tab
+            [config]="{ tabs: ['properties', 'taxlots'], action: navigateTo.bind(this) }"
+            [inputType]="currentType()"
+          ></seed-page-inventory-tab>
         }
+
         <mat-tab-nav-panel class="p-4" #tabPanel>
           <router-outlet></router-outlet>
         </mat-tab-nav-panel>
