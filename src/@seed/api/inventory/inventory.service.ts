@@ -15,7 +15,7 @@ export class InventoryService {
   private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _properties = new BehaviorSubject<unknown>([])
-  private _columnListProfiles = new BehaviorSubject<unknown>([])
+  private _columnListProfiles = new BehaviorSubject<Profile[]>([])
   private _view = new BehaviorSubject<ViewResponse>(null)
   orgId: number
 
@@ -51,7 +51,7 @@ export class InventoryService {
     )
   }
 
-  getColumnListProfiles(profileLocation: string, inventoryType: string, brief = false): Observable<Profile[]> {
+  getColumnListProfiles(profileLocation: string, inventoryType: string, brief = false) {
     const url = 'api/v3/column_list_profiles/'
     const params = {
       organization_id: this.orgId,
@@ -59,7 +59,7 @@ export class InventoryService {
       profile_location: profileLocation,
       brief,
     }
-    return this._httpClient.get<ProfilesResponse>(url, { params }).pipe(
+    this._httpClient.get<ProfilesResponse>(url, { params }).pipe(
       map((response) => response.data),
       tap((profiles) => {
         this._columnListProfiles.next(profiles)
@@ -67,7 +67,7 @@ export class InventoryService {
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching column list profiles')
       }),
-    )
+    ).subscribe()
   }
 
   getColumnListProfile(id: number): Observable<Profile> {

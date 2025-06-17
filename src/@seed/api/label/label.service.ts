@@ -2,7 +2,7 @@ import type { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, switchMap } from 'rxjs'
+import { catchError, map, ReplaySubject, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -23,13 +23,13 @@ export class LabelService {
   constructor() {
     // Fetch current org data whenever user org id changes
     this._userService.currentOrganizationId$.pipe(
-      switchMap((organizationId) => this.getByOrgId(organizationId)),
-    ).subscribe()
+      tap((organizationId) => { this.getByOrgId(organizationId) }),
+    )
   }
 
-  getByOrgId(organizationId: number): Observable<Label[]> {
+  getByOrgId(organizationId: number) {
     const url = `/api/v3/labels/?organization_id=${organizationId}`
-    return this._httpClient.get<Label[]>(url).pipe(
+    this._httpClient.get<Label[]>(url).pipe(
       map((response) => {
         const labels = response.sort((a, b) => naturalSort(a.name, b.name))
         this._labels.next(labels)
@@ -39,7 +39,7 @@ export class LabelService {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching organization')
       }),
-    )
+    ).subscribe()
   }
 
   /*

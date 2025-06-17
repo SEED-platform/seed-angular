@@ -64,7 +64,7 @@ export class LabelsComponent implements OnInit, OnDestroy {
   }
 
   refreshLabels(): void {
-    this._labelService.getByOrgId(this.organization.id).subscribe()
+    this._labelService.getByOrgId(this.organization.id)
   }
 
   edit(label: Label) {

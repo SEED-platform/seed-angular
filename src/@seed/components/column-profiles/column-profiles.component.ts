@@ -120,7 +120,8 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
         this.currentUser = currentUser
         this.columns = columns
       }),
-      switchMap(() => this._inventoryService.getColumnListProfiles(this.profileLocation, this.type)),
+      tap(() => { this._inventoryService.getColumnListProfiles(this.profileLocation, this.type) }),
+      switchMap(() => this._inventoryService.columnListProfiles$),
       switchMap((profiles) => {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType).sort((a, b) => naturalSort(a.name, b.name))
         return this.setProfile()
@@ -305,7 +306,8 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
         newProfileId = id
         return !!id
       }),
-      switchMap(() => this._inventoryService.getColumnListProfiles(this.profileLocation, this.type)),
+      tap(() => { this._inventoryService.getColumnListProfiles(this.profileLocation, this.type) }),
+      switchMap(() => this._inventoryService.columnListProfiles$),
       tap((profiles) => {
         this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
         this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null

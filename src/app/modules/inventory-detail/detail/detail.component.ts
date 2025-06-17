@@ -96,6 +96,7 @@ export class DetailComponent implements OnDestroy, OnInit {
       tap((organization) => {
         this.orgId = organization.org_id
         this.org = organization
+        this._inventoryService.getColumnListProfiles('Detail View Profile', this.type)
       }),
       switchMap(() => {
         const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
@@ -103,7 +104,7 @@ export class DetailComponent implements OnDestroy, OnInit {
           columns: columns$.pipe(take(1)),
           currentUser: this._userService.currentUser$.pipe(take(1)),
           matchingColumns: this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
-          profiles: this._inventoryService.getColumnListProfiles('Detail View Profile', this.type),
+          profiles: this._inventoryService.columnListProfiles$.pipe(take(1)),
         })
       }),
       tap(({ columns, currentUser, matchingColumns, profiles }) => {

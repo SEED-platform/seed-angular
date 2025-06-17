@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatMenuModule } from '@angular/material/menu'
 import { Router } from '@angular/router'
-import { Subject, take, takeUntil } from 'rxjs'
+import { Subject, takeUntil } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization/organization.service'
 import type { BriefOrganization } from '@seed/api/organization/organization.types'
 import type { CurrentUser } from '@seed/api/user'
@@ -36,7 +36,7 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   }
 
   selectOrganization(organizationId: number) {
-    this._userService.setDefaultOrganization(organizationId).pipe(take(1)).subscribe(() => void this._router.navigate(['dashboard']))
+    this._userService.setDefaultOrganization(organizationId).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
   }
 
   ngOnDestroy(): void {

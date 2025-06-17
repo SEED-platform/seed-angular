@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, concatMap, distinctUntilChanged, EMPTY, filter, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
@@ -25,7 +25,7 @@ import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryType, Pagination, Profile } from '../../inventory/inventory.types'
+import type { AgFilterResponse, FiltersSorts, InventoryType, Pagination, Profile } from '../../inventory/inventory.types'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 
@@ -89,22 +89,33 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   /*
   * 1. get org
-  * 2. get dependencies: cycles, profiles, labels, current user
-  * 3. set dependencies & get profile
-  * 4. load inventory
-  * 5. set filters and sorts from user settings
+  * 2. get/set dependencies: cycles, profiles, labels, current user
+  * 3. load inventory
+  * 4. set filters and sorts from user settings
   */
   ngOnInit(): void {
-    this.initPage()
-  }
-
-  initPage() {
     this._userService.currentOrganizationId$.pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap((orgId) => this.getDependencies(orgId)),
-      map((results) => this.setDependencies(results)),
-      switchMap((profile_id) => this.getProfile(profile_id)),
-      switchMap(() => this.loadInventory()),
+      tap((orgId) => { this.getDependencies(orgId) }),
+    ).subscribe()
+  }
+
+  /*
+  * get cycles, profiles, columns, inventory, current user
+  */
+  getDependencies(org_id: number) {
+    console.log('getDependencies')
+    this.orgId = org_id
+    this._cycleService.get(this.orgId)
+    this._labelService.getByOrgId(this.orgId)
+    this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true)
+
+    this.getUser().pipe(
+      distinctUntilChanged(),
+      concatMap(() => this.getLabels()),
+      concatMap(() => this.getCycle()),
+      concatMap(() => this.getColumnListProfiles()),
+      concatMap(() => this.loadInventory()),
       tap(() => {
         this.setFilterSorts()
         this.initStreams()
@@ -112,73 +123,58 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ).subscribe()
   }
 
-  initStreams() {
-    this.profileId$.pipe(
-      filter(Boolean),
+  getUser() {
+    return this._userService.currentUser$.pipe(
       takeUntil(this._unsubscribeAll$),
-      switchMap((id) => this.getProfile(id)),
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
-
-    this.cycleId$.pipe(
-      filter(Boolean),
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
-
-    this.refreshInventory$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
-  }
-
-  refreshInventory() {
-    return this.updateOrgUserSettings().pipe(
-      switchMap(() => this.loadInventory()),
+      tap((currentUser) => {
+        const { org_user_id, settings } = currentUser
+        this.currentUser = currentUser
+        this.orgUserId = org_user_id
+        this.userSettings = settings
+      }),
     )
   }
 
-  /*
-  * get cycles, profiles, columns, inventory, current user
-  */
-  getDependencies(org_id: number) {
-    this.orgId = org_id
-    this._cycleService.get(this.orgId)
-
-    return combineLatest([
-      this._userService.currentUser$,
-      this._cycleService.cycles$,
-      this._labelService.labels$,
-      this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true),
-    ])
+  getCycle() {
+    return this._cycleService.cycles$.pipe(
+      take(1),
+      // takeUntil(this._unsubscribeAll$),
+      filter((cycles) => !!cycles.length),
+      tap((cycles) => {
+        console.log('cycles', cycles)
+        this.cycles = cycles
+        this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycleId) ?? this.cycles[0]
+        this.cycleId = this.cycle.id
+        this.cycleId$.next(this.cycleId)
+      }),
+      map(() => undefined),
+    )
   }
 
-  /*
-  * set class variables: cycles, profiles, inventory. returns profile id
-  */
-  setDependencies([currentUser, cycles, labels, profiles]: InventoryDependencies) {
-    if (!cycles) {
-      return null
-    }
+  getLabels() {
+    return this._labelService.labels$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((labels) => {
+        for (const label of labels) {
+          this.labelMap[label.id] = label
+        }
+      }),
+    )
+  }
 
-    const { org_user_id, settings } = currentUser
-    this.currentUser = currentUser
-    this.orgUserId = org_user_id
-    this.userSettings = settings
-
-    this.cycles = cycles
-    this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycleId) ?? this.cycles[0]
-    this.cycleId = this.cycle.id
-
-    this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
-    this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
-
-    for (const label of labels) {
-      this.labelMap[label.id] = label
-    }
-
-    const profileId = this.profiles.find((p) => p.id === this.userSettings.profile.list[this.type])?.id ?? this.profiles[0]?.id
-    return profileId
+  getColumnListProfiles() {
+    return this._inventoryService.columnListProfiles$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      tap((profiles: Profile[]) => {
+        this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
+        this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
+      }),
+      switchMap(() => {
+        const profileId = this.profiles.find((p) => p.id === this.userSettings.profile.list[this.type])?.id ?? this.profiles[0]?.id
+        return this.getProfile(profileId)
+      }),
+      takeUntil(this._unsubscribeAll$),
+    )
   }
 
   get profiles() {
@@ -209,6 +205,40 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   /*
+  * Watch for changes to profileId$, cycleId$, and refreshInventory$.
+  */
+  initStreams() {
+    this.profileId$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap((id) => this.getProfile(id)),
+      switchMap(() => this.refreshInventory()),
+    ).subscribe()
+
+    this.cycleId$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => {
+        console.log('cycleId$, refreshing inventory')
+        return this.refreshInventory()
+      }),
+    ).subscribe()
+
+    this.refreshInventory$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap(() => this.refreshInventory()),
+    ).subscribe()
+  }
+
+  refreshInventory() {
+    return this.updateOrgUserSettings().pipe(
+      switchMap(() => {
+        return this.loadInventory()
+      }),
+    )
+  }
+
+  /*
   * Loads inventory for the grid.
   * returns a null observable to track completion
   */
@@ -230,6 +260,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
       profile_id: this.profileId,
       filters: this.filters,
       sorts: this.sorts,
+    }
+
+    if (this.orgId != this.cycles[0]?.organization) {
+      console.log('org cycle mismatch, return empty')
+      return EMPTY
     }
 
     return this._inventoryService.getAgInventory(params.toString(), data).pipe(
@@ -329,6 +364,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
+    console.log('InventoryComponent destroyed')
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
