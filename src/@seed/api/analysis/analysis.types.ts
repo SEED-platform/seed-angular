@@ -6,24 +6,26 @@ export type Highlight = {
 
 // Analysis type
 export type Analysis = {
-  id: number;
-  service: string;
-  status: string;
-  name: string;
-  created_at: string;
-  start_time: string;
-  end_time: string;
   configuration: Record<string, unknown>; // configuration is different for each analysis type
-  parsed_results: Record<string, unknown>; // parsed_results is different for each analysis type
-  user: number;
+  created_at: string;
+  cycles: number[];
+  end_time: string;
+  id: number;
+  name: string;
   organization: number;
+  parsed_results: Record<string, unknown>; // parsed_results is different for each analysis type
+  service: AnalysisServiceType;
+  start_time: string;
+  status: string;
+  user: number;
   access_level_instance: number;
   number_of_analysis_property_views: number;
   views: number[];
-  cycles: number[];
   highlights: Highlight[];
   _finished_with_tasks: boolean; // used to determine if an analysis has no currently running tasks
 }
+
+export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation';
 
 // Analysis by View type
 export type View = {

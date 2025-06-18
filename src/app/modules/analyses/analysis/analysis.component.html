@@ -1,115 +1,68 @@
+<seed-page
+  [config]="{
+    title: 'Analysis',
+    titleIcon: 'fa-solid:chart-bar', 
+    subTitle: analysis?.name,
+    breadcrumbs: ['Analyses', 'Detail']}"
+>
+<div class="h-full-page m-5" id="content">
+  <div class="my-5 flex gap-4">
+    <div class="text-lg bold whitespace-nowrap min-w-40">
+      {{ analysis?.service }} Analysis
+    </div>
+    <div class="max-w-160 text-secondary">{{ analysisDescription }}</div>
+  </div>
+  <mat-divider></mat-divider>
 
-<seed-page [config]="{ title: 'Analysis', titleIcon: 'fa-solid:chart-bar', breadcrumbs: ['Analyses']}" *transloco="let t">
-  <div class="flex-auto pt-4 sm:pt-6">
-    <div class="bg-card flex flex-auto flex-col overflow-hidden rounded-2xl p-6 shadow sm:col-span-2 md:col-span-4">
-      <div class="overflow-x-auto">
-        <div class="mx-auto h-screen w-full max-w-screen-2xl">
-          <div class="mx-6 mb-8 text-2xl font-extrabold leading-none tracking-tight">{{ analysis.name }}</div>
-          <div class="mx-10">
-            <p>{{ t('ANALYSIS_DESCRIPTION_' + analysis.service.split(' ').join('')) }}</p>
-          </div>
-          <div class="mx-auto mt-3 h-screen w-full max-w-screen-2xl">
-            <mat-grid-list cols="11" gutterSize="0px" rowHeight="50px" class="justify-center max-h-2">
-              <mat-grid-tile [colspan]="1" class="header-row border-r-2">{{ t('Runs') }}</mat-grid-tile>
-              <mat-grid-tile class="header-row border-r-2">{{ t('Type') }}</mat-grid-tile>
-              <mat-grid-tile [colspan]="3" class="header-row border-r-2">{{ t('Configuration') }}</mat-grid-tile>
-              <mat-grid-tile class="header-row border-r-2">{{ t('Created') }}</mat-grid-tile>
-              <mat-grid-tile class="header-row border-r-2">{{ t('Run Status') }}</mat-grid-tile>
-              <mat-grid-tile class="header-row border-r-2">{{ t('Run Date') }}</mat-grid-tile>
-              <mat-grid-tile class="header-row border-r-2">{{ t('Run Duration') }}</mat-grid-tile>
-              <mat-grid-tile [colspan]="2" class="header-row">{{ t('Run Cycle') }}</mat-grid-tile>
-            </mat-grid-list>
-            <div class="mt-10">
-              <mat-grid-list cols="11" rowHeight="1:2" gutterSize="0px">
-                <mat-grid-tile [colspan]="1" class="border-l-2 border-r-2 border-b-2">{{ analysis.number_of_analysis_property_views }}</mat-grid-tile>
-                <mat-grid-tile class="border-r-2 border-b-2">{{ analysis.service }}</mat-grid-tile>
-                <mat-grid-tile [colspan]="3" class="border-r-2 border-b-2">
-                  <div class="tile-content">
-                    <ul class="list-disc list-outside m-0 p-4">
-                      <!-- iterate over the hash display key - value pairs -->
-                      @for (key of getKeys(analysis.configuration); track key) {
-                        <li *ngIf="typeof analysis.configuration[key] !== 'object'"><strong>{{ key }}</strong>: {{ analysis.configuration[key] }}</li>
-                      }
-                    </ul>
-                  </div>
-                </mat-grid-tile>
-                <mat-grid-tile class="border-r-2 border-b-2">{{ analysis.created_at | date : 'MM-dd-yy HH:mm' }}</mat-grid-tile>
-                <mat-grid-tile class="analysis-status border-r-2 border-b-2" [ngClass]="analysis.status.toLowerCase()">
-                  <!-- <i class="fa-solid fa-arrows-rotate fa-spin-pulse fa-fw" style="padding-right: 0" ng-if="!analysis._finished_with_tasks"></i> -->
-                  {{ analysis.status }}
-                </mat-grid-tile>
-                <mat-grid-tile class="pad-row border-r-2 border-b-2">{{ analysis.start_time | date : 'MM-dd-yy HH:mm' }}</mat-grid-tile>
-                <mat-grid-tile class="border-r-2 border-b-2">{{ runDuration(analysis) }}</mat-grid-tile>
-                <mat-grid-tile class="border-b-2 border-r-2" [colspan]="2">{{ cycle(analysis.cycles[0]) }}</mat-grid-tile>
-              </mat-grid-list>
-            </div>
-            <div class="mt-8 w-full">
-              <table mat-table [dataSource]="views" class="mat-elevation-z4 pt-5 w-full" id="analysis-table">
-                <ng-container matColumnDef="id">
-                  <th mat-header-cell *matHeaderCellDef> {{ t('Run') }} </th>
-                  <td mat-cell *matCellDef="let view">
-                    {{ view.id }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="property">
-                  <th mat-header-cell *matHeaderCellDef> {{ t('Property') }} </th>
-                  <td mat-cell *matCellDef="let view">
-                    <!-- <mat-icon svgIcon="fa-solid:right-from-bracket" class="ml-2 text-blue-400 small-icon"></mat-icon>--><a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/properties', originalViews[view.id]]">{{ view.display_name || 'Property ' + originalViews[view.id] }}</a>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="messages">
-                  <th mat-header-cell *matHeaderCellDef> {{ t('Latest Messages') }} </th>
-                  <td mat-cell *matCellDef="let view">
-                    @if (filteredMessages(view.id); as items) {
-                      <ul class="md:list-disc list-outside m-0 p-4">
-                        @for (message of items; track message.id) {
-                          <li class="pb-2">
-                            {{ message['user_message'] }}
-                            @if (message['debug_message']) {
-                              - {{ message['debug_message'] }}
-                            }
-                          </li>
-                        }
-                      </ul>
-                    }
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="outputs">
-                  <th mat-header-cell *matHeaderCellDef> {{ t('Download Output Files') }} </th>
-                  <td mat-cell *matCellDef="let view">
-                    <ul>
-                      @for (file of view.output_files; track file.id) {
-                        @if (file['analysis_property_views'].length > 1) {
-                          <li>
-                            <a class="ml-1 text-primary-500 hover:underline focus:underline" href="{{ file.file }}" download>
-                              Portfolio Report <mat-icon svgIcon="fa-solid:download" class="ml-2 text-blue-400 small-icon"></mat-icon>
-                            </a>
-                          </li>
-                        }
-                        @if (file['analysis_property_views'].length === 1) {
-                          <li>
-                            <a class="ml-1 text-primary-500 hover:underline focus:underline" href="{{ file.file }}" download
-                              >{{ file.content_type === 'html' ? 'Building Report' : file.content_type }} <mat-icon svgIcon="fa-solid:download" class="ml-2 text-blue-400 small-icon"></mat-icon>
-                            </a>
-                          </li>
-                        }
-                      }
-                    </ul>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let view">
-                    <a mat-raised-button color="primary" [routerLink]="['/analyses', view.analysis, 'runs', view.id]">View Results</a>
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-                <tr mat-row *matRowDef="let row; let odd = odd; columns: columnsToDisplay;" [class.alt-row]="odd"></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="my-5">
+    @if (analysis) {
+      <ag-grid-angular
+        [columnDefs]="columnDefs.analysis"
+        [rowData]="[analysis]"
+        [theme]="gridTheme$ | async"
+        [style.height.px]="93"
+      ></ag-grid-angular>
+    }
+  </div>
+  <mat-divider></mat-divider>
+
+  <div class="my-5 flex gap-4">
+    <div class="text-lg bold whitespace-nowrap w-40">
+      Configuration
+    </div>
+    <ul class="text-secondary list-disc pl-5">
+      @for (item of analysis?.configuration | keyvalue; track $index) {
+        <li>{{item.key}}: {{item.value}}</li>
+      }
+    </ul>
+  </div>
+
+  <mat-divider></mat-divider>
+  <div class="my-5 flex gap-4">
+    <div class="text-lg bold whitespace-nowrap w-40">
+      Latest Message
+    </div>
+    <div class="max-w-160 text-secondary"> 
+      {{ latestMessage }}
     </div>
   </div>
+  <mat-divider></mat-divider>
+
+  <div class="my-5">
+    @if (views && messages) {
+      <ag-grid-angular
+        [columnDefs]="columnDefs.views"
+        [rowData]="views"
+        [theme]="gridTheme$ | async"
+        [context]="{messages: this.messages}"
+        [domLayout]="'autoHeight'"
+        (gridReady)="onGridReady($event)"
+        ></ag-grid-angular>
+        <!-- [getRowHeight]="getRowHeight" -->
+        <!-- [style.height.px]="500" -->
+    }
+  </div>
+
+</div>
+
 </seed-page>
