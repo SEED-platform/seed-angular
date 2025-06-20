@@ -33,10 +33,18 @@ export type View = {
   analysis: number;
   cycle: number;
   display_name: string;
-  output_files: Record<string, unknown>[];
+  output_files: AnalysisOutputFile[];
   parsed_results: Record<string, unknown>;
   property: number;
   property_state: number;
+  messages?: string[]; // used for analysis ag grid
+}
+
+export type AnalysisOutputFile = {
+  analysis_property_view: number;
+  content_type: string;
+  file: string;
+  id: number;
 }
 
 // OriginalView is an array of key values where the key is a string and the value is a number

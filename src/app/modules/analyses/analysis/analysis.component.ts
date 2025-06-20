@@ -1,17 +1,19 @@
+import type { KeyValue } from '@angular/common'
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { RouterLink } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { combineLatest, filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import type { AnalysesMessage, Analysis, OriginalView, View } from '@seed/api/analysis'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { AnalysesMessage, Analysis, AnalysisOutputFile, View } from '@seed/api/analysis'
 import { AnalysisService } from '@seed/api/analysis'
-import { CycleService, type Cycle } from '@seed/api/cycle'
+import { type Cycle, CycleService } from '@seed/api/cycle'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
@@ -19,6 +21,7 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { ResultsModalComponent } from '../results/results-modal.component'
 
 @Component({
   selector: 'seed-analyses-analysis',
@@ -35,18 +38,19 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     SharedImports,
   ],
 })
-export class AnalysisComponent implements OnInit {
+export class AnalysisComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _analysisService = inject(AnalysisService)
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
+  private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   analysisId = Number(this._route.snapshot.paramMap.get('id'))
-  analysis: Analysis
+  analysis: Analysis | null = null
   analysisDescription: string
   columnDefs: { analysis: ColDef[]; views: ColDef[] }
   columnsToDisplay = ['id', 'property', 'messages', 'outputs', 'actions']
@@ -54,10 +58,11 @@ export class AnalysisComponent implements OnInit {
   cycles: Cycle[]
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
+  gridHeight = 0
   messages: AnalysesMessage[]
   orgId: number
-  originalViews: OriginalView[]
-  views: View[]
+  views: View[] = []
+  gridViews: (View & { messages?: string[] })[] = []
 
   ngOnInit() {
     this._userService.currentOrganizationId$.pipe(
@@ -83,20 +88,34 @@ export class AnalysisComponent implements OnInit {
     combineLatest([
       this._analysisService.analysis$,
       this._analysisService.views$,
-      this._analysisService.originalViews$,
       this._analysisService.messages$,
     ]).pipe(
-      filter(([analysis, _]) => !!analysis),
-      take(1),
-      tap(([analysis, views, originalViews, messages]) => {
+      filter(([analysis, views]) => !!analysis && views.length && analysis.id === this.analysisId),
+      takeUntil(this._unsubscribeAll$),
+      tap(([analysis, views, messages]) => {
         this.analysis = analysis
         this.views = views
-        this.originalViews = originalViews
         this.messages = messages
         this.analysisDescription = this._analysisService.getAnalysisDescription(analysis)
+        this.formatViews()
         this.setColumnDefs()
       }),
     ).subscribe()
+  }
+
+  formatViews() {
+    this.gridViews = []
+    for (const view of this.views) {
+      // skip views that are not associated with the current analysis
+      if (view.analysis !== this.analysisId) continue
+
+      const messages = this.messages
+        .filter((m) => m.analysis_property_view === view.id)
+        .map((m) => m.user_message)
+
+      this.gridViews.push({ ...view, messages })
+    }
+    this.getViewGridHeight()
   }
 
   setColumnDefs() {
@@ -110,11 +129,9 @@ export class AnalysisComponent implements OnInit {
         { field: 'run_duration', headerName: 'Run Duration', valueGetter: this._analysisService.getRunDuration },
       ],
       views: [
-        { field: 'id', hide: true },
         { field: 'display_name', headerName: 'Property', cellRenderer: this.propertyRenderer },
         { field: 'results', headerName: 'Results', cellRenderer: this.resultsRenderer },
-        { field: 'messages', headerName: 'Messages', cellRenderer: this.messagesRenderer },
-        { field: 'outputs', headerName: 'Output Files' },
+        { field: 'messages', headerName: 'Messages', cellRenderer: this.messagesRenderer, valueFormatter: () => null },
       ],
     }
   }
@@ -134,48 +151,51 @@ export class AnalysisComponent implements OnInit {
     const { value, data } = params
     const name = value ?? `Property ${data.property}`
     return `
-      <div class="text-primary dark:text-primary-300 cursor-pointer" title="Property Detail" data-action="property">
+      <div class="text-primary dark:text-primary-300 cursor-pointer" title="View Property" data-action="viewProperty">
         ${name}
         <span class="material-icons text-secondary text-sm">open_in_new</span>
       </div>
     `
   }
 
-  resultsRenderer = () => {
+  resultsRenderer = ({ data }: { data: View }) => {
+    const downloadHTML = data.output_files.length ? '<span class="material-icons cursor-pointer text-secondary mt-1" data-action="download">cloud_download</span>' : ''
+
     return `
-      <div class="text-primary dark:text-primary-300 cursor-pointer" title="Analysis Results" data-action="results">
-        Results
-        <span class="material-icons text-secondary text-sm">open_in_new</span>
+      <div class="flex gap-4">
+        <div class="text-primary dark:text-primary-300 cursor-pointer" title="View Results" data-action="viewResults">
+          Results
+          <span class="material-icons text-secondary text-sm">open_in_new</span>
+        </div>
+        ${downloadHTML}
       </div>
     `
   }
 
-  messagesRenderer({ context, data }: { context: { messages: AnalysesMessage[] }; data: View }) {
-    const messages = context.messages
-
-    // const messageList = messages
-    //   .filter((m) => m.analysis_property_view === data.id)
-    //   .map((m) => `<li>${m.user_message}</li>`)
-    //   .join('')
-
+  messagesRenderer({ value }: { value: string[] }) {
+    if (!value) return ''
     return `
-      <ul>
-        <li>a</li>
-        <li>b</li>
-        <li>c</li>
-      </ul>
+        <ul class="text-secondary">
+          ${value.map((message) => `
+            <li class="list-disc pl-4 space-y-1 text-sm leading-snug">
+              <div class="truncate max-w-full whitespace-nowrap overflow-hidden">${message}</div>
+            </li>
+          `).join('')}
+        </ul>
       `
-
-    // return `
-    //   <ul>
-    //     ${messageList}
-    //   </ul>
-    //   `
   }
 
-  getRowHeight = (params) => {
-    console.log(params)
-    return 100
+  getViewGridHeight() {
+    const div = document.querySelector('#content')
+    if (!div || !this.gridViews?.length) return
+
+    const divHeight = div.getBoundingClientRect().height ?? 1
+    this.gridHeight = Math.min(this.gridViews.length * 29 + 97, divHeight * 0.9)
+  }
+
+  getRowHeight = (params: { data: (View & { messages?: string[] }) }) => {
+    const messageHeight = params.data.messages?.length * 18 + 10
+    return Math.max(42, messageHeight)
   }
 
   get latestMessage() {
@@ -185,49 +205,69 @@ export class AnalysisComponent implements OnInit {
 
   onGridReady(event: GridReadyEvent) {
     this.gridApi = event.api
+    this.gridApi.sizeColumnsToFit()
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
-  
-  // ngOnInit(): void {
-  //   this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
-  //     this.currentUser = currentUser
-  //   })
+  onCellClicked(event: CellClickedEvent) {
+    if (event.colDef.field === 'messages') return
 
-  //   this._init()
-  // }
+    const target = event.event.target as HTMLElement
+    const action = target.getAttribute('data-action')
+    const { id, output_files, property } = event.data as View
 
-  // cycle(_id: number): string {
-  //   const cycle: Cycle = this.cycles.find((cycle) => cycle.id === _id)
-  //   if (cycle) {
-  //     return cycle.name
-  //   }
-  //   return ''
-  // }
+    if (action === 'viewProperty') {
+      void this._router.navigate([`/properties/${property}`])
+    } else if (action === 'viewResults') {
+      this.viewResults(id)
+    } else if (action === 'download') {
+      this.downloadResult(output_files)
+    }
+  }
 
-  // getKeys(obj: any): string[] {
-  //   return Object.keys(obj);
-  // }
+  viewResults(id: number) {
+    console.log('Developer Note: Results modal may not work until frontend and backend are on the same server')
 
-  // // Return messages filtered by analysis property view
-  // filteredMessages(_id: number): AnalysesMessage[] {
-  //   return this.messages.filter((item) => item.analysis_property_view === _id)
-  // }
+    const view = this.gridViews.find((v) => v.id === id)
+    const { parsed_results, output_files } = view
+    if (!parsed_results) return
 
-  // // calculate run duration from start_time and end_time in minutes and seconds only. don't display hours if hours is 0
-  // runDuration(analysis): string {
-  //   const start = new Date(analysis.start_time)
-  //   const end = new Date(analysis.end_time)
-  //   const duration = Math.abs(end.getTime() - start.getTime())
-  //   const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60))
-  //   const seconds = Math.floor((duration % (1000 * 60)) / 1000)
-  //   return `${minutes}m ${seconds}s`
-  // }
+    this._dialog.open(ResultsModalComponent, {
+      minWidth: '40rem',
+      data: { parsedResults: parsed_results, outputFiles: output_files, service: this.analysis?.service },
+    })
+  }
 
-  // private _init() {
-  //   this.analysis = this._route.snapshot.data.analysis as Analysis
-  //   this.views = this._route.snapshot.data.viewsPayload.views as View[]
-  //   this.originalViews = this._route.snapshot.data.viewsPayload.original_views as OriginalView[]
-  //   this.cycles = this._route.snapshot.data.cycles as Cycle[]
-  //   this.messages = this._route.snapshot.data.messages as AnalysesMessage[]
-  // }
+  downloadResult(output_files: AnalysisOutputFile[]) {
+    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
+
+    const file = output_files[0]?.file
+    const name = file.split('/').pop()?.split('.html')[0]
+    const a = document.createElement('a')
+    const url = file
+    a.href = url
+    a.download = name
+    a.click()
+  }
+
+  meterConfig(item: KeyValue<string, unknown>) {
+    const { value } = item
+    const isObj = typeof value === 'object' && value !== null
+    if (!isObj) return null
+
+    const formatDate = (dateStr: string) => {
+      return new Date(dateStr).toLocaleDateString()
+    }
+
+    const obj = value as Record<string, unknown>
+    return `
+    ${'start_date' in obj ? `<li>start_date: ${formatDate(obj.start_date as string)}</li>` : ''}
+    ${'end_date' in obj ? `<li>end_date: ${formatDate(obj.end_date as string)}</li>` : ''}
+    `
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
 }
