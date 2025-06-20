@@ -1,5 +1,4 @@
 export * from './detail.component'
-export * from './grid/analyses-grid.component'
 export * from './grid/building-files-grid.component'
 export * from './grid/documents-grid.component'
 export * from './grid/history-grid.component'
