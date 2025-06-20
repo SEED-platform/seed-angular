@@ -32,7 +32,11 @@
     </div>
     <ul class="text-secondary list-disc pl-5">
       @for (item of analysis?.configuration | keyvalue; track $index) {
-        <li>{{item.key}}: {{item.value}}</li>
+        @if (item.key === 'meter') {
+          <div [innerHTML]="meterConfig(item)"></div>
+        } @else {
+          <li>{{item.key}}: {{item.value | json}}</li>
+        }
       }
     </ul>
   </div>
@@ -49,17 +53,14 @@
   <mat-divider></mat-divider>
 
   <div class="my-5">
-    @if (views && messages) {
+    @if (gridViews.length) {
       <ag-grid-angular
         [columnDefs]="columnDefs.views"
-        [rowData]="views"
+        [rowData]="gridViews"
+        [style.height.px]="gridHeight"
         [theme]="gridTheme$ | async"
-        [context]="{messages: this.messages}"
-        [domLayout]="'autoHeight'"
         (gridReady)="onGridReady($event)"
         ></ag-grid-angular>
-        <!-- [getRowHeight]="getRowHeight" -->
-        <!-- [style.height.px]="500" -->
     }
   </div>
 
