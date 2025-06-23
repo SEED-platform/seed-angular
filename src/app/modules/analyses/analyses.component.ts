@@ -44,6 +44,7 @@ export class AnalysesComponent implements AfterViewInit, OnDestroy {
   analyses: Analysis[] = []
   cycles: Cycle[] = []
   orgId: number
+  ready = false
 
   ngAfterViewInit() {
     this._userService.currentOrganizationId$.pipe(
@@ -62,7 +63,11 @@ export class AnalysesComponent implements AfterViewInit, OnDestroy {
   getAnalyses() {
     this._analysisService.analyses$.pipe(
       filter(Boolean),
-      tap((analyses) => { this.analyses = analyses }),
+      tap((analyses) => {
+        setTimeout(() => { // suppress ExpressionChangedAfterItHasBeenCheckedError
+          this.analyses = analyses
+        })
+      }),
     ).subscribe()
   }
 

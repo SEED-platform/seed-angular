@@ -4,14 +4,14 @@ import { Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { Router } from '@angular/router'
-import type { Analysis } from '@seed/api/analysis'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { filter, switchMap, take } from 'rxjs'
+import type { Analysis, Highlight } from '@seed/api/analysis'
 import { AnalysisService } from '@seed/api/analysis'
 import type { Cycle } from '@seed/api/cycle'
 import { DeleteModalComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { filter, switchMap } from 'rxjs'
 
 @Component({
   selector: 'seed-analyses-grid',
@@ -27,6 +27,7 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
   @Input() analyses: Analysis[] = []
   @Input() cycles: Cycle[] = []
   @Input() parentRef!: HTMLDivElement
+  @Input() highlights = false
   private _analysisService = inject(AnalysisService)
   private _configService = inject(ConfigService)
   private _router = inject(Router)
@@ -37,13 +38,16 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
   gridHeight = 0
   columnDefs: ColDef[] = []
 
-  ngOnInit(): void {
-    this.setColumnDefs()
+  ngOnInit() {
+    this._analysisService.pollStatuses(this.orgId)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes.analyses?.currentValue as Analysis[])?.length) {
       this.getGridHeight()
+    }
+    if (changes.cycles) {
+      this.setColumnDefs()
     }
   }
 
@@ -52,14 +56,24 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Name', cellRenderer: this.nameRenderer },
       { field: 'status', headerName: 'Status', cellRenderer: this.statusRenderer },
-      { field: 'number_of_analysis_property_views', headerName: 'Property Count' },
       { field: 'service', headerName: 'Service' },
-      { field: 'created_at', headerName: 'Created At', valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString() },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       { field: 'cycles', headerName: 'Cycle', valueFormatter: this.getCycle.bind(this) },
+      { field: 'number_of_analysis_property_views', headerName: 'Property Count' },
+      { field: 'created_at', headerName: 'Created At', valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString() },
       { field: 'run_duration', headerName: 'Run Duration', valueGetter: this._analysisService.getRunDuration },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
+
+    if (this.highlights) {
+      const highlightsCol = {
+        field: 'highlights',
+        headerName: 'Highlights',
+        cellRenderer: this.highlightsRenderer,
+        valueFormatter: () => '', // suppress datatype warning
+      }
+      this.columnDefs.splice(3, 0, highlightsCol)
+    }
   }
 
   nameRenderer({ value }: { value: string }) {
@@ -72,14 +86,38 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
   }
 
   statusRenderer = ({ value }: { value: string }) => {
-    const bgColor = value === 'Completed' ? 'bg-green-900 text-white' : value === 'Failed' ? 'bg-red-900 text-white' : ''
-    return `<div class="overflow-hidden ${bgColor} px-2">${value}</div>`
+    const styleMap = {
+      Completed: 'bg-green-900 text-white',
+      Failed: 'bg-red-900 text-white',
+      Running: 'bg-primary text-white animate-pulse',
+    }
+
+    return `<div class="overflow-hidden ${styleMap[value]} px-2">${value}</div>`
   }
 
-  actionRenderer = () => {
+  highlightsRenderer = ({ value }: { value: Highlight[] }) => {
+    if (!value?.length) return ''
+
+    return `
+        <ul class="">
+          ${value.map((highlight) => `
+            <li class="list-disc pl-4 space-y-1 text leading-snug">
+              <div class="truncate max-w-full whitespace-nowrap overflow-hidden"><span class="text-secondary">${highlight.name}:</span> ${highlight.value}</div>
+            </li>
+          `).join('')}
+        </ul>
+    `
+  }
+
+  actionRenderer = ({ data }: { data: Analysis }) => {
+    const runningStatuses = new Set(['Pending Creation', 'Creating', 'Queued', 'Running'])
+    const isRunning = runningStatuses.has(data.status)
+
     return `
       <div class="flex gap-2 mt-2 align-center">
       <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${isRunning ? ' <span class="material-icons action-icon cursor-pointer text-secondary" title="Stop" data-action="stop">dangerous</span>' : ''}
+      ${data.status === 'Ready' ? ' <span class="material-icons action-icon cursor-pointer text-secondary" title="Start" data-action="start">play_circle_filled</span>' : ''}
       </div>
     `
   }
@@ -97,9 +135,15 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
     this.gridHeight = Math.min(this.analyses.length * 42 + 52, divHeight * 0.9)
   }
 
+  getRowHeight = (params: { data: Analysis }) => {
+    if (!this.highlights) return undefined
+
+    const height = params.data.highlights?.length * 20 + 10
+    return Math.max(42, height)
+  }
+
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
@@ -114,6 +158,10 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
 
     if (action === 'delete') {
       this.deleteAnalysis(analysis)
+    } else if (action === 'stop') {
+      this._analysisService.stopAnalysis(this.orgId, id).pipe(take(1)).subscribe()
+    } else if (action === 'start') {
+      this._analysisService.startAnalysis(this.orgId, id).pipe(take(1)).subscribe()
     } else if (action === 'detail') {
       void this._router.navigate([`/analyses/${id}`])
     }

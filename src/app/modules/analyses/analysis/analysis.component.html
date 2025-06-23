@@ -59,6 +59,7 @@
         [rowData]="gridViews"
         [style.height.px]="gridHeight"
         [theme]="gridTheme$ | async"
+        [getRowHeight]="getRowHeight"
         (gridReady)="onGridReady($event)"
         ></ag-grid-angular>
     }
