@@ -8,13 +8,8 @@
   --info-text-color: theme('colors.cyan.600');
   --warning-text-color: rgb(180 83 9);
   --error-text-color: rgb(185 28 28);
-
   --header-row-bg: #f2f2f2; /* Light mode background */
 
-}
-
-.dark {
-  --header-row-bg: #0f172b;    /* Dark mode background */
 }
 
 .mat-mdc-snack-bar-container {
@@ -159,8 +154,10 @@
   min-height: fit-content !important;
 }
 
-// MAT dark components
+// dark components
 .dark {
+  --header-row-bg: #0f172b;
+
   .even-row {
     @apply bg-slate-900
   }
