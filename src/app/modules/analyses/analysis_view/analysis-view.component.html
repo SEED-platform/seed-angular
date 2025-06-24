@@ -42,9 +42,15 @@
 
     <mat-divider></mat-divider>
     <div class="my-5">
-      <div class="m-4 flex items-center text-lg font-medium">
-        <mat-icon svgIcon="fa-solid:chart-bar"></mat-icon>
-        <span class="ml-4">Results</span>
+      <div class="flex justify-between">
+        <div class="m-4 flex items-center text-lg font-medium">
+          <mat-icon svgIcon="fa-solid:chart-bar"></mat-icon>
+          <span class="ml-4">Results</span>
+        </div>
+        @if (view.output_files?.length) {
+          <mat-icon class="scale-150 my-auto cursor-pointer" (click)="downloadOutputFile()" svgIcon="fa-solid:cloud-arrow-down"></mat-icon>
+        }
+
       </div>
       <!-- Table Display -->
       @if (rowData.length) {

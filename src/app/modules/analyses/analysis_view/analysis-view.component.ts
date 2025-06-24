@@ -111,6 +111,16 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
     iframe.style.height = '100vh'
   }
 
+  downloadOutputFile() {
+    const file = this.view.output_files[0]?.file
+    const name = file.split('/').pop()?.split('.html')[0]
+    const a = document.createElement('a')
+    const url = file
+    a.href = url
+    a.download = name
+    a.click()
+  }
+
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()

@@ -226,22 +226,7 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     }
   }
 
-  // viewResults(id: number) {
-  //   console.log('Developer Note: Results modal may not work until frontend and backend are on the same server')
-
-  //   const view = this.gridViews.find((v) => v.id === id)
-  //   const { parsed_results, output_files } = view
-  //   if (!parsed_results) return
-
-  //   this._dialog.open(ResultsModalComponent, {
-  //     minWidth: '40rem',
-  //     data: { parsedResults: parsed_results, outputFiles: output_files, service: this.analysis?.service },
-  //   })
-  // }
-
   downloadResult(output_files: AnalysisOutputFile[]) {
-    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
-
     const file = output_files[0]?.file
     const name = file.split('/').pop()?.split('.html')[0]
     const a = document.createElement('a')

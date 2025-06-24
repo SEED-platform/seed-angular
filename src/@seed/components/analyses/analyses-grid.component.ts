@@ -73,6 +73,14 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
         valueFormatter: () => '', // suppress datatype warning
       }
       this.columnDefs.splice(3, 0, highlightsCol)
+
+      const resultsCol = {
+        field: 'results',
+        headerName: 'Results',
+        cellRenderer: this.resultsRenderer,
+      }
+
+      this.columnDefs.splice(3, 0, resultsCol)
     }
   }
 
@@ -93,6 +101,18 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
     }
 
     return `<div class="overflow-hidden ${styleMap[value]} px-2">${value}</div>`
+  }
+
+  resultsRenderer = ({ data }: { data: Analysis }) => {
+    if (!data.views.length) return ''
+    return `
+      <div class="flex gap-4">
+        <div class="text-primary dark:text-primary-300 cursor-pointer" title="View Results" data-action="viewResults">
+          Results
+          <span class="material-icons text-secondary text-sm">open_in_new</span>
+        </div>
+      </div>
+    `
   }
 
   highlightsRenderer = ({ value }: { value: Highlight[] }) => {
@@ -148,7 +168,7 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    if (!['actions', 'name'].includes(event.colDef.field)) return
+    if (!['actions', 'name', 'results'].includes(event.colDef.field)) return
 
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action')
@@ -164,6 +184,8 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
       this._analysisService.startAnalysis(this.orgId, id).pipe(take(1)).subscribe()
     } else if (action === 'detail') {
       void this._router.navigate([`/analyses/${id}`])
+    } else if (action === 'viewResults') {
+      void this._router.navigate([`/analyses/${id}/views/${analysis.views[0]}`])
     }
   }
 
