@@ -8,13 +8,8 @@
   --info-text-color: theme('colors.cyan.600');
   --warning-text-color: rgb(180 83 9);
   --error-text-color: rgb(185 28 28);
-
   --header-row-bg: #f2f2f2; /* Light mode background */
 
-}
-
-.dark {
-  --header-row-bg: #0f172b;    /* Dark mode background */
 }
 
 .mat-mdc-snack-bar-container {
@@ -162,8 +157,15 @@
   min-height: fit-content !important;
 }
 
+// dark components
 .dark {
-  .mat-mdc-option-active{
+  --header-row-bg: #0f172b;
+
+  .even-row {
+    @apply bg-slate-900
+  }
+
+  .mat-mdc-option-active {
     .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
       color: lightblue !important;
     }
