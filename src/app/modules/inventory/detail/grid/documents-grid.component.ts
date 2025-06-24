@@ -108,7 +108,6 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   }
 
   downloadDocument(file: string, filename: string) {
-    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
     const a = document.createElement('a')
     const url = file
     a.href = url
