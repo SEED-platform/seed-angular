@@ -6,7 +6,9 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
@@ -35,7 +37,9 @@ export const MY_DATE_FORMATS = {
     MatButtonModule,
     MatDatepickerModule,
     MatDialogModule,
+    MatDividerModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatNativeDateModule,
     ReactiveFormsModule,

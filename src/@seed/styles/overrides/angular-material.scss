@@ -508,7 +508,7 @@
               .mat-mdc-select-arrow {
                 min-height: 0;
 
-                @apply text-gray-500 dark:text-gray-400 #{'!important'};
+                @apply text-gray-500 dark:text-secondary #{'!important'};
               }
             }
           }

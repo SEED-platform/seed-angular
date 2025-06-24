@@ -1,9 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
-import type { OnDestroy } from '@angular/core'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, distinctUntilChanged, map, ReplaySubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { catchError, distinctUntilChanged, map, ReplaySubject, switchMap, take, tap } from 'rxjs'
 import type {
   Action,
   CreateUserRequest,
@@ -17,15 +16,15 @@ import type {
   UserUpdateRequest,
 } from '@seed/api/user'
 import { ErrorService } from '@seed/services'
+import { type OrganizationUserSettings } from '../organization'
 
 @Injectable({ providedIn: 'root' })
-export class UserService implements OnDestroy {
+export class UserService {
   private _httpClient = inject(HttpClient)
   private _currentOrganizationId = new ReplaySubject<number>(1)
   private _currentUser = new ReplaySubject<CurrentUser>(1)
   private _auth = new ReplaySubject<UserAuth>(1)
   private _errorService = inject(ErrorService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   currentOrganizationId$ = this._currentOrganizationId.asObservable().pipe(distinctUntilChanged())
   currentUser$ = this._currentUser.asObservable()
@@ -33,7 +32,6 @@ export class UserService implements OnDestroy {
 
   constructor() {
     this.currentUser$.pipe(
-      takeUntil(this._unsubscribeAll$),
       switchMap(({ id, org_id }) => {
         const actions: Action[] = ['can_invite_member', 'can_remove_member', 'requires_owner', 'requires_member', 'requires_superuser']
         return this.getUserAuthorization(org_id, id, actions)
@@ -47,6 +45,7 @@ export class UserService implements OnDestroy {
   getCurrentUser(): Observable<CurrentUser> {
     return this._httpClient.get<CurrentUser>('/api/v3/users/current/').pipe(
       tap((user) => {
+        this.checkUserSettings(user.settings)
         this._currentUser.next(user)
         this._currentOrganizationId.next(user.org_id)
       }),
@@ -165,8 +164,31 @@ export class UserService implements OnDestroy {
     )
   }
 
-  ngOnDestroy() {
-    this._unsubscribeAll$.next()
-    this._unsubscribeAll$.complete()
+  // applies defaults to an org users settings
+  checkUserSettings(userSettings: OrganizationUserSettings) {
+    userSettings.crossCycles ??= {}
+    userSettings.crossCycles.properties ??= null
+    userSettings.crossCycles.taxlots ??= null
+
+    userSettings.cycleId ??= null
+
+    userSettings.filters ??= {}
+    userSettings.filters.properties ??= {}
+    userSettings.filters.taxlots ??= {}
+
+    userSettings.labels ??= { ids: [], operator: 'and' }
+
+    userSettings.profile ??= {}
+    userSettings.profile.detail ??= {}
+    userSettings.profile.detail.properties ??= null
+    userSettings.profile.detail.taxlots ??= null
+
+    userSettings.profile.list ??= {}
+    userSettings.profile.list.properties ??= null
+    userSettings.profile.list.taxlots ??= null
+
+    userSettings.sorts ??= {}
+    userSettings.sorts.properties ??= []
+    userSettings.sorts.taxlots ??= []
   }
 }

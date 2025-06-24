@@ -7,11 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressBar } from '@angular/material/progress-bar'
-import { finalize, tap } from 'rxjs'
+import { EMPTY, finalize, switchMap, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { InventoryService } from '@seed/api/inventory'
+import { SEEDValidators } from '@seed/validators'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation } from 'app/modules/inventory/inventory.types'
+import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, ProfileModalMode } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-column-list-profile-modal',
@@ -33,22 +34,27 @@ export class ModalComponent {
   private _inventoryService = inject(InventoryService)
   private _snackBar = inject(SnackBarService)
 
-  form = new FormGroup({
-    name: new FormControl<string | null>('', [
-      Validators.required,
-    ]),
-  })
-
   data = inject(MAT_DIALOG_DATA) as {
     columns: Column[];
     cycleId: number;
     inventoryType: InventoryType;
-    mode: 'create' | 'delete' | 'rename' | 'populate';
+    mode: ProfileModalMode;
     orgId: number;
     profile: Profile;
+    profiles: Profile[];
     location: ProfileLocation;
     type: InventoryDisplayType;
   }
+
+  existingNames = this.data.profiles?.map((p) => p.name).filter((name) => name !== this.data.profile?.name) ?? []
+
+  form = new FormGroup({
+    name: new FormControl<string | null>('', [
+      Validators.required,
+      SEEDValidators.uniqueValue(this.existingNames),
+    ]),
+  })
+
   errorMessage = false
   inProgress = false
 
@@ -75,14 +81,21 @@ export class ModalComponent {
     const { orgId, profile, cycleId } = this.data
 
     this._inventoryService.updateProfileToShowPopulatedColumns(orgId, profile.id, cycleId, displayType).pipe(
+      switchMap((profile) => this.setOrder(profile)),
       tap(() => { this._snackBar.success('Profile updated') }),
       finalize(() => {
         setTimeout(() => {
           this.inProgress = false
         }, 1000)
-        this.close('refresh')
+        this.close(profile.id)
       }),
     ).subscribe()
+  }
+
+  setOrder(profile: Profile) {
+    if (!profile.columns.some((c) => !c.order)) return EMPTY
+    profile.columns = profile.columns.map((c, idx) => ({ ...c, order: idx + 1 }))
+    return this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, profile)
   }
 
   onCreate() {
@@ -97,7 +110,18 @@ export class ModalComponent {
     this._inventoryService.createColumnListProfile(this.data.orgId, data).pipe(
       tap((profile) => {
         this.data.profile = profile
+        // do not close if its a show populated columns request
+        if (this.data.mode === 'create') {
+          this.close(profile.id)
+        }
       }),
     ).subscribe()
+  }
+
+  onRename() {
+    this.data.profile.name = this.form.get('name')?.value
+    this._inventoryService.updateColumnListProfile(this.data.orgId, this.data.profile.id, this.data.profile).subscribe(() => {
+      this.close(this.data.profile.id)
+    })
   }
 }

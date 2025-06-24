@@ -5,16 +5,15 @@ import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { combineLatest, Subject, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { BriefOrganization, OrganizationUser } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { UserAuth } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { PageComponent, TableContainerComponent } from '@seed/components'
+import { DeleteModalComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import type { Config } from '@seed/components/page/page.types'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 import { ResetPasswordsModalComponent } from './modal/reset-passwords-modal.component'
 
@@ -87,10 +86,15 @@ export class MembersComponent implements OnDestroy, OnInit {
   deleteMember(member: OrganizationUser): void {
     const dialogRef: MatDialogRef<DeleteModalComponent, boolean> = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { member, orgId: this._organization.org_id },
+      data: { model: 'Member', instance: member.email },
     })
 
-    this.fetchMembers(dialogRef)
+    dialogRef.afterClosed().pipe(
+      takeUntil(this._unsubscribeAll$),
+      filter(Boolean),
+      switchMap(() => this._organizationService.deleteOrganizationUser(member.user_id, this._organization.id)),
+      tap(() => { this.getMembers(this._organization.org_id) }),
+    ).subscribe()
   }
 
   resetPasswords = (): void => {

@@ -106,9 +106,11 @@ export class DataQualityComponent implements OnDestroy, OnInit {
   }
 
   resetRules = () => {
-    this._dataQualityService.resetRules(this._orgId).subscribe(() => {
-      this.getRules()
-    })
+    if (confirm('Are you sure you want to reset all data quality rules? This action cannot be undone.')) {
+      this._dataQualityService.resetRules(this._orgId).subscribe(() => {
+        this.getRules()
+      })
+    }
   }
 
   createRule = () => {

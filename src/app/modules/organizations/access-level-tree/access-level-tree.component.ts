@@ -131,7 +131,6 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
         accessLevelNames: this.accessLevelNames,
         organizationId: this._organizationId,
       } satisfies EditAccessLevelsData,
-      panelClass: 'seed-dialog-panel',
     })
   }
 

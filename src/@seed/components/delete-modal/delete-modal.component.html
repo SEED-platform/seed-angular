@@ -1,0 +1,18 @@
+<div class="mt-4 flex gap-4" mat-dialog-title>
+  <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:trash-can"></mat-icon>
+  <div class="text-2xl font-medium leading-6">Delete {{ data.model }}</div>
+</div>
+<mat-divider></mat-divider>
+
+<div class="mx-4 my-10 flex justify-evenly">
+  Are you sure you want to delete {{ data.model.toLowerCase() }} {{ data.instance }}? This action cannot be undone.
+</div>
+
+<div class="flex justify-end">
+  <mat-dialog-actions>
+    <button (click)="onSubmit()" mat-raised-button color="warn">Yes</button>
+  </mat-dialog-actions>
+  <mat-dialog-actions>
+    <button (click)="close()" mat-stroked-button>No</button>
+  </mat-dialog-actions>
+</div>

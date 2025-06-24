@@ -1,6 +1,7 @@
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <div
     class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
+    [style.padding-bottom]="config.tabs ? '15px !important' : null"
   >
     <div class="min-w-0 flex-1">
       <div class="flex" [class]="config.sideNavToggle ? '-ml-10 -mt-3' : ''">
@@ -25,11 +26,14 @@
 
       <div [ngClass]="{ 'mt-2': config.breadcrumbs?.length > 0 }">
         <div class="flex">
-          <h2 class="truncate text-3xl font-extrabold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+          <h2 class="truncate text-3xl font-bold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
             @if (config.titleIcon) {
               <mat-icon class="text-primary-900 icon-size-6" [svgIcon]="config.titleIcon"></mat-icon>
             }
             {{ t(config.title) }}
+            @if (config.subTitle) {
+              <span class="text-secondary ml-2 text-2xl font-normal">({{ config.subTitle }})</span>
+            }
           </h2>
         </div>
       </div>
@@ -74,5 +78,22 @@
       }
     </div>
   </div>
-  <ng-content></ng-content>
+  @if (config.tabs) {
+    <div class="bg-card">
+      <div class="mx-auto flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
+        <!-- Tabs -->
+        <seed-page-inventory-tab [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
+      </div>
+    </div>
+  }
+
+  <!-- Loading or content -->
+  <div class="relative">
+    @if (loading) {
+      <div class="absolute h-[100vh] w-[100vw] animate-pulse bg-gray-300 dark:bg-gray-700"></div>
+    }
+    <div [class.opacity-0]="loading" [class.pointer-events-none]="loading">
+      <ng-content></ng-content>
+    </div>
+  </div>
 </div>

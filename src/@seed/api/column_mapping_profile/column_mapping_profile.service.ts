@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { catchError, map, ReplaySubject } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
 import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileDeleteResponse, ColumnMappingProfilesRequest, ColumnMappingProfileUpdateResponse, ColumnMappingSuggestionResponse } from './column_mapping_profile.types'
@@ -13,13 +13,12 @@ export class ColumnMappingProfileService {
   private _userService = inject(UserService)
   private _profiles = new ReplaySubject<ColumnMappingProfile[]>(1)
   private _errorService = inject(ErrorService)
-  private readonly _unsubscribeAll$ = new Subject<void>()
 
   profiles$ = this._profiles.asObservable()
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizationId) => {
+    this._userService.currentOrganizationId$.subscribe((organizationId) => {
       this.getProfiles(organizationId).subscribe()
     })
   }
