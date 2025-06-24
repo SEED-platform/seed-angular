@@ -1,7 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, map, Observable, Subject, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -87,14 +88,13 @@ export class AnalysisService {
 
   // get analyses for a property (by property ID)
   getPropertyAnalyses(_propertyId): Observable<Analysis[]> {
-    return this._httpClient
-      .get<PropertyAnalysesResponse>(`/api/v3/properties/${_propertyId}/analyses/?organization_id=${this.orgId}`)
-      .pipe(
-        map((response) => response.analyses),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching analyses for this property')
-        }),
-      )
+    const url = `/api/v3/properties/${_propertyId}/analyses/?organization_id=${this.orgId}`
+    return this._httpClient.get<PropertyAnalysesResponse>(url).pipe(
+      map((response) => response.analyses),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching analyses for this property')
+      }),
+    )
   }
 
   // get single analysis view (from a single run)

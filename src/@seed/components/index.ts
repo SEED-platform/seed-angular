@@ -1,3 +1,4 @@
+export * from './analyses'
 export * from './alert'
 export * from './card'
 export * from './clipboard'

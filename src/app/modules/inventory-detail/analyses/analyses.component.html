@@ -1,0 +1,24 @@
+<seed-page
+  [config]="{
+    title: 'Property',
+    subTitle: viewDisplayField$ | async,
+    titleIcon: 'fa-solid:chart-simple',
+    breadcrumbs: ['Property', 'Analyses'],
+    sideNavToggle: true,
+    action: createAnalysis,
+    actionIcon: 'fa-solid:plus',
+    actionText: 'Create Analysis',
+  }"
+>
+  <div class="h-full-page-tabs p-5" id="content" #parentDiv>
+        
+    <seed-analyses-grid
+      [analyses]="analyses"
+      [cycles]="cycles"
+      [parentRef]="parentDiv"
+      [orgId]="orgId"
+    ></seed-analyses-grid>
+
+  </div>
+</seed-page>
+
