@@ -1,3 +1,3 @@
 export * from './analyses.component'
 export * from './analysis'
-export * from './analysis-run'
+export * from './analysis_view'

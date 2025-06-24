@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
+import type { AfterViewInit, OnChanges, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
@@ -22,7 +22,7 @@ import { ConfigService } from '@seed/services'
     MatIconModule,
   ],
 })
-export class AnalysesGridComponent implements OnChanges, OnInit {
+export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   @Input() orgId: number
   @Input() analyses: Analysis[] = []
   @Input() cycles: Cycle[] = []
@@ -38,7 +38,7 @@ export class AnalysesGridComponent implements OnChanges, OnInit {
   gridHeight = 0
   columnDefs: ColDef[] = []
 
-  ngOnInit() {
+  ngAfterViewInit(): void {
     this._analysisService.pollStatuses(this.orgId)
   }
 

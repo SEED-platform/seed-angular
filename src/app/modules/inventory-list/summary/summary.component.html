@@ -1,0 +1,57 @@
+<seed-page
+  [config]="{
+    title: 'Summary',
+    titleIcon: 'fa-solid:clipboard-list',
+  }"
+>
+  <div class="h-full-page flex flex-col gap-2">
+    <div class="m-5 flex gap-4">
+      <!-- CYCLE SELECT -->
+      <mat-label class="text-secondary mr-4 mt-3 text-sm">Cycle</mat-label>
+      <mat-select
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+        [value]="cycleId"
+        (selectionChange)="selectCycle($event.value)"
+        placeholder="(no cycles)"
+      >
+        @for (cycle of cycles; track cycle.cycle_id) {
+          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+        }
+      </mat-select>
+
+      <!-- SUMMARY STATS -->
+      @if (summary) {
+        <div class="font-bold">
+          <div class="flex">
+            <div class="text-secondary ml-4 w-40">Total Records:</div>
+            <div>{{ totalRecords }}</div>
+          </div>
+          <div class="flex">
+            <div class="text-secondary ml-4 w-40">Extra Data Fields:</div>
+            <div>{{ totalExtraData }}</div>
+          </div>
+        </div>
+      }
+    </div>
+    <mat-divider></mat-divider>
+
+    <!-- INDIVIDUAL STATS -->
+    @if (rowData.length) {
+      <ag-grid-angular
+        class="filter-border"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [rowData]="rowData"
+        [theme]="gridTheme$ | async"
+        (gridReady)="onGridReady($event)"
+        style="width: 100%; height: 100%"
+      ></ag-grid-angular>
+
+      <div class="ml-4 text-sm italic text-gray-500">
+        <span class="mr-4"><span class="material-icons align-middle ml-1 text-md text-gray-500">emergency</span>Extra Data Column</span>
+      </div>
+    } @else {
+      <seed-not-found message="No Inventory Found" icon="fa-solid:triangle-exclamation"></seed-not-found>
+    }
+  </div>
+</seed-page>
