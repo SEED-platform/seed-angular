@@ -1,8 +1,8 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, Subject, takeUntil, tap } from 'rxjs'
+import type { Observable, Subscription } from 'rxjs'
+import { BehaviorSubject, catchError, interval, map, Subject, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -29,6 +29,7 @@ export class AnalysisService {
   views$ = this._views.asObservable()
   originalViews$ = this._originalViews.asObservable()
   messages$ = this._messages.asObservable()
+  pollingStatuses?: Subscription
 
   constructor() {
     this._userService.currentOrganizationId$
@@ -137,60 +138,58 @@ export class AnalysisService {
     )
   }
 
-  // poll for completion (pass in list of analyses that are still running)
-  // This function should be called on an interval until all analyses are completed
-  // For the analyses provided, poll for Completion one at a time
-  // Completion statuses include: 'Failed', 'Stopped', 'Completed'
-  // pollForCompletion(analyses: Analysis[]): Observable<AnalysesViews> {
-  //   const completionStatuses = ['Failed', 'Stopped', 'Completed']
-  //   return new Observable<AnalysesViews>((observer) => {
-  //     let remainingAnalyses = [...analyses] // Clone the list of analyses to track remaining ones
-  //     const pollInterval = setInterval(() => {
-  //       const analysisRequests = remainingAnalyses.map((analysis) => this.getAnalysis(this.orgId, analysis.id))
-  //       forkJoin(analysisRequests).subscribe({
-  //         next: (updatedAnalyses) => {
-  //           // Get the current list of analyses from the BehaviorSubject
-  //           const currentAnalyses = this._analyses.getValue()
-  //           // Merge the updated analyses into the current list
-  //           const mergedAnalyses = currentAnalyses.map((analysis) => {
-  //             const updatedAnalysis = updatedAnalyses.find((updated) => updated.id === analysis.id)
-  //             if (updatedAnalysis) {
-  //               const isCompletionStatus = completionStatuses.includes(updatedAnalysis.status)
-  //               const statusChanged = analysis.status !== updatedAnalysis.status
-  //               // Only update the analysis if the status has changed to a completion status
-  //               if (isCompletionStatus && statusChanged) {
-  //                 return updatedAnalysis
-  //               }
-  //             }
-  //             // If no update is needed, return the original analysis
-  //             return analysis
-  //           })
-  //           // Emit the merged list to the BehaviorSubject
-  //           this._analyses.next(mergedAnalyses)
-  //           // Remove analyses that have reached a completion status
-  //           remainingAnalyses = remainingAnalyses.filter(
-  //             (analysis) => !updatedAnalyses.some(
-  //               (updated) => updated.id === analysis.id && completionStatuses.includes(updated.status),
-  //             ),
-  //           )
-  //           // If all analyses have reached a completion status, complete the observable
-  //           if (remainingAnalyses.length === 0) {
-  //             clearInterval(pollInterval)
-  //             observer.next({
-  //               analyses: mergedAnalyses,
-  //               views: this._views.getValue(), // Assuming views are already stored in the BehaviorSubject
-  //             })
-  //             observer.complete()
-  //           }
-  //         },
-  //         error: (error: HttpErrorResponse) => {
-  //           clearInterval(pollInterval)
-  //           observer.error(this._errorService.handleError(error, 'Error polling for completion'))
-  //         },
-  //       })
-  //     }, 5000) // Poll every 5 seconds
-  //   })
-  // }
+  summary(orgId: number, cycleId: number): Observable<AnalysisSummary> {
+    const url = `/api/v4/analyses/stats/?cycle_id=${cycleId}&organization_id=${orgId}`
+    return this._httpClient.get<AnalysisSummary>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching analysis summary')
+      }),
+    )
+  }
+
+  stopAnalysis(orgId: number, analysisId: number): Observable<Analysis> {
+    const url = `/api/v3/analyses/${analysisId}/stop/?organization_id=${orgId}`
+    return this._httpClient.post<Analysis>(url, {}).pipe(
+      tap((data) => {
+        console.log('Analysis stopped:', data)
+        this._snackBar.success('Analysis stopped successfully')
+        this.getAnalyses(orgId)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error stopping analysis')
+      }),
+    )
+  }
+
+  startAnalysis(orgId: number, analysisId: number): Observable<Analysis> {
+    const url = `/api/v3/analyses/${analysisId}/start/?organization_id=${orgId}`
+    return this._httpClient.post<Analysis>(url, {}).pipe(
+      tap((data) => {
+        console.log('Analysis started:', data)
+        this._snackBar.success('Analysis started')
+        this.getAnalyses(orgId)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting analysis')
+      }),
+    )
+  }
+
+  /*
+  * Poll for analysis statuses
+  * Fetch analyses every 5 seconds until all analyses are in a terminal state
+  */
+  pollStatuses(orgId: number) {
+    const isPolling = this.pollingStatuses && !this.pollingStatuses.closed
+    if (isPolling) return
+
+    const runningStatuses = new Set(['Pending Creation', 'Creating', 'Queued', 'Running'])
+    this.pollingStatuses = interval(5000).pipe(
+      withLatestFrom(this.analyses$),
+      takeWhile(([_, analyses]) => analyses.some((a) => runningStatuses.has(a.status)), true),
+      tap(() => { this.getAnalyses(orgId) }),
+    ).subscribe()
+  }
 
   getAnalysisDescription(analysis: Analysis): string {
     const descriptionMap: Record<AnalysisServiceType, string> = {
@@ -206,6 +205,8 @@ export class AnalysisService {
   }
 
   getRunDuration({ data }: { data: Analysis }) {
+    if (!data.start_time || !data.end_time) return ''
+
     const start = new Date(data.start_time)
     const end = new Date(data.end_time)
     const duration = Math.abs(end.getTime() - start.getTime())
