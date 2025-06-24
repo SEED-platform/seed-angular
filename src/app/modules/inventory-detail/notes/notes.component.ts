@@ -13,7 +13,7 @@ import { NoteService } from '@seed/api/notes'
 import type { Note } from '@seed/api/notes/notes.types'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryStateType, InventoryType } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -26,6 +26,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     AgGridModule,
     CommonModule,
     MatIconModule,
+    NotFoundComponent,
     PageComponent,
   ],
 })

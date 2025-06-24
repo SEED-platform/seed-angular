@@ -43,10 +43,7 @@
         title="Loading Inventory..."
       ></seed-progress-bar>
     } @else if (data.length === 0) {
-      <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
-        <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
-        <div class="text-secondary text-xl font-medium">No Inventory Found</div>
-      </div>
+      <seed-not-found message="No Inventory Found" icon="fa-solid:triangle-exclamation"></seed-not-found>
     } @else {
       <div class="flex gap-3 bg-white px-2 dark:bg-gray-800">
         <!-- Refresh Map -->

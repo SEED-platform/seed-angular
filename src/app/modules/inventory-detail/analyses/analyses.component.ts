@@ -14,7 +14,7 @@ import { CycleService } from '@seed/api/cycle'
 import { InventoryService } from '@seed/api/inventory'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { AnalysesGridComponent, PageComponent } from '@seed/components'
+import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
@@ -27,6 +27,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
     CommonModule,
     MatButtonModule,
     MatIconModule,
+    NotFoundComponent,
     PageComponent,
     SharedImports,
   ],

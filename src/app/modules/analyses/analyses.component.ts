@@ -14,7 +14,7 @@ import type { Analysis } from '@seed/api/analysis'
 import { AnalysisService } from '@seed/api/analysis'
 import { type Cycle, CycleService } from '@seed/api/cycle'
 import { UserService } from '@seed/api/user'
-import { AnalysesGridComponent, PageComponent } from '@seed/components'
+import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
 @Component({
@@ -31,6 +31,7 @@ import { SharedImports } from '@seed/directives'
     MatIconModule,
     MatListModule,
     MatTabsModule,
+    NotFoundComponent,
     PageComponent,
     RouterLink,
     SharedImports,

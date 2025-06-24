@@ -13,7 +13,7 @@ import { OrganizationService } from '@seed/api/organization'
 import type { Ubid } from '@seed/api/ubid'
 import { UbidService } from '@seed/api/ubid/ubid.service'
 import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { MapComponent } from '../detail'
@@ -28,6 +28,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     CommonModule,
     MapComponent,
     MatIconModule,
+    NotFoundComponent,
     PageComponent,
   ],
 })

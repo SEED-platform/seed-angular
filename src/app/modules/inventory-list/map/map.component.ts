@@ -36,7 +36,7 @@ import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
-import { PageComponent, ProgressBarComponent } from '@seed/components'
+import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MapService } from '@seed/services/map'
 import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
 import { LabelsComponent } from './labels.component'
@@ -47,13 +47,14 @@ type Layer = VectorLayer | TileLayer
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
   imports: [
-    PageComponent,
+    LabelsComponent,
     MatCheckboxModule,
     MatIconModule,
     MatProgressBarModule,
     MatSelectModule,
     MatTooltipModule,
-    LabelsComponent,
+    NotFoundComponent,
+    PageComponent,
     ProgressBarComponent,
   ],
 })

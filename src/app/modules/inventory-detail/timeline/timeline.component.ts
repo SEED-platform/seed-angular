@@ -8,7 +8,7 @@ import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
+import { NotFoundComponent, PageComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-inventory-detail-timeline',
@@ -17,8 +17,9 @@ import { PageComponent } from '@seed/components'
     AgGridAngular,
     AgGridModule,
     CommonModule,
-    PageComponent,
     MatIconModule,
+    NotFoundComponent,
+    PageComponent,
   ],
 })
 export class TimelineComponent implements OnInit {

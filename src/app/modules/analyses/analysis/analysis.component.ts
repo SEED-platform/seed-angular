@@ -189,8 +189,8 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     const div = document.querySelector('#content')
     if (!div || !this.gridViews?.length) return
 
-    const divHeight = div.getBoundingClientRect().height ?? 1
-    this.gridHeight = Math.min(this.gridViews.length * 29 + 97, divHeight * 0.9)
+    const divHeight = div.getBoundingClientRect().height ?? 500
+    this.gridHeight = Math.min(this.gridViews.length * 42 + 50, divHeight * 0.9)
   }
 
   getRowHeight = (params: { data: (View & { messages?: string[] }) }) => {
@@ -219,24 +219,25 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     if (action === 'viewProperty') {
       void this._router.navigate([`/properties/${property}`])
     } else if (action === 'viewResults') {
-      this.viewResults(id)
+      void this._router.navigate([`/analyses/${this.analysisId}/views/${id}`])
+      // this.viewResults(id)
     } else if (action === 'download') {
       this.downloadResult(output_files)
     }
   }
 
-  viewResults(id: number) {
-    console.log('Developer Note: Results modal may not work until frontend and backend are on the same server')
+  // viewResults(id: number) {
+  //   console.log('Developer Note: Results modal may not work until frontend and backend are on the same server')
 
-    const view = this.gridViews.find((v) => v.id === id)
-    const { parsed_results, output_files } = view
-    if (!parsed_results) return
+  //   const view = this.gridViews.find((v) => v.id === id)
+  //   const { parsed_results, output_files } = view
+  //   if (!parsed_results) return
 
-    this._dialog.open(ResultsModalComponent, {
-      minWidth: '40rem',
-      data: { parsedResults: parsed_results, outputFiles: output_files, service: this.analysis?.service },
-    })
-  }
+  //   this._dialog.open(ResultsModalComponent, {
+  //     minWidth: '40rem',
+  //     data: { parsedResults: parsed_results, outputFiles: output_files, service: this.analysis?.service },
+  //   })
+  // }
 
   downloadResult(output_files: AnalysisOutputFile[]) {
     console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')

@@ -19,7 +19,7 @@ export class AnalysisService {
   private _analyses = new BehaviorSubject<Analysis[]>([])
   private _analysis = new BehaviorSubject<Analysis>(null)
   private _views = new BehaviorSubject<View[]>([])
-  private _orgId = new BehaviorSubject<number>(null)
+  private _view = new BehaviorSubject<View>(null)
   private _originalViews = new BehaviorSubject<OriginalView[]>([])
   private _messages = new BehaviorSubject<AnalysesMessage[]>([])
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -27,6 +27,7 @@ export class AnalysisService {
   analyses$ = this._analyses.asObservable()
   analysis$ = this._analysis.asObservable()
   views$ = this._views.asObservable()
+  view$ = this._view.asObservable()
   originalViews$ = this._originalViews.asObservable()
   messages$ = this._messages.asObservable()
   pollingStatuses?: Subscription
@@ -76,7 +77,7 @@ export class AnalysisService {
   }
 
   // get single analysis
-  getAnalysis(orgId: number, analysisId) {
+  getAnalysis(orgId: number, analysisId: number) {
     const url = `/api/v3/analyses/${analysisId}?organization_id=${orgId}`
     this._httpClient.get<AnalysisResponse>(url).pipe(
       map((response) => response.analysis),
@@ -98,18 +99,6 @@ export class AnalysisService {
     )
   }
 
-  // get single analysis view (from a single run)
-  getRun(_analysisId, _runId): Observable<AnalysisView> {
-    return this._httpClient
-      .get<AnalysisView>(`/api/v3/analyses/${_analysisId}/views/${_runId}?organization_id=${this.orgId}`)
-      .pipe(
-        map((response) => response),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching analysis run')
-        }),
-      )
-  }
-
   // get analysis views
   getAnalysisViews(orgId: number, analysisId: number) {
     const url = `/api/v3/analyses/${analysisId}/views?organization_id=${orgId}`
@@ -122,6 +111,18 @@ export class AnalysisService {
         return this._errorService.handleError(error, 'Error fetching analyses')
       }),
     ).subscribe()
+  }
+
+  // get analysis view
+  getAnalysisView(orgId: number, analysisId: number, viewId: number): Observable<View> {
+    const url = `/api/v3/analyses/${analysisId}/views/${viewId}/?organization_id=${orgId}`
+    return this._httpClient.get<AnalysisView>(url).pipe(
+      map((response) => response.view),
+      tap((view) => { this._view.next(view) }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching analysis view')
+      }),
+    )
   }
 
   // delete analysis

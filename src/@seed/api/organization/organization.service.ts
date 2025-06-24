@@ -5,7 +5,7 @@ import type { Observable } from 'rxjs'
 import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { naturalSort } from '../../utils'
 import { InventoryService } from '../inventory'
 import type { ProgressResponse } from '../progress'
@@ -293,10 +293,11 @@ export class OrganizationService {
           map((view) => ({ org, view })),
         ),
       ),
-      map(({ org, view }) => {
+      map(({ org, view }: { org: Organization; view: ViewResponse }) => {
         const displayFieldKey = type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
         const displayField = view.state[displayFieldKey] as string
-        return displayField
+        const defaultName = type === 'taxlots' ? `Tax Lot ${view.taxlot.id}` : `Property ${view.property.id}`
+        return displayField || defaultName
       }),
     )
   }

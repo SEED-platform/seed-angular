@@ -12,7 +12,7 @@ import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { GroupsService } from '@seed/api/groups/groups.service'
 import type { InventoryGroup } from '@seed/api/groups/groups.types'
 import { OrganizationService } from '@seed/api/organization'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -26,6 +26,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     CommonModule,
     FormModalComponent,
     MatIconModule,
+    NotFoundComponent,
     PageComponent,
   ],
 })
