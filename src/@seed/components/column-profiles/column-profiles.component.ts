@@ -178,7 +178,7 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   //   return `
   //     <span
   //       style="opacity: 0.4"
-  //       class="material-icons-outlined action-icon cursor-pointer"
+  //       class="material-icons-outlined  cursor-pointer"
   //     >
   //       push_pin
   //     </span>

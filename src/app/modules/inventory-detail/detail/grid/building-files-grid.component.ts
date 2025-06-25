@@ -56,7 +56,7 @@ export class BuildingFilesGridComponent implements OnInit {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="download">cloud_download</span>
+        <span class="material-icons cursor-pointer text-secondary" data-action="download">cloud_download</span>
       </div>
     `
   }

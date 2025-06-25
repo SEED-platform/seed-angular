@@ -179,8 +179,8 @@ export class MetersComponent implements OnDestroy, OnInit {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center">
-      <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
-      ${this.groupIds.length ? '<span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
+      <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${this.groupIds.length ? '<span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }

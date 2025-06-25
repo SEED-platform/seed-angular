@@ -86,8 +86,8 @@ export class DataLoggersGridComponent implements OnChanges {
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Readings</span>
         </span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }
