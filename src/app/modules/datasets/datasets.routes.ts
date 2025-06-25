@@ -3,7 +3,7 @@ import type { Routes } from '@angular/router'
 import { switchMap, take, tap } from 'rxjs'
 import { DatasetService } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
-import { DataComponent } from './data.component'
+import { DataComponent } from './datasets.component'
 
 export default [
   {
