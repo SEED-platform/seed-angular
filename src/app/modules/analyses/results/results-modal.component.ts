@@ -5,11 +5,11 @@ import { MatCardModule } from '@angular/material/card'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { AnalysisOutputFile, AnalysisServiceType } from '@seed/api/analysis'
 import { SafeUrlPipe } from '@seed/pipes/safe-url/safe-url.pipe'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 
 @Component({
   selector: 'seed-analysis-results-modal',

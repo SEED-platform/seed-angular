@@ -25,7 +25,7 @@ export type Analysis = {
   _finished_with_tasks: boolean; // used to determine if an analysis has no currently running tasks
 }
 
-export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation';
+export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation'
 
 // Analysis by View type
 export type View = {

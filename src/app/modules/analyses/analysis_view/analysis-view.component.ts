@@ -4,6 +4,10 @@ import { Component, inject } from '@angular/core'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { Observable } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { AnalysesMessage, Analysis, View } from '@seed/api/analysis'
 import { AnalysisService } from '@seed/api/analysis'
 import type { Cycle } from '@seed/api/cycle'
@@ -13,11 +17,7 @@ import { UserService } from '@seed/api/user'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 import { SafeUrlPipe } from '@seed/pipes/safe-url/safe-url.pipe'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { InventoryType } from 'app/modules/inventory'
-import type { Observable } from 'rxjs'
-import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-analysis-view',
@@ -49,7 +49,7 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
   cycle: Partial<Cycle> = {}
   messages: AnalysesMessage[] = []
   orgId: number
-  apvId = Number(this._route.snapshot.paramMap.get('viewId'))  // analysis_property_view_id
+  apvId = Number(this._route.snapshot.paramMap.get('viewId')) // analysis_property_view_id
   view: Partial<View> = {}
   gridApi: GridApi
   viewDisplayField$: Observable<string>

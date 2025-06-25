@@ -6,8 +6,7 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
-import { RouterLink } from '@angular/router'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -21,7 +20,6 @@ import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { ResultsModalComponent } from '../results/results-modal.component'
 
 @Component({
   selector: 'seed-analyses-analysis',
