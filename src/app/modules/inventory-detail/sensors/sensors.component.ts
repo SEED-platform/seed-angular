@@ -82,7 +82,7 @@ export class SensorsComponent implements OnDestroy, OnInit {
       tap(() => { this._cycleService.get(this.orgId) }),
       switchMap(() => this._cycleService.cycles$),
       tap((cycles) => { this.cycleId = cycles.length ? cycles[0].id : null }),
-      switchMap(() => this._datasetService.listDatasets(this.orgId)),
+      switchMap(() => this._datasetService.datasets$),
       tap((datasets) => { this.datasetId = datasets.length ? datasets[0].id.toString() : null }),
     )
   }

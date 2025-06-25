@@ -2,43 +2,94 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, of, ReplaySubject } from 'rxjs'
+import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap } from 'rxjs'
 import { UserService } from '../user'
 import type { CountDatasetsResponse, Dataset, ListDatasetsResponse } from './dataset.types'
+import { ErrorService } from '@seed/services'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Injectable({ providedIn: 'root' })
 export class DatasetService {
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
-
+  private _errorService = inject(ErrorService)
+  private _snackBar = inject(SnackBarService)
   private _datasetCount = new ReplaySubject<number>(1)
+  private _datasets = new ReplaySubject<Dataset[]>(1)
   datasetCount$ = this._datasetCount.asObservable()
+  datasets$ = this._datasets.asObservable()
+  orgId: number
 
   constructor() {
     // Refresh dataset count only when the organization ID changes
-    this._userService.currentOrganizationId$.subscribe((organizationId) => {
-      this.countDatasets(organizationId).subscribe()
-    })
+    this._userService.currentOrganizationId$.pipe(
+      tap((orgId) => {
+        this.orgId = orgId
+        this.list(this.orgId)
+        this.countDatasets(this.orgId)
+      }),
+    ).subscribe()
   }
 
-  listDatasets(organizationId: number): Observable<Dataset[]> {
-    return this._httpClient
-      .get<ListDatasetsResponse>(`/api/v3/datasets/?organization_id=${organizationId}`)
-      .pipe(map(({ datasets }) => datasets))
+  list(organizationId: number) {
+    const url = `/api/v3/datasets/?organization_id=${organizationId}`
+    this._httpClient.get<ListDatasetsResponse>(url).pipe(
+      map(({ datasets }) => datasets),
+      tap((datasets) => { this._datasets.next(datasets) }),
+    ).subscribe()
   }
 
-  countDatasets(organizationId: number): Observable<number> {
-    return this._httpClient.get<CountDatasetsResponse>(`/api/v3/datasets/count/?organization_id=${organizationId}`).pipe(
-      map(({ datasets_count }) => {
-        // This assumes that the organizationId passed in is the selected organization
-        this._datasetCount.next(datasets_count)
-        return datasets_count
+  create(orgId: number, name: string): Observable<Dataset> {
+    const url = `/api/v3/datasets/?organization_id=${orgId}`
+    return this._httpClient.post<Dataset>(url, { name }).pipe(
+      tap((response) => { console.log('temp', response) }),
+      tap(() => {
+        this.countDatasets(orgId)
+        this.list(orgId)
+        this._snackBar.success('Dataset created successfully')
       }),
       catchError((error: HttpErrorResponse) => {
-        // TODO toast or alert? also, better fallback value
-        console.error('Error occurred while counting datasets:', error.error)
-        return of(-1)
+        return this._errorService.handleError(error, 'Error creating dataset count')
       }),
     )
+  }
+
+  update(orgId: number, datasetId: number, name: string): Observable<Dataset> {
+    const url = `/api/v3/datasets/${datasetId}/?organization_id=${orgId}`
+    return this._httpClient.put<Dataset>(url, { dataset: name }).pipe(
+      tap((response) => { console.log('temp', response) }),
+      tap(() => {
+        this.countDatasets(orgId)
+        this.list(orgId)
+        this._snackBar.success('Dataset updated successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating dataset')
+      }),
+    )
+  }
+
+  delete(orgId: number, datasetId: number) {
+    const url = `/api/v3/datasets/${datasetId}/?organization_id=${orgId}`
+    return this._httpClient.delete(url).pipe(
+      tap(() => {
+        this.countDatasets(orgId)
+        this.list(orgId)
+        this._snackBar.success('Dataset deleted successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting dataset')
+      }),
+    )
+  }
+
+  countDatasets(orgId: number) {
+    this._httpClient.get<CountDatasetsResponse>(`/api/v3/datasets/count/?organization_id=${orgId}`).pipe(
+      map(({ datasets_count }) => datasets_count),
+      tap((datasetsCount) => { this._datasetCount.next(datasetsCount)}),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching dataset count')
+      }),
+    ).subscribe()
   }
 }

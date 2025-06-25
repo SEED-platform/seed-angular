@@ -113,7 +113,6 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
     this._groupsService.listForInventory(this.orgId, [this.viewId])
-    this._cycleService.get(this.orgId)
 
     this._meterService.meters$.pipe(
       tap((meters) => {
@@ -141,7 +140,7 @@ export class MetersComponent implements OnDestroy, OnInit {
       tap((cycles) => { this.cycles = cycles }),
     ).subscribe()
 
-    this._datasetService.listDatasets(this.orgId).pipe(
+    this._datasetService.datasets$.pipe(
       tap((datasets) => { this.datasets = datasets }),
     ).subscribe()
   }

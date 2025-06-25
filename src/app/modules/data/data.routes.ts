@@ -1,6 +1,6 @@
 import { inject } from '@angular/core'
 import type { Routes } from '@angular/router'
-import { switchMap, take } from 'rxjs'
+import { switchMap, take, tap } from 'rxjs'
 import { DatasetService } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
 import { DataComponent } from './data.component'
@@ -14,13 +14,7 @@ export default [
     resolve: {
       datasets: () => {
         const datasetService = inject(DatasetService)
-        const userService = inject(UserService)
-        return userService.currentOrganizationId$.pipe(
-          take(1),
-          switchMap((organizationId) => {
-            return datasetService.listDatasets(organizationId)
-          }),
-        )
+        return datasetService.datasets$
       },
     },
   },
@@ -33,11 +27,10 @@ export default [
         const datasetService = inject(DatasetService)
         const userService = inject(UserService)
         return userService.currentOrganizationId$.pipe(
+          // TODO retrieve a single dataset instead
           take(1),
-          switchMap((organizationId) => {
-            // TODO retrieve a single dataset instead
-            return datasetService.listDatasets(organizationId)
-          }),
+          tap((orgId) => { datasetService.list(orgId) }),
+          switchMap(() => datasetService.datasets$),
         )
       },
     },
