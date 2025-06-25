@@ -17,7 +17,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-data',
-  templateUrl: './data.component.html',
+  templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
   // changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -28,13 +28,12 @@ import { FormModalComponent } from './modal/form-modal.component'
     PageComponent,
   ],
 })
-export class DataComponent implements OnInit {
+export class DatasetsComponent implements OnInit {
   private _configService = inject(ConfigService)
   private _datasetService = inject(DatasetService)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _userService = inject(UserService)
-  readonly sort = viewChild.required(MatSort)
   private _dialog = inject(MatDialog)
   columnDefs: ColDef[]
   datasets: Dataset[]
@@ -69,12 +68,21 @@ export class DataComponent implements OnInit {
   setColumnDefs() {
     this.columnDefs = [
       { field: 'id', hide: true },
-      { field: 'name', headerName: 'Name' },
+      { field: 'name', headerName: 'Name', cellRenderer: this.nameRenderer },
       { field: 'importfiles', headerName: 'Files', valueGetter: ({ data }: { data: Dataset }) => data.importfiles.length },
       { field: 'updated_at', headerName: 'Updated At', valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString() },
       { field: 'last_modified_by', headerName: 'Last Modified By' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionsRenderer },
     ]
+  }
+
+  nameRenderer({ value }: { value: string }) {
+    return `
+      <div class="text-primary dark:text-primary-300 cursor-pointer" title="Dataset Detail" data-action="detail">
+        ${value}
+        <span class="material-icons text-secondary text-sm">open_in_new</span>
+      </div>
+    `
   }
 
   actionsRenderer() {
@@ -97,8 +105,7 @@ export class DataComponent implements OnInit {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    console.log('cell clicked', event)
-    if (event.colDef.field !== 'actions') return
+    if (!['actions', 'name'].includes(event.colDef.field)) return
 
     const target = event.event.target as HTMLElement
     const action = target.closest('[data-action]')?.getAttribute('data-action')
@@ -111,6 +118,8 @@ export class DataComponent implements OnInit {
       this.editDataset(dataset)
     } else if (action === 'delete') {
       this.deleteDataset(dataset)
+    } else if(action === 'detail') {
+    void this._router.navigate([`/datasets/${id}`])
     }
   }
 
