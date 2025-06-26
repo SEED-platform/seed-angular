@@ -44,7 +44,7 @@ export class InventoryService {
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
-    const url = `api/v4/tax_lot_properties/filter/?${paramString}`
+    const url = `/api/v4/tax_lot_properties/filter/?${paramString}`
     return this._httpClient.post<FilterResponse>(url, data).pipe(
       map((response) => response),
       tap((response) => {
@@ -68,7 +68,7 @@ export class InventoryService {
   }
 
   getColumnListProfiles(profileLocation: string, inventoryType: string, brief = false): Observable<Profile[]> {
-    const url = 'api/v3/column_list_profiles/'
+    const url = '/api/v3/column_list_profiles/'
     const params = {
       organization_id: this.orgId,
       inventory_type: inventoryType,
@@ -87,7 +87,7 @@ export class InventoryService {
   }
 
   getColumnListProfile(id: number): Observable<Profile> {
-    const url = `api/v3/column_list_profiles/${id}/`
+    const url = `/api/v3/column_list_profiles/${id}/`
     const params = { organization_id: this.orgId }
     return this._httpClient.get<ProfileResponse>(url, { params }).pipe(
       map(({ data }) => data),

@@ -13,7 +13,7 @@ export class ScenarioService {
   private _snackBar = inject(SnackBarService)
 
   deleteScenario(orgId: number, viewId: number, scenarioId: number): Observable<unknown> {
-    const url = `api/v3/properties/${viewId}/scenarios/${scenarioId}/?organization_id=${orgId}`
+    const url = `/api/v3/properties/${viewId}/scenarios/${scenarioId}/?organization_id=${orgId}`
     return this._httpClient.delete<unknown>(url, {}).pipe(
       tap(() => {
         this._snackBar.success('Successfully deleted scenario')

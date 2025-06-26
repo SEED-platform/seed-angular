@@ -24,6 +24,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "baseHref": "/ng-seed/",
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",

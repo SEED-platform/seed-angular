@@ -61,7 +61,7 @@ export class DocumentationComponent {
             'Mapping, Merging, Matching, Pairing, and Linking - What do each of those mean and how are they related or different from each other?',
           answer: `
             <p>Different inventory management and analysis features in SEED are based on the relationships between records of different inventory types (properties and tax lots). Those terms help describe these relationships.</p>
-            <img class="drop-shadow-lg" src="/images/documentation/features/mapping-diagram.webp" alt="Mapping diagram, description follows">
+            <img class="drop-shadow-lg" src="images/documentation/features/mapping-diagram.webp" alt="Mapping diagram, description follows">
             <ul>
               <li><strong>Mapping</strong> refers to the process of mapping newly imported data fields to the known database column names in order to create a record.</li>
               <li><strong>Merging</strong> refers to the act of combining multiple properties (or multiple tax lots) into one record. This can be done manually by users or automatically by SEED and helps avoid duplicate records.</li>

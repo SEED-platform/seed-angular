@@ -88,7 +88,7 @@ export class UserService {
    * Update user
    */
   updateUser(userId: number, params: UserUpdateRequest): Observable<CurrentUser> {
-    return this._httpClient.put<CurrentUser>(`api/v3/users/${userId}/`, params).pipe(
+    return this._httpClient.put<CurrentUser>(`/api/v3/users/${userId}/`, params).pipe(
       tap((user) => {
         this._currentUser.next(user)
       }),
@@ -102,7 +102,7 @@ export class UserService {
    * Update user role
    */
   updateUserRole(userId: number, orgId: number, role: string): Observable<{ status: string }> {
-    const url = `api/v3/users/${userId}/role/?organization_id=${orgId}`
+    const url = `/api/v3/users/${userId}/role/?organization_id=${orgId}`
     return this._httpClient.put<{ status: string }>(url, { role }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating user role')
@@ -126,7 +126,7 @@ export class UserService {
     return this.currentUser$.pipe(
       take(1),
       switchMap(({ id: userId }) => {
-        return this._httpClient.put<PasswordUpdateResponse>(`api/v3/users/${userId}/set_password/`, params)
+        return this._httpClient.put<PasswordUpdateResponse>(`/api/v3/users/${userId}/set_password/`, params)
       }),
       tap(() => {
         this.getCurrentUser().subscribe()
@@ -144,7 +144,7 @@ export class UserService {
     return this.currentUser$.pipe(
       take(1),
       switchMap(({ id: userId }) => {
-        return this._httpClient.post<GenerateApiKeyResponse>(`api/v3/users/${userId}/generate_api_key/`, {})
+        return this._httpClient.post<GenerateApiKeyResponse>(`/api/v3/users/${userId}/generate_api_key/`, {})
       }),
       tap(() => {
         // Refresh user info after changing the API key
