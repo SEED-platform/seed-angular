@@ -95,12 +95,12 @@ export class DatasetComponent implements OnDestroy, OnInit {
     return `
       <div class="flex gap-2 align-center">
         <span class="inline-flex items-center gap-1 cursor-pointer border rounded-lg bg-primary text-white h-8 mt-1 px-2 hover:bg-primary-800" title="Data Mapping" data-action="dataMapping">
-          <span class="material-icons text-base">add</span>
           <span class="text-sm">Data Mapping</span>
+          <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>
         <span class="inline-flex items-center gap-1 cursor-pointer border rounded-lg bg-primary text-white h-8 mt-1 px-2 hover:bg-primary-800" title="Data Pairing" data-action="dataPairing">
-          <span class="material-icons text-base">add</span>
           <span class="text-sm">Data Pairing</span>
+          <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>
         <span class="material-icons cursor-pointer text-secondary my-auto" title="Download Dataset" data-action="download">cloud_download</span>
         <span class="material-icons cursor-pointer text-secondary my-auto" title="Delete Dataset" data-action="delete">clear</span>
