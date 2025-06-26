@@ -1,14 +1,17 @@
 // Subset type
-type ImportFile = {
+export type ImportFile = {
   created: string;
   modified: string;
   deleted: boolean;
   import_record: number;
   cycle: number;
+  cycle_name?: string; // used in dataset.component ag-grid
   file: string;
   uploaded_filename: string;
   cached_first_row: string;
   id: number;
+  source_type: string;
+  num_rows: number;
 }
 
 // Subset type
@@ -38,4 +41,9 @@ export type ListDatasetsResponse = {
 export type CountDatasetsResponse = {
   status: 'success';
   datasets_count: number;
+}
+
+export type DatasetResponse = {
+  status: 'success';
+  dataset: Dataset;
 }

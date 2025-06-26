@@ -3,6 +3,7 @@ import type { Routes } from '@angular/router'
 import { switchMap, take, tap } from 'rxjs'
 import { DatasetService } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
+import { DatasetComponent } from './dataset/dataset.component'
 import { DatasetsComponent } from './datasets.component'
 
 export default [
@@ -20,8 +21,8 @@ export default [
   },
   {
     path: ':id',
-    title: 'TODO',
-    component: DatasetsComponent,
+    title: 'Dataset Detail',
+    component: DatasetComponent,
     resolve: {
       data: () => {
         const datasetService = inject(DatasetService)

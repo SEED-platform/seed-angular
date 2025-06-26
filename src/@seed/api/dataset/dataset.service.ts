@@ -2,9 +2,9 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap } from 'rxjs'
+import { catchError, map, ReplaySubject, tap } from 'rxjs'
 import { UserService } from '../user'
-import type { CountDatasetsResponse, Dataset, ListDatasetsResponse } from './dataset.types'
+import type { CountDatasetsResponse, Dataset, DatasetResponse, ListDatasetsResponse } from './dataset.types'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -37,6 +37,16 @@ export class DatasetService {
       map(({ datasets }) => datasets),
       tap((datasets) => { this._datasets.next(datasets) }),
     ).subscribe()
+  }
+
+  get(orgId: number, datasetId: number): Observable<Dataset> {
+    const url = `/api/v3/datasets/${datasetId}/?organization_id=${orgId}`
+    return this._httpClient.get<DatasetResponse>(url).pipe(
+      map(({ dataset }) => dataset),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching dataset')
+      }),
+    )
   }
 
   create(orgId: number, name: string): Observable<Dataset> {
@@ -86,10 +96,20 @@ export class DatasetService {
   countDatasets(orgId: number) {
     this._httpClient.get<CountDatasetsResponse>(`/api/v3/datasets/count/?organization_id=${orgId}`).pipe(
       map(({ datasets_count }) => datasets_count),
-      tap((datasetsCount) => { this._datasetCount.next(datasetsCount)}),
+      tap((datasetsCount) => { this._datasetCount.next(datasetsCount) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching dataset count')
       }),
     ).subscribe()
+  }
+
+  deleteFile(orgId: number, fileId: number) {
+    const url = `/api/v3/import_files/${fileId}/?organization_id=${orgId}`
+    return this._httpClient.delete(url).pipe(
+      tap(() => { this._snackBar.success('File deleted successfully') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting file')
+      }),
+    )
   }
 }
