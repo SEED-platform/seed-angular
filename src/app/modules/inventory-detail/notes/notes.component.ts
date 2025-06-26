@@ -56,11 +56,15 @@ export class NotesComponent implements OnDestroy, OnInit {
   viewDisplayField$: Observable<string>
 
   ngOnInit(): void {
-    this.getParams().pipe(
-      switchMap(() => this._userService.currentOrganizationId$),
-      switchMap((orgId) => this.getDependencies(orgId)),
-      tap(() => { this.setGrid() }),
-    ).subscribe()
+    this.getParams()
+      .pipe(
+        switchMap(() => this._userService.currentOrganizationId$),
+        switchMap((orgId) => this.getDependencies(orgId)),
+        tap(() => {
+          this.setGrid()
+        }),
+      )
+      .subscribe()
   }
 
   getParams() {
@@ -191,13 +195,17 @@ export class NotesComponent implements OnDestroy, OnInit {
     const dialogRef = this._dialog.open(FormModalComponent, {
       width: '40rem',
       data: { orgId: this.orgId, viewId: this.viewId, type: this.type, note: null },
-
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      tap(() => { this.updateGridHeight() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => {
+          this.updateGridHeight()
+        }),
+      )
+      .subscribe()
   }
 
   editNote(id: number) {
@@ -218,11 +226,16 @@ export class NotesComponent implements OnDestroy, OnInit {
       data: { model: 'Note', instance: noteDate },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._notesService.delete(this.orgId, this.viewId, id, this.type)),
-      tap(() => { this.updateGridHeight() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._notesService.delete(this.orgId, this.viewId, id, this.type)),
+        tap(() => {
+          this.updateGridHeight()
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

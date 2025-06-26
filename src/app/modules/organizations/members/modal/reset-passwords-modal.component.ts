@@ -12,12 +12,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-member-reset-passwords-modal',
   templateUrl: './reset-passwords-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule],
 })
 export class ResetPasswordsModalComponent implements OnDestroy {
   private _organizationService = inject(OrganizationService)

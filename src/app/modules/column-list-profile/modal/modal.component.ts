@@ -49,10 +49,7 @@ export class ModalComponent {
   existingNames = this.data.profiles?.map((p) => p.name).filter((name) => name !== this.data.profile?.name) ?? []
 
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
-      Validators.required,
-      SEEDValidators.uniqueValue(this.existingNames),
-    ]),
+    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
   })
 
   errorMessage = false
@@ -80,16 +77,21 @@ export class ModalComponent {
     const displayType = this.data.inventoryType === 'taxlots' ? 'Tax Lot' : 'Property'
     const { orgId, profile, cycleId } = this.data
 
-    this._inventoryService.updateProfileToShowPopulatedColumns(orgId, profile.id, cycleId, displayType).pipe(
-      switchMap((profile) => this.setOrder(profile)),
-      tap(() => { this._snackBar.success('Profile updated') }),
-      finalize(() => {
-        setTimeout(() => {
-          this.inProgress = false
-        }, 1000)
-        this.close(profile.id)
-      }),
-    ).subscribe()
+    this._inventoryService
+      .updateProfileToShowPopulatedColumns(orgId, profile.id, cycleId, displayType)
+      .pipe(
+        switchMap((profile) => this.setOrder(profile)),
+        tap(() => {
+          this._snackBar.success('Profile updated')
+        }),
+        finalize(() => {
+          setTimeout(() => {
+            this.inProgress = false
+          }, 1000)
+          this.close(profile.id)
+        }),
+      )
+      .subscribe()
   }
 
   setOrder(profile: Profile) {
@@ -107,15 +109,18 @@ export class ModalComponent {
       derived_columns: [],
     }
 
-    this._inventoryService.createColumnListProfile(this.data.orgId, data).pipe(
-      tap((profile) => {
-        this.data.profile = profile
-        // do not close if its a show populated columns request
-        if (this.data.mode === 'create') {
-          this.close(profile.id)
-        }
-      }),
-    ).subscribe()
+    this._inventoryService
+      .createColumnListProfile(this.data.orgId, data)
+      .pipe(
+        tap((profile) => {
+          this.data.profile = profile
+          // do not close if its a show populated columns request
+          if (this.data.mode === 'create') {
+            this.close(profile.id)
+          }
+        }),
+      )
+      .subscribe()
   }
 
   onRename() {

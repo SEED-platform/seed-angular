@@ -108,21 +108,24 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
     const sourceType = 'GreenButton'
     this.uploading = true
 
-    return this._uploaderService.fileUpload(orgId, this.file, sourceType, datasetId.toString()).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(({ import_file_id }) => {
-        this.fileId = import_file_id
-        this.completed[1] = true
-      }),
-      switchMap(() => this._uploaderService.greenButtonMetersPreview(orgId, viewId, systemId, this.fileId)),
-      tap(({ proposed_imports, validated_type_units }) => {
-        this.proposedImports = proposed_imports
-        this.typeUnits = validated_type_units
-        this.completed[2] = true
-        this.stepper.next()
-        this.uploading = false
-      }),
-    ).subscribe()
+    return this._uploaderService
+      .fileUpload(orgId, this.file, sourceType, datasetId.toString())
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(({ import_file_id }) => {
+          this.fileId = import_file_id
+          this.completed[1] = true
+        }),
+        switchMap(() => this._uploaderService.greenButtonMetersPreview(orgId, viewId, systemId, this.fileId)),
+        tap(({ proposed_imports, validated_type_units }) => {
+          this.proposedImports = proposed_imports
+          this.typeUnits = validated_type_units
+          this.completed[2] = true
+          this.stepper.next()
+          this.uploading = false
+        }),
+      )
+      .subscribe()
   }
 
   step3() {
@@ -145,20 +148,25 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
       })
     }
 
-    this._uploaderService.saveRawData(orgId, cycleId, this.fileId).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((response: ProgressResponse) => { this.progressBarObj.progress = response.progress }),
-      switchMap((data) => {
-        return this._uploaderService.checkProgressLoop({
-          progressKey: data.progress_key,
-          offset: 0,
-          multiplier: 1,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })
-      }),
-    ).subscribe()
+    this._uploaderService
+      .saveRawData(orgId, cycleId, this.fileId)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((response: ProgressResponse) => {
+          this.progressBarObj.progress = response.progress
+        }),
+        switchMap((data) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: data.progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+      )
+      .subscribe()
   }
 
   gridHeight(data: unknown[]) {

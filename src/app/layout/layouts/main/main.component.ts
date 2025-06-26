@@ -49,12 +49,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.navigation = this._navigationService.navigation
 
-    this._router.events.pipe(
-      filter((event) => event instanceof (NavigationEnd)),
-      tap(() => {
-        this.navigation = this._navigationService.getNavigation()
-      }),
-    ).subscribe()
+    this._router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        tap(() => {
+          this.navigation = this._navigationService.getNavigation()
+        }),
+      )
+      .subscribe()
 
     // Subscribe to media changes
     this._mediaWatcherService.onMediaChange$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ matchingAliases }) => {

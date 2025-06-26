@@ -56,9 +56,13 @@ export class UbidsComponent implements OnDestroy, OnInit {
   viewDisplayField$: Observable<string>
 
   ngOnInit() {
-    this.getUrlParams().pipe(
-      tap(() => { this.getStreams() }),
-    ).subscribe()
+    this.getUrlParams()
+      .pipe(
+        tap(() => {
+          this.getStreams()
+        }),
+      )
+      .subscribe()
   }
 
   getUrlParams() {
@@ -72,28 +76,32 @@ export class UbidsComponent implements OnDestroy, OnInit {
   }
 
   getStreams() {
-    this._inventoryService.view$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      tap((view) => {
-        this.view = view
-        setTimeout(() => {
-          this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
-          this.mapComponent?.initMap()
-        })
-      }),
-    ).subscribe()
+    this._inventoryService.view$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        tap((view) => {
+          this.view = view
+          setTimeout(() => {
+            this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
+            this.mapComponent?.initMap()
+          })
+        }),
+      )
+      .subscribe()
 
-    this._userService.currentOrganizationId$.subscribe((orgId) => this.orgId = orgId)
-    this._ubidService.ubids$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      tap((ubids) => {
-        ubids.sort((a, b) => Number(b.preferred) - Number(a.preferred))
-        this.ubids = ubids
-        this.setGrid()
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$.subscribe((orgId) => (this.orgId = orgId))
+    this._ubidService.ubids$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        tap((ubids) => {
+          ubids.sort((a, b) => Number(b.preferred) - Number(a.preferred))
+          this.ubids = ubids
+          this.setGrid()
+        }),
+      )
+      .subscribe()
   }
 
   setGrid() {
@@ -172,10 +180,13 @@ export class UbidsComponent implements OnDestroy, OnInit {
       },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
+      )
+      .subscribe()
   }
 
   editUbid(ubid: Ubid) {
@@ -191,10 +202,13 @@ export class UbidsComponent implements OnDestroy, OnInit {
       },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._inventoryService.getView(this.orgId, this.viewId, this.type)),
+      )
+      .subscribe()
   }
 
   deleteUbid(ubid: Ubid) {
@@ -203,10 +217,13 @@ export class UbidsComponent implements OnDestroy, OnInit {
       data: { model: 'UBID', instance: ubid.ubid },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._ubidService.delete(this.orgId, this.viewId, ubid.id, this.type)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._ubidService.delete(this.orgId, this.viewId, ubid.id, this.type)),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

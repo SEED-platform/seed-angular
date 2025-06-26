@@ -7,11 +7,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 @Component({
   selector: 'seed-progress-bar',
   templateUrl: './progress-bar.component.html',
-  imports: [
-    CommonModule,
-    MatProgressBarModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, MatProgressBarModule, MatIconModule],
 })
 export class ProgressBarComponent {
   @Input() total: number
@@ -20,7 +16,7 @@ export class ProgressBarComponent {
   @Input() outline = false
 
   get percent() {
-    return this.progress / this.total * 100
+    return (this.progress / this.total) * 100
   }
 
   get showNumericProgress() {

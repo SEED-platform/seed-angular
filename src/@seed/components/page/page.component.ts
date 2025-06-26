@@ -16,14 +16,7 @@ import type { Config } from './page.types'
 @Component({
   selector: 'seed-page',
   templateUrl: './page.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-    InventoryTabComponent,
-    SharedImports,
-  ],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, InventoryTabComponent, SharedImports],
   encapsulation: ViewEncapsulation.None,
   styles: ':host { @apply flex; @apply flex-auto }',
 })
@@ -40,9 +33,7 @@ export class PageComponent implements OnDestroy {
 
   constructor() {
     // show loading only once
-    this._loadingService.show$.pipe(
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe((loading) => {
+    this._loadingService.show$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((loading) => {
       if (!this.hasLoaded && !loading) {
         this.loading = false
         this.hasLoaded = true

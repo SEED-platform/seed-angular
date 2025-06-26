@@ -84,13 +84,17 @@ export class DetailComponent implements OnDestroy, OnInit {
   }
 
   initDetail() {
-    return this._activatedRoute.paramMap.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => { this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id')) }),
-      switchMap(() => this.getDependencies()),
-      switchMap(() => this.updateOrgUserSettings()),
-      switchMap(() => this.loadView()),
-    ).subscribe()
+    return this._activatedRoute.paramMap
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.viewId = parseInt(this._activatedRoute.snapshot.paramMap.get('id'))
+        }),
+        switchMap(() => this.getDependencies()),
+        switchMap(() => this.updateOrgUserSettings()),
+        switchMap(() => this.loadView()),
+      )
+      .subscribe()
   }
 
   getDependencies() {
@@ -124,9 +128,7 @@ export class DetailComponent implements OnDestroy, OnInit {
     return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
       switchMap((view) => {
         this.view = view
-        const id = this.type === 'taxlots'
-          ? view.taxlot?.id
-          : view.property?.id
+        const id = this.type === 'taxlots' ? view.taxlot?.id : view.property?.id
         return this._inventoryService.getViews(this.orgId, id, this.type)
       }),
       switchMap((views) => {

@@ -14,11 +14,7 @@ import { MoreActionsModalComponent } from '../modal'
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [
-    DeleteModalComponent,
-    MatFormFieldModule,
-    MatSelectModule,
-  ],
+  imports: [DeleteModalComponent, MatFormFieldModule, MatSelectModule],
 })
 export class ActionsComponent implements OnDestroy {
   @Input() cycleId: number
@@ -36,12 +32,36 @@ export class ActionsComponent implements OnDestroy {
 
   get actions() {
     return [
-      { name: 'Select All', action: () => { this.selectAll() }, disabled: false },
-      { name: 'Select None', action: () => { this.deselectAll() }, disabled: false },
-      { name: 'Only Show Populated Columns', action: () => { this.openShowPopulatedColumnsModal() }, disabled: !this.inventory },
+      {
+        name: 'Select All',
+        action: () => {
+          this.selectAll()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Select None',
+        action: () => {
+          this.deselectAll()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Only Show Populated Columns',
+        action: () => {
+          this.openShowPopulatedColumnsModal()
+        },
+        disabled: !this.inventory,
+      },
       { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
       { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
-      { name: 'More...', action: () => { this.openMoreActionsModal() }, disabled: !this.selectedViewIds.length },
+      {
+        name: 'More...',
+        action: () => {
+          this.openMoreActionsModal()
+        },
+        disabled: !this.selectedViewIds.length,
+      },
     ]
   }
 
@@ -88,12 +108,17 @@ export class ActionsComponent implements OnDestroy {
       data: { model: `${this.selectedViewIds.length} Property States`, instance: '' },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
-      tap(() => { this.refreshInventory.emit() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
+        tap(() => {
+          this.refreshInventory.emit()
+        }),
+      )
+      .subscribe()
   }
 
   openShowPopulatedColumnsModal() {

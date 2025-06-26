@@ -59,20 +59,98 @@ export class HeaderComponent implements OnInit {
   gridTheme$ = this._configService.gridTheme$
 
   actions = [
-    { name: 'Add to/Remove from Groups', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Add/Remove Labels', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Add/Update UBID', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Export Audit Template File (XML)', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Export BuildingSync', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Export BuildingSync (Excel)', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Export to Audit Template', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Merge and Link Matches', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Only Show Populated Columns', action: () => { this.openShowPopulatedColumnsModal() }, disabled: false },
-    { name: 'Run Analysis', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Update with Audit Template', action: () => { this.tempAction() }, disabled: true },
-    { name: 'Update with BuildingSync', action: () => { this.tempAction() }, disabled: true },
-    // eslint-disable-next-line @cspell/spellchecker
-    { name: 'Update with ESPM', action: () => { this.tempAction() }, disabled: true },
+    {
+      name: 'Add to/Remove from Groups',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Add/Remove Labels',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Add/Update UBID',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Export Audit Template File (XML)',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Export BuildingSync',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Export BuildingSync (Excel)',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Export to Audit Template',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Merge and Link Matches',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Only Show Populated Columns',
+      action: () => {
+        this.openShowPopulatedColumnsModal()
+      },
+      disabled: false,
+    },
+    {
+      name: 'Run Analysis',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Update with Audit Template',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+    {
+      name: 'Update with BuildingSync',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
+
+    {
+      name: 'Update with ESPM',
+      action: () => {
+        this.tempAction()
+      },
+      disabled: true,
+    },
   ]
 
   ngOnInit(): void {
@@ -87,17 +165,15 @@ export class HeaderComponent implements OnInit {
 
     // column defs (minus root level)
     for (const name of this.org.access_level_names.slice(1)) {
-      this.aliColumnDefs.push(
-        {
-          headerName: name,
-          field: name,
-          sortable: false,
-          filter: false,
-          resizable: true,
-          suppressMovable: true,
-          width: 100,
-        },
-      )
+      this.aliColumnDefs.push({
+        headerName: name,
+        field: name,
+        sortable: false,
+        filter: false,
+        resizable: true,
+        suppressMovable: true,
+        width: 100,
+      })
     }
     // row data
     this.aliRowData.push(this.view[inventoryKey].access_level_instance.path)

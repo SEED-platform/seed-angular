@@ -27,7 +27,6 @@ export class MoreActionsModalComponent implements OnDestroy {
     { name: 'Delete', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Email', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Export', action: this.tempAction, disabled: !this.data.viewIds.length },
-
   ]
   actionsColumn2 = [
     { name: 'Export to AT', action: this.tempAction, disabled: !this.data.viewIds.length },

@@ -14,12 +14,7 @@ type FieldType = 'annual_electricity_savings' | 'annual_peak_electricity_reducti
 @Component({
   selector: 'seed-inventory-detail-scenarios-grid',
   templateUrl: './scenarios-grid.component.html',
-  imports: [
-    CommonModule,
-    AgGridAngular,
-    AgGridModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, AgGridAngular, AgGridModule, MatIconModule],
 })
 export class ScenariosGridComponent implements OnChanges {
   @Input() orgId: number

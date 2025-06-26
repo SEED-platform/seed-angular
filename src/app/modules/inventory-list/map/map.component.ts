@@ -115,12 +115,16 @@ export class MapComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.defaultField = this.type === 'properties' ? 'property_display_field' : 'taxlot_display_field'
-    this.getDependencies().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(() => !!this.cycle),
-      switchMap(() => this.initMap()),
-      tap(() => { this.initStreams() }),
-    ).subscribe()
+    this.getDependencies()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(() => !!this.cycle),
+        switchMap(() => this.initMap()),
+        tap(() => {
+          this.initStreams()
+        }),
+      )
+      .subscribe()
   }
 
   getDependencies() {
@@ -139,23 +143,31 @@ export class MapComponent implements OnDestroy, OnInit {
   }
 
   initStreams() {
-    this.refreshMap$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.initMap()),
-    ).subscribe()
+    this.refreshMap$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this.initMap()),
+      )
+      .subscribe()
 
-    this.cycle$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => { this.currentUser.settings.cycleId = this.cycle.cycle_id }),
-      switchMap(() => this.updateOrgUserSettings()),
-      switchMap(() => this.getLabels()),
-      switchMap(() => this.initMap()),
-    ).subscribe()
+    this.cycle$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.currentUser.settings.cycleId = this.cycle.cycle_id
+        }),
+        switchMap(() => this.updateOrgUserSettings()),
+        switchMap(() => this.getLabels()),
+        switchMap(() => this.initMap()),
+      )
+      .subscribe()
   }
 
   getLabels() {
     return this._labelService.getInventoryLabels(this.orgId, null, this.cycle.cycle_id, this.type as InventoryType).pipe(
-      tap((labels) => { this.labels = labels.filter((l) => l.is_applied.length) }),
+      tap((labels) => {
+        this.labels = labels.filter((l) => l.is_applied.length)
+      }),
     )
   }
 
@@ -227,7 +239,9 @@ export class MapComponent implements OnDestroy, OnInit {
         this.requestParams.set('page', page.toString())
         return this._inventoryService.getAgInventory(this.requestParams.toString(), this.requestData).pipe(
           map(({ results }: FilterResponse) => results),
-          tap(() => { this.updateProgress() }),
+          tap(() => {
+            this.updateProgress()
+          }),
         )
       }),
       scan((allData: State[], pageData: State[]) => [...allData, ...pageData], []), // accumulate all pages
@@ -337,8 +351,10 @@ export class MapComponent implements OnDestroy, OnInit {
 
       this.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
         // disregard hexBin/census clicks
-        if (![this.layers.hexBinLayer.zIndex, this.layers.censusTractLayer.zIndex, undefined].includes(layer.getProperties().zIndex as number)) {
-          points.push(...(feature.get('features') as Feature[] ?? []))
+        if (
+          ![this.layers.hexBinLayer.zIndex, this.layers.censusTractLayer.zIndex, undefined].includes(layer.getProperties().zIndex as number)
+        ) {
+          points.push(...((feature.get('features') as Feature[]) ?? []))
         }
       })
 
@@ -384,7 +400,9 @@ export class MapComponent implements OnDestroy, OnInit {
       style: (feature: Feature) => {
         const properties = feature.getProperties() as { features?: unknown[] }
         const features = properties.features || []
-        const siteEUIKey = Object.keys((features[0] as { values_: Record<string, unknown> })?.values_ || {}).find((key) => key.startsWith('site_eui'))
+        const siteEUIKey = Object.keys((features[0] as { values_: Record<string, unknown> })?.values_ || {}).find((key) =>
+          key.startsWith('site_eui'),
+        )
         if (!siteEUIKey) {
           console.error('No site EUI key found in feature properties')
           return null
@@ -402,11 +420,11 @@ export class MapComponent implements OnDestroy, OnInit {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-  hexBinSource = (records = this.geocodedData) => new HexBin({
-    source: this.buildingSources(records),
-    size: this.hexagonSize,
-  })
+  hexBinSource = (records = this.geocodedData) =>
+    new HexBin({
+      source: this.buildingSources(records),
+      size: this.hexagonSize,
+    })
 
   hexBinInfoBarColor() {
     const hexBinColorCode = this.hexBinColor.join(',')
@@ -477,7 +495,7 @@ export class MapComponent implements OnDestroy, OnInit {
         const extents = this.map.getView().calculateExtent(this.map.getSize())
         const [west, south, east, north] = transformExtent(extents, this.map.getView().getProjection(), 'EPSG:4326')
         const url = `https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/usa_november_2022/FeatureServer/0/query?where=1%3D1&outFields=GEOID10&geometry=${west}%2C${south}%2C${east}%2C${north}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson`
-        geojson = await (await fetch(url)).json() as { type: string; features: { properties: { GEOID10: string } }[] }
+        geojson = (await (await fetch(url)).json()) as { type: string; features: { properties: { GEOID10: string } }[] }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const tractIds = geojson.features.reduce((acc: string[], feature: { properties: { GEOID10: string } }) => {
           return acc.concat(feature.properties.GEOID10)
@@ -584,7 +602,6 @@ export class MapComponent implements OnDestroy, OnInit {
     this.filteredRecords = records.length
     this.pointsLayer.setSource(this.pointsSource(records))
     if (this.type === 'properties') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       this.hexBinLayer.setSource(this.hexBinSource(records))
       this.propertyBBLayer.setSource(this.boundingBoxSource(records))
       this.propertyCentroidLayer.setSource(this.centroidSource(records))

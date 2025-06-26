@@ -13,15 +13,7 @@ import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileServ
 @Component({
   selector: 'seed-column-mappings-copy-modal',
   templateUrl: './copy-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    ReactiveFormsModule,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule],
 })
 export class CopyModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
@@ -41,11 +33,14 @@ export class CopyModalComponent implements OnInit {
 
   onSubmit() {
     this.profile.name = this.form.get('name').value
-    this._columnMappingProfileService.create(this.data.org_id, this.profile).pipe(
-      map((response) => {
-        this._dialogRef.close(response.data.id)
-      }),
-    ).subscribe()
+    this._columnMappingProfileService
+      .create(this.data.org_id, this.profile)
+      .pipe(
+        map((response) => {
+          this._dialogRef.close(response.data.id)
+        }),
+      )
+      .subscribe()
   }
 
   close() {

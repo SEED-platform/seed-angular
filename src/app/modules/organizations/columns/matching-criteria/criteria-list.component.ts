@@ -10,7 +10,6 @@ import { SharedImports } from '@seed/directives'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports, MatButtonModule, MatIcon],
 })
-
 export class CriteriaListComponent {
   @Input() columns: Column[]
   @Output() removeColumnEvent = new EventEmitter<Column>()

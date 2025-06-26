@@ -46,17 +46,21 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
   derivedColumnColumns = ['name', 'expression', 'actions']
 
   ngOnInit(): void {
-    this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((orgId) => { this._orgId = orgId }),
-      switchMap(() => this._derivedColumnService.derivedColumns$),
-      map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
-      tap((derivedColumns) => {
-        this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
-        this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
-        this.derivedColumnDataSource.data = this.derivedColumns
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((orgId) => {
+          this._orgId = orgId
+        }),
+        switchMap(() => this._derivedColumnService.derivedColumns$),
+        map((derivedColumns) => derivedColumns.sort((a, b) => naturalSort(a.name, b.name))),
+        tap((derivedColumns) => {
+          this.inventoryType = this.inventoryTypeParam === 'taxlots' ? 'Tax Lot' : 'Property'
+          this.derivedColumns = derivedColumns.filter((dc) => dc.inventory_type === this.inventoryType)
+          this.derivedColumnDataSource.data = this.derivedColumns
+        }),
+      )
+      .subscribe()
   }
 
   getDerivedColumns() {
@@ -112,11 +116,16 @@ export class DerivedColumnsComponent implements OnDestroy, OnInit {
       data: { model: 'Derived Column', instance: derivedColumn.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._derivedColumnService.delete({ orgId: this._orgId, id: derivedColumn.id })),
-      tap(() => { this.getDerivedColumns() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._derivedColumnService.delete({ orgId: this._orgId, id: derivedColumn.id })),
+        tap(() => {
+          this.getDerivedColumns()
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(_index: number, { id }: DerivedColumn) {

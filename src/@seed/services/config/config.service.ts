@@ -27,18 +27,12 @@ export class ConfigService {
     // If the scheme is set to auto, we need to check the system preference
     return this.config$.pipe(
       map(({ scheme }) => {
-        return scheme === 'auto'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-          : scheme
+        return scheme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : scheme
       }),
     )
   }
 
   get gridTheme$(): Observable<Theme> {
-    return this.scheme$.pipe(
-      map((theme) => themeAlpine.withPart(
-        theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight,
-      )),
-    )
+    return this.scheme$.pipe(map((theme) => themeAlpine.withPart(theme === 'dark' ? colorSchemeDarkBlue : colorSchemeLight)))
   }
 }

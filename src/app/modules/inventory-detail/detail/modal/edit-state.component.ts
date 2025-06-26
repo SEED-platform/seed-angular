@@ -33,7 +33,13 @@ export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)
   private _fb = inject(FormBuilder)
 
-  data = inject(MAT_DIALOG_DATA) as { columns: Column[]; orgId: number; view: ViewResponse; matchingColumns: string[]; extraDataColumnNames: Set<string> }
+  data = inject(MAT_DIALOG_DATA) as {
+    columns: Column[];
+    orgId: number;
+    view: ViewResponse;
+    matchingColumns: string[];
+    extraDataColumnNames: Set<string>;
+  }
 
   changedData: Record<string, unknown> = { extra_data: {} }
   changedFields = new Set<string>()
@@ -48,9 +54,9 @@ export class EditStateModalComponent implements OnInit {
   }
 
   /*
-  * Generates the form for the main state based on the profile columns
-  * detects value changes and highlights border
-  */
+   * Generates the form for the main state based on the profile columns
+   * detects value changes and highlights border
+   */
   setForm() {
     const controls: Record<string, FormControl> = {}
     const state = this.data.view.state

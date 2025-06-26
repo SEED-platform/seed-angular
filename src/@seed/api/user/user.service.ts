@@ -31,12 +31,14 @@ export class UserService {
   auth$ = this._auth.asObservable()
 
   constructor() {
-    this.currentUser$.pipe(
-      switchMap(({ id, org_id }) => {
-        const actions: Action[] = ['can_invite_member', 'can_remove_member', 'requires_owner', 'requires_member', 'requires_superuser']
-        return this.getUserAuthorization(org_id, id, actions)
-      }),
-    ).subscribe()
+    this.currentUser$
+      .pipe(
+        switchMap(({ id, org_id }) => {
+          const actions: Action[] = ['can_invite_member', 'can_remove_member', 'requires_owner', 'requires_member', 'requires_superuser']
+          return this.getUserAuthorization(org_id, id, actions)
+        }),
+      )
+      .subscribe()
   }
 
   /**
@@ -72,8 +74,8 @@ export class UserService {
   }
 
   /*
-  * Create user
-  */
+   * Create user
+   */
   createUser(orgId: number, params: CreateUserRequest): Observable<CurrentUser> {
     return this._httpClient.post<CurrentUser>(`/api/v3/users/?organization_id=${orgId}`, params).pipe(
       catchError((error: HttpErrorResponse) => {

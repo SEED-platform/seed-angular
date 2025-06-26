@@ -10,11 +10,7 @@ import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
-  imports: [
-    CommonModule,
-    MatChipsModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, MatChipsModule, MatIconModule],
 })
 export class FilterSortChipsComponent implements OnChanges {
   @Input() gridApi: GridApi

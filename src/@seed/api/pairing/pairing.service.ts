@@ -14,9 +14,10 @@ export class PairingService {
   private _snackBar = inject(SnackBarService)
 
   unpairInventory(orgId: number, viewId: number, otherViewId: number, inventoryType: InventoryType): Observable<unknown> {
-    const url = inventoryType === 'taxlots'
-      ? `/api/v3/taxlots/${viewId}/unpair/?organization_id=${orgId}&property_id=${otherViewId}`
-      : `/api/v3/properties/${viewId}/unpair/?organization_id=${orgId}&taxlot_id=${otherViewId}`
+    const url
+      = inventoryType === 'taxlots'
+        ? `/api/v3/taxlots/${viewId}/unpair/?organization_id=${orgId}&property_id=${otherViewId}`
+        : `/api/v3/properties/${viewId}/unpair/?organization_id=${orgId}&taxlot_id=${otherViewId}`
 
     return this._httpClient.put<unknown>(url, {}).pipe(
       tap(() => {

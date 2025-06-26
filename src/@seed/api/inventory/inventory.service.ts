@@ -5,7 +5,23 @@ import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { CrossCyclesResponse, DeleteParams, FilterResponse, GenericView, GenericViewsResponse, InventoryDisplayType, InventoryType, InventoryTypeGoal, NewProfileData, Profile, ProfileResponse, ProfilesResponse, PropertyDocumentExtension, UpdateInventoryResponse, ViewResponse } from 'app/modules/inventory/inventory.types'
+import type {
+  CrossCyclesResponse,
+  DeleteParams,
+  FilterResponse,
+  GenericView,
+  GenericViewsResponse,
+  InventoryDisplayType,
+  InventoryType,
+  InventoryTypeGoal,
+  NewProfileData,
+  Profile,
+  ProfileResponse,
+  ProfilesResponse,
+  PropertyDocumentExtension,
+  UpdateInventoryResponse,
+  ViewResponse,
+} from 'app/modules/inventory/inventory.types'
 import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
@@ -24,7 +40,7 @@ export class InventoryService {
   view$ = this._view.asObservable()
 
   constructor() {
-    this._userService.currentOrganizationId$.subscribe((id) => this.orgId = id)
+    this._userService.currentOrganizationId$.subscribe((id) => (this.orgId = id))
   }
 
   getAgInventory(paramString: string, data: Record<string, unknown>): Observable<FilterResponse> {
@@ -81,7 +97,12 @@ export class InventoryService {
     )
   }
 
-  updateProfileToShowPopulatedColumns(orgId: number, id: number, cycle_id: number, inventory_type: InventoryDisplayType): Observable<Profile> {
+  updateProfileToShowPopulatedColumns(
+    orgId: number,
+    id: number,
+    cycle_id: number,
+    inventory_type: InventoryDisplayType,
+  ): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/${id}/show_populated/?organization_id=${orgId}`
     const data = { cycle_id, inventory_type }
     return this._httpClient.put<ProfileResponse>(url, data).pipe(
@@ -95,7 +116,9 @@ export class InventoryService {
   createColumnListProfile(orgId: number, data: NewProfileData): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/?organization_id=${orgId}`
     return this._httpClient.post<ProfileResponse>(url, data).pipe(
-      tap(() => { this._snackBar.success('Profile created successfully') }),
+      tap(() => {
+        this._snackBar.success('Profile created successfully')
+      }),
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating column list profile')
@@ -106,7 +129,9 @@ export class InventoryService {
   updateColumnListProfile(orgId: number, id: number, data: unknown): Observable<Profile> {
     const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
     return this._httpClient.put<ProfileResponse>(url, data).pipe(
-      tap(() => { this._snackBar.success('Profile updated successfully') }),
+      tap(() => {
+        this._snackBar.success('Profile updated successfully')
+      }),
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating column list profile')
@@ -138,8 +163,8 @@ export class InventoryService {
   }
 
   /*
-  * Get PropertyView or TaxLotView
-  */
+   * Get PropertyView or TaxLotView
+   */
   getView(orgId: number, viewId: number, inventoryType: InventoryType): Observable<ViewResponse> {
     return inventoryType === 'taxlots' ? this.getTaxLotView(orgId, viewId) : this.getPropertyView(orgId, viewId)
   }
@@ -148,7 +173,9 @@ export class InventoryService {
     const url = `/api/v3/properties/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
-      tap((view) => { this._view.next(view) }),
+      tap((view) => {
+        this._view.next(view)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
@@ -159,7 +186,9 @@ export class InventoryService {
     const url = `/api/v3/taxlots/${viewId}/`
     const params = { organization_id: orgId }
     return this._httpClient.get<ViewResponse>(url, { params }).pipe(
-      tap((view) => { this._view.next(view) }),
+      tap((view) => {
+        this._view.next(view)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching property')
       }),
@@ -167,8 +196,8 @@ export class InventoryService {
   }
 
   /*
-  * Get PropertyViews or TaxLotViews given a Property or Taxlot id
-  */
+   * Get PropertyViews or TaxLotViews given a Property or Taxlot id
+   */
   getViews(orgId: number, id: number, inventoryType: InventoryType): Observable<GenericView[]> {
     return inventoryType === 'taxlots' ? this.getTaxLotViews(orgId, id) : this.getPropertyViews(orgId, id)
   }
@@ -196,9 +225,14 @@ export class InventoryService {
   }
 
   /*
-  * Update a property/taxlot view's state
-  */
-  updateInventory(orgId: number, viewId: number, inventoryType: InventoryType, updatedStateFields: Record<string, unknown>): Observable<UpdateInventoryResponse> {
+   * Update a property/taxlot view's state
+   */
+  updateInventory(
+    orgId: number,
+    viewId: number,
+    inventoryType: InventoryType,
+    updatedStateFields: Record<string, unknown>,
+  ): Observable<UpdateInventoryResponse> {
     return inventoryType === 'taxlots'
       ? this.updateTaxLot(orgId, viewId, updatedStateFields)
       : this.updateProperty(orgId, viewId, updatedStateFields)

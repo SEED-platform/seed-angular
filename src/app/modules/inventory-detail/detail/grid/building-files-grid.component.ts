@@ -10,12 +10,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-building-files-grid',
   templateUrl: './building-files-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule],
 })
 export class BuildingFilesGridComponent implements OnInit {
   @Input() view: ViewResponse

@@ -79,10 +79,15 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
       width: '50rem',
       data: { rule, orgId: this._orgId, tableName, currentRules: this.currentRules },
     })
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => { this.getRules.emit() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   deleteRule(rule: Rule) {
@@ -92,12 +97,17 @@ export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnIn
       data: { model: 'Rule', instance: displayName },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
-      tap(() => { this.getRules.emit() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   toggleEnable(index: number) {

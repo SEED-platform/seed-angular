@@ -22,10 +22,7 @@ export class ListPropertiesComponent extends ListComponent implements AfterViewI
   @ViewChild(MatPaginator) paginator: MatPaginator
 
   ngOnInit(): void {
-    combineLatest([
-      this._columnService.propertyColumns$,
-      this._organizationService.currentOrganization$,
-    ])
+    combineLatest([this._columnService.propertyColumns$, this._organizationService.currentOrganization$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([columns, organization]) => {
         this.organization = organization

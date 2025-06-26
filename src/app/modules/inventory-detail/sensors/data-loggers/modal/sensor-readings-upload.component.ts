@@ -97,26 +97,29 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
     this.file = file
     const sourceType = 'SensorReadings'
 
-    return this._uploaderService.fileUpload(orgId, this.file, sourceType, datasetId).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(({ import_file_id }) => {
-        this.fileId = import_file_id
-        this.completed[1] = true
-      }),
-      switchMap(() => this._uploaderService.sensorReadingsPreview(orgId, viewId, dataLoggerId, this.fileId)),
-      tap((proposedImports) => {
-        this.completed[2] = true
-        this.proposedImports = proposedImports
-        this.gridHeight = Math.min(this.proposedImports.length * 35 + 42, 300)
-        this.stepper.next()
-        this.uploading = false
-      }),
-      catchError(() => {
-        this.completed[1] = false
-        this.uploading = false
-        return []
-      }),
-    ).subscribe()
+    return this._uploaderService
+      .fileUpload(orgId, this.file, sourceType, datasetId)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(({ import_file_id }) => {
+          this.fileId = import_file_id
+          this.completed[1] = true
+        }),
+        switchMap(() => this._uploaderService.sensorReadingsPreview(orgId, viewId, dataLoggerId, this.fileId)),
+        tap((proposedImports) => {
+          this.completed[2] = true
+          this.proposedImports = proposedImports
+          this.gridHeight = Math.min(this.proposedImports.length * 35 + 42, 300)
+          this.stepper.next()
+          this.uploading = false
+        }),
+        catchError(() => {
+          this.completed[1] = false
+          this.uploading = false
+          return []
+        }),
+      )
+      .subscribe()
   }
 
   step2() {
@@ -138,20 +141,25 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
       })
     }
 
-    this._uploaderService.saveRawData(orgId, cycleId, this.fileId).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((response: ProgressResponse) => { this.progressBarObj.progress = response.progress }),
-      switchMap((data) => {
-        return this._uploaderService.checkProgressLoop({
-          progressKey: data.progress_key,
-          offset: 0,
-          multiplier: 1,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })
-      }),
-    ).subscribe()
+    this._uploaderService
+      .saveRawData(orgId, cycleId, this.fileId)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((response: ProgressResponse) => {
+          this.progressBarObj.progress = response.progress
+        }),
+        switchMap((data) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: data.progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+      )
+      .subscribe()
   }
 
   dismiss() {

@@ -35,7 +35,7 @@ export class SeedHeaderAutocompleteComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (('tableName' in changes) && (changes.tableName.previousValue !== changes.tableName.currentValue)) {
+    if ('tableName' in changes && changes.tableName.previousValue !== changes.tableName.currentValue) {
       this.filteredColumns = this.formControl.valueChanges.pipe(
         startWith(''),
         map((val: string) => this.filter(val)),
@@ -44,7 +44,9 @@ export class SeedHeaderAutocompleteComponent implements OnChanges, OnInit {
   }
 
   filter(val: string) {
-    return this.columns.filter((col) => col.table_name === this.tableName && col.column_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+    return this.columns.filter(
+      (col) => col.table_name === this.tableName && col.column_name.toLocaleLowerCase().includes(val.toLocaleLowerCase()),
+    )
   }
   displayFn = (a: string) => {
     if (this.columns) {

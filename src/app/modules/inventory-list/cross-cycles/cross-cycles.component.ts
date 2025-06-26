@@ -22,14 +22,7 @@ import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/i
 @Component({
   selector: 'seed-inventory-list-cross-cycles',
   templateUrl: './cross-cycles.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatIconModule,
-    MatSelectModule,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule, MatSelectModule, PageComponent],
 })
 export class CrossCyclesComponent implements OnInit {
   private _route = inject(ActivatedRoute)
@@ -59,13 +52,13 @@ export class CrossCyclesComponent implements OnInit {
   ngOnInit(): void {
     this.displayType = this.type === 'properties' ? 'Property' : 'Tax Lot'
     this.initPage()
-    console.error('DEVELOPER NOTE: Row grouping is an enterprise only feature. Cross cycles will need a new approach to show grouped/nested data')
+    console.error(
+      'DEVELOPER NOTE: Row grouping is an enterprise only feature. Cross cycles will need a new approach to show grouped/nested data',
+    )
   }
 
   initPage() {
-    this._organizationService.currentOrganization$.pipe(
-      switchMap((org) => this.getDependencies(org)),
-    ).subscribe()
+    this._organizationService.currentOrganization$.pipe(switchMap((org) => this.getDependencies(org))).subscribe()
   }
 
   getDependencies(org: Organization): Observable<unknown> {
@@ -80,7 +73,6 @@ export class CrossCyclesComponent implements OnInit {
       this._inventoryService.getColumnListProfiles('Detail List Profile', this.type),
       this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
       columns$,
-
     ]).pipe(
       tap(([currentUser, profiles, matchingColumns, columns]: [CurrentUser, Profile[], string[], Column[]]) => {
         this.currentUser = currentUser
@@ -139,15 +131,15 @@ export class CrossCyclesComponent implements OnInit {
 
   onSelectCycleClosed() {
     this.currentUser.settings.crossCycles[this.type] = this.selectedCycleIds
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.setGrid()),
-    ).subscribe()
+    this.updateOrgUserSettings()
+      .pipe(switchMap(() => this.setGrid()))
+      .subscribe()
   }
 
   onSelectProfile() {
     this.currentUser.settings.profile.list[this.type] = this.selectedProfileId
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.setGrid()),
-    ).subscribe()
+    this.updateOrgUserSettings()
+      .pipe(switchMap(() => this.setGrid()))
+      .subscribe()
   }
 }

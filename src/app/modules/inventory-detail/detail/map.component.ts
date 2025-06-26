@@ -21,12 +21,7 @@ import type { InventoryType, State } from 'app/modules/inventory/inventory.types
 @Component({
   selector: 'seed-inventory-detail-map',
   templateUrl: './map.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule],
 })
 export class MapComponent implements AfterViewInit {
   @Input() state: State
@@ -140,7 +135,7 @@ export class MapComponent implements AfterViewInit {
   buildingSources() {
     const features = [this.buildingBoundingBox()]
     return new VectorSource({ features })
-  };
+  }
 
   // Define building UBID bounding box
   buildingBB() {
@@ -165,7 +160,7 @@ export class MapComponent implements AfterViewInit {
 
     feature.setProperties(this.state)
     return feature
-  };
+  }
 
   buildingBBSources() {
     const features = [this.buildingBB()]

@@ -7,10 +7,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-list-profiles',
   templateUrl: './column-list-profiles.component.html',
-  imports: [
-    ColumnProfilesComponent,
-    PageComponent,
-  ],
+  imports: [ColumnProfilesComponent, PageComponent],
 })
 export class ColumnListProfilesComponent {
   @ViewChild('columnProfiles') columnProfiles: ColumnProfilesComponent

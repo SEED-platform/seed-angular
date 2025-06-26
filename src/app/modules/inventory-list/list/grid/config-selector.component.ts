@@ -6,9 +6,7 @@ import type { Profile } from '../../../inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-grid-config-selector',
   templateUrl: './config-selector.component.html',
-  imports: [
-    MatSelectModule,
-  ],
+  imports: [MatSelectModule],
 })
 export class ConfigSelectorComponent {
   @Input() label = ''

@@ -272,7 +272,10 @@ export class OrganizationService {
     )
   }
 
-  getMatchingCriteriaColumns(orgId: number, inventoryType: InventoryType | null = null): Observable<MatchingCriteriaColumnsResponse | string[]> {
+  getMatchingCriteriaColumns(
+    orgId: number,
+    inventoryType: InventoryType | null = null,
+  ): Observable<MatchingCriteriaColumnsResponse | string[]> {
     const url = `/api/v3/organizations/${orgId}/matching_criteria_columns/`
     return this._httpClient.get<MatchingCriteriaColumnsResponse>(url).pipe(
       map((response) => {
