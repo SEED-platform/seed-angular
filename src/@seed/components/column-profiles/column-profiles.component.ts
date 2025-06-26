@@ -70,7 +70,9 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
-    onRowSelected: (event) => { this.onRowSelected(event) },
+    onRowSelected: (event) => {
+      this.onRowSelected(event)
+    },
   }
 
   defaultColDef = {
@@ -88,27 +90,35 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   }
 
   initPage() {
-    this.getDependencies().pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => {
-        this.setGrid()
-        this.initStreams()
-      }),
-    ).subscribe()
+    this.getDependencies()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.setGrid()
+          this.initStreams()
+        }),
+      )
+      .subscribe()
   }
 
   initStreams() {
-    this.updateCLP$.pipe(
-      filter(Boolean),
-      takeUntil(this._unsubscribeAll$),
-      switchMap((data) => this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data)),
-      tap(() => { this.initPage() }),
-    ).subscribe()
+    this.updateCLP$
+      .pipe(
+        filter(Boolean),
+        takeUntil(this._unsubscribeAll$),
+        switchMap((data) => this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data)),
+        tap(() => {
+          this.initPage()
+        }),
+      )
+      .subscribe()
 
-    this.updateOrgUserSettings$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.updateOrgUserSettings()),
-    ).subscribe()
+    this.updateOrgUserSettings$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this.updateOrgUserSettings()),
+      )
+      .subscribe()
   }
 
   getDependencies() {
@@ -271,14 +281,19 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
       data: { model: 'Column List Profile', instance: this.currentProfile.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      tap(() => {
-        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-      }),
-      switchMap(() => this._inventoryService.deleteColumnListProfile(this.orgId, this.currentProfile.id)),
-      tap(() => { this.initPage() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => {
+          console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
+        }),
+        switchMap(() => this._inventoryService.deleteColumnListProfile(this.orgId, this.currentProfile.id)),
+        tap(() => {
+          this.initPage()
+        }),
+      )
+      .subscribe()
   }
 
   openProfileModal(mode: ProfileModalMode, columns: ProfileColumn[] = []) {
@@ -300,20 +315,23 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
 
     let newProfileId: number
 
-    dialogRef.afterClosed().pipe(
-      filter((id: number) => {
-        newProfileId = id
-        return !!id
-      }),
-      switchMap(() => this._inventoryService.getColumnListProfiles(this.profileLocation, this.type)),
-      tap((profiles) => {
-        this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
-        this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null
-        this.currentUser.settings.profile[this.profileType][this.type] = this.currentProfile?.id
-        this.setGrid()
-      }),
-      switchMap(() => this.updateOrgUserSettings()),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((id: number) => {
+          newProfileId = id
+          return !!id
+        }),
+        switchMap(() => this._inventoryService.getColumnListProfiles(this.profileLocation, this.type)),
+        tap((profiles) => {
+          this.profiles = profiles.filter((p) => p.inventory_type === this.displayType)
+          this.currentProfile = this.profiles.find((p) => p.id === newProfileId) ?? this.profiles[0] ?? null
+          this.currentUser.settings.profile[this.profileType][this.type] = this.currentProfile?.id
+          this.setGrid()
+        }),
+        switchMap(() => this.updateOrgUserSettings()),
+      )
+      .subscribe()
   }
 
   onSave = () => {

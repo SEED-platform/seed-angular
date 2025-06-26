@@ -52,7 +52,8 @@ export class FormModalComponent implements OnInit {
       preferred: new FormControl<boolean | null>(false, Validators.required),
     })
     if (this.data.ubid) {
-      setTimeout(() => { // prevent ExpressionChangedAfterItHasBeenCheckedError
+      setTimeout(() => {
+        // prevent ExpressionChangedAfterItHasBeenCheckedError
         const { ubid, preferred } = this.data.ubid
         this.form.patchValue({ ubid, preferred })
       })
@@ -67,28 +68,34 @@ export class FormModalComponent implements OnInit {
     }
 
     if (this.data.ubid) {
-      this._ubidService.update(this.data.orgId, this.data.viewId, this.data.ubid.id, ubidDetails, this.data.type).pipe(
-        tap((response) => {
-          console.log('response', response)
-          this.close(preferred)
-        }),
-      ).subscribe()
+      this._ubidService
+        .update(this.data.orgId, this.data.viewId, this.data.ubid.id, ubidDetails, this.data.type)
+        .pipe(
+          tap((response) => {
+            console.log('response', response)
+            this.close(preferred)
+          }),
+        )
+        .subscribe()
     } else {
       const inventoryKey = this.data.type === 'taxlots' ? 'taxlot' : 'property'
       ubidDetails[inventoryKey] = this.data.stateId
-      this._ubidService.create(this.data.orgId, this.data.viewId, ubidDetails, this.data.type).pipe(
-        tap((response) => {
-          console.log('response', response)
-          this.close(preferred)
-        }),
-      ).subscribe()
+      this._ubidService
+        .create(this.data.orgId, this.data.viewId, ubidDetails, this.data.type)
+        .pipe(
+          tap((response) => {
+            console.log('response', response)
+            this.close(preferred)
+          }),
+        )
+        .subscribe()
     }
   }
 
   validUbid(orgId: number): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
       return this._ubidService.validate(orgId, control.value as string).pipe(
-        map((isValid) => isValid ? null : { invalidUbid: true }),
+        map((isValid) => (isValid ? null : { invalidUbid: true })),
         catchError(() => of({ invalidUbid: true })),
       )
     }

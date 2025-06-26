@@ -9,12 +9,7 @@ import type { PropertyDocumentExtension, PropertyDocumentType } from 'app/module
 @Component({
   selector: 'seed-detail-document-upload',
   templateUrl: './document-upload.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule],
 })
 export class DocumentUploadModalComponent {
   private _dialogRef = inject(MatDialogRef<DocumentUploadModalComponent>)
@@ -34,8 +29,9 @@ export class DocumentUploadModalComponent {
   onUpload() {
     if (!this.file) return
     const fileExt = this.extMap[this.file.type as PropertyDocumentType]
-    this._inventoryService.uploadPropertyDocument(this.data.orgId, this.data.viewId, this.file, fileExt)
-      .subscribe(() => { this.dismiss() })
+    this._inventoryService.uploadPropertyDocument(this.data.orgId, this.data.viewId, this.file, fileExt).subscribe(() => {
+      this.dismiss()
+    })
   }
 
   onSelectFile(fileList: FileList): Promise<void> {

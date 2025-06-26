@@ -25,7 +25,14 @@ import { UserService } from '@seed/api/user'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
-import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryType, Pagination, Profile } from '../../inventory/inventory.types'
+import type {
+  AgFilterResponse,
+  FiltersSorts,
+  InventoryDependencies,
+  InventoryType,
+  Pagination,
+  Profile,
+} from '../../inventory/inventory.types'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 // import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 
@@ -88,58 +95,60 @@ export class InventoryComponent implements OnDestroy, OnInit {
   userSettings: OrganizationUserSettings = {}
 
   /*
-  * 1. get org
-  * 2. get dependencies: cycles, profiles, labels, current user
-  * 3. set dependencies & get profile
-  * 4. load inventory
-  * 5. set filters and sorts from user settings
-  */
+   * 1. get org
+   * 2. get dependencies: cycles, profiles, labels, current user
+   * 3. set dependencies & get profile
+   * 4. load inventory
+   * 5. set filters and sorts from user settings
+   */
   ngOnInit(): void {
     this.initPage()
   }
 
   initPage() {
-    this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap((orgId) => this.getDependencies(orgId)),
-      map((results) => this.setDependencies(results)),
-      switchMap((profile_id) => this.getProfile(profile_id)),
-      switchMap(() => this.loadInventory()),
-      tap(() => {
-        this.setFilterSorts()
-        this.initStreams()
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((orgId) => this.getDependencies(orgId)),
+        map((results) => this.setDependencies(results)),
+        switchMap((profile_id) => this.getProfile(profile_id)),
+        switchMap(() => this.loadInventory()),
+        tap(() => {
+          this.setFilterSorts()
+          this.initStreams()
+        }),
+      )
+      .subscribe()
   }
 
   initStreams() {
-    this.profileId$.pipe(
-      filter(Boolean),
-      takeUntil(this._unsubscribeAll$),
-      switchMap((id) => this.getProfile(id)),
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
+    this.profileId$
+      .pipe(
+        filter(Boolean),
+        takeUntil(this._unsubscribeAll$),
+        switchMap((id) => this.getProfile(id)),
+        switchMap(() => this.refreshInventory()),
+      )
+      .subscribe()
 
-    this.cycleId$.pipe(
-      filter(Boolean),
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
+    this.cycleId$
+      .pipe(
+        filter(Boolean),
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this.refreshInventory()),
+      )
+      .subscribe()
 
-    this.refreshInventory$.pipe(
-      switchMap(() => this.refreshInventory()),
-    ).subscribe()
+    this.refreshInventory$.pipe(switchMap(() => this.refreshInventory())).subscribe()
   }
 
   refreshInventory() {
-    return this.updateOrgUserSettings().pipe(
-      switchMap(() => this.loadInventory()),
-    )
+    return this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory()))
   }
 
   /*
-  * get cycles, profiles, columns, inventory, current user
-  */
+   * get cycles, profiles, columns, inventory, current user
+   */
   getDependencies(org_id: number) {
     this.orgId = org_id
     this._cycleService.get(this.orgId)
@@ -153,8 +162,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * set class variables: cycles, profiles, inventory. returns profile id
-  */
+   * set class variables: cycles, profiles, inventory. returns profile id
+   */
   setDependencies([currentUser, cycles, labels, profiles]: InventoryDependencies) {
     if (!cycles) {
       return null
@@ -187,9 +196,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * get profile and reload inventory
-  * retrieve profile returns a more detailed Profile object than list profiles
-  */
+   * get profile and reload inventory
+   * retrieve profile returns a more detailed Profile object than list profiles
+   */
   getProfile(id: number): Observable<Profile | null> {
     if (!id) {
       this.profile = null
@@ -197,20 +206,19 @@ export class InventoryComponent implements OnDestroy, OnInit {
       return of(null)
     }
 
-    return this._inventoryService.getColumnListProfile(id)
-      .pipe(
-        tap((profile) => {
-          this.profile = profile
-          this.profileId = profile.id
-          this.userSettings.profile.list[this.type] = profile.id
-        }),
-      )
+    return this._inventoryService.getColumnListProfile(id).pipe(
+      tap((profile) => {
+        this.profile = profile
+        this.profileId = profile.id
+        this.userSettings.profile.list[this.type] = profile.id
+      }),
+    )
   }
 
   /*
-  * Loads inventory for the grid.
-  * returns a null observable to track completion
-  */
+   * Loads inventory for the grid.
+   * returns a null observable to track completion
+   */
   loadInventory(): Observable<null> {
     if (!this.cycleId) return of(null)
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
@@ -244,8 +252,8 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * on initial page load, set any filters and sorts from the user settings
-  */
+   * on initial page load, set any filters and sorts from the user settings
+   */
   setFilterSorts() {
     this.setFilters()
     this.setSorts()
@@ -293,8 +301,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const colIds = new Set(this.columnDefs.map((c) => c.field))
     // filter out any filters that are not in the current column definitions.
     for (const colId in this.filters) {
-      if (colIds.has(colId))
-        validFilters[colId] = this.filters[colId]
+      if (colIds.has(colId)) validFilters[colId] = this.filters[colId]
     }
 
     this.gridApi.setFilterModel(validFilters)

@@ -16,15 +16,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-columns-matching-criteria-confirm-modal',
   templateUrl: './confirm-modal.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressBarModule,
-  ],
+  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatProgressBarModule],
 })
 export class ConfirmModalComponent implements OnDestroy {
   private _columnService = inject(ColumnService)
@@ -67,27 +59,30 @@ export class ConfirmModalComponent implements OnDestroy {
     }
     this.progressBarObj.message = 'Updating matching criteria...'
 
-    this._columnService.updateMultipleColumns(this.data.orgId, this.data.columns[0].table_name, changes).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((response: ProgressResponse) => {
-        this.progressBarObj.progress = response.progress
-      }),
-      switchMap(({ progress_key }) => {
-        return this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          offset: 0,
-          multiplier: 1,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })
-      }),
-      catchError(() => {
-        this.inProgress = false
-        this.errorMessage = 'An error occurred while updating matching criteria.'
-        return EMPTY
-      }),
-    ).subscribe()
+    this._columnService
+      .updateMultipleColumns(this.data.orgId, this.data.columns[0].table_name, changes)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((response: ProgressResponse) => {
+          this.progressBarObj.progress = response.progress
+        }),
+        switchMap(({ progress_key }) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+        catchError(() => {
+          this.inProgress = false
+          this.errorMessage = 'An error occurred while updating matching criteria.'
+          return EMPTY
+        }),
+      )
+      .subscribe()
   }
 
   close(success) {

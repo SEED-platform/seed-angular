@@ -20,21 +20,30 @@ export class CycleService {
   cycles$ = this._cycles.asObservable()
 
   constructor() {
-    this._organizationService.currentOrganization$.pipe(
-      tap(({ org_id }) => { this.get(org_id) }),
-    ).subscribe()
+    this._organizationService.currentOrganization$
+      .pipe(
+        tap(({ org_id }) => {
+          this.get(org_id)
+        }),
+      )
+      .subscribe()
   }
 
   get(orgId: number) {
     const url = `/api/v3/cycles/?organization_id=${orgId}`
-    this._httpClient.get<CyclesResponse>(url).pipe(
-      take(1),
-      map(({ cycles }) => cycles),
-      tap((cycles) => { this._cycles.next(cycles) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching cycles')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<CyclesResponse>(url)
+      .pipe(
+        take(1),
+        map(({ cycles }) => cycles),
+        tap((cycles) => {
+          this._cycles.next(cycles)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching cycles')
+        }),
+      )
+      .subscribe()
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {
@@ -66,7 +75,9 @@ export class CycleService {
   delete(id: number, orgId: number) {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
-      tap(() => { this.get(orgId) }),
+      tap(() => {
+        this.get(orgId)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting cycle')
       }),

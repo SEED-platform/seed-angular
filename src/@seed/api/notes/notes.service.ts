@@ -20,13 +20,18 @@ export class NoteService {
 
   list(orgId: number, viewId: number, type: InventoryType) {
     const url = `/api/v3/${type}/${viewId}/notes/?organization_id=${orgId}`
-    this._httpClient.get<Note[]>(url).pipe(
-      take(1),
-      tap((notes) => { this._notes.next(notes) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching notes')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<Note[]>(url)
+      .pipe(
+        take(1),
+        tap((notes) => {
+          this._notes.next(notes)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching notes')
+        }),
+      )
+      .subscribe()
   }
 
   create(orgId: number, viewId: number, noteData: NoteData, type: InventoryType): Observable<Note> {

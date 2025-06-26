@@ -3,7 +3,16 @@ import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/rou
 import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
 import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
-import { AnalysesComponent, CrossCyclesComponent, DetailLayoutComponent, MetersComponent, NotesComponent, SensorsComponent, TimelineComponent, UbidsComponent } from '../inventory-detail'
+import {
+  AnalysesComponent,
+  CrossCyclesComponent,
+  DetailLayoutComponent,
+  MetersComponent,
+  NotesComponent,
+  SensorsComponent,
+  TimelineComponent,
+  UbidsComponent,
+} from '../inventory-detail'
 import { ColumnDetailProfilesComponent } from '../inventory-detail/column-detail-profiles/column-detail-profiles.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
 import type { InventoryType } from './inventory.types'

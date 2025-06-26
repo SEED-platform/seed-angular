@@ -65,7 +65,9 @@ export class InventoryGridComponent implements OnChanges {
     rowClassRules: {
       'even-row': (params) => params.node.rowIndex % 2 === 0,
     },
-    onSelectionChanged: () => { this.onSelectionChanged() },
+    onSelectionChanged: () => {
+      this.onSelectionChanged()
+    },
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -98,7 +100,9 @@ export class InventoryGridComponent implements OnChanges {
     return void this._router.navigate(urlMap[action])
   }
 
-  onSelectionChanged() { this.selectionChanged.emit() }
+  onSelectionChanged() {
+    this.selectionChanged.emit()
+  }
 
   getColumnDefs() {
     this.columnDefs = [
@@ -173,11 +177,13 @@ export class InventoryGridComponent implements OnChanges {
         const labels = value
         if (!labels.length) return ''
 
-        const eLabels = labels.map((id: number) => {
-          return this.labelMap[id]
-            ? `<div class="label ${this.labelMap[id]?.color} whitespace-nowrap px-2">${this.labelMap[id].name}</div>`
-            : ''
-        }).join(' ')
+        const eLabels = labels
+          .map((id: number) => {
+            return this.labelMap[id]
+              ? `<div class="label ${this.labelMap[id]?.color} whitespace-nowrap px-2">${this.labelMap[id].name}</div>`
+              : ''
+          })
+          .join(' ')
 
         const eGui = `<div>${eLabels}</div>`
         return value ? eGui : ''
@@ -197,11 +203,12 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   /*
-  * ascending sorts formatted as 'column_id'
-  * descending sorts formatted as '-column_id'
-  */
+   * ascending sorts formatted as 'column_id'
+   * descending sorts formatted as '-column_id'
+   */
   getSorts() {
-    const sorts = this.gridApi.getColumnState()
+    const sorts = this.gridApi
+      .getColumnState()
       .filter((col) => col.sort)
       .map((col) => `${col.sort === 'desc' ? '-' : ''}${col.colId}`)
     return sorts

@@ -136,23 +136,25 @@ export class MatchingCriteriaComponent implements OnDestroy {
     const dialogRef = this._dialog.open(ConfirmModalComponent, {
       width: '40rem',
       data: { cycle: null, orgId: this.organization.id, columns },
-
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      tap(() => {
-        if (this.currentType === 'properties') {
-          this._columnService.getPropertyColumns(this.organization.id).subscribe((columns) => {
-            this.populateMatchingColumns(columns)
-          })
-        } else if (this.currentType === 'taxlots') {
-          this._columnService.getTaxLotColumns(this.organization.id).subscribe((columns) => {
-            this.populateMatchingColumns(columns)
-          })
-        }
-      }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        tap(() => {
+          if (this.currentType === 'properties') {
+            this._columnService.getPropertyColumns(this.organization.id).subscribe((columns) => {
+              this.populateMatchingColumns(columns)
+            })
+          } else if (this.currentType === 'taxlots') {
+            this._columnService.getTaxLotColumns(this.organization.id).subscribe((columns) => {
+              this.populateMatchingColumns(columns)
+            })
+          }
+        }),
+      )
+      .subscribe()
   }
 }

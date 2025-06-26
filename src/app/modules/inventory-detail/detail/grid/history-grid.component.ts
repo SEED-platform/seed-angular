@@ -27,16 +27,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-inventory-detail-history',
   templateUrl: './history-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatDividerModule,
-    MatProgressBar,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatDividerModule, MatProgressBar],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {
   @Input() columns: Column[]
@@ -86,10 +77,10 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   /*
-  * 1. find current profile
-  * 2. if no profile, set to null
-  * 3. set columns to current profile columns or all canonical columns
-  */
+   * 1. find current profile
+   * 2. if no profile, set to null
+   * 3. set columns to current profile columns or all canonical columns
+   */
   setGridColumns() {
     if (this.currentProfile?.columns) {
       this.gridColumns = this.currentProfile.columns
@@ -172,19 +163,28 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
       disableClose: true,
       width: '50rem',
       maxHeight: '75vh',
-      data: { columns: this.gridColumns, orgId: this.orgId, view: this.view, matchingColumns: this.matchingColumns, extraDataColumnNames: this.extraDataColumnNames },
+      data: {
+        columns: this.gridColumns,
+        orgId: this.orgId,
+        view: this.view,
+        matchingColumns: this.matchingColumns,
+        extraDataColumnNames: this.extraDataColumnNames,
+      },
       panelClass: 'seed-dialog-panel',
     })
 
-    dialogRef.afterClosed().pipe(
-      tap((updatedFields: Record<string, unknown>) => {
-        if (this.updatedFieldsEmpty(updatedFields)) {
-          this._snackBar.info('No changes detected')
-        } else if (updatedFields) {
-          this.saveItem(updatedFields)
-        }
-      }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        tap((updatedFields: Record<string, unknown>) => {
+          if (this.updatedFieldsEmpty(updatedFields)) {
+            this._snackBar.info('No changes detected')
+          } else if (updatedFields) {
+            this.saveItem(updatedFields)
+          }
+        }),
+      )
+      .subscribe()
   }
 
   updatedFieldsEmpty(updatedFields) {
@@ -192,26 +192,33 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   }
 
   /*
-  * save the user's changes to the Property/TaxLot State object.
-  */
+   * save the user's changes to the Property/TaxLot State object.
+   */
   saveItem(updatedFields: Record<string, unknown>) {
     // const updatedFields = this.checkStateDifference(this.view.state, this.viewCopy.state)
     this.loading = true
-    this._inventoryService.updateInventory(this.orgId, this.viewId, this.type, updatedFields).pipe(
-      tap((response) => {
-        if (response.view_id !== this.viewId) {
-          void this._router.navigateByUrl(`${this.type}/${response.view_id}`)
-        } else {
-          this.refreshView.emit()
-        }
-      }),
-      finalize(() => {
-        this.loading = false
-      }),
-    ).subscribe()
+    this._inventoryService
+      .updateInventory(this.orgId, this.viewId, this.type, updatedFields)
+      .pipe(
+        tap((response) => {
+          if (response.view_id !== this.viewId) {
+            void this._router.navigateByUrl(`${this.type}/${response.view_id}`)
+          } else {
+            this.refreshView.emit()
+          }
+        }),
+        finalize(() => {
+          this.loading = false
+        }),
+      )
+      .subscribe()
   }
 
-  checkExtraDataDifference(extraData: Record<string, unknown>, extraDataCopy: Record<string, unknown>, updatedFields: Record<string, unknown>) {
+  checkExtraDataDifference(
+    extraData: Record<string, unknown>,
+    extraDataCopy: Record<string, unknown>,
+    updatedFields: Record<string, unknown>,
+  ) {
     for (const field in extraData) {
       if (extraData[field] !== extraDataCopy[field]) {
         updatedFields[field] = extraData[field]

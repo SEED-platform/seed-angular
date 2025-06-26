@@ -8,5 +8,4 @@ import { SharedImports } from '@seed/directives'
   encapsulation: ViewEncapsulation.None,
   imports: [SharedImports, MatIcon],
 })
-
 export class ColumnMatchingCriteriaHelpComponent {}

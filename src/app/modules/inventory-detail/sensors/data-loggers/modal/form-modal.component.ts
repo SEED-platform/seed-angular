@@ -58,13 +58,23 @@ export class FormModalComponent implements OnInit {
 
   onSubmit() {
     if (this.create) {
-      this._sensorService.createDataLogger(this.data.orgId, this.data.viewId, this.form.value as DataLogger).pipe(
-        tap(() => { this.close(true) }),
-      ).subscribe()
+      this._sensorService
+        .createDataLogger(this.data.orgId, this.data.viewId, this.form.value as DataLogger)
+        .pipe(
+          tap(() => {
+            this.close(true)
+          }),
+        )
+        .subscribe()
     } else {
-      this._sensorService.updateDataLogger(this.data.orgId, this.data.viewId, this.data.dataLogger.id, this.form.value as DataLogger).pipe(
-        tap(() => { this.close(true) }),
-      ).subscribe()
+      this._sensorService
+        .updateDataLogger(this.data.orgId, this.data.viewId, this.data.dataLogger.id, this.form.value as DataLogger)
+        .pipe(
+          tap(() => {
+            this.close(true)
+          }),
+        )
+        .subscribe()
     }
   }
 

@@ -14,13 +14,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-grid',
   templateUrl: './sensors-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatDividerModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule],
 })
 export class SensorsGridComponent implements OnChanges {
   @Input() sensors: Sensor[]
@@ -40,7 +34,9 @@ export class SensorsGridComponent implements OnChanges {
       checkboxes: true,
       headerCheckbox: true,
     },
-    onSelectionChanged: () => { this.selectionChanged() },
+    onSelectionChanged: () => {
+      this.selectionChanged()
+    },
   }
 
   columnDefs: ColDef[] = [
@@ -67,9 +63,7 @@ export class SensorsGridComponent implements OnChanges {
     }
 
     if (changes.excludedDataLoggerIds && this.sensors.length && this.gridApi) {
-      const sensorIdsToExclude = this.sensors
-        .filter((s) => this.excludedDataLoggerIds.includes(s.data_logger_id))
-        .map((s) => s.id)
+      const sensorIdsToExclude = this.sensors.filter((s) => this.excludedDataLoggerIds.includes(s.data_logger_id)).map((s) => s.id)
 
       this.gridApi.forEachNode((node: RowNode<Sensor>) => {
         if (sensorIdsToExclude.includes(node.data.id)) {
@@ -126,10 +120,13 @@ export class SensorsGridComponent implements OnChanges {
       data: { model: 'Sensor', instance: sensor.display_name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._sensorService.deleteSensor(this.orgId, this.viewId, sensor.id)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._sensorService.deleteSensor(this.orgId, this.viewId, sensor.id)),
+      )
+      .subscribe()
   }
 
   selectionChanged() {

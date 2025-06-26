@@ -92,7 +92,20 @@ export type AgFilterResponse = {
 
 export type AgFilterModel = Record<string, AgFilter>
 
-export type FilterType = 'contains' | 'notContains' | 'equals' | 'notEqual' | 'startsWith' | 'endsWith' | 'blank' | 'notBlank' | 'greaterThan' | 'greaterThanOrEqual' | 'lessThan' | 'lessThanOrEqual' | 'between'
+export type FilterType =
+  | 'contains'
+  | 'notContains'
+  | 'equals'
+  | 'notEqual'
+  | 'startsWith'
+  | 'endsWith'
+  | 'blank'
+  | 'notBlank'
+  | 'greaterThan'
+  | 'greaterThanOrEqual'
+  | 'lessThan'
+  | 'lessThanOrEqual'
+  | 'between'
 
 export type AgFilter = {
   filterType?: string;

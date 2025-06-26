@@ -57,9 +57,14 @@ export class FormModalComponent implements OnInit {
   }
 
   onSubmit() {
-    this._sensorService.updateSensor(this.data.orgId, this.data.viewId, this.data.sensor.id, this.form.value as Sensor).pipe(
-      tap(() => { this.close(true) }),
-    ).subscribe()
+    this._sensorService
+      .updateSensor(this.data.orgId, this.data.viewId, this.data.sensor.id, this.form.value as Sensor)
+      .pipe(
+        tap(() => {
+          this.close(true)
+        }),
+      )
+      .subscribe()
   }
 
   close(success = false) {

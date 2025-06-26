@@ -13,9 +13,17 @@ import type { ColumnMapping } from '@seed/api/column_mapping_profile'
 })
 export class ActionButtonsComponent implements ICellRenderer {
   data: ColumnMapping
-  params: ICellRendererParams & { onDelete: (mapping: ColumnMapping, node: IRowNode) => void; onEdit: (mapping: ColumnMapping, node: IRowNode) => void }
+  params: ICellRendererParams & {
+    onDelete: (mapping: ColumnMapping, node: IRowNode) => void;
+    onEdit: (mapping: ColumnMapping, node: IRowNode) => void;
+  }
 
-  agInit(params: ICellRendererParams & { onDelete: (mapping: ColumnMapping, node: IRowNode) => void; onEdit: (mapping: ColumnMapping, node: IRowNode) => void }) {
+  agInit(
+    params: ICellRendererParams & {
+      onDelete: (mapping: ColumnMapping, node: IRowNode) => void;
+      onEdit: (mapping: ColumnMapping, node: IRowNode) => void;
+    },
+  ) {
     this.params = params
     this.data = params.data as ColumnMapping
   }

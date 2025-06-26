@@ -11,14 +11,17 @@ export class MapService {
     const idsToFetch = tractIds.filter((id) => !(id in this.disadvantaged))
     if (idsToFetch.length) {
       const url = '/api/v3/eeej/filter_disadvantaged_tracts/'
-      this._httpClient.post<{ status: string; disadvantaged: number[] }>(url, { tract_ids: tractIds }).pipe(
-        map(({ disadvantaged }) => disadvantaged),
-        tap((disadvantagedTracts) => {
-          for (const id of idsToFetch) {
-            this.disadvantaged[id] = disadvantagedTracts.includes(id)
-          }
-        }),
-      ).subscribe()
+      this._httpClient
+        .post<{ status: string; disadvantaged: number[] }>(url, { tract_ids: tractIds })
+        .pipe(
+          map(({ disadvantaged }) => disadvantaged),
+          tap((disadvantagedTracts) => {
+            for (const id of idsToFetch) {
+              this.disadvantaged[id] = disadvantagedTracts.includes(id)
+            }
+          }),
+        )
+        .subscribe()
     }
   }
 

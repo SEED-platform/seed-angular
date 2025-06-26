@@ -65,7 +65,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       link: '/organizations/columns/list',
       type: 'basic',
       useTabs: true,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnListHelpComponent,
     },
     {
@@ -74,7 +76,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       title: 'Geocoding',
       type: 'basic',
       useTabs: true,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnGeocodingHelpComponent,
     },
     {
@@ -83,7 +87,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       title: 'Data Types',
       type: 'basic',
       useTabs: true,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnDataTypesHelpComponent,
     },
     {
@@ -92,7 +98,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       title: 'Import Settings',
       type: 'basic',
       useTabs: true,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnImportSettingsHelpComponent,
     },
     {
@@ -101,7 +109,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       title: 'Matching Criteria',
       type: 'basic',
       useTabs: true,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnMatchingCriteriaHelpComponent,
     },
     {
@@ -110,7 +120,9 @@ export class ColumnsComponent implements AfterViewInit, OnInit {
       title: 'Column Mappings',
       type: 'basic',
       useTabs: false,
-      fn: (n: ColumnNavigationItem) => { this.setPageInfo(n) },
+      fn: (n: ColumnNavigationItem) => {
+        this.setPageInfo(n)
+      },
       helpComponent: ColumnMappingHelpComponent,
     },
   ]

@@ -17,15 +17,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressBarModule,
-  ],
+  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatProgressBarModule],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _columnService = inject(ColumnService)

@@ -16,14 +16,7 @@ import { DocumentUploadModalComponent } from '../modal/document-upload.component
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
   templateUrl: './documents-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    DocumentUploadModalComponent,
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, DocumentUploadModalComponent, MatButtonModule, MatIconModule],
 })
 export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
@@ -67,9 +60,13 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
 
-    this.rowData = this.view.property.inventory_documents.map(({ id, file, created, file_type, filename }) => (
-      { id, file, created, file_type, filename }
-    ))
+    this.rowData = this.view.property.inventory_documents.map(({ id, file, created, file_type, filename }) => ({
+      id,
+      file,
+      created,
+      file_type,
+      filename,
+    }))
   }
 
   actionRenderer = () => {
@@ -116,11 +113,14 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
 
   deleteDocument(id: string) {
     if (confirm('Are you sure you want to delete this document?')) {
-      this._inventoryService.deletePropertyDocument(this.org.id, this.viewId, id).pipe(
-        tap(() => {
-          this.refreshDetail.emit()
-        }),
-      ).subscribe()
+      this._inventoryService
+        .deletePropertyDocument(this.org.id, this.viewId, id)
+        .pipe(
+          tap(() => {
+            this.refreshDetail.emit()
+          }),
+        )
+        .subscribe()
     }
   }
 

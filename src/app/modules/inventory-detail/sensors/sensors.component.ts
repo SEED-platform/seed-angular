@@ -60,11 +60,15 @@ export class SensorsComponent implements OnDestroy, OnInit {
   usage: SensorUsage
 
   ngOnInit() {
-    this.getUrlParams().pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.getOrgData()),
-      tap(() => { this.setStreams() }),
-    ).subscribe()
+    this.getUrlParams()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this.getOrgData()),
+        tap(() => {
+          this.setStreams()
+        }),
+      )
+      .subscribe()
   }
 
   getUrlParams() {
@@ -78,8 +82,12 @@ export class SensorsComponent implements OnDestroy, OnInit {
 
   getOrgData() {
     return this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => { this.orgId = orgId }),
-      tap(() => { this._cycleService.get(this.orgId) }),
+      tap((orgId) => {
+        this.orgId = orgId
+      }),
+      tap(() => {
+        this._cycleService.get(this.orgId)
+      }),
       switchMap(() => this._cycleService.cycles$),
       tap((cycles) => { this.cycleId = cycles.length ? cycles[0].id : null }),
       switchMap(() => this._datasetService.datasets$),
@@ -92,17 +100,11 @@ export class SensorsComponent implements OnDestroy, OnInit {
     this._sensorService.listSensors(this.orgId, this.viewId)
     this._sensorService.listSensorUsage(this.orgId, this.viewId)
 
-    this._sensorService.dataLoggers$.pipe(
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe((dataLoggers) => this.dataLoggers = dataLoggers)
+    this._sensorService.dataLoggers$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((dataLoggers) => (this.dataLoggers = dataLoggers))
 
-    this._sensorService.sensors$.pipe(
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe((sensors) => this.sensors = sensors)
+    this._sensorService.sensors$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((sensors) => (this.sensors = sensors))
 
-    this._sensorService.usage$.pipe(
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe((usage) => this.usage = usage)
+    this._sensorService.usage$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((usage) => (this.usage = usage))
   }
 
   createDataLogger = () => {

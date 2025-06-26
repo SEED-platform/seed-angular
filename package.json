@@ -1,6 +1,6 @@
 {
   "name": "seed",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "Standard Energy Efficiency Data (SEED) Platform™",
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": {
@@ -86,6 +86,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.6",
+    "@types/ol-ext": "npm:@siedlerchr/types-ol-ext@^3.6.2",
     "angular-eslint": "^19.0.2",
     "autoprefixer": "^10.4.20",
     "chroma-js": "2.4.2",

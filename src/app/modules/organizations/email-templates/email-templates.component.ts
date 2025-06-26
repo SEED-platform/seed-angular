@@ -53,17 +53,21 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
   })
 
   ngOnInit(): void {
-    this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((orgId) => { this._orgId = orgId }),
-      switchMap(() => this._postOfficeService.emailTemplates$),
-      map((templates) => templates.sort((a, b) => naturalSort(a.name, b.name))),
-      tap((templates) => {
-        this.templates = templates
-        this.selectedTemplate = this.templates[0]
-        this.setForm()
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((orgId) => {
+          this._orgId = orgId
+        }),
+        switchMap(() => this._postOfficeService.emailTemplates$),
+        map((templates) => templates.sort((a, b) => naturalSort(a.name, b.name))),
+        tap((templates) => {
+          this.templates = templates
+          this.selectedTemplate = this.templates[0]
+          this.setForm()
+        }),
+      )
+      .subscribe()
   }
 
   setForm() {
@@ -143,14 +147,17 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
       data: { model: 'Email Template', instance: this.selectedTemplate.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._postOfficeService.delete(this.selectedTemplate.id, this._orgId)),
-      tap(() => {
-        this.refreshTemplates(null)
-      }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._postOfficeService.delete(this.selectedTemplate.id, this._orgId)),
+        tap(() => {
+          this.refreshTemplates(null)
+        }),
+      )
+      .subscribe()
   }
 
   save() {

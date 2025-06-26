@@ -24,14 +24,19 @@ export class UbidService {
     const singularType = typeMap[type]
     const url = `/api/v3/ubid/ubids_by_view/?organization_id=${orgId}`
     const body = { view_id: viewId, type: singularType }
-    this._httpClient.post<UbidResponse>(url, body).pipe(
-      take(1),
-      map(({ data }) => data),
-      tap((ubids) => { this._ubids.next(ubids) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching UBIDs')
-      }),
-    ).subscribe()
+    this._httpClient
+      .post<UbidResponse>(url, body)
+      .pipe(
+        take(1),
+        map(({ data }) => data),
+        tap((ubids) => {
+          this._ubids.next(ubids)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching UBIDs')
+        }),
+      )
+      .subscribe()
   }
 
   delete(orgId: number, viewId: number, ubidId: number, type: InventoryType): Observable<object> {

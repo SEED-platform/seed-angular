@@ -44,7 +44,6 @@ export class EditModalComponent implements OnInit {
     to_field: new FormControl<string>('', []),
     from_field: new FormControl<string>('', []),
     from_units: new FormControl<string>(''),
-
   })
   data = inject(MAT_DIALOG_DATA) as { mapping: ColumnMapping; org_id: number; columns: Column[]; profile: ColumnMappingProfile }
 
@@ -52,13 +51,19 @@ export class EditModalComponent implements OnInit {
     this.mapping = this.data.mapping
     this.columns = this.data.columns
     this.profile = this.data.profile
-    this.from_fields = this.profile.mappings.filter((m) => {
-      if (m.from_field === this.mapping.from_field && m.to_field === this.mapping.to_field && m.to_table_name === this.mapping.to_table_name) {
-        return false
-      } else {
-        return true
-      }
-    }).map((m) => m.from_field)
+    this.from_fields = this.profile.mappings
+      .filter((m) => {
+        if (
+          m.from_field === this.mapping.from_field
+          && m.to_field === this.mapping.to_field
+          && m.to_table_name === this.mapping.to_table_name
+        ) {
+          return false
+        } else {
+          return true
+        }
+      })
+      .map((m) => m.from_field)
     this.form.get('to_field').disable()
     this.form.get('to_table_name').valueChanges.subscribe((val) => {
       if (val) {

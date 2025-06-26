@@ -93,14 +93,17 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
   watchForm() {
     // watch for changes to access level and repopulate access level instances
-    this.form.get('access_level')?.valueChanges.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((accessLevel) => {
-        this.getPossibleAccessLevelInstances(accessLevel)
-        // default to first access level instance
-        this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
-      }),
-    ).subscribe()
+    this.form
+      .get('access_level')
+      ?.valueChanges.pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevel) => {
+          this.getPossibleAccessLevelInstances(accessLevel)
+          // default to first access level instance
+          this.form.get('access_level_instance_id')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+      )
+      .subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
