@@ -36,11 +36,7 @@ export class MembersComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     // get org id and org users
-    combineLatest([
-      this._organizationService.currentOrganization$,
-      this._organizationService.organizationUsers$,
-      this._userService.auth$,
-    ])
+    combineLatest([this._organizationService.currentOrganization$, this._organizationService.organizationUsers$, this._userService.auth$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([organization, orgUsers, auth]) => {
         this._organization = organization
@@ -89,12 +85,17 @@ export class MembersComponent implements OnDestroy, OnInit {
       data: { model: 'Member', instance: member.email },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._organizationService.deleteOrganizationUser(member.user_id, this._organization.id)),
-      tap(() => { this.getMembers(this._organization.org_id) }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._organizationService.deleteOrganizationUser(member.user_id, this._organization.id)),
+        tap(() => {
+          this.getMembers(this._organization.org_id)
+        }),
+      )
+      .subscribe()
   }
 
   resetPasswords = (): void => {

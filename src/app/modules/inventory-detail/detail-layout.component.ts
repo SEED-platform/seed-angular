@@ -16,13 +16,7 @@ import type { InventoryType } from '../inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-detail-layout',
   templateUrl: './detail-layout.component.html',
-  imports: [
-    MatIconModule,
-    MatSidenavModule,
-    RouterOutlet,
-    ScrollResetDirective,
-    VerticalNavigationComponent,
-  ],
+  imports: [MatIconModule, MatSidenavModule, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class DetailLayoutComponent implements AfterViewInit, OnInit {
   @ViewChild('drawer') drawer!: MatDrawer
@@ -117,13 +111,7 @@ export class DetailLayoutComponent implements AfterViewInit, OnInit {
     this.ubids,
   ]
 
-  taxlotChildren: NavigationItem[] = [
-    this.detail,
-    this.columnDetailProfiles,
-    this.crossCycles,
-    this.notes,
-    this.ubids,
-  ]
+  taxlotChildren: NavigationItem[] = [this.detail, this.columnDetailProfiles, this.crossCycles, this.notes, this.ubids]
 
   readonly detailNavigationMenu: NavigationItem[] = [
     {
@@ -139,18 +127,20 @@ export class DetailLayoutComponent implements AfterViewInit, OnInit {
   }
 
   initStreams() {
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => { this.orgId = orgId }),
-      // endpoints that return observables and initiate streams
-      filter(() => Boolean(this.orgId && this.viewId && this.type)),
-      switchMap(() => forkJoin([
-        this._inventoryService.getView(this.orgId, this.viewId, this.type),
-      ])),
-      // endpoints that initiate streams
-      tap(() => {
-        this._ubidService.list(this.orgId, this.viewId, this.type)
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        // endpoints that return observables and initiate streams
+        filter(() => Boolean(this.orgId && this.viewId && this.type)),
+        switchMap(() => forkJoin([this._inventoryService.getView(this.orgId, this.viewId, this.type)])),
+        // endpoints that initiate streams
+        tap(() => {
+          this._ubidService.list(this.orgId, this.viewId, this.type)
+        }),
+      )
+      .subscribe()
   }
 
   ngAfterViewInit() {

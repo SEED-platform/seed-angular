@@ -128,10 +128,15 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
       width: '50rem',
       data: { rule, orgId: this._orgId, columns$, tableName, currentRules: this.currentRules },
     })
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => { this.getRules.emit() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   deleteRule(rule: Rule) {
@@ -141,12 +146,17 @@ export class DataQualityInventoryTableComponent implements AfterViewInit, OnChan
       data: { model: 'Rule', instance: displayName },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
-      tap(() => { this.getRules.emit() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._dataQualityService.deleteRule({ id: rule.id, orgId: this._orgId })),
+        tap(() => {
+          this.getRules.emit()
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(index: number) {

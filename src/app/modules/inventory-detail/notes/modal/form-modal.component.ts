@@ -14,15 +14,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-notes-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatInputModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatInputModule, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy {
   private _noteService = inject(NoteService)
@@ -47,10 +39,14 @@ export class FormModalComponent implements OnDestroy {
       ? this._noteService.create(orgId, viewId, noteData, type)
       : this._noteService.update(orgId, viewId, note.id, noteData, type)
 
-    request$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => { this.close(true) }),
-    ).subscribe()
+    request$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.close(true)
+        }),
+      )
+      .subscribe()
   }
 
   close(success = false) {

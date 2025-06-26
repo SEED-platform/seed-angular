@@ -13,13 +13,7 @@ import { PageComponent } from '@seed/components'
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    PageComponent,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, PageComponent, MatIconModule],
 })
 export class AnalysesComponent implements OnInit {
   private _organizationService = inject(OrganizationService)

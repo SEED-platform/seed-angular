@@ -8,7 +8,17 @@ import { MatIcon } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClassParams, CellDoubleClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent, IRowNode, ValueFormatterParams } from 'ag-grid-community'
+import type {
+  CellClassParams,
+  CellDoubleClickedEvent,
+  ColDef,
+  ColGroupDef,
+  GridApi,
+  GridOptions,
+  GridReadyEvent,
+  IRowNode,
+  ValueFormatterParams,
+} from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
 import { combineLatest, filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -41,7 +51,17 @@ type RenderMapping = ColumnMapping & {
   selector: 'seed-organizations-column-mappings',
   templateUrl: './mappings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [AgGridAngular, CommonModule, SharedImports, MatButtonModule, MatIcon, MatFormFieldModule, ReactiveFormsModule, MatSelectModule, MatTooltipModule],
+  imports: [
+    AgGridAngular,
+    CommonModule,
+    SharedImports,
+    MatButtonModule,
+    MatIcon,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatTooltipModule,
+  ],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -78,63 +98,77 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     { id: 'L/year', value: 'L/year', type: 'water_use' },
   ]
   columnDefs: ColDef[] | ColGroupDef[] = [
-    { headerName: 'SEED', children: [
-      { headerName: 'Omit?', field: 'is_omitted', cellRenderer: 'agCheckboxCellRenderer',
-        editable: false, width: 100,
-
-      },
-      { headerName: 'Inventory Type',
-        field: 'to_table_name',
-        editable: false,
-        valueFormatter: (params: ValueFormatterParams) => { return (params.value as string).slice(0, -5) },
-      },
-      {
-        headerName: 'SEED Header',
-        field: 'to_field',
-        valueFormatter: (params: ValueFormatterParams<RenderMapping>) => { return (params.data.column?.display_name || params.value) as string },
-      },
-      { headerName: 'Measurement Units', field: 'from_units',
-        editable: false,
-        valueFormatter: (params: ValueFormatterParams<RenderMapping>) => { return params.data.unit_label },
-        cellClass: (params: CellClassParams<RenderMapping>) => {
-          if (this.measuredColumn(params.node) && !params.data.from_units) {
-            return 'bg-red-300'
-          } else {
-            return ''
-          }
+    {
+      headerName: 'SEED',
+      children: [
+        { headerName: 'Omit?', field: 'is_omitted', cellRenderer: 'agCheckboxCellRenderer', editable: false, width: 100 },
+        {
+          headerName: 'Inventory Type',
+          field: 'to_table_name',
+          editable: false,
+          valueFormatter: (params: ValueFormatterParams) => {
+            return (params.value as string).slice(0, -5)
+          },
         },
-      },
-    ],
+        {
+          headerName: 'SEED Header',
+          field: 'to_field',
+          valueFormatter: (params: ValueFormatterParams<RenderMapping>) => {
+            return (params.data.column?.display_name || params.value) as string
+          },
+        },
+        {
+          headerName: 'Measurement Units',
+          field: 'from_units',
+          editable: false,
+          valueFormatter: (params: ValueFormatterParams<RenderMapping>) => {
+            return params.data.unit_label
+          },
+          cellClass: (params: CellClassParams<RenderMapping>) => {
+            if (this.measuredColumn(params.node) && !params.data.from_units) {
+              return 'bg-red-300'
+            } else {
+              return ''
+            }
+          },
+        },
+      ],
     },
-    { headerName: 'Profile', children: [
-      {
-        headerName: 'Data File Header',
-        field: 'from_field',
-        cellClass: (params: CellClassParams<RenderMapping>) => {
-          if (this.countFromFieldsInGrid(params.data.from_field) > 1) {
-            return 'bg-red-300'
-          } else {
-            return ''
-          }
+    {
+      headerName: 'Profile',
+      children: [
+        {
+          headerName: 'Data File Header',
+          field: 'from_field',
+          cellClass: (params: CellClassParams<RenderMapping>) => {
+            if (this.countFromFieldsInGrid(params.data.from_field) > 1) {
+              return 'bg-red-300'
+            } else {
+              return ''
+            }
+          },
         },
-      },
-      {
-        headerName: 'Actions',
-        field: 'actions',
-        cellRendererSelector: (_params) => {
-          if (this.profileReadOnly()) {
-            return undefined
-          }
-          return {
-            component: ActionButtonsComponent,
-            params: {
-              onDelete: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.deleteMapping(data, node) },
-              onEdit: (data: ColumnMapping, node: IRowNode<RenderMapping>) => { this.editMapping(data, node) },
-            },
-          }
+        {
+          headerName: 'Actions',
+          field: 'actions',
+          cellRendererSelector: (_params) => {
+            if (this.profileReadOnly()) {
+              return undefined
+            }
+            return {
+              component: ActionButtonsComponent,
+              params: {
+                onDelete: (data: ColumnMapping, node: IRowNode<RenderMapping>) => {
+                  this.deleteMapping(data, node)
+                },
+                onEdit: (data: ColumnMapping, node: IRowNode<RenderMapping>) => {
+                  this.editMapping(data, node)
+                },
+              },
+            }
+          },
         },
-      },
-    ],
+      ],
     },
   ]
   rowData = []
@@ -314,7 +348,12 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   editMapping(mapping: ColumnMapping, node: IRowNode): void {
     const dialogRef = this._dialog.open(EditModalComponent, {
       width: '80rem',
-      data: { profile: this.selectedProfile, mapping, org_id: this.orgId, columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns) },
+      data: {
+        profile: this.selectedProfile,
+        mapping,
+        org_id: this.orgId,
+        columns: [].concat(this.mappablePropertyColumns, this.mappableTaxlotColumns),
+      },
     })
     dialogRef
       .afterClosed()
@@ -348,11 +387,9 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
               this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
               this.selectProfile(newProfileId)
               this._gridApi.redrawRows()
-            },
-            )
+            })
           }
-        },
-        ),
+        }),
       )
       .subscribe()
   }
@@ -360,7 +397,12 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
   copy_profile() {
     const dialogRef = this._dialog.open(CopyModalComponent, {
       width: '40rem',
-      data: { profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal', selectedProfileName: this.selectedProfile.name, mappings: this.getMappingsFromGrid(), org_id: this.orgId },
+      data: {
+        profile_type: this.selectedProfile.profile_type === 'BuildingSync Default' ? 'BuildingSync Custom' : 'Normal',
+        selectedProfileName: this.selectedProfile.name,
+        mappings: this.getMappingsFromGrid(),
+        org_id: this.orgId,
+      },
     })
 
     dialogRef
@@ -368,14 +410,12 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((newProfileId: number) => {
-          this._columnMappingProfileService.getProfiles(this.orgId).subscribe(
-            () => {
-              if (newProfileId) {
-                this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
-                this.selectProfile(newProfileId)
-              }
-            },
-          )
+          this._columnMappingProfileService.getProfiles(this.orgId).subscribe(() => {
+            if (newProfileId) {
+              this.selectedProfileForm.get('selectedProfile').setValue(newProfileId)
+              this.selectProfile(newProfileId)
+            }
+          })
         }),
       )
       .subscribe()
@@ -391,16 +431,19 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       data: { model: 'Column Mapping Profile', instance: this.selectedProfile.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._columnMappingProfileService.delete(this.orgId, this.selectedProfile.id)),
-      tap(() => {
-        this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
-        this.selectProfile()
-        this._columnMappingProfileService.getProfiles(this.orgId).subscribe()
-      }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._columnMappingProfileService.delete(this.orgId, this.selectedProfile.id)),
+        tap(() => {
+          this.selectedProfileForm.get('selectedProfile').setValue(this.profiles.find((p) => p.id !== profileToDelete.id).id)
+          this.selectProfile()
+          this._columnMappingProfileService.getProfiles(this.orgId).subscribe()
+        }),
+      )
+      .subscribe()
   }
 
   rename() {
@@ -430,7 +473,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       return
     }
     const filename = `column_mapping_profile_${this.selectedProfile.id}.csv`
-    this._columnMappingProfileService.export(this.orgId, this.selectedProfile.id)
+    this._columnMappingProfileService
+      .export(this.orgId, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
         saveAs(blob, filename) // eslint-disable-line @typescript-eslint/no-unsafe-call
@@ -439,7 +483,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
   suggest() {
     const headers = this.selectedProfile.mappings.map((m) => m.from_field)
-    this._columnMappingProfileService.suggestions(this.orgId, headers)
+    this._columnMappingProfileService
+      .suggestions(this.orgId, headers)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((suggestions) => {
         for (const k of Object.keys(suggestions)) {
@@ -460,12 +505,14 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
 
   save() {
     const orgId = this.orgId
-    this._columnMappingProfileService.updateMappings(orgId, this.selectedProfile.id, this.getMappingsFromGrid()).subscribe((updatedProfile) => {
-      const i = this.profiles.indexOf(this.selectedProfile)
-      this.profiles[i] = updatedProfile
-      this.selectedProfileForm.get('selectedProfile').enable()
-      this.populateGrid(this.profiles[i])
-    })
+    this._columnMappingProfileService
+      .updateMappings(orgId, this.selectedProfile.id, this.getMappingsFromGrid())
+      .subscribe((updatedProfile) => {
+        const i = this.profiles.indexOf(this.selectedProfile)
+        this.profiles[i] = updatedProfile
+        this.selectedProfileForm.get('selectedProfile').enable()
+        this.populateGrid(this.profiles[i])
+      })
   }
 
   cancel() {

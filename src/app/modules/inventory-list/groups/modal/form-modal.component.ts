@@ -51,10 +51,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
   existingNames = this.data.groups?.map((g) => g.name).filter((name) => name !== this.data.group?.name) ?? []
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
-      Validators.required,
-      SEEDValidators.uniqueValue(this.existingNames),
-    ]),
+    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
     access_level: new FormControl<string | null>(null),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
   })
@@ -67,31 +64,36 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
   watchAccessLevel() {
     // update access level instances if the access level changes
-    this.form.get('access_level').valueChanges.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((accessLevel) => {
-        this.getPossibleAccessLevelInstances(accessLevel)
-        // default to first access level instance
-        this.form.get('access_level_instance')?.setValue(this.accessLevelInstances[0]?.id)
-      }),
-    ).subscribe()
+    this.form
+      .get('access_level')
+      .valueChanges.pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((accessLevel) => {
+          this.getPossibleAccessLevelInstances(accessLevel)
+          // default to first access level instance
+          this.form.get('access_level_instance')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+      )
+      .subscribe()
   }
 
   getDependencies() {
-    this._organizationService.accessLevelTree$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(({ accessLevelNames }) => {
-        this.accessLevelNames = accessLevelNames
-        const accessLevel = this.form.get('access_level')?.value ?? accessLevelNames.at(-1)
-        this.form.get('access_level')?.setValue(accessLevel)
-        return this._organizationService.accessLevelInstancesByDepth$
-      }),
-      tap((accessLevelsByDepth) => {
-        this.accessLevelInstancesByDepth = accessLevelsByDepth
-        this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
-        this.form.get('access_level_instance')?.setValue(this.accessLevelInstances[0]?.id)
-      }),
-    ).subscribe()
+    this._organizationService.accessLevelTree$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(({ accessLevelNames }) => {
+          this.accessLevelNames = accessLevelNames
+          const accessLevel = this.form.get('access_level')?.value ?? accessLevelNames.at(-1)
+          this.form.get('access_level')?.setValue(accessLevel)
+          return this._organizationService.accessLevelInstancesByDepth$
+        }),
+        tap((accessLevelsByDepth) => {
+          this.accessLevelInstancesByDepth = accessLevelsByDepth
+          this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
+          this.form.get('access_level_instance')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+      )
+      .subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {

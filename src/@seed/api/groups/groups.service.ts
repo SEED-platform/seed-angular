@@ -19,31 +19,37 @@ export class GroupsService {
 
   list(orgId: number) {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
-    this._httpClient.get<InventoryGroupsResponse>(url).pipe(
-      take(1),
-      map(({ data }) => {
-        this._groups.next(data)
-        return data
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching groups')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<InventoryGroupsResponse>(url)
+      .pipe(
+        take(1),
+        map(({ data }) => {
+          this._groups.next(data)
+          return data
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching groups')
+        }),
+      )
+      .subscribe()
   }
 
   listForInventory(orgId: number, inventoryIds: number[]) {
     const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=properties`
     const body = { selected: inventoryIds }
-    this._httpClient.post<InventoryGroupsResponse>(url, body).pipe(
-      take(1),
-      map(({ data }) => {
-        this._groups.next(data)
-        return data
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching groups for inventory')
-      }),
-    ).subscribe()
+    this._httpClient
+      .post<InventoryGroupsResponse>(url, body)
+      .pipe(
+        take(1),
+        map(({ data }) => {
+          this._groups.next(data)
+          return data
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching groups for inventory')
+        }),
+      )
+      .subscribe()
   }
 
   create(orgId: number, data: InventoryGroup): Observable<InventoryGroup> {

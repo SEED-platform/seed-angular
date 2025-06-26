@@ -64,20 +64,20 @@ export class FormModalComponent implements OnDestroy, OnInit {
     { display: 'Connected to Outside', value: 'outside' },
     { display: 'Connected to a Service', value: 'service' },
   ]
-  useOptions = [
-    { display: 'Using a Service', value: 'using' },
-  ]
+  useOptions = [{ display: 'Using a Service', value: 'using' }]
   groupOptions: InventoryGroup[] = []
   systemOptions: GroupSystem[] = []
   serviceOptions: GroupService[] = []
 
   ngOnInit(): void {
-    this.getDependencies().pipe(
-      tap(() => {
-        this.patchForm()
-        this.watchForm()
-      }),
-    ).subscribe()
+    this.getDependencies()
+      .pipe(
+        tap(() => {
+          this.patchForm()
+          this.watchForm()
+        }),
+      )
+      .subscribe()
   }
 
   getDependencies() {
@@ -90,7 +90,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
     })
 
     return this._groupsService.groups$.pipe(
-      tap((groups) => { this.groupOptions = groups }),
+      tap((groups) => {
+        this.groupOptions = groups
+      }),
     )
   }
 
@@ -152,13 +154,16 @@ export class FormModalComponent implements OnDestroy, OnInit {
   }
 
   onSubmit() {
-    this._meterService.updateMeterConnection(this.data.orgId, this.data.meter.id, this.form.value as MeterConfig, this.data.viewId, this.data.groupId).pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap(() => {
-        this._snackBar.success('Meter connection updated successfully')
-        this._dialogRef.close(true)
-      }),
-    ).subscribe()
+    this._meterService
+      .updateMeterConnection(this.data.orgId, this.data.meter.id, this.form.value as MeterConfig, this.data.viewId, this.data.groupId)
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this._snackBar.success('Meter connection updated successfully')
+          this._dialogRef.close(true)
+        }),
+      )
+      .subscribe()
   }
 
   close(success = false) {

@@ -5,7 +5,14 @@ import type { Observable } from 'rxjs'
 import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
-import type { CheckProgressLoopParams, GreenButtonMeterPreview, SensorPreviewResponse, SensorReadingPreview, UpdateProgressBarObjParams, UploadResponse } from './uploader.types'
+import type {
+  CheckProgressLoopParams,
+  GreenButtonMeterPreview,
+  SensorPreviewResponse,
+  SensorReadingPreview,
+  UpdateProgressBarObjParams,
+  UploadResponse,
+} from './uploader.types'
 
 @Injectable({ providedIn: 'root' })
 export class UploaderService {
@@ -27,9 +34,13 @@ export class UploaderService {
 
     return interval(750).pipe(
       switchMap(() => this.checkProgress(progressKey)),
-      tap((response) => { this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj }) }),
+      tap((response) => {
+        this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
+      }),
       takeWhile((response) => !isCompleted(response.status), true), // end stream
-      tap((response) => { if (response.status === 'success') successFn() }),
+      tap((response) => {
+        if (response.status === 'success') successFn()
+      }),
       catchError(() => {
         // TODO the interval needs to continue if the error was network-related
         failureFn()
@@ -84,7 +95,7 @@ export class UploaderService {
   sensorPreview(orgId: number, viewId: number, dataLoggerId: number, fileId: number): Observable<SensorPreviewResponse> {
     const url = `/api/v3/import_files/${fileId}/sensors_preview/`
     const params = { organization_id: orgId, view_id: viewId, data_logger_id: dataLoggerId }
-    return this._httpClient.get <SensorPreviewResponse>(url, { params }).pipe(
+    return this._httpClient.get<SensorPreviewResponse>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching sensor preview')
       }),

@@ -5,7 +5,14 @@ import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
-import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileDeleteResponse, ColumnMappingProfilesRequest, ColumnMappingProfileUpdateResponse, ColumnMappingSuggestionResponse } from './column_mapping_profile.types'
+import type {
+  ColumnMapping,
+  ColumnMappingProfile,
+  ColumnMappingProfileDeleteResponse,
+  ColumnMappingProfilesRequest,
+  ColumnMappingProfileUpdateResponse,
+  ColumnMappingSuggestionResponse,
+} from './column_mapping_profile.types'
 
 @Injectable({ providedIn: 'root' })
 export class ColumnMappingProfileService {

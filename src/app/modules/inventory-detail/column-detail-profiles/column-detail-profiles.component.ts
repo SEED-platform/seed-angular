@@ -11,11 +11,7 @@ import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/
 @Component({
   selector: 'seed-inventory-detail-profiles',
   templateUrl: './column-detail-profiles.component.html',
-  imports: [
-    ColumnProfilesComponent,
-    CommonModule,
-    PageComponent,
-  ],
+  imports: [ColumnProfilesComponent, CommonModule, PageComponent],
 })
 export class ColumnDetailProfilesComponent implements OnInit {
   @ViewChild('columnProfiles') columnProfiles: ColumnProfilesComponent

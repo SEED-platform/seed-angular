@@ -21,25 +21,35 @@ export class MeterService {
 
   list(orgId: number, viewId: number) {
     const url = `/api/v3/properties/${viewId}/meters/?organization_id=${orgId}`
-    this._httpClient.get<Meter[]>(url).pipe(
-      take(1),
-      tap((meters) => { this._meters.next(meters) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching meters')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<Meter[]>(url)
+      .pipe(
+        take(1),
+        tap((meters) => {
+          this._meters.next(meters)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching meters')
+        }),
+      )
+      .subscribe()
   }
 
   listReadings(orgId: number, viewId: number, interval: string, excluded_meter_ids: number[] = []) {
     const url = `/api/v3/properties/${viewId}/meter_usage/?organization_id=${orgId}`
     const body = { interval, excluded_meter_ids }
-    return this._httpClient.post<MeterUsage>(url, body).pipe(
-      take(1),
-      tap((readings) => { this._meterReadings.next(readings) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching meter usage')
-      }),
-    ).subscribe()
+    return this._httpClient
+      .post<MeterUsage>(url, body)
+      .pipe(
+        take(1),
+        tap((readings) => {
+          this._meterReadings.next(readings)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching meter usage')
+        }),
+      )
+      .subscribe()
   }
 
   delete(orgId: number, viewId: number, meterId: number) {

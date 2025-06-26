@@ -22,15 +22,7 @@ type CellRendererParams = { value: string; data: { is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-list-summary',
   templateUrl: './summary.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatSelectModule,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule, MatSelectModule, PageComponent],
 })
 export class SummaryComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)
@@ -61,7 +53,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
   initPage() {
     return this._userService.currentUser$.pipe(
       switchMap((user) => this.getDependencies(user)),
-      tap(() => { this.setGrid() }),
+      tap(() => {
+        this.setGrid()
+      }),
     )
   }
 
@@ -116,9 +110,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   selectCycle(cycleId: number) {
     this.currentUser.settings.cycleId = cycleId
-    this.updateOrgUserSettings().pipe(
-      switchMap(() => this.initPage()),
-    ).subscribe()
+    this.updateOrgUserSettings()
+      .pipe(switchMap(() => this.initPage()))
+      .subscribe()
   }
 
   updateOrgUserSettings() {

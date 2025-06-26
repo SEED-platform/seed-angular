@@ -90,12 +90,17 @@ export class LabelsComponent implements OnInit, OnDestroy {
       data: { model: 'Label', instance: label.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      takeUntil(this._unsubscribeAll$),
-      filter(Boolean),
-      switchMap(() => this._labelService.delete(label)),
-      tap(() => { this.refreshLabels() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => this._labelService.delete(label)),
+        tap(() => {
+          this.refreshLabels()
+        }),
+      )
+      .subscribe()
   }
 
   create = () => {

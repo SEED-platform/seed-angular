@@ -16,13 +16,7 @@ import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-data-loggers-grid',
   templateUrl: './data-loggers-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatDividerModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule],
 })
 export class DataLoggersGridComponent implements OnChanges {
   @Input() cycleId: number
@@ -43,7 +37,9 @@ export class DataLoggersGridComponent implements OnChanges {
       checkboxes: true,
       headerCheckbox: true,
     },
-    onSelectionChanged: () => { this.selectionChanged() },
+    onSelectionChanged: () => {
+      this.selectionChanged()
+    },
   }
 
   columnDefs: ColDef[] = [
@@ -156,10 +152,13 @@ export class DataLoggersGridComponent implements OnChanges {
       data: { model: 'Sensor', instance: dataLogger.display_name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._sensorService.deleteDataLogger(this.orgId, this.viewId, dataLogger.id)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._sensorService.deleteDataLogger(this.orgId, this.viewId, dataLogger.id)),
+      )
+      .subscribe()
   }
 
   selectionChanged() {

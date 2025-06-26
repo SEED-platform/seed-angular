@@ -37,10 +37,7 @@ import { MatchingCriteriaComponent } from './matching-criteria.component'
 })
 export class MatchingCriteriaPropertiesComponent extends MatchingCriteriaComponent implements OnInit {
   ngOnInit(): void {
-    combineLatest([
-      this._columnService.propertyColumns$,
-      this._organizationService.currentOrganization$,
-    ])
+    combineLatest([this._columnService.propertyColumns$, this._organizationService.currentOrganization$])
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe(([columns, organization]) => {
         this.organization = organization

@@ -21,7 +21,7 @@ export class InventoryTabComponent implements OnChanges, OnDestroy, OnInit {
 
   ngOnInit(): void {
     this._route.paramMap.subscribe((params) => {
-      this.type = params.get('type') as InventoryType || this.inputType
+      this.type = (params.get('type') as InventoryType) || this.inputType
     })
   }
 

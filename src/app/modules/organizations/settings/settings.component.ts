@@ -13,13 +13,7 @@ import { ScrollResetDirective } from '@seed/directives'
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    MatIconModule,
-    MatSidenavModule,
-    RouterOutlet,
-    ScrollResetDirective,
-    VerticalNavigationComponent,
-  ],
+  imports: [MatIconModule, MatSidenavModule, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class SettingsComponent implements AfterViewInit {
   @ViewChild('drawer') drawer!: MatDrawer

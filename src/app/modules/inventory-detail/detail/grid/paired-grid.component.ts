@@ -16,12 +16,7 @@ import type { GenericRelatedInventory, InventoryType, ViewResponse } from 'app/m
 @Component({
   selector: 'seed-inventory-detail-paired-grid',
   templateUrl: './paired-grid.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule],
 })
 export class PairedGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization

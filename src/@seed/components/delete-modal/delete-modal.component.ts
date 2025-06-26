@@ -8,12 +8,7 @@ import { MatIconModule } from '@angular/material/icon'
   standalone: true,
   selector: 'seed-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-  ],
+  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule],
 })
 export class DeleteModalComponent {
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)

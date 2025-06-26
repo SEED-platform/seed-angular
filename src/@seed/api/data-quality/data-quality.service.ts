@@ -17,9 +17,7 @@ export class DataQualityService {
   rules$ = this._rules.asObservable()
 
   constructor() {
-    this._organizationService.currentOrganization$.pipe(
-      switchMap(({ org_id }) => this.getRules(org_id)),
-    ).subscribe()
+    this._organizationService.currentOrganization$.pipe(switchMap(({ org_id }) => this.getRules(org_id))).subscribe()
   }
 
   getRules(orgId: number): Observable<Rule[]> {

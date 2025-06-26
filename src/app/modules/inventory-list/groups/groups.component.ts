@@ -20,14 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    FormModalComponent,
-    MatIconModule,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, FormModalComponent, MatIconModule, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
@@ -50,13 +43,15 @@ export class GroupsComponent implements OnDestroy, OnInit {
   }
 
   initPage() {
-    this._organizationService.currentOrganization$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(({ org_id }) => this.getDependencies(org_id)),
-      tap(() => {
-        this.setGrid()
-      }),
-    ).subscribe()
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(({ org_id }) => this.getDependencies(org_id)),
+        tap(() => {
+          this.setGrid()
+        }),
+      )
+      .subscribe()
   }
 
   getDependencies(orgId: number): Observable<unknown> {
@@ -64,7 +59,9 @@ export class GroupsComponent implements OnDestroy, OnInit {
     this._groupsService.list(orgId)
 
     return this._groupsService.groups$.pipe(
-      tap((groups: InventoryGroup[]) => { this.groups = groups }),
+      tap((groups: InventoryGroup[]) => {
+        this.groups = groups
+      }),
     )
   }
 
@@ -150,10 +147,15 @@ export class GroupsComponent implements OnDestroy, OnInit {
       data,
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      tap(() => { this.initPage() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => {
+          this.initPage()
+        }),
+      )
+      .subscribe()
   }
 
   openDeleteModal(id: number, name: string) {
@@ -162,14 +164,19 @@ export class GroupsComponent implements OnDestroy, OnInit {
       data: { model: 'Group', instance: name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      tap(() => {
-        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-      }),
-      switchMap(() => this._groupsService.delete(this.orgId, id)),
-      tap(() => { this.initPage() }),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => {
+          console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
+        }),
+        switchMap(() => this._groupsService.delete(this.orgId, id)),
+        tap(() => {
+          this.initPage()
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

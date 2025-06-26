@@ -29,16 +29,7 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
 @Component({
   selector: 'seed-inventory-detail-meters',
   templateUrl: './meters.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    PageComponent,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    MatDividerModule,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, PageComponent, MatButtonModule, MatIconModule, MatSelectModule, MatDividerModule],
 })
 export class MetersComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -88,16 +79,24 @@ export class MetersComponent implements OnDestroy, OnInit {
       checkboxes: true,
       headerCheckbox: true,
     },
-    onSelectionChanged: () => { this.meterSelectionChanged() },
+    onSelectionChanged: () => {
+      this.meterSelectionChanged()
+    },
   }
 
   ngOnInit(): void {
-    this.getUrlParams().pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this._userService.currentOrganizationId$),
-      tap((orgId) => { this.orgId = orgId }),
-      tap(() => { this.setStreams() }),
-    ).subscribe()
+    this.getUrlParams()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this._userService.currentOrganizationId$),
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        tap(() => {
+          this.setStreams()
+        }),
+      )
+      .subscribe()
   }
 
   getUrlParams() {
@@ -115,35 +114,54 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._groupsService.listForInventory(this.orgId, [this.viewId])
     this._cycleService.get(this.orgId)
 
-    this._meterService.meters$.pipe(
-      tap((meters) => {
-        this.meters = meters
-        this.setMeterGrid()
-      }),
-    ).subscribe((meters) => this.meters = meters)
+    this._meterService.meters$
+      .pipe(
+        tap((meters) => {
+          this.meters = meters
+          this.setMeterGrid()
+        }),
+      )
+      .subscribe((meters) => (this.meters = meters))
 
-    this._meterService.meterReadings$.pipe(
-      tap((meterReadings) => {
-        this.meterReadings = meterReadings
-        this.setReadingGrid()
-      }),
-    ).subscribe((meterReadings) => this.meterReadings = meterReadings)
+    this._meterService.meterReadings$
+      .pipe(
+        tap((meterReadings) => {
+          this.meterReadings = meterReadings
+          this.setReadingGrid()
+        }),
+      )
+      .subscribe((meterReadings) => (this.meterReadings = meterReadings))
 
-    this._groupsService.groups$.pipe(
-      filter(Boolean),
-      tap((groups) => {
-        this.groupIds = groups.map((g) => g.id)
-        this.services = groups.map((g) => g.systems || []).flat().map((sys) => sys.services || []).flat()
-      }),
-    ).subscribe()
+    this._groupsService.groups$
+      .pipe(
+        filter(Boolean),
+        tap((groups) => {
+          this.groupIds = groups.map((g) => g.id)
+          this.services = groups
+            .map((g) => g.systems || [])
+            .flat()
+            .map((sys) => sys.services || [])
+            .flat()
+        }),
+      )
+      .subscribe()
 
-    this._cycleService.cycles$.pipe(
-      tap((cycles) => { this.cycles = cycles }),
-    ).subscribe()
+    this._cycleService.cycles$
+      .pipe(
+        tap((cycles) => {
+          this.cycles = cycles
+        }),
+      )
+      .subscribe()
 
-    this._datasetService.listDatasets(this.orgId).pipe(
-      tap((datasets) => { this.datasets = datasets }),
-    ).subscribe()
+    this._datasetService
+      .listDatasets(this.orgId)
+      .pipe(
+        tap((datasets) => {
+          this.datasets = datasets
+        }),
+      )
+      .subscribe()
   }
 
   setMeterGrid() {
@@ -260,10 +278,13 @@ export class MetersComponent implements OnDestroy, OnInit {
       data: { model: 'Meter', instance: meter.alias },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._meterService.delete(this.orgId, this.viewId, meter.id)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._meterService.delete(this.orgId, this.viewId, meter.id)),
+      )
+      .subscribe()
   }
 
   editMeter(meter: Meter) {

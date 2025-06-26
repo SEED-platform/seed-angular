@@ -22,9 +22,7 @@ export class LabelService {
 
   constructor() {
     // Fetch current org data whenever user org id changes
-    this._userService.currentOrganizationId$.pipe(
-      switchMap((organizationId) => this.getByOrgId(organizationId)),
-    ).subscribe()
+    this._userService.currentOrganizationId$.pipe(switchMap((organizationId) => this.getByOrgId(organizationId))).subscribe()
   }
 
   getByOrgId(organizationId: number): Observable<Label[]> {
@@ -43,12 +41,10 @@ export class LabelService {
   }
 
   /*
-  * Get inventory labels for a list of views
-  */
+   * Get inventory labels for a list of views
+   */
   getInventoryLabels(orgId: number, viewIds: number[], cycleId: number, inventoryType: InventoryType): Observable<Label[]> {
-    return inventoryType === 'taxlots'
-      ? this.getTaxLotLabels(orgId, viewIds, cycleId)
-      : this.getPropertyLabels(orgId, viewIds, cycleId)
+    return inventoryType === 'taxlots' ? this.getTaxLotLabels(orgId, viewIds, cycleId) : this.getPropertyLabels(orgId, viewIds, cycleId)
   }
 
   getPropertyLabels(orgId: number, viewIds: number[], cycleId: number): Observable<Label[]> {

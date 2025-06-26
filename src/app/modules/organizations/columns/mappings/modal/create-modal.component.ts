@@ -66,11 +66,14 @@ export class CreateModalComponent implements OnInit {
     for (const m of this.mappings.controls) {
       this.addToMapping(m as FormGroup)
     }
-    this._columnMappingProfileService.create(this.data.org_id, this.profile).pipe(
-      map((response) => {
-        this._dialogRef.close(response.data.id)
-      }),
-    ).subscribe()
+    this._columnMappingProfileService
+      .create(this.data.org_id, this.profile)
+      .pipe(
+        map((response) => {
+          this._dialogRef.close(response.data.id)
+        }),
+      )
+      .subscribe()
   }
 
   close() {
@@ -96,7 +99,7 @@ export class CreateModalComponent implements OnInit {
   }
 
   setMeasurementSelect(mapping: FormGroup, field: string): void {
-    const col = this.columns.find((c) => c.table_name === mapping.get('to_table_name').value as string && c.column_name === field)
+    const col = this.columns.find((c) => c.table_name === (mapping.get('to_table_name').value as string) && c.column_name === field)
     if (!col) {
       return null
     }
@@ -126,7 +129,9 @@ export class CreateModalComponent implements OnInit {
 
   unitSelections(index: number) {
     const mapping = this.form.controls.mappings.controls[index] as FormGroup
-    const col = this.columns.find((c) => c.table_name === mapping.get('to_table_name').value && c.column_name === mapping.get('to_field').value)
+    const col = this.columns.find(
+      (c) => c.table_name === mapping.get('to_table_name').value && c.column_name === mapping.get('to_field').value,
+    )
     if (!col) {
       return []
     }

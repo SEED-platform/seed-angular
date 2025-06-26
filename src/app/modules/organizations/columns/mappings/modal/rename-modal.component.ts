@@ -12,14 +12,7 @@ import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/ap
 @Component({
   selector: 'seed-column-mappings-rename-modal',
   templateUrl: './rename-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    ReactiveFormsModule],
+  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule],
 })
 export class RenameModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
