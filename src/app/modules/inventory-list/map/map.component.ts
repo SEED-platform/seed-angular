@@ -527,7 +527,7 @@ export class MapComponent implements OnDestroy, OnInit {
     })
   }
 
-  singlePointStyle = () => new Style({ image: new Icon({ src: '/images/map_pin.webp', anchor: [0.5, 1] }) })
+  singlePointStyle = () => new Style({ image: new Icon({ src: 'images/map_pin.webp', anchor: [0.5, 1] }) })
   pointsSource = (records = this.geocodedData) => new Cluster({ source: this.buildingSources(records), distance: 45 })
   propertyStyle = () => new Style({ stroke: new Stroke({ color: '#185189', width: 2 }) })
   taxlotStyle = () => new Style({ stroke: new Stroke({ color: '#10A0A0', width: 2 }) })
