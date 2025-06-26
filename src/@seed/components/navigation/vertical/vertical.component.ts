@@ -2,13 +2,13 @@ import type { AnimationPlayer } from '@angular/animations'
 import { animate, AnimationBuilder, style } from '@angular/animations'
 import type { ScrollStrategy } from '@angular/cdk/overlay'
 import { ScrollStrategyOptions } from '@angular/cdk/overlay'
-import { DOCUMENT } from '@angular/common'
 import type { AfterViewInit, OnChanges, OnDestroy, OnInit, QueryList, SimpleChanges } from '@angular/core'
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DOCUMENT,
   ElementRef,
   HostBinding,
   HostListener,
