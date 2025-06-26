@@ -3,6 +3,7 @@ import type { Routes } from '@angular/router'
 import { switchMap, take, tap } from 'rxjs'
 import { DatasetService } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
+import { DataMappingComponent } from './data-mappings'
 import { DatasetComponent } from './dataset/dataset.component'
 import { DatasetsComponent } from './datasets.component'
 
@@ -35,5 +36,10 @@ export default [
         )
       },
     },
+  },
+  {
+    path: 'mappings/:id',
+    title: 'Data Mappings',
+    component: DataMappingComponent,
   },
 ] satisfies Routes

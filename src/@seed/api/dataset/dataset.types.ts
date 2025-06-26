@@ -47,3 +47,8 @@ export type DatasetResponse = {
   status: 'success';
   dataset: Dataset;
 }
+
+export type ImportFileResponse = {
+  status: 'success';
+  import_file: ImportFile;
+}

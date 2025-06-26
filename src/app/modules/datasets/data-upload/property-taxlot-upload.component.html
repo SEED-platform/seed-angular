@@ -1,0 +1,87 @@
+
+<mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
+  <!-- STEP 1 -->
+  <mat-step [completed]="completed[1]" label="File Select">
+    <div class="">
+      <form [formGroup]="form" class="flex flex-col">
+
+        <!-- Cycle -->
+        <div class="flex gap-4">
+          <mat-form-field class="w-2/3">
+            <mat-label>{{ form.get('multiCycle').value ? 'Default Cycle' : 'Cycle'}}</mat-label>
+
+            <mat-select formControlName="cycleId">
+              @for (cycle of cycles; track $index) {
+              <mat-option [value]="cycle.id">{{ cycle.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Multi Cycle -->
+          <mat-checkbox formControlName="multiCycle" color="primary">
+            Multi-Cycle
+          </mat-checkbox>
+        </div>
+
+        <mat-divider class="my-4"></mat-divider>
+
+        <!-- File select -->
+        <input 
+          class="pointer-events-none invisible absolute h-0 w-0 opacity-0" 
+          type="file" 
+          #fileInput
+          [accept]="allowedTypes"
+          (change)="step1(fileInput.files)"
+        />
+        
+        <div class="flex flex-col gap-2 w-full">
+          <div class="flex gap-4">
+            <button class="flex gap-4 w-2/3" mat-flat-button color="primary" (click)="triggerUpload('Assessed Raw')">
+              <mat-icon svgIcon="fa-solid:file"></mat-icon>
+              <span class="inline-block w-40 text-left">Upload Spreadsheet</span>
+            </button>
+            <span class="text-secondary my-auto">.csv, .xls, .xslx</span>
+          </div>
+        <div class="text-secondary mb-2 ml-4">Note: only the first sheet of multi-sheet Excel files will be imported.</div>
+
+        
+          <div class="flex gap-4">
+            <button class="flex gap-4 w-2/3" mat-flat-button color="primary" (click)="triggerUpload('GeoJSON')">
+              <mat-icon svgIcon="fa-solid:globe"></mat-icon>
+              <span class="inline-block w-40 text-left">Upload GeoJSON</span>
+            </button>
+            <span class="text-secondary my-auto">.geojson, .json</span>
+          </div>
+        
+          <div class="flex gap-4">
+            <button class="flex gap-4 w-2/3" mat-flat-button color="primary" (click)="triggerUpload('BuildingSync Raw')">
+              <mat-icon svgIcon="fa-solid:building"></mat-icon>
+              <span class="inline-block w-40 text-left">Upload BuildingSync</span>
+            </button>
+            <span class="text-secondary my-auto">.xml</span>
+          </div>
+        </div>
+
+
+      </form>
+    </div>
+    
+    @if (uploading) {
+      <mat-progress-bar class="my-5" mode="indeterminate"></mat-progress-bar>
+    } @else {
+      <!-- spacer -->
+      <div class="my-5"></div>
+    }
+  </mat-step>
+  
+  <!-- STEP 2 -->
+   <mat-step [completed]="completed[2]" label="Upload File">
+    @if (inProgress) {
+      <seed-progress-bar
+        [progress]="progressBarObj.progress"
+        [total]="progressBarObj.total"
+        title="Uploading Sensor Data..."
+      ></seed-progress-bar>
+    }
+   </mat-step>
+</mat-stepper>

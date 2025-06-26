@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, tap } from 'rxjs'
 import { UserService } from '../user'
-import type { CountDatasetsResponse, Dataset, DatasetResponse, ListDatasetsResponse } from './dataset.types'
+import type { CountDatasetsResponse, Dataset, DatasetResponse, ImportFile, ImportFileResponse, ListDatasetsResponse } from './dataset.types'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -109,6 +109,17 @@ export class DatasetService {
       tap(() => { this._snackBar.success('File deleted successfully') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting file')
+      }),
+    )
+  }
+
+  getImportFile(orgId: number, fieldId: number): Observable<ImportFile> {
+    const url = `/api/v3/import_files/${fieldId}/?organization_id=${orgId}`
+    return this._httpClient.get<ImportFileResponse>(url).pipe(
+      tap((response) => { console.log('temp', response) }),
+      map(({ import_file }) => import_file),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching import file')
       }),
     )
   }

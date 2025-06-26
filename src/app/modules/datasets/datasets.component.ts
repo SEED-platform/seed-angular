@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
-import { Component, inject, viewChild, ViewEncapsulation } from '@angular/core'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
@@ -14,6 +14,9 @@ import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { FormModalComponent } from './modal/form-modal.component'
+import { UploadFileModalComponent } from './data-upload/data-upload-modal.component'
+import { CycleService } from '@seed/api/cycle/cycle.service'
+import { Cycle } from '@seed/api/cycle'
 
 @Component({
   selector: 'seed-data',
@@ -30,12 +33,14 @@ import { FormModalComponent } from './modal/form-modal.component'
 })
 export class DatasetsComponent implements OnInit {
   private _configService = inject(ConfigService)
+  private _cycleService = inject(CycleService)
   private _datasetService = inject(DatasetService)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _dialog = inject(MatDialog)
   columnDefs: ColDef[]
+  cycles: Cycle[] = []
   datasets: Dataset[]
   datasetsColumns = ['name', 'importfiles', 'updated_at', 'last_modified_by', 'actions']
   existingNames: string[] = []
@@ -56,6 +61,8 @@ export class DatasetsComponent implements OnInit {
         this.orgId = orgId
         this._datasetService.list(orgId)
       }),
+      switchMap(() => this._cycleService.cycles$),
+      tap((cycles) => { this.cycles = cycles }),
       switchMap(() => this._datasetService.datasets$),
       tap((datasets) => {
         this.datasets = datasets.sort((a, b) => naturalSort(a.name, b.name))
@@ -113,7 +120,10 @@ export class DatasetsComponent implements OnInit {
     const dataset = this.datasets.find((ds) => ds.id === id)
 
     if (action === 'addDataFiles') {
-      console.log('add data files', dataset)
+      this._dialog.open(UploadFileModalComponent, {
+        width: '40rem',
+        data: { orgId: this.orgId, dataset, cycles: this.cycles },
+      })
     } else if (action === 'rename') {
       this.editDataset(dataset)
     } else if (action === 'delete') {
