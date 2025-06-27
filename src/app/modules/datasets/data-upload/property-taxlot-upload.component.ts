@@ -1,6 +1,7 @@
+import { StepperSelectionEvent } from '@angular/cdk/stepper'
 import { CommonModule } from '@angular/common'
 import { HttpErrorResponse } from '@angular/common/http'
-import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
+import type { AfterViewInit, ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -13,7 +14,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSelectModule } from '@angular/material/select'
 import { MatStepper, MatStepperModule } from '@angular/material/stepper'
-import { Router } from '@angular/router'
+import { Router, RouterModule } from '@angular/router'
 import { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import type { Dataset } from '@seed/api/dataset'
@@ -40,11 +41,12 @@ import { catchError, Subject, switchMap, takeUntil, tap } from 'rxjs'
     MatProgressBarModule,
     MatSelectModule,
     MatStepperModule,
-    ReactiveFormsModule,
     ProgressBarComponent,
+    ReactiveFormsModule,
+    RouterModule,
   ],
 })
-export class PropertyTaxlotUploadComponent implements OnDestroy, OnInit {
+export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>
   @Input() cycles: Cycle[]
@@ -59,7 +61,7 @@ export class PropertyTaxlotUploadComponent implements OnDestroy, OnInit {
   private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   allowedTypes: string
-  completed = { 1: false, 2: false }
+  completed = { 1: false, 2: false, 3: false }
   file: File
   fileId: number
   inProgress = false
@@ -79,8 +81,8 @@ export class PropertyTaxlotUploadComponent implements OnDestroy, OnInit {
     cycleId: new FormControl<number>(null, Validators.required),
     multiCycle: new FormControl<boolean>(false),
   })
-
-  ngOnInit() {
+  
+  ngAfterViewInit() {
     this.form.patchValue({ cycleId: this.cycles[0]?.id })
   }
 
@@ -133,11 +135,11 @@ export class PropertyTaxlotUploadComponent implements OnDestroy, OnInit {
     }
 
     const successFn = () => {
+      this.completed[2] = true
       this._snackBar.success('Successfully uploaded file')
-      console.log(this.progressBarObj)
-      this.dismissModal.emit()
-
-      void this._router.navigate(['/datasets/mappings', this.fileId])
+      setTimeout(() => {
+        this.stepper.next()
+      })
     }
 
     this._uploaderService
@@ -152,9 +154,28 @@ export class PropertyTaxlotUploadComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  onSubmit() {
-    console.log('onSubmit')
-    return
+  goToMapping() {
+    this.dismissModal.emit()
+    void this._router.navigate(['/data/mappings', this.fileId])
+  }
+
+  goToStep1() {
+    this.completed[3] = true
+    this.stepper.selectedIndex = 0
+  }
+
+  onStepChange(event: StepperSelectionEvent) {
+    const index = event.selectedIndex
+    if (index === 0) this.resetStepper()
+  }
+
+  resetStepper() {
+    this.completed = { 1: false, 2: false, 3: false }
+    this.file = null
+    this.fileId = null
+    this.fileInput.nativeElement.value = ''
+    this.inProgress = false
+    this.uploading = false
   }
 
   ngOnDestroy(): void {

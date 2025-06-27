@@ -72,7 +72,7 @@ export const appRoutes: Route[] = [
         loadChildren: () => import('app/modules/inventory/inventory.routes'),
       },
       {
-        path: 'datasets',
+        path: 'data',
         loadChildren: () => import('app/modules/datasets/datasets.routes'),
       },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },

@@ -129,7 +129,7 @@ export class DatasetsComponent implements OnInit {
     } else if (action === 'delete') {
       this.deleteDataset(dataset)
     } else if (action === 'detail') {
-      void this._router.navigate([`/datasets/${id}`])
+      void this._router.navigate([`/data/${id}`])
     }
   }
 

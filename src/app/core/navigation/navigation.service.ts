@@ -108,11 +108,11 @@ export class NavigationService {
       children: this.inventoryChildrenProperties,
     },
     {
-      id: 'datasets',
-      title: 'Datasets',
+      id: 'data',
+      title: 'Data',
       type: 'basic',
       icon: 'fa-solid:sitemap',
-      link: '/datasets',
+      link: '/data',
     },
     {
       id: 'organizations',
@@ -275,7 +275,7 @@ export class NavigationService {
     this._datasetService.datasetCount$.subscribe((count) => {
       // Use a timeout to avoid the race condition where mainNavigation hasn't been registered yet
       setTimeout(() => {
-        this.updateBadge('datasets', 'mainNavigation', count)
+        this.updateBadge('data', 'mainNavigation', count)
       })
     })
     this.getNavigation()

@@ -1,6 +1,6 @@
 
-<mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
-  <!-- STEP 1 -->
+<mat-stepper class="stepper-disable-hover" #stepper [linear]="true" (selectionChange)="onStepChange($event)">
+  <!-- STEP 1: select file -->
   <mat-step [completed]="completed[1]" label="File Select">
     <div class="">
       <form [formGroup]="form" class="flex flex-col">
@@ -74,14 +74,27 @@
     }
   </mat-step>
   
-  <!-- STEP 2 -->
-   <mat-step [completed]="completed[2]" label="Upload File">
-    @if (inProgress) {
-      <seed-progress-bar
-        [progress]="progressBarObj.progress"
-        [total]="progressBarObj.total"
-        title="Uploading Sensor Data..."
-      ></seed-progress-bar>
-    }
-   </mat-step>
+  <!-- STEP 2: Upload -->
+  <mat-step [completed]="completed[2]" label="Uploading" [editable]="false">
+  @if (inProgress) {
+    <seed-progress-bar
+      [progress]="progressBarObj.progress"
+      [total]="progressBarObj.total"
+      title="Uploading Data..."
+    ></seed-progress-bar>
+  }
+  </mat-step>
+
+
+  <!-- STEP 3: Complete -->
+  <mat-step [completed]="completed[3]" label="Mapping">
+    <div class="flex justify-between w-full">
+      <button (click)="goToStep1()" mat-stroked-button>Select New File</button>
+      <button mat-flat-button color="primary" (click)="goToMapping()">
+        <mat-icon class="mx-2 scale-50" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
+        <span>Continue to Mapping</span>
+      </button>
+    </div>
+  </mat-step>
+
 </mat-stepper>
