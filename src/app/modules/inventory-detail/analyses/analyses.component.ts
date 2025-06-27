@@ -1,43 +1,99 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
-import type { ColDef, GridApi } from 'ag-grid-community'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
-import { tap } from 'rxjs'
+import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { Analysis } from '@seed/api/analysis'
+import { AnalysisService } from '@seed/api/analysis'
+import type { Cycle } from '@seed/api/cycle'
+import { CycleService } from '@seed/api/cycle/cycle.service'
+import { InventoryService } from '@seed/api/inventory'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
+import { UserService } from '@seed/api/user'
+import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
+import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, PageComponent, MatIconModule],
+  imports: [
+    AnalysesGridComponent,
+    AgGridAngular,
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    NotFoundComponent,
+    PageComponent,
+    SharedImports,
+  ],
 })
 export class AnalysesComponent implements OnInit {
+  private _analysisService = inject(AnalysisService)
+  private _cycleService = inject(CycleService)
+  private _userService = inject(UserService)
   private _organizationService = inject(OrganizationService)
+  private _inventoryService = inject(InventoryService)
   private _route = inject(ActivatedRoute)
-  columnDefs: ColDef[]
-  rowData: Record<string, unknown>[] = []
-  gridApi: GridApi
-  viewId: number
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  analyses: Analysis[] = []
+  cycles: Cycle[] = []
+  orgId: number
   viewDisplayField$: Observable<string>
+  viewId: number
+  view: ViewResponse
+  type: InventoryType
 
-  ngOnInit() {
-    this.getUrlParams().subscribe()
+  defaultColDef = {
+    sortable: false,
+    filter: false,
+    resizable: true,
+    suppressMovable: true,
   }
 
-  getUrlParams() {
+  ngOnInit(): void {
+    this.getParams().pipe(
+      switchMap(() => this._userService.currentOrganizationId$),
+      tap((orgId) => { this.orgId = orgId }),
+      switchMap(() => this._cycleService.cycles$),
+      tap((cycles) => { this.cycles = cycles }),
+      tap(() => { this.watchAnalyses() }),
+    ).subscribe()
+  }
+
+  getParams() {
     return this._route.parent.paramMap.pipe(
       tap((params) => {
         this.viewId = parseInt(params.get('id'))
-        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, 'properties')
+        this.type = params.get('type') as InventoryType
+        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, this.type)
       }),
     )
   }
 
-  createAnalysis = () => {
-    console.log('create analysis')
+  getAnalyses() {
+    return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
+      tap((view) => { this.view = view }),
+      switchMap(() => {
+        const id = this.type === 'taxlots' ? this.view.taxlot.id : this.view.property.id
+        return this._analysisService.getPropertyAnalyses(id)
+      }),
+      tap((analyses) => { this.analyses = analyses }),
+    )
+  }
+
+  watchAnalyses() {
+    this._analysisService.analyses$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap(() => this.getAnalyses()),
+    ).subscribe()
+  }
+
+  createAnalysis() {
+    console.log('Create Analysis')
   }
 }

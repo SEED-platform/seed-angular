@@ -168,6 +168,8 @@ export class UserService {
 
   // applies defaults to an org users settings
   checkUserSettings(userSettings: OrganizationUserSettings) {
+    userSettings ??= {}
+
     userSettings.crossCycles ??= {}
     userSettings.crossCycles.properties ??= null
     userSettings.crossCycles.taxlots ??= null

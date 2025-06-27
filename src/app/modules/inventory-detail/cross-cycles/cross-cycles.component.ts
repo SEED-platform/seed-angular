@@ -8,12 +8,19 @@ import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
-import { PageComponent } from '@seed/components'
+import { NotFoundComponent, PageComponent } from '@seed/components'
 
 @Component({
   selector: 'seed-inventory-detail-cross-cycles',
   templateUrl: './cross-cycles.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, PageComponent, MatIconModule],
+  imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
+    MatIconModule,
+    NotFoundComponent,
+    PageComponent,
+  ],
 })
 export class CrossCyclesComponent implements OnInit {
   private _organizationService = inject(OrganizationService)

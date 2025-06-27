@@ -17,6 +17,7 @@ import { OrganizationService } from '@seed/api/organization'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import {
@@ -44,6 +45,7 @@ import {
     PageComponent,
     PairedGridComponent,
     ScenariosGridComponent,
+    SharedImports,
   ],
 })
 export class DetailComponent implements OnDestroy, OnInit {

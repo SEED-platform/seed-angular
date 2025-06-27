@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, Component, inject, viewChild, ViewEncapsulation } from '@angular/core'
+import { Component, inject, viewChild, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSort, MatSortModule } from '@angular/material/sort'
@@ -15,7 +15,7 @@ import { PageComponent } from '@seed/components'
   selector: 'seed-data',
   templateUrl: './data.component.html',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatButtonModule, MatIconModule, MatSortModule, MatTableModule, PageComponent],
 })
 export class DataComponent implements OnInit, AfterViewInit {
