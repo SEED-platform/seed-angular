@@ -3,8 +3,6 @@ import { CheckboxEditorModule, ClientSideRowModelModule, ColumnAutoSizeModule, E
 import { AppComponent } from 'app/app.component'
 import { appConfig } from 'app/app.config'
 
-// TEMP - should be overwritten when analyses pr is merged
-
 ModuleRegistry.registerModules([
   CheckboxEditorModule,
   ClientSideRowModelModule,

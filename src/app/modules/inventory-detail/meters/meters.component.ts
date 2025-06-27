@@ -20,7 +20,7 @@ import type { Meter, MeterUsage } from '@seed/api/meters'
 import { MeterService } from '@seed/api/meters'
 import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { ViewResponse } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -29,7 +29,17 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
 @Component({
   selector: 'seed-inventory-detail-meters',
   templateUrl: './meters.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, PageComponent, MatButtonModule, MatIconModule, MatSelectModule, MatDividerModule],
+  imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatDividerModule,
+    NotFoundComponent,
+    PageComponent,
+  ],
 })
 export class MetersComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()

@@ -13,7 +13,7 @@ import { OrganizationService } from '@seed/api/organization'
 import type { Ubid } from '@seed/api/ubid'
 import { UbidService } from '@seed/api/ubid/ubid.service'
 import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { MapComponent } from '../detail'
@@ -22,7 +22,15 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MapComponent, MatIconModule, PageComponent],
+  imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
+    MapComponent,
+    MatIconModule,
+    NotFoundComponent,
+    PageComponent,
+  ],
 })
 export class UbidsComponent implements OnDestroy, OnInit {
   @ViewChild(MapComponent) mapComponent!: MapComponent

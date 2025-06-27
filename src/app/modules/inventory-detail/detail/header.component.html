@@ -70,26 +70,6 @@
         }
       </div>
     }
-
-    <!-- Access Level Instance Info -->
-    @if (aliColumnDefs.length) {
-      <mat-divider class="mt-4"></mat-divider>
-      <div class="mt-4">
-        <div class="mb-4 ml-4 flex text-lg font-medium">
-          <mat-icon svgIcon="fa-solid:tree"></mat-icon>
-          <span class="ml-4">Access Levels</span>
-        </div>
-        <!-- <span class="text-secondary m-1">Access Levels</span> -->
-        <ag-grid-angular
-          [columnDefs]="aliColumnDefs"
-          [rowData]="aliRowData"
-          [theme]="gridTheme$ | async"
-          [style.height.px]="90"
-          (gridReady)="onGridReady($event)"
-          style="height: 100%"
-        />
-      </div>
-    }
   </div>
 
   @if (enableMap) {
@@ -98,3 +78,22 @@
     </div>
   }
 </div>
+
+<!-- Access Level Instance Info -->
+@if (aliColumnDefs.length) {
+  <mat-divider class="mt-4"></mat-divider>
+  <div class="mt-4">
+    <div class="mb-4 ml-4 flex text-lg font-medium">
+      <mat-icon svgIcon="fa-solid:tree"></mat-icon>
+      <span class="ml-4">Access Levels</span>
+    </div>
+    <ag-grid-angular
+      [columnDefs]="aliColumnDefs"
+      [rowData]="aliRowData"
+      [theme]="gridTheme$ | async"
+      [style.height.px]="90"
+      (gridReady)="onGridReady($event)"
+      style="height: 100%"
+    />
+  </div>
+}

@@ -28,9 +28,6 @@
       ></ag-grid-angular>
     </div>
   } @else {
-    <div class="mx-auto mt-20 flex w-1/2 justify-center space-x-2 rounded-xl border bg-white p-10 dark:bg-gray-800">
-      <mat-icon class="text-primary-600" svgIcon="fa-solid:triangle-exclamation"></mat-icon>
-      <div class="text-secondary text-xl font-medium">No UBIDs found</div>
-    </div>
+    <seed-not-found message="No UBIDs Found" icon="fa-solid:triangle-exclamation"></seed-not-found>
   }
 </seed-page>

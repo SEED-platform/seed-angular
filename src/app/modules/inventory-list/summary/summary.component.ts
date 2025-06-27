@@ -13,7 +13,7 @@ import type { AnalysisSummary, AnalysisSummaryStats } from '@seed/api/analysis/a
 import type { OrgCycle } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import { type CurrentUser, UserService } from '@seed/api/user'
-import { PageComponent } from '@seed/components'
+import { NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
@@ -22,7 +22,16 @@ type CellRendererParams = { value: string; data: { is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-list-summary',
   templateUrl: './summary.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule, MatSelectModule, PageComponent],
+  imports: [
+    AgGridAngular,
+    AgGridModule,
+    CommonModule,
+    MatDividerModule,
+    MatIconModule,
+    MatSelectModule,
+    NotFoundComponent,
+    PageComponent,
+  ],
 })
 export class SummaryComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)

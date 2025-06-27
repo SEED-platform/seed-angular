@@ -163,7 +163,7 @@ export class HeaderComponent implements OnInit {
   setAliGrid() {
     const inventoryKey = this.type === 'properties' ? 'property' : 'taxlot'
 
-    // column defs
+    // column defs (minus root level)
     for (const name of this.org.access_level_names.slice(1)) {
       this.aliColumnDefs.push({
         headerName: name,
