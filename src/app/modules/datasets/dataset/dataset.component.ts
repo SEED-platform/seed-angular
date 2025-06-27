@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -31,6 +31,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
   private _datasetService = inject(DatasetService)
   private _dialog = inject(MatDialog)
   private _route = inject(ActivatedRoute)
+  private _router = inject(Router)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[] = []
@@ -128,6 +129,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
     } else if (action === 'download') {
       this.downloadDocument(importFile.file, importFile.uploaded_filename)
     } else if (action === 'dataMapping') {
+      void this._router.navigate(['/data/mappings/', importFile.id])
       console.log('data mapping', importFile)
     } else if (action === 'dataPairing') {
       console.log('data pairing', importFile)

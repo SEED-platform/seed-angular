@@ -116,7 +116,6 @@ export class DatasetService {
   getImportFile(orgId: number, fieldId: number): Observable<ImportFile> {
     const url = `/api/v3/import_files/${fieldId}/?organization_id=${orgId}`
     return this._httpClient.get<ImportFileResponse>(url).pipe(
-      tap((response) => { console.log('temp', response) }),
       map(({ import_file }) => import_file),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching import file')

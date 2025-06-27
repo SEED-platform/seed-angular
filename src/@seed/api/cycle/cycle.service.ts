@@ -7,11 +7,12 @@ import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
+import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
 export class CycleService {
   private _httpClient = inject(HttpClient)
-  private _organizationService = inject(OrganizationService)
+  private _userService = inject(UserService)
   private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _cycles = new BehaviorSubject<Cycle[]>([])
@@ -20,21 +21,20 @@ export class CycleService {
   cycles$ = this._cycles.asObservable()
 
   constructor() {
-    this._organizationService.currentOrganization$
+    this._userService.currentOrganizationId$
       .pipe(
-        tap(({ org_id }) => {
-          this.get(org_id)
+        tap((orgId) => {
+          this.getCycles(orgId)
         }),
       )
       .subscribe()
   }
 
-  get(orgId: number) {
+  getCycles(orgId: number) {
     const url = `/api/v3/cycles/?organization_id=${orgId}`
     this._httpClient
       .get<CyclesResponse>(url)
       .pipe(
-        take(1),
         map(({ cycles }) => cycles),
         tap((cycles) => {
           this._cycles.next(cycles)
@@ -46,12 +46,25 @@ export class CycleService {
       .subscribe()
   }
 
+  getCycle(orgId: number, cycleId: number): Observable<Cycle> {
+    const url = `/api/v3/cycles/${cycleId}?organization_id=${orgId}`
+    return this._httpClient
+      .get<CycleResponse>(url)
+      .pipe(
+        take(1),
+        map(({ cycles }) => cycles),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching cycles')
+        }),
+      )
+  }
+
   post({ data, orgId }): Observable<CycleResponse | null> {
     const url = `/api/v3/cycles/?organization_id=${orgId}`
     return this._httpClient.post<CycleResponse>(url, data).pipe(
       tap((response) => {
         this._snackBar.success(`Created Cycle ${response.cycles.name}`)
-        this.get(orgId as number)
+        this.getCycles(orgId as number)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating cycle')
@@ -64,7 +77,7 @@ export class CycleService {
     return this._httpClient.put<CycleResponse>(url, data).pipe(
       tap((response) => {
         this._snackBar.success(`Updated Cycle ${response.cycles.name}`)
-        this.get(orgId as number)
+        this.getCycles(orgId as number)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating cycle')
@@ -76,7 +89,7 @@ export class CycleService {
     const url = `/api/v3/cycles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
       tap(() => {
-        this.get(orgId)
+        this.getCycles(orgId)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting cycle')

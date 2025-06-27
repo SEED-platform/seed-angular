@@ -151,7 +151,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    */
   getDependencies(org_id: number) {
     this.orgId = org_id
-    this._cycleService.get(this.orgId)
+    // this._cycleService.getCycles(this.orgId)
 
     return combineLatest([
       this._userService.currentUser$,
