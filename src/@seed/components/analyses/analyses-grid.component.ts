@@ -16,11 +16,7 @@ import { ConfigService } from '@seed/services'
 @Component({
   selector: 'seed-analyses-grid',
   templateUrl: './analyses-grid.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MatIconModule,
-  ],
+  imports: [AgGridAngular, CommonModule, MatIconModule],
 })
 export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   @Input() orgId: number
@@ -60,7 +56,11 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       { field: 'cycles', headerName: 'Cycle', valueFormatter: this.getCycle.bind(this) },
       { field: 'number_of_analysis_property_views', headerName: 'Property Count' },
-      { field: 'created_at', headerName: 'Created At', valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString() },
+      {
+        field: 'created_at',
+        headerName: 'Created At',
+        valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString(),
+      },
       { field: 'run_duration', headerName: 'Run Duration', valueGetter: this._analysisService.getRunDuration },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
@@ -120,11 +120,15 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
 
     return `
         <ul class="">
-          ${value.map((highlight) => `
+          ${value
+            .map(
+              (highlight) => `
             <li class="list-disc pl-4 space-y-1 text leading-snug">
               <div class="truncate max-w-full whitespace-nowrap overflow-hidden"><span class="text-secondary">${highlight.name}:</span> ${highlight.value}</div>
             </li>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </ul>
     `
   }
@@ -195,9 +199,12 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
       data: { model: 'Analysis', instance: analysis.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._analysisService.delete(this.orgId, analysis.id)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._analysisService.delete(this.orgId, analysis.id)),
+      )
+      .subscribe()
   }
 }

@@ -20,7 +20,6 @@ import { SharedImports } from '@seed/directives'
 @Component({
   selector: 'seed-analyses',
   templateUrl: './analyses.component.html',
-  styleUrls: ['./analyses.component.scss'],
   imports: [
     AnalysesGridComponent,
     AgGridAngular,
@@ -48,28 +47,33 @@ export class AnalysesComponent implements AfterViewInit, OnDestroy {
   ready = false
 
   ngAfterViewInit() {
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => {
-        this.orgId = orgId
-        this.getCycles()
-        this.getAnalyses()
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+          this.getCycles()
+          this.getAnalyses()
+        }),
+      )
+      .subscribe()
   }
 
   getCycles() {
-    this._cycleService.cycles$.subscribe((cycles) => this.cycles = cycles)
+    this._cycleService.cycles$.subscribe((cycles) => (this.cycles = cycles))
   }
 
   getAnalyses() {
-    this._analysisService.analyses$.pipe(
-      filter(Boolean),
-      tap((analyses) => {
-        setTimeout(() => { // suppress ExpressionChangedAfterItHasBeenCheckedError
-          this.analyses = analyses
-        })
-      }),
-    ).subscribe()
+    this._analysisService.analyses$
+      .pipe(
+        filter(Boolean),
+        tap((analyses) => {
+          setTimeout(() => {
+            // suppress ExpressionChangedAfterItHasBeenCheckedError
+            this.analyses = analyses
+          })
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

@@ -13,14 +13,7 @@ import { NotFoundComponent, PageComponent } from '@seed/components'
 @Component({
   selector: 'seed-inventory-detail-timeline',
   templateUrl: './timeline.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatIconModule,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class TimelineComponent implements OnInit {
   private _organizationService = inject(OrganizationService)

@@ -22,15 +22,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MapComponent,
-    MatIconModule,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MapComponent, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class UbidsComponent implements OnDestroy, OnInit {
   @ViewChild(MapComponent) mapComponent!: MapComponent
