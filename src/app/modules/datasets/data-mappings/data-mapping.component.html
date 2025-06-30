@@ -41,16 +41,17 @@
     <div class="flex flex-col gap-2 w-100">
       <button mat-stroked-button (click)="copyHeadersToSeed()">Copy Data File Headers directly to SEED headers</button>
       <!-- <button mat-stroked-button>Toggle Omitted</button> -->
-      <div class="flex justify-between gap-4">
-        <mat-label class="text-secondary my-auto">Set all fields to</mat-label>
-        <mat-select class="w-60 border p-2 rounded" (selectionChange)="setAllInventoryType($event.value)">
-          <mat-option value="Property">Property</mat-option>
-          <mat-option value="Tax Lot">Tax Lot</mat-option>
-        </mat-select>
-      </div>
+      <mat-button-toggle-group name="invntoryType" [(ngModel)]="defaultInventoryType" (change)="setAllInventoryType($event.value)" appearance="standard">
+        <mat-button-toggle value="Property">Property Types</mat-button-toggle>
+        <mat-button-toggle value="Tax Lot">Tax Lot Types</mat-button-toggle>
+      </mat-button-toggle-group>
     </div>
   
   <mat-divider class="my-5"></mat-divider>
+  <div class="flex gap-4 my-2 mx-3">
+    <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
+    <div class="italic text-secondary">Editable Cell</div>
+  </div>
 
   <ag-grid-angular
     [rowData]="rowData"

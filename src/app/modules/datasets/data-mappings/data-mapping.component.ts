@@ -1,29 +1,32 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, ColGroupDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
+import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
 import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 'rxjs'
+import { type Column, ColumnService } from '@seed/api/column'
+import type { Cycle } from '@seed/api/cycle'
+import { CycleService } from '@seed/api/cycle/cycle.service'
 import type { ImportFile } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
+import { InventoryService } from '@seed/api/inventory'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { MappingService } from '@seed/api/mapping'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
+import type { InventoryDisplayType, Profile } from 'app/modules/inventory'
 import { HelpComponent } from './help.component'
-import { Column } from '@seed/api/column'
-import { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { InventoryDisplayType, Profile } from 'app/modules/inventory'
-import { InventoryService } from '@seed/api/inventory'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatSelectModule } from '@angular/material/select'
-
+import { buildColumnDefs, gridOptions } from './column-defs'
+import { dataTypeMap } from './constants'
 
 @Component({
   selector: 'seed-data-mapping',
@@ -33,36 +36,40 @@ import { MatSelectModule } from '@angular/material/select'
     CommonModule,
     HelpComponent,
     MatButtonModule,
+    MatButtonToggleModule,
     MatDividerModule,
     MatIconModule,
     MatSidenavModule,
     MatSelectModule,
     PageComponent,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class DataMappingComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
+  private _columnService = inject(ColumnService)
   private _datasetService = inject(DatasetService)
   private _inventoryService = inject(InventoryService)
   private _mappingService = inject(MappingService)
   private _router = inject(ActivatedRoute)
   private _userService = inject(UserService)
   columns: Column[]
+  columnNames: string[]
+  columnMap: Record<string, Column>
   columnDefs: ColDef[]
   currentProfile: Profile
   cycle: Cycle
-  defaultInventoryType = 'Property'
+  defaultInventoryType: InventoryDisplayType = 'Property'
+  defaultRow: Record<string, unknown>
   fileId = this._router.snapshot.params.id as number
   firstFiveRows: Record<string, unknown>[]
   helpOpened = false
   importFile: ImportFile
   gridApi: GridApi
-  gridOptions = {
-    singleClickEdit: true,
-    suppressMovableColumns: true,
-  }
+  gridOptions = gridOptions
   gridTheme$ = this._configService.gridTheme$
   mappingSuggestions: MappingSuggestionsResponse
   orgId: number
@@ -70,7 +77,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   rowData: Record<string, unknown>[] = []
 
   ngOnInit(): void {
-    console.log('Data Mapping Component Initialized')
     this._userService.currentOrganizationId$
       .pipe(
         take(1),
@@ -107,74 +113,31 @@ export class DataMappingComponent implements OnDestroy, OnInit {
           this.firstFiveRows = firstFiveRows
           this.mappingSuggestions = mappingSuggestions
           this.rawColumnNames = rawColumnNames
+          this.setColumns()
         }),
       )
   }
 
   setGrid() {
+    this.defaultRow = {
+      isExtraData: false,
+      omit: null,
+      seed_header: null,
+      inventory_type: this.defaultInventoryType,
+      dataType: null,
+      units: null,
+    }
     this.setColumnDefs()
     this.setRowData()
   }
 
   setColumnDefs() {
-    const seedCols: ColDef[] = [
-      {
-        field: 'omit',
-        headerName: 'Omit',
-        editable: true,
-        cellEditor: 'agCheckboxCellEditor',
-      },
-      {
-        field: 'inventory_type',
-        headerName: 'Inventory Type',
-        editable: true,
-        cellEditor: 'agSelectCellEditor',
-        cellEditorParams: {
-          values: ['Property', 'Tax Lot'],
-        },
-        cellRenderer: this.dropdownRenderer,
-      },
-      {
-        field: 'seed_header',
-        headerName: 'SEED Header',
-        editable: true,
-        cellRenderer: this.inputRenderer,
-        cellEditor: 'agTextCellEditor',
-      },
-    ]
-
-    const fileCols: ColDef[] = [
-      { field: 'data_type', headerName: 'Data Type' },
-      { field: 'units', headerName: 'Units' },
-      { field: 'file_header', headerName: 'Data File Header' },
-      { field: 'row1', headerName: 'Row 1' },
-      { field: 'row2', headerName: 'Row 2' },
-      { field: 'row3', headerName: 'Row 3' },
-      { field: 'row4', headerName: 'Row 4' },
-      { field: 'row5', headerName: 'Row 5' },
-    ]
-
-    this.columnDefs = [
-      { headerName: 'SEED', children: seedCols } as ColGroupDef,
-      { headerName: this.importFile.uploaded_filename, children: fileCols } as ColGroupDef,
-    ]
-  }
-
-  dropdownRenderer({ value }: { value: string }) {
-    return `
-      <div class="flex justify-between -ml-3 w-[115%] h-full border rounded">
-        <span class="px-2">${value ?? ''}</span>
-        <span class="material-icons cursor-pointer text-secondary">arrow_drop_down</span>
-      </div>
-    `
-  }
-
-  inputRenderer({ value }: { value: string }) {
-    return `
-      <div class="-ml-3 px-2 w-[115%] h-full border rounded">
-        ${value ?? ''}
-      </div>
-    `
+    this.columnDefs = buildColumnDefs(
+      this.columnNames,
+      this.importFile.uploaded_filename,
+      this.seedHeaderChange.bind(this),
+      this.dataTypeChange.bind(this),
+    )
   }
 
   setRowData() {
@@ -182,11 +145,11 @@ export class DataMappingComponent implements OnDestroy, OnInit {
 
     // transpose first 5 rows to fit into the grid
     for (const header of this.rawColumnNames) {
-      const keys = ['file_header', 'row1', 'row2', 'row3', 'row4', 'row5']
+      const keys = ['row1', 'row2', 'row3', 'row4', 'row5']
       const values = this.firstFiveRows.map((r) => r[header])
-      values.unshift(header)
+      const rows: Record<string, unknown> = Object.fromEntries(keys.map((k, i) => [k, values[i]]))
 
-      const data = Object.fromEntries(keys.map((k, i) => [k, values[i]]))
+      const data = { ...rows, ...this.defaultRow, file_header: header }
       this.rowData.push(data)
     }
 
@@ -203,6 +166,44 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   setAllInventoryType(value: InventoryDisplayType) {
     this.defaultInventoryType = value
     this.gridApi.forEachNode((n) => n.setDataValue('inventory_type', value))
+    this.setColumns()
+  }
+
+  setColumns() {
+    this.columns = this.defaultInventoryType === 'Tax Lot' ? this.mappingSuggestions?.taxlot_columns : this.mappingSuggestions?.property_columns
+    this.columnNames = this.columns.map((c) => c.display_name)
+    this.columnMap = this.columns.reduce((acc, curr) => ({ ...acc, [curr.display_name]: curr }), {})
+  }
+
+  seedHeaderChange = (params: CellValueChangedEvent): void => {
+    const node = params.node as RowNode
+    const newValue = params.newValue as string
+    const column = this.columnMap[newValue] ?? null
+
+    const dataTypeConfig = dataTypeMap[column?.data_type] ?? { display: 'None', units: null }
+
+    node.setData({
+      ...node.data,
+      isNewColumn: !column,
+      isExtraData: column?.is_extra_data ?? true,
+      dataType: dataTypeConfig.display,
+      units: dataTypeConfig.units,
+    })
+
+    this.refreshNode(node)
+  }
+
+  dataTypeChange = (params: CellValueChangedEvent): void => {
+    const node = params.node as RowNode
+    node.setDataValue('units', null)
+    this.refreshNode(node)
+  }
+
+  refreshNode(node: RowNode) {
+    this.gridApi.refreshCells({
+      rowNodes: [node],
+      force: true,
+    })
   }
 
   copyHeadersToSeed() {
@@ -210,11 +211,11 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     const columns = this.defaultInventoryType === 'Tax Lot' ? taxlot_columns : property_columns
     const columnMap: Record<string, string> = columns.reduce((acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }), {})
 
-    this.gridApi.forEachNode((n: RowNode<{ file_header: string }>) => {
-      const fileHeader = n.data.file_header
+    this.gridApi.forEachNode((node: RowNode<{ file_header: string }>) => {
+      const fileHeader = node.data.file_header
       const suggestedColumnName = suggested_column_mappings[fileHeader][1]
       const displayName = columnMap[suggestedColumnName]
-      n.setDataValue('seed_header', displayName)
+      node.setDataValue('seed_header', displayName)
     })
   }
 
