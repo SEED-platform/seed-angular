@@ -15,26 +15,26 @@
 .mat-mdc-snack-bar-container {
   &.success-snackbar  {
     --mat-snack-bar-button-color: #fff;
-    --mdc-snackbar-container-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-snackbar-container-color: rgb(22 163 74 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: #fff;
   }
 
   &.info-snackbar {
     --mat-snack-bar-button-color: #fff;
-    --mdc-snackbar-container-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-snackbar-container-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: #fff;
   }
 
   &.alert-snackbar {
     --mat-snack-bar-button-color: #fff;
-    --mdc-snackbar-container-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-snackbar-container-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: #fff;
   }
 
   &.warning-snackbar {
     --mat-snack-bar-button-color: #fff;
-    --mdc-snackbar-container-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: #fff;
+    --mat-snackbar-container-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: #fff;
   }
 
   &.soft-success-snackbar {
@@ -43,8 +43,8 @@
     border-radius: 4px;
     button {span {color: rgb(20 83 45)}}
 
-    --mdc-snackbar-container-color: rgb(240 253 244 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: rgb(21 128 61);
+    --mat-snackbar-container-color: rgb(240 253 244 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: rgb(21 128 61);
   }
 
   &.soft-info-snackbar {
@@ -53,8 +53,8 @@
     border-radius: 4px;
     button {span {color: rgb(30 58 138)}}
 
-    --mdc-snackbar-container-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: rgb(29 78 216);
+    --mat-snackbar-container-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: rgb(29 78 216);
   }
 
   &.soft-alert-snackbar {
@@ -63,8 +63,8 @@
     border-radius: 4px;
     button {span {color: rgb(127 29 29)}}
 
-    --mdc-snackbar-container-color: rgb(254 242 242);
-    --mdc-snackbar-supporting-text-color: rgb(185 28 28);
+    --mat-snackbar-container-color: rgb(254 242 242);
+    --mat-snackbar-supporting-text-color: rgb(185 28 28);
   }
 
   &.soft-warning-snackbar {
@@ -73,8 +73,8 @@
     border-color: rgb(217 119 6);
     button {span {color: rgb(120 53 15)}}
 
-    --mdc-snackbar-container-color: rgb(255 251 235 / var(--tw-bg-opacity, 1));
-    --mdc-snackbar-supporting-text-color: rgb(180 83 9);
+    --mat-snackbar-container-color: rgb(255 251 235 / var(--tw-bg-opacity, 1));
+    --mat-snackbar-supporting-text-color: rgb(180 83 9);
   }
 }
 

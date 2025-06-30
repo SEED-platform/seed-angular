@@ -22,16 +22,7 @@ type CellRendererParams = { value: string; data: { is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-list-summary',
   templateUrl: './summary.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatSelectModule,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule, MatSelectModule, NotFoundComponent, PageComponent],
 })
 export class SummaryComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)
