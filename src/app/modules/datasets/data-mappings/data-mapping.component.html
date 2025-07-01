@@ -48,9 +48,15 @@
     </div>
   
   <mat-divider class="my-5"></mat-divider>
-  <div class="flex gap-4 my-2 mx-3">
-    <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
-    <div class="italic text-secondary">Editable Cell</div>
+  <div class="flex justify-between items-center">
+    <div class="flex gap-4 my-2 mx-3">
+      <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
+      <div class="italic text-secondary">Editable Cell</div>
+    </div>
+
+    <button class="mb-2" mat-raised-button color="primary" (click)="mapData()" [disabled]="!dataValid">Map Data</button>
+
+
   </div>
 
   <ag-grid-angular

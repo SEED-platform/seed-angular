@@ -52,3 +52,15 @@ export type ImportFileResponse = {
   status: 'success';
   import_file: ImportFile;
 }
+
+export type DataMappingRow = {
+  from_field: string;
+  from_units: string | null;
+  to_data_type: string | null;
+  to_field: string | null;
+  to_field_display_name: string | null;
+  to_table_name: string | null;
+  omit?: boolean; // optional, used for omitting columns
+  isExtraData?: boolean; // used internally, not part of the API
+  isNewColumn?: boolean; // used internally, not part of the API
+}

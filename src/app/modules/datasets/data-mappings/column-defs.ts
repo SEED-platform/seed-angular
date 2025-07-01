@@ -10,11 +10,11 @@ export const gridOptions = {
 }
 
 // Special cases
-const canEdit = (dataType: string, field: string, isNewColumn: boolean): boolean => {
+const canEdit = (to_data_type: string, field: string, isNewColumn: boolean): boolean => {
   const editMap: Record<string, boolean> = {
-    dataType: isNewColumn,
-    inventory_type: true,
-    units: ['EUI', 'Area', 'GHG', 'GHG Intensity', 'Water use', 'WUI'].includes(dataType),
+    to_data_type: isNewColumn,
+    to_table_name: true,
+    from_units: ['EUI', 'Area', 'GHG', 'GHG Intensity', 'Water use', 'WUI'].includes(to_data_type),
   }
 
   return editMap[field]
@@ -22,10 +22,10 @@ const canEdit = (dataType: string, field: string, isNewColumn: boolean): boolean
 
 const dropdownRenderer = (params: ICellRendererParams) => {
   const value = params.value as string
-  const data = params.data as { dataType: string; isNewColumn: boolean }
+  const data = params.data as { to_data_type: string; isNewColumn: boolean }
   const field = params.colDef.field
 
-  if (!canEdit(data.dataType, field, data.isNewColumn)) {
+  if (!canEdit(data.to_data_type, field, data.isNewColumn)) {
     return value
   }
 
@@ -48,6 +48,7 @@ export const buildColumnDefs = (
   const seedCols: ColDef[] = [
     { field: 'isExtraData', hide: true },
     { field: 'isNewColumn', hide: true },
+    { field: 'to_field', hide: true },
     // OMIT
     {
       field: 'omit',
@@ -57,7 +58,7 @@ export const buildColumnDefs = (
       width: 70,
     },
     {
-      field: 'inventory_type',
+      field: 'to_table_name',
       headerName: 'Inventory Type',
       headerComponent: EditHeaderComponent,
       headerComponentParams: {
@@ -73,7 +74,7 @@ export const buildColumnDefs = (
     },
     // SEED HEADER
     {
-      field: 'seed_header',
+      field: 'to_field_display_name',
       headerName: 'SEED Header',
       cellEditor: AutocompleteCellComponent,
       cellEditorParams: {
@@ -92,7 +93,7 @@ export const buildColumnDefs = (
   const fileCols: ColDef[] = [
     // DATA TYPE: Editable if isExtraData is true
     {
-      field: 'dataType',
+      field: 'to_data_type',
       headerName: 'Data Type',
       headerComponent: EditHeaderComponent,
       headerComponentParams: {
@@ -105,41 +106,41 @@ export const buildColumnDefs = (
       cellRenderer: dropdownRenderer,
       editable: (params) => {
         const data = params?.data as { isNewColumn: boolean }
-        return canEdit(null, 'dataType', data.isNewColumn)
+        return canEdit(null, 'to_data_type', data.isNewColumn)
       },
       onCellValueChanged: dataTypeChange,
       cellClass: (params) => {
         const data = params?.data as { isNewColumn: boolean }
-        return canEdit(null, 'dataType', data.isNewColumn) ? canEditClass : ''
+        return canEdit(null, 'to_data_type', data.isNewColumn) ? canEditClass : ''
       },
     },
     /* UNITS: Only editable for Area, EUI, GHG, GHGI, Water use, WUI
     * Dropdowns are populated based on a unit type map
     */
     {
-      field: 'units',
+      field: 'from_units',
       headerName: 'Units',
       headerComponent: EditHeaderComponent,
       headerComponentParams: {
         name: 'Units',
       },
       cellEditor: 'agSelectCellEditor',
-      cellEditorParams: ({ data }: { data: { dataType: string } }) => {
+      cellEditorParams: ({ data }: { data: { to_data_type: string } }) => {
         return {
-          values: unitMap[data.dataType] ?? [],
+          values: unitMap[data.to_data_type] ?? [],
         }
       },
       cellRenderer: dropdownRenderer,
       editable: (params) => {
-        const data = params?.data as { dataType: string }
-        return canEdit(data.dataType, 'units', null)
+        const data = params?.data as { to_data_type: string }
+        return canEdit(data.to_data_type, 'from_units', null)
       },
       cellClass: (params) => {
-        const data = params?.data as { dataType: string }
-        return canEdit(data.dataType, 'units', null) ? canEditClass : ''
+        const data = params?.data as { to_data_type: string }
+        return canEdit(data.to_data_type, 'from_units', null) ? canEditClass : ''
       },
     },
-    { field: 'file_header', headerName: 'Data File Header' },
+    { field: 'from_field', headerName: 'Data File Header' },
     { field: 'row1', headerName: 'Row 1' },
     { field: 'row2', headerName: 'Row 2' },
     { field: 'row3', headerName: 'Row 3' },

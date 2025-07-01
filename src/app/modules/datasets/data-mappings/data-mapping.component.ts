@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
@@ -15,18 +16,19 @@ import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 
 import { type Column, ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
-import type { ImportFile } from '@seed/api/dataset'
+import type { DataMappingRow, ImportFile } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
 import { InventoryService } from '@seed/api/inventory'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { MappingService } from '@seed/api/mapping'
+import { OrganizationService } from '@seed/api/organization'
 import { UserService } from '@seed/api/user'
 import { PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryDisplayType, Profile } from 'app/modules/inventory'
-import { HelpComponent } from './help.component'
 import { buildColumnDefs, gridOptions } from './column-defs'
-import { dataTypeMap } from './constants'
+import { dataTypeMap, displayToDataTypeMap } from './constants'
+import { HelpComponent } from './help.component'
 
 @Component({
   selector: 'seed-data-mapping',
@@ -54,6 +56,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   private _datasetService = inject(DatasetService)
   private _inventoryService = inject(InventoryService)
   private _mappingService = inject(MappingService)
+  private _organizationService = inject(OrganizationService)
   private _router = inject(ActivatedRoute)
   private _userService = inject(UserService)
   columns: Column[]
@@ -62,6 +65,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   columnDefs: ColDef[]
   currentProfile: Profile
   cycle: Cycle
+  dataValid = false
   defaultInventoryType: InventoryDisplayType = 'Property'
   defaultRow: Record<string, unknown>
   fileId = this._router.snapshot.params.id as number
@@ -72,6 +76,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   gridOptions = gridOptions
   gridTheme$ = this._configService.gridTheme$
   mappingSuggestions: MappingSuggestionsResponse
+  matchingPropertyColumns: string[] = []
+  matchingTaxLotColumns: string[] = []
   orgId: number
   rawColumnNames: string[] = []
   rowData: Record<string, unknown>[] = []
@@ -84,6 +90,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
         switchMap(() => this.getImportFile()),
         filter(Boolean),
         switchMap(() => this.getMappingData()),
+        switchMap(() => this.getMatchingColumns()),
         tap(() => { this.setGrid() }),
       )
       .subscribe()
@@ -118,14 +125,29 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       )
   }
 
+  getMatchingColumns() {
+    return forkJoin([
+      this._organizationService.getMatchingCriteriaColumns(this.orgId, 'properties'),
+      this._organizationService.getMatchingCriteriaColumns(this.orgId, 'taxlots'),
+    ])
+      .pipe(
+        take(1),
+        tap(([matchingPropertyColumns, matchingTaxLotColumns]) => {
+          this.matchingPropertyColumns = matchingPropertyColumns as string[]
+          this.matchingTaxLotColumns = matchingTaxLotColumns as string[]
+        }),
+      )
+
+  }
+
   setGrid() {
     this.defaultRow = {
       isExtraData: false,
       omit: null,
-      seed_header: null,
-      inventory_type: this.defaultInventoryType,
-      dataType: null,
-      units: null,
+      to_field_display_name: null,
+      to_table_name: this.defaultInventoryType,
+      to_data_type: null,
+      from_units: null,
     }
     this.setColumnDefs()
     this.setRowData()
@@ -149,7 +171,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       const values = this.firstFiveRows.map((r) => r[header])
       const rows: Record<string, unknown> = Object.fromEntries(keys.map((k, i) => [k, values[i]]))
 
-      const data = { ...rows, ...this.defaultRow, file_header: header }
+      const data = { ...rows, ...this.defaultRow, from_field: header }
       this.rowData.push(data)
     }
 
@@ -165,7 +187,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
 
   setAllInventoryType(value: InventoryDisplayType) {
     this.defaultInventoryType = value
-    this.gridApi.forEachNode((n) => n.setDataValue('inventory_type', value))
+    this.gridApi.forEachNode((node) => node.setDataValue('to_table_display_name', value))
     this.setColumns()
   }
 
@@ -181,21 +203,24 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     const column = this.columnMap[newValue] ?? null
 
     const dataTypeConfig = dataTypeMap[column?.data_type] ?? { display: 'None', units: null }
-
+    const to_field = column?.column_name ?? newValue
+    console.log('set dataType', dataTypeConfig.display)
     node.setData({
       ...node.data,
       isNewColumn: !column,
       isExtraData: column?.is_extra_data ?? true,
-      dataType: dataTypeConfig.display,
-      units: dataTypeConfig.units,
+      to_data_type: dataTypeConfig.display,
+      to_field,
+      from_units: dataTypeConfig.units,
     })
 
     this.refreshNode(node)
+    this.validateData()
   }
 
   dataTypeChange = (params: CellValueChangedEvent): void => {
     const node = params.node as RowNode
-    node.setDataValue('units', null)
+    node.setDataValue('from_units', null)
     this.refreshNode(node)
   }
 
@@ -211,12 +236,55 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     const columns = this.defaultInventoryType === 'Tax Lot' ? taxlot_columns : property_columns
     const columnMap: Record<string, string> = columns.reduce((acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }), {})
 
-    this.gridApi.forEachNode((node: RowNode<{ file_header: string }>) => {
-      const fileHeader = node.data.file_header
+    this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
+      const fileHeader = node.data.from_field
       const suggestedColumnName = suggested_column_mappings[fileHeader][1]
       const displayName = columnMap[suggestedColumnName]
-      node.setDataValue('seed_header', displayName)
+      node.setDataValue('to_field_display_name', displayName)
     })
+  }
+
+  // Format data for backend consumption
+  mapData() {
+    const result = []
+    this.gridApi.forEachNode(({ data }: { data: DataMappingRow }) => {
+      if (data.omit) return // skip omitted rows
+
+      const { from_field, from_units, to_data_type, to_field, to_field_display_name, to_table_name } = data
+
+      result.push({
+        from_field,
+        from_units: from_units?.replace('²', '**2') ?? null,
+        to_data_type: displayToDataTypeMap[to_data_type] ?? null,
+        to_field,
+        to_field_display_name,
+        to_table_name: to_table_name ?? this.defaultInventoryType,
+      })
+    })
+    console.log('Mapped Data:', result)
+  }
+
+  validateData() {
+    const matchingColumns = this.defaultInventoryType === 'Tax Lot' ? this.matchingTaxLotColumns : this.matchingPropertyColumns
+    const toFields = []
+    this.gridApi.forEachNode((node: RowNode<DataMappingRow>) => {
+      if (node.data.omit) return // skip omitted rows
+      toFields.push(node.data.to_field)
+    })
+
+    // no duplicates
+    if (toFields.length !== new Set(toFields).size) {
+      this.dataValid = false
+      return
+    }
+    // at least one matching column
+    const hasMatchingCol = toFields.some((col) => matchingColumns.includes(col))
+    if (!hasMatchingCol) {
+      this.dataValid = false
+      return
+    }
+
+    this.dataValid = true
   }
 
   toggleHelp = () => {

@@ -51,8 +51,8 @@ export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterV
   }
 
   onKeyDown(event: KeyboardEvent) {
-    // if enter or tab, accept the value and stop propagation
-    const exitKeys = ['Enter', 'Tab']
+    // if enter, accept the value and stop propagation
+    const exitKeys = ['Enter']
     if (!exitKeys.includes(event.key)) {
       event.stopPropagation()
     }
