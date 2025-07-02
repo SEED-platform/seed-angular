@@ -22,16 +22,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-analysis-view',
   templateUrl: './analysis-view.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MatIconModule,
-    MatDividerModule,
-    NotFoundComponent,
-    PageComponent,
-    RouterModule,
-    SafeUrlPipe,
-  ],
+  imports: [AgGridAngular, CommonModule, MatIconModule, MatDividerModule, NotFoundComponent, PageComponent, RouterModule, SafeUrlPipe],
 })
 export class AnalysisViewComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
@@ -63,20 +54,20 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
   ]
 
   ngOnInit() {
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => { this.orgId = orgId }),
-      tap(() => {
-        this._analysisService.getAnalysis(this.orgId, this.analysisId)
-        this._analysisService.getMessages(this.orgId, this.analysisId)
-      }),
-      switchMap(() => combineLatest([
-        this._analysisService.analysis$,
-        this._cycleService.cycles$,
-        this._analysisService.messages$,
-      ])),
-      filter(([analysis, cycles, _]) => !!analysis && cycles.length > 0),
-      switchMap(([analysis, cycles, messages]) => this.getAnalysisView(analysis, cycles, messages)),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        tap(() => {
+          this._analysisService.getAnalysis(this.orgId, this.analysisId)
+          this._analysisService.getMessages(this.orgId, this.analysisId)
+        }),
+        switchMap(() => combineLatest([this._analysisService.analysis$, this._cycleService.cycles$, this._analysisService.messages$])),
+        filter(([analysis, cycles, _]) => !!analysis && cycles.length > 0),
+        switchMap(([analysis, cycles, messages]) => this.getAnalysisView(analysis, cycles, messages)),
+      )
+      .subscribe()
   }
 
   getAnalysisView(analysis: Analysis, cycles: Cycle[], messages: AnalysesMessage[]) {
