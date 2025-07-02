@@ -7,7 +7,7 @@
     actionIcon: 'fa-solid:circle-question',
   }"
 >
-  <div class="h-full-page-tabs p-5" id="content">
+  <div class="h-full-page-tabs" id="content">
     
     <mat-drawer-container class="h-full">
       <mat-drawer class="w-1/2" #drawer [(opened)]="helpOpened" mode="over" position="end">
@@ -28,45 +28,47 @@
 <!-- MAIN CONTENT -->
 <ng-template #mainTemplate>
 
-  <div class="flex gap-4">
-    <div class="w-30 text-secondary">Cycle</div>
-    <div>{{ cycle?.name }}</div>
-  </div>
-  <div class="flex gap-4">
-    <div class="w-30 text-secondary">Column Profile</div>
-    <div>none selected</div>
-  </div>
+  <mat-stepper class="stepper-disable-hover bg-transparent p-0" #stepper [linear]="true">
+    <mat-step [completed]="completed[1]" label="Map Data">
+      <seed-map-data
+      [cycle]="cycle"
+      [firstFiveRows]="firstFiveRows"
+      [importFile]="importFile"
+      [mappingSuggestions]="mappingSuggestions"
+      [matchingPropertyColumns]="matchingPropertyColumns"
+      [matchingTaxLotColumns]="matchingTaxLotColumns"
+      [orgId]="orgId"
+      [rawColumnNames]="rawColumnNames"
+      (completed)="startMapping()"
+      ></seed-map-data>
+    </mat-step>
+    
+    <mat-step [completed]="completed[2]" label="Mapping" editable="false">
+      <seed-progress-bar
+        [progress]="progressBarObj.progress"
+        [total]="progressBarObj.total"
+        title="Uploading Data..."
+      ></seed-progress-bar>
+    </mat-step>
 
-  <mat-divider class="my-5"></mat-divider>
-    <div class="flex flex-col gap-2 w-100">
-      <button mat-stroked-button (click)="copyHeadersToSeed()">Copy Data File Headers directly to SEED headers</button>
-      <!-- <button mat-stroked-button>Toggle Omitted</button> -->
-      <mat-button-toggle-group name="invntoryType" [(ngModel)]="defaultInventoryType" (change)="setAllInventoryType($event.value)" appearance="standard">
-        <mat-button-toggle value="Property">Property Types</mat-button-toggle>
-        <mat-button-toggle value="Tax Lot">Tax Lot Types</mat-button-toggle>
-      </mat-button-toggle-group>
-    </div>
+    <mat-step [completed]="completed[3]" label="Save Mappings">
+      <seed-save-mappings
+      [columns]="columns"
+      [cycle]="cycle"
+      [mappingResultsResponse]="mappingResultsResponse"
+      [org]="org"
+      [orgId]="orgId"
+      (completed)="matchMergeProgress.startMatchMerge()"
+      ></seed-save-mappings>
+    </mat-step>
+
+    <mat-step [completed]="completed[4]" label="Matching & Merging" editable="false">
+      <seed-matching-merging #matchMergeProgress
+      ></seed-matching-merging>
+    </mat-step>
+
+  </mat-stepper>
+
   
-  <mat-divider class="my-5"></mat-divider>
-  <div class="flex justify-between items-center">
-    <div class="flex gap-4 my-2 mx-3">
-      <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
-      <div class="italic text-secondary">Editable Cell</div>
-    </div>
-
-    <button class="mb-2" mat-raised-button color="primary" (click)="mapData()" [disabled]="!dataValid">Map Data</button>
-
-
-  </div>
-
-  <ag-grid-angular
-    [rowData]="rowData"
-    [columnDefs]="columnDefs"
-    [gridOptions]="gridOptions"
-    [theme]="gridTheme$ | async"
-    [domLayout]="'autoHeight'"
-    (gridReady)="onGridReady($event)"
-  >
-  </ag-grid-angular>
 
 </ng-template>

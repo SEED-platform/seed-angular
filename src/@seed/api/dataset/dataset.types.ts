@@ -64,3 +64,13 @@ export type DataMappingRow = {
   isExtraData?: boolean; // used internally, not part of the API
   isNewColumn?: boolean; // used internally, not part of the API
 }
+
+export type MappedData = {
+  mappings: DataMappingRow[];
+}
+
+export type MappingResultsResponse = {
+  status: string;
+  properties: Record<string, unknown>[];
+  tax_lots: Record<string, unknown>[];
+}

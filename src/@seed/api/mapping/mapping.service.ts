@@ -2,8 +2,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
-import { catchError, map, type Observable } from 'rxjs'
+import { catchError, map, tap, type Observable } from 'rxjs'
 import type { FirstFiveRowsResponse, MappingSuggestionsResponse, RawColumnNamesResponse } from './mapping.types'
+import { MappedData, MappingResultsResponse } from '../dataset'
+import { ProgressResponse } from '../progress'
 
 @Injectable({ providedIn: 'root' })
 export class MappingService {
@@ -39,6 +41,39 @@ export class MappingService {
         map(({ first_five_rows }) => first_five_rows),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching first five rows')
+        }),
+      )
+  }
+
+  startMapping(orgId: number, importFileId: number, mappedData: MappedData): Observable<unknown> {
+    const url = `api/v3/organizations/${orgId}/column_mappings/?import_file_id=${importFileId}`
+    return this._httpClient.post(url, mappedData)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error starting mapping')
+        }),
+      )
+  }
+
+  remapBuildings(orgId: number, importFileId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/import_files/${importFileId}/map/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, { remap: true, mark_as_done: false })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error remapping buildings')
+        }),
+      )
+  }
+
+  mappingResults(orgId: number, importFileId: number): Observable<MappingResultsResponse> {
+    const url = `/api/v3/import_files/${importFileId}/mapping_results/?organization_id=${orgId}`
+    return this._httpClient.post<MappingResultsResponse>(url, {})
+      .pipe(
+        tap((response) => {
+          console.log(response)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching mapping results')
         }),
       )
   }

@@ -15,8 +15,8 @@ export const dataTypeMap: Record<string, { display: string; units: string }> = {
   // wui: { display: 'Water Use Intensity', units: 'gal/ft²/year' },
 }
 
-const dataTypes = ['None', 'Number', 'Integer', 'Text', 'Datetime', 'Date', 'Boolean', 'Area', 'EUI', 'Geometry', 'GHG', 'GHG Intensity'] // 'Water Use', 'Water Use Intensity'
-const displayDataTypes = [null, 'number', 'integer', 'string', 'datetime', 'date', 'boolean', 'area', 'eui', 'geometry', 'ghg', 'ghg_intensity'] // 'water_use', 'wui'
+const displayDataTypes = ['None', 'Number', 'Integer', 'Text', 'Datetime', 'Date', 'Boolean', 'Area', 'EUI', 'Geometry', 'GHG', 'GHG Intensity'] // 'Water Use', 'Water Use Intensity'
+const dataTypes = ['None', 'number', 'integer', 'string', 'datetime', 'date', 'boolean', 'area', 'eui', 'geometry', 'ghg', 'ghg_intensity'] // 'water_use', 'wui'
 
 export const displayToDataTypeMap: Record<string, string> = Object.fromEntries(displayDataTypes.map((k, i) => [k, dataTypes[i]]))
 
