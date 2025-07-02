@@ -1,7 +1,17 @@
 <div>
-  <seed-progress-bar
-  [progress]="progressBarObj.progress"
-  [total]="progressBarObj.total"
-  title="Uploading Data..."
-></seed-progress-bar>
+  @if (inProgress) {
+    <seed-progress-bar
+    [progress]="progressBarObj.progress"
+    [total]="progressBarObj.total"
+    [title]="progressBarObj.statusMessage"
+  ></seed-progress-bar>
+  } @else {
+    <div>
+      <a [routerLink]="['/' + inventoryType]">
+        <button mat-raised-button color="primary">
+          View {{ inventoryType | titlecase }}
+        </button>
+      </a>
+    </div>
+  }
 </div>

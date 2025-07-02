@@ -60,16 +60,16 @@
       [org]="org"
       [orgId]="orgId"
       (completed)="startMatchMerge()"
+      (inventoryTypeChange)="onInventoryTypeChange($event)"
       ></seed-save-mappings>
     </mat-step>
 
     <mat-step [completed]="completed[4]" label="Matching & Merging" editable="false">
-      abc
       <seed-match-merge
       [importFileId]="fileId"
       [orgId]="orgId"
+      [inventoryType]="inventoryType"
       ></seed-match-merge>
-      xyz
     </mat-step>
 
   </mat-stepper>

@@ -14,21 +14,21 @@ import { MatStepperModule } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 'rxjs'
-import { ColumnService, type Column } from '@seed/api/column'
+import { type Column, ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { MappingService } from '@seed/api/mapping'
-import { Organization, OrganizationService } from '@seed/api/organization'
+import type { Organization } from '@seed/api/organization';
+import { OrganizationService } from '@seed/api/organization'
 import type { ProgressResponse } from '@seed/api/progress'
 import { UserService } from '@seed/api/user'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
-import type { ProgressBarObj } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { Profile } from 'app/modules/inventory'
+import type { InventoryType, Profile } from 'app/modules/inventory'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -80,6 +80,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   firstFiveRows: Record<string, unknown>[]
   helpOpened = false
   importFile: ImportFile
+  inventoryType: InventoryType = 'properties'
   mappingResultsResponse: MappingResultsResponse
   mappingSuggestions: MappingSuggestionsResponse
   matchingPropertyColumns: string[] = []
@@ -224,6 +225,10 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     setTimeout(() => {
       this.stepper.next()
     })
+  }
+
+  onInventoryTypeChange(inventoryType: InventoryType) {
+    this.inventoryType = inventoryType
   }
 
   toggleHelp = () => {

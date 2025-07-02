@@ -3,16 +3,17 @@ import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
+import { AgGridAngular } from 'ag-grid-angular'
+import { Subject, switchMap, take } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { DataQualityService } from '@seed/api/data-quality';
 import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import type { Organization } from '@seed/api/organization'
 import { ConfigService } from '@seed/services'
-import { ProgressBarObj, UploaderService } from '@seed/services/uploader';
-import { AgGridAngular } from 'ag-grid-angular'
+import { UploaderService } from '@seed/services/uploader'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Subject, switchMap, take } from 'rxjs'
+import type { InventoryType } from 'app/modules/inventory'
 
 @Component({
   selector: 'seed-save-mappings',
@@ -32,6 +33,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
   @Input() orgId: number
   @Output() completed = new EventEmitter<null>()
+  @Output() inventoryTypeChange = new EventEmitter<InventoryType>()
 
   private _configService = inject(ConfigService)
   private _dataQualityService = inject(DataQualityService)
@@ -43,6 +45,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
   gridTheme$ = this._configService.gridTheme$
   mappingResults: Record<string, unknown>[] = []
   dqcComplete = false
+  inventoryType: InventoryType
 
   progressBarObj = this._uploaderService.defaultProgressBarObj
 
@@ -50,7 +53,14 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
     if (!changes.mappingResultsResponse?.currentValue) return
 
     const { properties, tax_lots } = this.mappingResultsResponse
-    this.mappingResults = tax_lots.length ? tax_lots : properties || []
+    if (tax_lots.length) {
+      this.mappingResults = tax_lots
+      this.inventoryTypeChange.emit('taxlots')
+    } else {
+      this.mappingResults = properties
+      this.inventoryTypeChange.emit('properties')
+    }
+
     this.startDQC()
     this.setGrid()
   }
