@@ -8,6 +8,7 @@ import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,
   GreenButtonMeterPreview,
+  ProgressBarObj,
   SensorPreviewResponse,
   SensorReadingPreview,
   UpdateProgressBarObjParams,
@@ -18,6 +19,18 @@ import type {
 export class UploaderService {
   private _httpClient = inject(HttpClient)
   private _errorService = inject(ErrorService)
+
+  get defaultProgressBarObj(): ProgressBarObj {
+    return {
+      message: [],
+      progress: 0,
+      total: 100,
+      complete: false,
+      statusMessage: '',
+      progressLastUpdated: null,
+      progressLastChecked: null,
+    }
+  }
 
   /*
    * Checks a progress key for updates until it completes

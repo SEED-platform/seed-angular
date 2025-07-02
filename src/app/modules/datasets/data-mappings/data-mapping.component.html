@@ -47,7 +47,7 @@
       <seed-progress-bar
         [progress]="progressBarObj.progress"
         [total]="progressBarObj.total"
-        title="Uploading Data..."
+        title="Mapping Data..."
       ></seed-progress-bar>
     </mat-step>
 
@@ -55,16 +55,21 @@
       <seed-save-mappings
       [columns]="columns"
       [cycle]="cycle"
+      [importFile]="importFile"
       [mappingResultsResponse]="mappingResultsResponse"
       [org]="org"
       [orgId]="orgId"
-      (completed)="matchMergeProgress.startMatchMerge()"
+      (completed)="startMatchMerge()"
       ></seed-save-mappings>
     </mat-step>
 
     <mat-step [completed]="completed[4]" label="Matching & Merging" editable="false">
-      <seed-matching-merging #matchMergeProgress
-      ></seed-matching-merging>
+      abc
+      <seed-match-merge
+      [importFileId]="fileId"
+      [orgId]="orgId"
+      ></seed-match-merge>
+      xyz
     </mat-step>
 
   </mat-stepper>

@@ -32,7 +32,7 @@ import type { Profile } from 'app/modules/inventory'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
-import { MatchMergeProgressComponent } from './step4/match-margecompponent'
+import { MatchMergeComponent } from './step4/match-merge.component'
 
 @Component({
   selector: 'seed-data-mapping-stepper',
@@ -43,7 +43,7 @@ import { MatchMergeProgressComponent } from './step4/match-margecompponent'
     FormsModule,
     HelpComponent,
     MapDataComponent,
-    MatchMergeProgressComponent,
+    MatchMergeComponent,
     MatButtonModule,
     MatButtonToggleModule,
     MatDividerModule,
@@ -60,6 +60,7 @@ import { MatchMergeProgressComponent } from './step4/match-margecompponent'
 export class DataMappingComponent implements OnDestroy, OnInit {
   @ViewChild('stepper') stepper!: MatStepper
   @ViewChild(MapDataComponent) mapDataComponent!: MapDataComponent
+  @ViewChild(MatchMergeComponent) matchMergeComponent!: MatchMergeComponent
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _columnService = inject(ColumnService)
   private _cycleService = inject(CycleService)
@@ -89,15 +90,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   rawColumnNames: string[] = []
   taxlotColumns: Column[]
 
-  progressBarObj: ProgressBarObj = {
-    message: [],
-    progress: 0,
-    total: 100,
-    complete: false,
-    statusMessage: '',
-    progressLastUpdated: null,
-    progressLastChecked: null,
-  }
+  progressBarObj = this._uploaderService.defaultProgressBarObj
 
   ngOnInit(): void {
     // this._userService.currentOrganizationId$
@@ -221,8 +214,13 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  nextStep(step: number) {
-    this.completed[step] = true
+  startMatchMerge() {
+    this.nextStep(3)
+    this.matchMergeComponent.startMatchMerge()
+  }
+
+  nextStep(currentStep: number) {
+    this.completed[currentStep] = true
     setTimeout(() => {
       this.stepper.next()
     })

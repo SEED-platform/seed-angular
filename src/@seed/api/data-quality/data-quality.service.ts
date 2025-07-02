@@ -5,6 +5,7 @@ import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Rule } from './data-quality.types'
+import { DQCProgressResponse } from '../progress'
 
 @Injectable({ providedIn: 'root' })
 export class DataQualityService {
@@ -76,6 +77,25 @@ export class DataQualityService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error resetting data quality rules')
+      }),
+    )
+  }
+
+  startDataQualityCheckForImportFile(orgId: number, importFileId: number): Observable<DQCProgressResponse> {
+    const url = `/api/v3/import_files/${importFileId}/start_data_quality_checks/?organization_id=${orgId}`
+    return this._httpClient.post<DQCProgressResponse>(url, {})
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error starting data quality checks for import file')
+        }),
+      )
+  }
+
+  getDataQualityResults(orgId: number, runId: number): Observable<DQCProgressResponse> {
+    const url = `/api/v3/data_quality_checks/results/?organization_id=${orgId}&run_id=${runId}`
+    return this._httpClient.get<DQCProgressResponse>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching data quality results')
       }),
     )
   }

@@ -12,7 +12,10 @@
     <div class="italic text-secondary">Access Level Info</div>
   </div>
 
-  <button class="mb-2" mat-raised-button color="primary" (click)="saveData()" >Save Data</button>
+  <div class="flex gap-4">
+    <button  mat-stroked-button [disabled]="!dqcComplete" [ngClass]="{ 'animate-pulse bg-gray-500': !dqcComplete }" (click)="showDataQualityResults()"> Data Quality Results</button>
+    <button class="mb-2" mat-raised-button color="primary" (click)="saveData()" >Save Data</button>
+  </div>
 </div>
 
 @if (rowData.length) {

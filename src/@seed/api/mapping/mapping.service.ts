@@ -5,7 +5,7 @@ import { UserService } from '../user'
 import { catchError, map, tap, type Observable } from 'rxjs'
 import type { FirstFiveRowsResponse, MappingSuggestionsResponse, RawColumnNamesResponse } from './mapping.types'
 import { MappedData, MappingResultsResponse } from '../dataset'
-import { ProgressResponse } from '../progress'
+import { ProgressResponse, SubProgressResponse } from '../progress'
 
 @Injectable({ providedIn: 'root' })
 export class MappingService {
@@ -74,6 +74,29 @@ export class MappingService {
         }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching mapping results')
+        }),
+      )
+  }
+
+  mappingDone(orgId: number, importFileId: number): Observable<{ message: string; status: string }> {
+    const url = `/api/v3/import_files/${importFileId}/mapping_done/?organization_id=${orgId}`
+    return this._httpClient.post<{ message: string; status: string }>(url, {})
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching mapping results')
+        }),
+      )
+  }
+
+  startMatchMerge(orgId: number, importFileId: number): Observable<SubProgressResponse> {
+    const url = `/api/v3/import_files/${importFileId}/start_system_matching_and_geocoding/?organization_id=${orgId}`
+    return this._httpClient.post<SubProgressResponse>(url, {})
+      .pipe(
+        tap((response) => {
+          console.log('Match merge started:', response)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error starting match merge')
         }),
       )
   }

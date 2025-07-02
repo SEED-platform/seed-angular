@@ -5,12 +5,14 @@ import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
-import type { MappingResultsResponse } from '@seed/api/dataset'
+import { DataQualityService } from '@seed/api/data-quality';
+import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import type { Organization } from '@seed/api/organization'
 import { ConfigService } from '@seed/services'
+import { ProgressBarObj, UploaderService } from '@seed/services/uploader';
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Subject } from 'rxjs'
+import { Subject, switchMap, take } from 'rxjs'
 
 @Component({
   selector: 'seed-save-mappings',
@@ -25,25 +27,56 @@ import { Subject } from 'rxjs'
 export class SaveMappingsComponent implements OnChanges, OnDestroy {
   @Input() columns: Column[]
   @Input() cycle: Cycle
+  @Input() importFile: ImportFile
   @Input() mappingResultsResponse: MappingResultsResponse
   @Input() org: Organization
   @Input() orgId: number
   @Output() completed = new EventEmitter<null>()
 
   private _configService = inject(ConfigService)
+  private _dataQualityService = inject(DataQualityService)
+  private _uploaderService = inject(UploaderService)
   private _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[] = []
   rowData: Record<string, unknown>[] = []
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   mappingResults: Record<string, unknown>[] = []
+  dqcComplete = false
+
+  progressBarObj = this._uploaderService.defaultProgressBarObj
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes.mappingResultsResponse?.currentValue) return
 
     const { properties, tax_lots } = this.mappingResultsResponse
     this.mappingResults = tax_lots.length ? tax_lots : properties || []
+    this.startDQC()
     this.setGrid()
+  }
+
+  startDQC() {
+    const successFn = () => {
+      this.dqcComplete = true
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const failureFn = () => {}
+
+    this._dataQualityService.startDataQualityCheckForImportFile(this.orgId, this.importFile.id)
+      .pipe(
+        take(1),
+        switchMap(({ progress_key }) => {
+          return this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            offset: 0,
+            multiplier: 1,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          })
+        }),
+      )
+      .subscribe()
   }
 
   setGrid() {
@@ -86,8 +119,12 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
 
   saveData() {
     console.log('Saving data...')
-    console.log(this.mappingResults)
+    // console.log(this.mappingResults)
     this.completed.emit()
+  }
+
+  showDataQualityResults() {
+    console.log('open modal showing dqc results')
   }
 
   ngOnDestroy(): void {
