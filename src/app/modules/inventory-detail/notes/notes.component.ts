@@ -21,14 +21,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-notes',
   templateUrl: './notes.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatIconModule,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class NotesComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)

@@ -56,13 +56,21 @@ export class AnalysesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getParams().pipe(
-      switchMap(() => this._userService.currentOrganizationId$),
-      tap((orgId) => { this.orgId = orgId }),
-      switchMap(() => this._cycleService.cycles$),
-      tap((cycles) => { this.cycles = cycles }),
-      tap(() => { this.watchAnalyses() }),
-    ).subscribe()
+    this.getParams()
+      .pipe(
+        switchMap(() => this._userService.currentOrganizationId$),
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        switchMap(() => this._cycleService.cycles$),
+        tap((cycles) => {
+          this.cycles = cycles
+        }),
+        tap(() => {
+          this.watchAnalyses()
+        }),
+      )
+      .subscribe()
   }
 
   getParams() {
@@ -77,20 +85,26 @@ export class AnalysesComponent implements OnInit {
 
   getAnalyses() {
     return this._inventoryService.getView(this.orgId, this.viewId, this.type).pipe(
-      tap((view) => { this.view = view }),
+      tap((view) => {
+        this.view = view
+      }),
       switchMap(() => {
         const id = this.type === 'taxlots' ? this.view.taxlot.id : this.view.property.id
         return this._analysisService.getPropertyAnalyses(id)
       }),
-      tap((analyses) => { this.analyses = analyses }),
+      tap((analyses) => {
+        this.analyses = analyses
+      }),
     )
   }
 
   watchAnalyses() {
-    this._analysisService.analyses$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap(() => this.getAnalyses()),
-    ).subscribe()
+    this._analysisService.analyses$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap(() => this.getAnalyses()),
+      )
+      .subscribe()
   }
 
   createAnalysis() {

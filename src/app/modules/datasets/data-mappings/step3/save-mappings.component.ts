@@ -3,8 +3,6 @@ import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
-import { AgGridAngular } from 'ag-grid-angular'
-import { Subject, switchMap, take } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { DataQualityService } from '@seed/api/data-quality';
@@ -12,8 +10,10 @@ import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import type { Organization } from '@seed/api/organization'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { InventoryType } from 'app/modules/inventory'
+import { Subject, switchMap, take } from 'rxjs'
 
 @Component({
   selector: 'seed-save-mappings',

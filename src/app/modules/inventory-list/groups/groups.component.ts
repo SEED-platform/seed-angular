@@ -20,15 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    FormModalComponent,
-    MatIconModule,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, AgGridModule, CommonModule, FormModalComponent, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)

@@ -56,7 +56,7 @@ export class DatasetService {
       tap(() => {
         this.countDatasets(orgId)
         this.list(orgId)
-        this._snackBar.success('Dataset created successfully')
+        // this._snackBar.success('Dataset created successfully')
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating dataset count')

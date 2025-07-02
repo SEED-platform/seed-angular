@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
+import { Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { combineLatest, filter, map, Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api/version'

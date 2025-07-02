@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DOCUMENT, inject } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'

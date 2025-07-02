@@ -136,7 +136,6 @@ export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
 
     const successFn = () => {
       this.completed[2] = true
-      this._snackBar.success('Successfully uploaded file')
       setTimeout(() => {
         this.stepper.next()
       })

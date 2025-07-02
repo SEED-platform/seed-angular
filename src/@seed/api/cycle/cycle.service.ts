@@ -3,11 +3,10 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, take, tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 import { UserService } from '../user'
+import type { Cycle, CycleResponse, CyclesResponse } from './cycle.types'
 
 @Injectable({ providedIn: 'root' })
 export class CycleService {

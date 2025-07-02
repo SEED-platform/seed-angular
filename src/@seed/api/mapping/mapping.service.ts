@@ -46,7 +46,7 @@ export class MappingService {
   }
 
   startMapping(orgId: number, importFileId: number, mappedData: MappedData): Observable<unknown> {
-    const url = `api/v3/organizations/${orgId}/column_mappings/?import_file_id=${importFileId}`
+    const url = `/api/v3/organizations/${orgId}/column_mappings/?import_file_id=${importFileId}`
     return this._httpClient.post(url, mappedData)
       .pipe(
         catchError((error: HttpErrorResponse) => {

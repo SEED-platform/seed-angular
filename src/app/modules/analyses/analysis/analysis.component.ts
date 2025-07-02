@@ -24,17 +24,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-analyses-analysis',
   templateUrl: './analysis.component.html',
-  styleUrls: ['../analyses.component.scss'],
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    PageComponent,
-    RouterLink,
-    SharedImports,
-  ],
+  imports: [AgGridAngular, CommonModule, MatButtonModule, MatDividerModule, MatIconModule, PageComponent, RouterLink, SharedImports],
 })
 export class AnalysisComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
@@ -63,18 +53,26 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   gridViews: (View & { messages?: string[] })[] = []
 
   ngOnInit() {
-    this._userService.currentOrganizationId$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((orgId) => { this.orgId = orgId }),
-      switchMap(() => this.getCycles()),
-      tap(() => { this.getAnalysis() }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        switchMap(() => this.getCycles()),
+        tap(() => {
+          this.getAnalysis()
+        }),
+      )
+      .subscribe()
   }
 
   getCycles() {
     return this._cycleService.cycles$.pipe(
       takeUntil(this._unsubscribeAll$),
-      tap((cycles) => { this.cycles = cycles }),
+      tap((cycles) => {
+        this.cycles = cycles
+      }),
     )
   }
 
@@ -83,22 +81,20 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     this._analysisService.getAnalysisViews(this.orgId, this.analysisId)
     this._analysisService.getMessages(this.orgId, this.analysisId)
 
-    combineLatest([
-      this._analysisService.analysis$,
-      this._analysisService.views$,
-      this._analysisService.messages$,
-    ]).pipe(
-      filter(([analysis, views]) => !!analysis && views.length && analysis.id === this.analysisId),
-      takeUntil(this._unsubscribeAll$),
-      tap(([analysis, views, messages]) => {
-        this.analysis = analysis
-        this.views = views
-        this.messages = messages
-        this.analysisDescription = this._analysisService.getAnalysisDescription(analysis)
-        this.formatViews()
-        this.setColumnDefs()
-      }),
-    ).subscribe()
+    combineLatest([this._analysisService.analysis$, this._analysisService.views$, this._analysisService.messages$])
+      .pipe(
+        filter(([analysis, views]) => !!analysis && views.length && analysis.id === this.analysisId),
+        takeUntil(this._unsubscribeAll$),
+        tap(([analysis, views, messages]) => {
+          this.analysis = analysis
+          this.views = views
+          this.messages = messages
+          this.analysisDescription = this._analysisService.getAnalysisDescription(analysis)
+          this.formatViews()
+          this.setColumnDefs()
+        }),
+      )
+      .subscribe()
   }
 
   formatViews() {
@@ -107,9 +103,7 @@ export class AnalysisComponent implements OnDestroy, OnInit {
       // skip views that are not associated with the current analysis
       if (view.analysis !== this.analysisId) continue
 
-      const messages = this.messages
-        .filter((m) => m.analysis_property_view === view.id)
-        .map((m) => m.user_message)
+      const messages = this.messages.filter((m) => m.analysis_property_view === view.id).map((m) => m.user_message)
 
       this.gridViews.push({ ...view, messages })
     }
@@ -121,7 +115,11 @@ export class AnalysisComponent implements OnDestroy, OnInit {
       analysis: [
         { field: 'status', headerName: 'Status', cellRenderer: this.statusRenderer },
         { field: 'number_of_analysis_property_views', headerName: 'Property Count' },
-        { field: 'created_at', headerName: 'Created At', valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString() },
+        {
+          field: 'created_at',
+          headerName: 'Created At',
+          valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString(),
+        },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { field: 'cycles', headerName: 'Cycle', valueFormatter: this.getCycle.bind(this) },
         { field: 'run_duration', headerName: 'Run Duration', valueGetter: this._analysisService.getRunDuration },
@@ -157,7 +155,9 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   }
 
   resultsRenderer = ({ data }: { data: View }) => {
-    const downloadHTML = data.output_files.length ? '<span class="material-icons cursor-pointer text-secondary mt-1" data-action="download">cloud_download</span>' : ''
+    const downloadHTML = data.output_files.length
+      ? '<span class="material-icons cursor-pointer text-secondary mt-1" data-action="download">cloud_download</span>'
+      : ''
 
     return `
       <div class="flex gap-4">
@@ -174,11 +174,15 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     if (!value) return ''
     return `
         <ul class="text-secondary">
-          ${value.map((message) => `
+          ${value
+            .map(
+              (message) => `
             <li class="list-disc pl-4 space-y-1 text-sm leading-snug">
               <div class="truncate max-w-full whitespace-nowrap overflow-hidden">${message}</div>
             </li>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </ul>
       `
   }
@@ -191,7 +195,7 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     this.gridHeight = Math.min(this.gridViews.length * 42 + 50, divHeight * 0.9)
   }
 
-  getRowHeight = (params: { data: (View & { messages?: string[] }) }) => {
+  getRowHeight = (params: { data: View & { messages?: string[] } }) => {
     const messageHeight = params.data.messages?.length * 18 + 10
     return Math.max(42, messageHeight)
   }

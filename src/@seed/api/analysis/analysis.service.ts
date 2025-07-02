@@ -7,7 +7,20 @@ import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
-import type { AnalysesMessage, Analysis, AnalysisResponse, AnalysisServiceType, AnalysisSummary, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, OriginalView, PropertyAnalysesResponse, View } from './analysis.types'
+import type {
+  AnalysesMessage,
+  Analysis,
+  AnalysisResponse,
+  AnalysisServiceType,
+  AnalysisSummary,
+  AnalysisView,
+  AnalysisViews,
+  ListAnalysesResponse,
+  ListMessagesResponse,
+  OriginalView,
+  PropertyAnalysesResponse,
+  View,
+} from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -51,41 +64,54 @@ export class AnalysisService {
 
   getAnalyses(orgId: number) {
     const url = `/api/v3/analyses/?organization_id=${orgId}`
-    this._httpClient.get<ListAnalysesResponse>(url).pipe(
-      map((response) => response),
-      tap((response) => {
-        this._analyses.next(response.analyses)
-        this._views.next(response.views)
-        this._originalViews.next(response.original_views)
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching analyses')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<ListAnalysesResponse>(url)
+      .pipe(
+        map((response) => response),
+        tap((response) => {
+          this._analyses.next(response.analyses)
+          this._views.next(response.views)
+          this._originalViews.next(response.original_views)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses')
+        }),
+      )
+      .subscribe()
   }
 
   // get AnalysesMessages (for all analyses or for a single one)
   getMessages(orgId: number, analysisId: number) {
     const url = `/api/v3/analyses/${analysisId}/messages/?organization_id=${orgId}`
-    this._httpClient.get<ListMessagesResponse>(url).pipe(
-      map((response) => response.messages),
-      tap((response) => { this._messages.next(response) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching analyses messages')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<ListMessagesResponse>(url)
+      .pipe(
+        map((response) => response.messages),
+        tap((response) => {
+          this._messages.next(response)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses messages')
+        }),
+      )
+      .subscribe()
   }
 
   // get single analysis
   getAnalysis(orgId: number, analysisId: number) {
     const url = `/api/v3/analyses/${analysisId}?organization_id=${orgId}`
-    this._httpClient.get<AnalysisResponse>(url).pipe(
-      map((response) => response.analysis),
-      tap((analysis) => { this._analysis.next(analysis) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching analyses')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<AnalysisResponse>(url)
+      .pipe(
+        map((response) => response.analysis),
+        tap((analysis) => {
+          this._analysis.next(analysis)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses')
+        }),
+      )
+      .subscribe()
   }
 
   // get analyses for a property (by property ID)
@@ -102,15 +128,18 @@ export class AnalysisService {
   // get analysis views
   getAnalysisViews(orgId: number, analysisId: number) {
     const url = `/api/v3/analyses/${analysisId}/views?organization_id=${orgId}`
-    this._httpClient.get<AnalysisViews>(url).pipe(
-      tap((response) => {
-        this._views.next(response.views)
-        this._originalViews.next(response.original_views)
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching analyses')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<AnalysisViews>(url)
+      .pipe(
+        tap((response) => {
+          this._views.next(response.views)
+          this._originalViews.next(response.original_views)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching analyses')
+        }),
+      )
+      .subscribe()
   }
 
   // get analysis view
@@ -118,7 +147,9 @@ export class AnalysisService {
     const url = `/api/v3/analyses/${analysisId}/views/${viewId}/?organization_id=${orgId}`
     return this._httpClient.get<AnalysisView>(url).pipe(
       map((response) => response.view),
-      tap((view) => { this._view.next(view) }),
+      tap((view) => {
+        this._view.next(view)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching analysis view')
       }),
@@ -177,30 +208,38 @@ export class AnalysisService {
   }
 
   /*
-  * Poll for analysis statuses
-  * Fetch analyses every 5 seconds until all analyses are in a terminal state
-  */
+   * Poll for analysis statuses
+   * Fetch analyses every 5 seconds until all analyses are in a terminal state
+   */
   pollStatuses(orgId: number) {
     const isPolling = this.pollingStatuses && !this.pollingStatuses.closed
     if (isPolling) return
 
     const runningStatuses = new Set(['Pending Creation', 'Creating', 'Queued', 'Running'])
-    this.pollingStatuses = interval(5000).pipe(
-      withLatestFrom(this.analyses$),
-      takeWhile(([_, analyses]) => analyses.some((a) => runningStatuses.has(a.status)), true),
-      tap(() => { this.getAnalyses(orgId) }),
-    ).subscribe()
+    this.pollingStatuses = interval(5000)
+      .pipe(
+        withLatestFrom(this.analyses$),
+        takeWhile(([_, analyses]) => analyses.some((a) => runningStatuses.has(a.status)), true),
+        tap(() => {
+          this.getAnalyses(orgId)
+        }),
+      )
+      .subscribe()
   }
 
   getAnalysisDescription(analysis: Analysis): string {
     const descriptionMap: Record<AnalysisServiceType, string> = {
-      BETTER: "The BETTER analysis leverages better.lbl.gov to calculate energy, cost, and GHG emission savings by comparing the property's change point model with a benchmarked model. The results include saving potential and a list of recommended high-level energy conservation measures.",
-      BSyncr: 'The BSyncr analysis leverages the Normalized Metered Energy Consumption (NMEC) analysis to calculate a change point model. The data are passed to the analysis using BuildingSync. The result of the analysis are the coefficients of the change point model.',
-      'Building Upgrade Recommendation': 'The Building Upgrade Recommendation analysis implements a workflow to identify buildings that may need a deep energy retrofit, equipment replaced or re-tuning based on building attributes such as energy use, year built, and square footage. If your organization contains elements, the Element Statistics Analysis should be run prior to running this analysis.',
+      BETTER:
+        "The BETTER analysis leverages better.lbl.gov to calculate energy, cost, and GHG emission savings by comparing the property's change point model with a benchmarked model. The results include saving potential and a list of recommended high-level energy conservation measures.",
+      BSyncr:
+        'The BSyncr analysis leverages the Normalized Metered Energy Consumption (NMEC) analysis to calculate a change point model. The data are passed to the analysis using BuildingSync. The result of the analysis are the coefficients of the change point model.',
+      'Building Upgrade Recommendation':
+        'The Building Upgrade Recommendation analysis implements a workflow to identify buildings that may need a deep energy retrofit, equipment replaced or re-tuning based on building attributes such as energy use, year built, and square footage. If your organization contains elements, the Element Statistics Analysis should be run prior to running this analysis.',
       CO2: "This analysis calculates the average annual CO2 emissions for the property's meter data. The analysis requires an eGRID Subregion to be defined in order to accurately determine the emission rates.",
       EEEJ: "The EEEJ Analysis uses each property's address to identify the 2010 census tract. Based on census tract, disadvantaged community classification and energy burden information can be retrieved from the CEJST dataset. The number of affordable housing locations is retrieved from HUD datasets. Location is used to generate a link to view an EJScreen Report providing more demographic indicators.",
       EUI: "The EUI analysis will sum the property's meter readings for the last twelve months to calculate the energy use per square footage per year. If there are missing meter readings, then the analysis will return a less that 100% coverage to alert the user that there is a missing meter reading.",
-      'Element Statistics': "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C. Control Panel'. It also generates the aggregated (average) condition index values for scope 1 emission elements and saves those quantities to the property.",
+      'Element Statistics':
+        "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C. Control Panel'. It also generates the aggregated (average) condition index values for scope 1 emission elements and saves those quantities to the property.",
     }
     return descriptionMap[analysis.service] ?? 'No description available for this analysis.'
   }

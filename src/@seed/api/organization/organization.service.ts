@@ -291,11 +291,7 @@ export class OrganizationService {
 
   getViewDisplayField(viewId: number, type: InventoryType): Observable<string> {
     return this.currentOrganization$.pipe(
-      switchMap((org: Organization) =>
-        this._inventoryService.getView(org.org_id, viewId, type).pipe(
-          map((view) => ({ org, view })),
-        ),
-      ),
+      switchMap((org: Organization) => this._inventoryService.getView(org.org_id, viewId, type).pipe(map((view) => ({ org, view })))),
       map(({ org, view }: { org: Organization; view: ViewResponse }) => {
         const displayFieldKey = type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
         const displayField = view.state[displayFieldKey] as string

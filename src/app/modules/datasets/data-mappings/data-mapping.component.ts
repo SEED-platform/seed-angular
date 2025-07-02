@@ -9,11 +9,9 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
-import type { MatStepper} from '@angular/material/stepper'
+import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
-import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
@@ -27,8 +25,10 @@ import type { ProgressResponse } from '@seed/api/progress'
 import { UserService } from '@seed/api/user'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader'
+import { AgGridAngular } from 'ag-grid-angular'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, Profile } from 'app/modules/inventory'
+import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 'rxjs'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -135,7 +135,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
           this.firstFiveRows = firstFiveRows
           this.mappingSuggestions = mappingSuggestions
           this.rawColumnNames = rawColumnNames
-          // this.setColumns()
         }),
       )
   }
