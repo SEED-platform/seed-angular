@@ -47,14 +47,11 @@ export type AnalysisOutputFile = {
   id: number;
 }
 
-// OriginalView is an array of key values where the key is a string and the value is a number
-export type OriginalView = Record<string, number>
-
 export type ListAnalysesResponse = {
   status: 'success';
   analyses: Analysis[];
   views: View[];
-  original_views: OriginalView[];
+  original_views: Record<number, number>;
 }
 
 export type AnalysisResponse = {
@@ -75,13 +72,13 @@ export type AnalysesViews = {
 export type AnalysisViews = {
   status: 'success';
   views: View[];
-  original_views: OriginalView[];
+  original_views: Record<number, number>;
 }
 
 export type AnalysisView = {
   status: 'success';
   view: View;
-  original_view: OriginalView;
+  original_view: number;
 }
 
 export type AnalysesMessage = {

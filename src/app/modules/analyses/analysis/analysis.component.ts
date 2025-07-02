@@ -58,6 +58,7 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   gridTheme$ = this._configService.gridTheme$
   gridHeight = 0
   messages: AnalysesMessage[]
+  originalViews: Record<number, number>
   orgId: number
   views: View[] = []
   gridViews: (View & { messages?: string[] })[] = []
@@ -87,13 +88,15 @@ export class AnalysisComponent implements OnDestroy, OnInit {
       this._analysisService.analysis$,
       this._analysisService.views$,
       this._analysisService.messages$,
+      this._analysisService.originalViews$,
     ]).pipe(
       filter(([analysis, views]) => !!analysis && views.length && analysis.id === this.analysisId),
       takeUntil(this._unsubscribeAll$),
-      tap(([analysis, views, messages]) => {
+      tap(([analysis, views, messages, originalViews]) => {
         this.analysis = analysis
         this.views = views
         this.messages = messages
+        this.originalViews = originalViews
         this.analysisDescription = this._analysisService.getAnalysisDescription(analysis)
         this.formatViews()
         this.setColumnDefs()
@@ -212,10 +215,12 @@ export class AnalysisComponent implements OnDestroy, OnInit {
 
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action')
-    const { id, output_files, property } = event.data as View
+    const { id, output_files } = event.data as View
 
     if (action === 'viewProperty') {
-      void this._router.navigate([`/properties/${property}`])
+      // map viewId to propertyViewId
+      const propertyViewId: number = this.originalViews[id]
+      void this._router.navigate([`/properties/${propertyViewId}`])
     } else if (action === 'viewResults') {
       void this._router.navigate([`/analyses/${this.analysisId}/views/${id}`])
       // this.viewResults(id)

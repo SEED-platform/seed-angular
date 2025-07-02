@@ -1,4 +1,3 @@
-/* eslint-disable @cspell/spellchecker */
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -421,7 +420,6 @@ export class MapComponent implements OnDestroy, OnInit {
   }
 
   hexBinSource = (records = this.geocodedData) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
     new HexBin({
       source: this.buildingSources(records),
       size: this.hexagonSize,
@@ -603,7 +601,6 @@ export class MapComponent implements OnDestroy, OnInit {
     this.filteredRecords = records.length
     this.pointsLayer.setSource(this.pointsSource(records))
     if (this.type === 'properties') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       this.hexBinLayer.setSource(this.hexBinSource(records))
       this.propertyBBLayer.setSource(this.boundingBoxSource(records))
       this.propertyCentroidLayer.setSource(this.centroidSource(records))
