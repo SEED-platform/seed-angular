@@ -89,12 +89,12 @@ export class InventoryGridComponent implements OnChanges {
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
     if (!action) return
-    const { id } = event.data as { id: string; file: string; filename: string }
+    const { property_view_id } = event.data as { property_view_id: string; file: string; filename: string }
 
     const urlMap = {
-      detail: [`/${this.inventoryType}`, id],
-      notes: [`/${this.inventoryType}`, id, 'notes'],
-      meters: [`/${this.inventoryType}`, id, 'meters'],
+      detail: [`/${this.inventoryType}`, property_view_id],
+      notes: [`/${this.inventoryType}`, property_view_id, 'notes'],
+      meters: [`/${this.inventoryType}`, property_view_id, 'meters'],
     }
 
     return void this._router.navigate(urlMap[action])

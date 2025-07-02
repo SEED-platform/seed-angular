@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { InventoryService } from '@seed/api/inventory'
@@ -108,7 +108,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
   initPage() {
     this._userService.currentOrganizationId$
       .pipe(
-        takeUntil(this._unsubscribeAll$),
         switchMap((orgId) => this.getDependencies(orgId)),
         map((results) => this.setDependencies(results)),
         switchMap((profile_id) => this.getProfile(profile_id)),
@@ -116,6 +115,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
         tap(() => {
           this.setFilterSorts()
           this.initStreams()
+        }),
+        takeUntil(this._unsubscribeAll$),
+        catchError((err) => {
+          console.error('Error initializing inventory:', err)
+          return of(null)
         }),
       )
       .subscribe()

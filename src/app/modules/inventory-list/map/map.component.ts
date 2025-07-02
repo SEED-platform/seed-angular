@@ -1,4 +1,3 @@
-/* eslint-disable @cspell/spellchecker */
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatCheckboxModule } from '@angular/material/checkbox'

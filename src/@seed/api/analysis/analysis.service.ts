@@ -7,20 +7,7 @@ import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
-import type {
-  AnalysesMessage,
-  Analysis,
-  AnalysisResponse,
-  AnalysisServiceType,
-  AnalysisSummary,
-  AnalysisView,
-  AnalysisViews,
-  ListAnalysesResponse,
-  ListMessagesResponse,
-  OriginalView,
-  PropertyAnalysesResponse,
-  View,
-} from './analysis.types'
+import type { AnalysesMessage, Analysis, AnalysisResponse, AnalysisServiceType, AnalysisSummary, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, PropertyAnalysesResponse, View } from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -33,7 +20,8 @@ export class AnalysisService {
   private _analysis = new BehaviorSubject<Analysis>(null)
   private _views = new BehaviorSubject<View[]>([])
   private _view = new BehaviorSubject<View>(null)
-  private _originalViews = new BehaviorSubject<OriginalView[]>([])
+  private _originalView = new BehaviorSubject<number>(null)
+  private _originalViews = new BehaviorSubject<Record<number, number>>(null)
   private _messages = new BehaviorSubject<AnalysesMessage[]>([])
   private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
@@ -41,6 +29,7 @@ export class AnalysisService {
   analysis$ = this._analysis.asObservable()
   views$ = this._views.asObservable()
   view$ = this._view.asObservable()
+  originalView$ = this._originalView.asObservable()
   originalViews$ = this._originalViews.asObservable()
   messages$ = this._messages.asObservable()
   pollingStatuses?: Subscription
@@ -143,12 +132,12 @@ export class AnalysisService {
   }
 
   // get analysis view
-  getAnalysisView(orgId: number, analysisId: number, viewId: number): Observable<View> {
+  getAnalysisView(orgId: number, analysisId: number, viewId: number): Observable<AnalysisView> {
     const url = `/api/v3/analyses/${analysisId}/views/${viewId}/?organization_id=${orgId}`
     return this._httpClient.get<AnalysisView>(url).pipe(
-      map((response) => response.view),
-      tap((view) => {
+      tap(({ view, original_view }) => {
         this._view.next(view)
+        this._originalView.next(original_view)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching analysis view')
