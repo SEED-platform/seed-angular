@@ -29,7 +29,7 @@
 <ng-template #mainTemplate>
 
   <mat-stepper class="stepper-disable-hover bg-transparent p-0" #stepper [linear]="true">
-    <mat-step [completed]="completed[1]" label="Map Data">
+    <mat-step [completed]="completed[1]" label="Map Data" editable="false">
       <seed-map-data
       [cycle]="cycle"
       [firstFiveRows]="firstFiveRows"
@@ -51,7 +51,7 @@
       ></seed-progress-bar>
     </mat-step>
 
-    <mat-step [completed]="completed[3]" label="Save Mappings">
+    <mat-step [completed]="completed[3]" label="Save Mappings" editable="false">
       <seed-save-mappings
       [columns]="columns"
       [cycle]="cycle"
