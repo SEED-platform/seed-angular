@@ -12,7 +12,7 @@
       }
     </div>
   
-    <mat-progress-bar [mode]="getProgressMode(progress)" [value]="percent"></mat-progress-bar>
+    <mat-progress-bar [mode]="getProgressMode(progress)" [value]="percent" [ngClass]="{ 'animate-pulse': showSubProgress}"></mat-progress-bar>
   </div>
 
   @if (showSubProgress && subProgress && subProgress < 100) {
