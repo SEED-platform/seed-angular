@@ -42,6 +42,7 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
   orgId: number
   apvId = Number(this._route.snapshot.paramMap.get('viewId')) // analysis_property_view_id
   view: Partial<View> = {}
+  propertyViewId: number
   gridApi: GridApi
   viewDisplayField$: Observable<string>
   type: InventoryType = 'properties'
@@ -74,12 +75,16 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
     this.messages = messages.filter((m) => m.analysis_property_view === this.apvId)
 
     return this._analysisService.getAnalysisView(this.orgId, this.analysisId, this.apvId).pipe(
-      switchMap(() => this._analysisService.view$),
+      switchMap(() => combineLatest([
+        this._analysisService.view$,
+        this._analysisService.originalView$,
+      ])),
       takeUntil(this._unsubscribeAll$),
-      tap((view) => {
+      tap(([view, originalView]) => {
         this.view = view
+        this.propertyViewId = originalView
         this.cycle = cycles.find((c) => c.id === view.cycle)
-        this.viewDisplayField$ = this._organizationService.getViewDisplayField(view.property, this.type)
+        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.propertyViewId, this.type)
         this.formatTableResults()
       }),
     )
