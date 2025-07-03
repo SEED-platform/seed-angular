@@ -3,12 +3,13 @@ import type { OnDestroy } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { RouterModule } from '@angular/router'
+import { of, Subject, switchMap, takeUntil } from 'rxjs'
 import { MappingService } from '@seed/api/mapping'
-import type { SubProgressResponse } from '@seed/api/progress'
+import type { ProgressResponse, SubProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
 import type { CheckProgressLoopParams} from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
-import { finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { ResultsComponent } from './results.component'
 
 @Component({
   selector: 'seed-match-merge',
@@ -18,6 +19,7 @@ import { finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
     MatButtonModule,
     ProgressBarComponent,
     RouterModule,
+    ResultsComponent,
   ],
 })
 export class MatchMergeComponent implements OnDestroy {
@@ -34,13 +36,23 @@ export class MatchMergeComponent implements OnDestroy {
   subProgressBarObj = this._uploaderService.defaultProgressBarObj
 
   startMatchMerge() {
+    this.inProgress = true
     this._mappingService.mappingDone(this.orgId, this.importFileId)
       .pipe(
         switchMap(() => this._mappingService.startMatchMerge(this.orgId, this.importFileId)),
-        switchMap((data) => this.checkProgress(data)),
+        switchMap((response) => this.checkProgressResponse(response)),
         takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
+  }
+
+  checkProgressResponse(response: ProgressResponse | SubProgressResponse) {
+    // check if its already matched and skip progress step
+    if ((response as ProgressResponse).progress === 100) {
+      this.inProgress = false
+      return of(null)
+    }
+    return this.checkProgress(response as SubProgressResponse)
   }
 
   checkProgress(data: SubProgressResponse) {
@@ -67,15 +79,6 @@ export class MatchMergeComponent implements OnDestroy {
     }
 
     return this._uploaderService.checkProgressLoopMainSub(mainParams, subParams)
-      .pipe(
-        tap(([_, subProgress]) => {
-          console.log('subProgress', subProgress.status_message, this.subProgressBarObj.statusMessage, this.subProgressBarObj.progress)
-        }),
-        finalize(() => {
-          console.log('final main progressBarObj', this.progressBarObj)
-          console.log('final sub progressBarObj', this.subProgressBarObj)
-        }),
-      )
   }
 
   ngOnDestroy(): void {

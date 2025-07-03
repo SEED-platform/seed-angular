@@ -1,11 +1,12 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import type { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
 import { catchError, map, tap, type Observable } from 'rxjs'
-import type { FirstFiveRowsResponse, MappingSuggestionsResponse, RawColumnNamesResponse } from './mapping.types'
+import type { FirstFiveRowsResponse, MappingSuggestionsResponse, MatchingResultsResponse, RawColumnNamesResponse } from './mapping.types'
 import { MappedData, MappingResultsResponse } from '../dataset'
-import { ProgressResponse, SubProgressResponse } from '../progress'
+import type { ProgressResponse, SubProgressResponse } from '../progress'
 
 @Injectable({ providedIn: 'root' })
 export class MappingService {
@@ -88,15 +89,26 @@ export class MappingService {
       )
   }
 
-  startMatchMerge(orgId: number, importFileId: number): Observable<SubProgressResponse> {
+  startMatchMerge(orgId: number, importFileId: number): Observable<ProgressResponse | SubProgressResponse> {
     const url = `/api/v3/import_files/${importFileId}/start_system_matching_and_geocoding/?organization_id=${orgId}`
-    return this._httpClient.post<SubProgressResponse>(url, {})
+    // returns ProgressResponse if already matched
+    return this._httpClient.post<ProgressResponse | SubProgressResponse>(url, {})
       .pipe(
         tap((response) => {
           console.log('Match merge started:', response)
         }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error starting match merge')
+        }),
+      )
+  }
+
+  getMatchingResults(orgId: number, importFileId: number): Observable<MatchingResultsResponse> {
+    const url = `/api/v3/import_files/${importFileId}/matching_and_geocoding_results/?organization_id=${orgId}`
+    return this._httpClient.get<MatchingResultsResponse>(url)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error getting matching and geocoding results')
         }),
       )
   }

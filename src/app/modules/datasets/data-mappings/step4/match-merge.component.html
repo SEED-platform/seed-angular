@@ -10,12 +10,11 @@
     [subTotal]="subProgressBarObj.total"
   ></seed-progress-bar>
   } @else {
-    <div>
-      <a [routerLink]="['/' + inventoryType]">
-        <button mat-raised-button color="primary">
-          View {{ inventoryType | titlecase }}
-        </button>
-      </a>
-    </div>
+    <seed-match-merge-results
+      [inProgress]="inProgress"
+      [orgId]="orgId"
+      [importFileId]="importFileId"
+      [inventoryType]="inventoryType"
+    ></seed-match-merge-results>
   }
 </div>
