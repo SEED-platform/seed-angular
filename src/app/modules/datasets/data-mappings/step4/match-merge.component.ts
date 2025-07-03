@@ -4,10 +4,11 @@ import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { RouterModule } from '@angular/router'
 import { MappingService } from '@seed/api/mapping'
-import { SubProgressResponse } from '@seed/api/progress'
+import type { SubProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
+import type { CheckProgressLoopParams} from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
-import { Subject, switchMap, take } from 'rxjs'
+import { finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-match-merge',
@@ -35,33 +36,46 @@ export class MatchMergeComponent implements OnDestroy {
   startMatchMerge() {
     this._mappingService.mappingDone(this.orgId, this.importFileId)
       .pipe(
-        take(1),
         switchMap(() => this._mappingService.startMatchMerge(this.orgId, this.importFileId)),
-        take(1),
         switchMap((data) => this.checkProgress(data)),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }
 
   checkProgress(data: SubProgressResponse) {
     const successFn = () => {
-      console.log('success')
       this.inProgress = false
     }
-    const failureFn = () => {
-      console.log('failure')
+
+    const { progress_data, sub_progress_data } = data
+    const baseParams = { offset: 0, multiplier: 1 }
+    const mainParams: CheckProgressLoopParams = {
+      progressKey: progress_data.progress_key,
+      successFn,
+      failureFn: () => void 0,
+      progressBarObj: this.progressBarObj,
+      ...baseParams,
     }
 
-    const { progress_data } = data
+    const subParams: CheckProgressLoopParams = {
+      progressKey: sub_progress_data.progress_key,
+      successFn: () => void 0,
+      failureFn: () => void 0,
+      progressBarObj: this.subProgressBarObj,
+      ...baseParams,
+    }
 
-    return this._uploaderService.checkProgressLoop({
-      progressKey: progress_data.progress_key,
-      offset: 0,
-      multiplier: 1,
-      successFn,
-      failureFn,
-      progressBarObj: this.progressBarObj,
-    })
+    return this._uploaderService.checkProgressLoopMainSub(mainParams, subParams)
+      .pipe(
+        tap(([_, subProgress]) => {
+          console.log('subProgress', subProgress.status_message, this.subProgressBarObj.statusMessage, this.subProgressBarObj.progress)
+        }),
+        finalize(() => {
+          console.log('final main progressBarObj', this.progressBarObj)
+          console.log('final sub progressBarObj', this.subProgressBarObj)
+        }),
+      )
   }
 
   ngOnDestroy(): void {

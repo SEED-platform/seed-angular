@@ -28,7 +28,7 @@ import { UploaderService } from '@seed/services/uploader'
 import { AgGridAngular } from 'ag-grid-angular'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, Profile } from 'app/modules/inventory'
-import { catchError, filter, forkJoin, of, Subject, switchMap, take, tap } from 'rxjs'
+import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -182,12 +182,16 @@ export class DataMappingComponent implements OnDestroy, OnInit {
 
     this._mappingService.startMapping(this.orgId, this.fileId, mappedData)
       .pipe(
-        take(1),
         switchMap(() => this._mappingService.remapBuildings(this.orgId, this.fileId)),
         tap((response: ProgressResponse) => {
           this.progressBarObj.progress = response.progress
         }),
         switchMap((data) => {
+          if (data.progress === 100) {
+            successFn()
+            return of(null)
+          }
+
           return this._uploaderService.checkProgressLoop({
             progressKey: data.progress_key,
             offset: 0,
@@ -197,6 +201,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
             progressBarObj: this.progressBarObj,
           })
         }),
+        takeUntil(this._unsubscribeAll$),
         catchError((error) => {
           console.log('Error starting mapping:', error)
           return of(null)

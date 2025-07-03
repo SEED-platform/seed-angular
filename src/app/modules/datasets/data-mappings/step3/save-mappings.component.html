@@ -13,8 +13,20 @@
   </div>
 
   <div class="flex gap-4">
-    <button  mat-stroked-button [disabled]="!dqcComplete" [ngClass]="{ 'animate-pulse bg-gray-500': !dqcComplete }" (click)="showDataQualityResults()"> Data Quality Results</button>
-    <button class="mb-2" mat-raised-button color="primary" (click)="saveData()" >Save Data</button>
+    <button 
+      (click)="showDataQualityResults()"
+      [disabled]="!dqcComplete"
+      mat-stroked-button
+      [ngClass]="{ 'animate-pulse bg-gray-500': !dqcComplete }" 
+    > Data Quality Results</button>
+    <button 
+      class="mb-2" 
+      (click)="saveData()"
+      color="primary" 
+      [disabled]="!rowData.length"
+      mat-raised-button 
+      [ngClass]="{ 'animate-pulse bg-gray-500': !rowData.length }"
+    >Save Data</button>
   </div>
 </div>
 
@@ -29,4 +41,13 @@
     (gridReady)="onGridReady($event)"
   >
 </ag-grid-angular>
+} @else {
+  <div class="m-10">
+    <div class="mb-5 flex items-center space-x-2">
+      <mat-icon class="text-primary-600" svgIcon="fa-solid:hourglass-half"></mat-icon>
+      <div class="text-secondary text-xl font-medium leading-6">Fetching Mapping Results...</div>
+    </div>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
 }

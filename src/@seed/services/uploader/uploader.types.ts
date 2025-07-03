@@ -20,6 +20,7 @@ export type CheckProgressLoopParams = {
   successFn: () => void;
   failureFn: () => void;
   progressBarObj: ProgressBarObj;
+  subProgress?: boolean;
 }
 
 export type UpdateProgressBarObjParams = {

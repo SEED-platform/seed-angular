@@ -3,9 +3,11 @@ import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDividerModule } from '@angular/material/divider'
+import { MatIconModule } from '@angular/material/icon'
+import { MatProgressBarModule } from '@angular/material/progress-bar'
 import type { Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
-import { DataQualityService } from '@seed/api/data-quality';
+import { DataQualityService } from '@seed/api/data-quality'
 import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import type { Organization } from '@seed/api/organization'
 import { ConfigService } from '@seed/services'
@@ -21,8 +23,10 @@ import { Subject, switchMap, take } from 'rxjs'
   imports: [
     AgGridAngular,
     CommonModule,
-    MatDividerModule,
     MatButtonModule,
+    MatDividerModule,
+    MatIconModule,
+    MatProgressBarModule,
   ],
 })
 export class SaveMappingsComponent implements OnChanges, OnDestroy {
