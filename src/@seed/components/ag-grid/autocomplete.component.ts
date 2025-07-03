@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
 import type { ICellEditorAngularComp } from 'ag-grid-angular'
 import type { ICellEditorParams } from 'ag-grid-community'
-import { isOrderedSubset } from '@seed/utils/string-matching.util'
 
 @Component({
   selector: 'seed-ag-grid-auto-complete-cell',
@@ -35,7 +34,7 @@ export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterV
     this.inputCtrl.valueChanges.subscribe((value) => {
       // autocomplete
       this.filteredOptions = this.options.filter((option) => {
-        return isOrderedSubset(value, option)
+        return option.toLowerCase().startsWith(value.toLowerCase())
       })
     })
   }
