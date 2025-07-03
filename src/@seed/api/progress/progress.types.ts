@@ -14,3 +14,13 @@ export type ProgressResponse = {
   total_records?: number;
   completed_records?: number;
 }
+
+export type DQCProgressResponse = {
+  progress: ProgressResponse;
+  progress_key: string;
+}
+
+export type SubProgressResponse = {
+  progress_data: ProgressResponse;
+  sub_progress_data: ProgressResponse;
+}

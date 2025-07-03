@@ -2,12 +2,13 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, combineLatest, filter, finalize, interval, map, of, repeat, startWith, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,
   GreenButtonMeterPreview,
+  ProgressBarObj,
   SensorPreviewResponse,
   SensorReadingPreview,
   UpdateProgressBarObjParams,
@@ -19,6 +20,18 @@ export class UploaderService {
   private _httpClient = inject(HttpClient)
   private _errorService = inject(ErrorService)
 
+  get defaultProgressBarObj(): ProgressBarObj {
+    return {
+      message: [],
+      progress: 0,
+      total: 100,
+      complete: false,
+      statusMessage: '',
+      progressLastUpdated: null,
+      progressLastChecked: null,
+    }
+  }
+
   /*
    * Checks a progress key for updates until it completes
    */
@@ -29,16 +42,14 @@ export class UploaderService {
     successFn,
     failureFn,
     progressBarObj,
+    subProgress = false,
   }: CheckProgressLoopParams): Observable<ProgressResponse> {
     const isCompleted = (status: string) => ['error', 'success', 'warning'].includes(status)
 
-    return interval(750).pipe(
+    let progressLoop$ = interval(750).pipe(
       switchMap(() => this.checkProgress(progressKey)),
       tap((response) => {
         this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
-      }),
-      takeWhile((response) => !isCompleted(response.status), true), // end stream
-      tap((response) => {
         if (response.status === 'success') successFn()
       }),
       catchError(() => {
@@ -47,6 +58,39 @@ export class UploaderService {
         return throwError(() => new Error('Progress check failed'))
       }),
     )
+
+    // subProgress loops run until parent progress completes
+    if (!subProgress) {
+      progressLoop$ = progressLoop$.pipe(
+        takeWhile((response) => !isCompleted(response.status), true), // end stream
+      )
+    }
+
+    return progressLoop$
+  }
+
+  /*
+  * Check the progress of Main Progress and its Sub Progress 
+  * Main progress will run until it completes
+  * Sub Progresses can complete several times and will run continuously until Main Progress is completed
+  * the stop$ stream is used to end the Sub Progress stream
+  */
+  checkProgressLoopMainSub(mainParams: CheckProgressLoopParams, subParams: CheckProgressLoopParams) {
+    const stop$ = new Subject<void>()
+    const main$ = this.checkProgressLoop(mainParams)
+      .pipe(
+        finalize(() => {
+          stop$.next()
+          stop$.complete()
+        }),
+      )
+
+    const sub$ = this.checkProgressLoop({ ...subParams, subProgress: true })
+      .pipe(
+        takeUntil(stop$),
+      )
+
+    return combineLatest([main$, sub$])
   }
 
   /*
@@ -61,6 +105,8 @@ export class UploaderService {
       }),
     )
   }
+
+
 
   greenButtonMetersPreview(orgId: number, viewId: number, systemId: number, fileId: number): Observable<GreenButtonMeterPreview> {
     const url = `/api/v3/import_files/${fileId}/greenbutton_meters_preview/`

@@ -1,0 +1,30 @@
+import {
+  CellStyleModule,
+  CheckboxEditorModule,
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  CustomEditorModule,
+  EventApiModule,
+  ModuleRegistry,
+  PaginationModule,
+  RenderApiModule,
+  RowApiModule,
+  SelectEditorModule,
+  TextEditorModule,
+  ValidationModule,
+} from 'ag-grid-community'
+
+ModuleRegistry.registerModules([
+  CellStyleModule,
+  CheckboxEditorModule,
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  CustomEditorModule,
+  EventApiModule,
+  PaginationModule,
+  RenderApiModule,
+  RowApiModule,
+  SelectEditorModule,
+  TextEditorModule,
+  ValidationModule,
+])

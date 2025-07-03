@@ -122,7 +122,6 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
     this._groupsService.listForInventory(this.orgId, [this.viewId])
-    this._cycleService.get(this.orgId)
 
     this._meterService.meters$
       .pipe(
@@ -164,12 +163,9 @@ export class MetersComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
-    this._datasetService
-      .listDatasets(this.orgId)
+    this._datasetService.datasets$
       .pipe(
-        tap((datasets) => {
-          this.datasets = datasets
-        }),
+        tap((datasets) => { this.datasets = datasets }),
       )
       .subscribe()
   }
@@ -207,8 +203,8 @@ export class MetersComponent implements OnDestroy, OnInit {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center">
-      <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
-      ${this.groupIds.length ? '<span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
+      <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${this.groupIds.length ? '<span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }
