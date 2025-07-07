@@ -213,3 +213,7 @@
     border-radius: 25px !important;
   }
 }
+
+.vertical-divider {
+  @apply border
+}

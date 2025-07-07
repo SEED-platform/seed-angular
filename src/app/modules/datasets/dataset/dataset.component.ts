@@ -99,7 +99,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
           <span class="text-sm">Data Mapping</span>
           <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>
-        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800" title="Data Pairing" data-action="dataPairing">
+        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full h-8 mt-1 px-3 hover:bg-primary-800" title="Data Pairing" data-action="dataPairing">
           <span class="text-sm">Data Pairing</span>
           <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>

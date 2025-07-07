@@ -4,7 +4,6 @@
     matInput
     [formControl]="inputCtrl"
     [matAutocomplete]="auto"
-    (keydown)="onKeyDown($event)"
   />
   <mat-autocomplete #auto="matAutocomplete">
     @for (option of filteredOptions; track $index) {

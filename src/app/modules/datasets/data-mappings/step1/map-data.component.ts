@@ -15,7 +15,7 @@ import { type Column } from '@seed/api/column'
 import type { Cycle } from '@seed/api/cycle'
 import type { DataMappingRow, ImportFile } from '@seed/api/dataset'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
-import { PageComponent } from '@seed/components'
+import { AlertComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -31,6 +31,7 @@ import { dataTypeMap, displayToDataTypeMap } from './constants'
   templateUrl: './map-data.component.html',
   imports: [
     AgGridAngular,
+    AlertComponent,
     CommonModule,
     HelpComponent,
     MatButtonModule,
@@ -67,6 +68,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   dataValid = false
   defaultInventoryType: InventoryDisplayType = 'Property'
   defaultRow: Record<string, unknown>
+  errorMessages: string[] = []
   fileId = this._router.snapshot.params.id as number
   gridApi: GridApi
   gridOptions = gridOptions
@@ -216,6 +218,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   validateData() {
+    this.errorMessages = []
     const matchingColumns = this.defaultInventoryType === 'Tax Lot' ? this.matchingTaxLotColumns : this.matchingPropertyColumns
     const toFields = []
     this.gridApi.forEachNode((node: RowNode<DataMappingRow>) => {
@@ -223,19 +226,26 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       toFields.push(node.data.to_field)
     })
 
-    // no duplicates
-    if (toFields.length !== new Set(toFields).size) {
-      this.dataValid = false
-      return
-    }
     // at least one matching column
     const hasMatchingCol = toFields.some((col) => matchingColumns.includes(col))
     if (!hasMatchingCol) {
-      this.dataValid = false
-      return
+      const matchingColNames = this.columns.filter((c) => c.is_matching_criteria).map((c) => c.display_name).join(', ')
+      this.errorMessages.push(`At least one of the following Property fields is required: ${matchingColNames}.`)
     }
 
-    this.dataValid = true
+    // all fields must be mapped (no empty fields)
+    if (!toFields.every((f) => f)) {
+      this.dataValid = false
+      this.errorMessages.push('All SEED Headers must be mapped. Empty values are not allowed.')
+    }
+
+    // no duplicates
+    if (toFields.length !== new Set(toFields).size) {
+      this.dataValid = false
+      this.errorMessages.push('Duplicate headers found. Each SEED Header must be unique.')
+    }
+
+    this.dataValid = this.errorMessages.length === 0
   }
 
   ngOnDestroy(): void {
