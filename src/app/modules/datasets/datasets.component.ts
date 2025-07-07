@@ -8,15 +8,15 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, switchMap, tap } from 'rxjs'
+import type { Cycle } from '@seed/api/cycle'
+import { CycleService } from '@seed/api/cycle/cycle.service'
 import { type Dataset, DatasetService } from '@seed/api/dataset'
 import { UserService } from '@seed/api/user'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
-import { FormModalComponent } from './modal/form-modal.component'
 import { UploadFileModalComponent } from './data-upload/data-upload-modal.component'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { Cycle } from '@seed/api/cycle'
+import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-data',
@@ -95,7 +95,7 @@ export class DatasetsComponent implements OnInit {
   actionsRenderer() {
     return `
       <div class="flex gap-2 align-center">
-      <span class="inline-flex items-center gap-1 cursor-pointer border rounded-lg bg-primary text-white h-8 mt-1 px-2 hover:bg-primary-800" title="Add Data Files" data-action="addDataFiles">
+      <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800" title="Add Data Files" data-action="addDataFiles">
         <span class="material-icons text-base">add</span>
         <span class="text-sm">Data Files</span>
       </span>

@@ -95,11 +95,11 @@ export class DatasetComponent implements OnDestroy, OnInit {
   actionsRenderer() {
     return `
       <div class="flex gap-2 align-center">
-        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-lg bg-primary text-white h-8 mt-1 px-2 hover:bg-primary-800" title="Data Mapping" data-action="dataMapping">
+        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800" title="Data Mapping" data-action="dataMapping">
           <span class="text-sm">Data Mapping</span>
           <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>
-        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-lg bg-primary text-white h-8 mt-1 px-2 hover:bg-primary-800" title="Data Pairing" data-action="dataPairing">
+        <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800" title="Data Pairing" data-action="dataPairing">
           <span class="text-sm">Data Pairing</span>
           <span class="material-icons text-secondary text-sm">open_in_new</span>
         </span>
