@@ -271,6 +271,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
   }
 
+  onSelectAll(selectedViewIds: number[]) {
+    this.selectedViewIds = selectedViewIds
+  }
+
   onProfileChange(id: number) {
     this.profileId$.next(id)
   }

@@ -26,6 +26,7 @@ export class ActionsComponent implements OnDestroy {
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<null>()
+  @Output() selectedAll = new EventEmitter<number[]>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -95,6 +96,7 @@ export class ActionsComponent implements OnDestroy {
     const paramString = params.toString()
     this._inventoryService.getAgInventory(paramString, {}).subscribe(({ results }: { results: number[] }) => {
       this.selectedViewIds = results
+      this.selectedAll.emit(this.selectedViewIds)
     })
   }
 
