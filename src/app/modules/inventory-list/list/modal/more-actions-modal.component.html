@@ -4,39 +4,55 @@
 </div>
 <mat-divider></mat-divider>
 
-<div class="mb-4 mt-4 flex justify-evenly">
-  <ul>
-    @for (item of actionsColumn1; track $index) {
-      <li>
-        <button
-          class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
-          [disabled]="item.disabled"
-          (click)="item.action()"
-          mat-button
-        >
-          {{ item.name }}
-        </button>
-      </li>
-    }
-  </ul>
-  <ul>
-    @for (item of actionsColumn2; track $index) {
-      <li>
-        <button
-          class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
-          [disabled]="item.disabled"
-          (click)="item.action()"
-          mat-button
-        >
-          {{ item.name }}
-        </button>
-      </li>
-    }
-  </ul>
+<!-- CONTENT -->
+<div>
+  <div class="mb-4 mt-4 flex justify-evenly">
+    <ul>
+      @for (item of actionsColumn1; track $index) {
+        <li>
+          <button
+            class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
+            [disabled]="item.disabled"
+            (click)="item.action()"
+            mat-button
+          >
+            {{ item.name }}
+          </button>
+        </li>
+      }
+    </ul>
+    <ul>
+      @for (item of actionsColumn2; track $index) {
+        <li>
+          <button
+            class="cursor-pointer transition-colors hover:text-blue-700 dark:hover:text-blue-500"
+            [disabled]="item.disabled"
+            (click)="item.action()"
+            mat-button
+          >
+            {{ item.name }}
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+
+  <!-- Progress Overlay -->
+  @if (showProgress) {
+    <div class="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-gray-900 bg-opacity-95">
+      <seed-progress-bar
+      class="w-full"
+      [progress]="progressBarObj.progress"
+      [total]="progressBarObj.total"
+      [title]="progressBarObj.statusMessage || 'In Progress...'">
+    </seed-progress-bar>
+    </div>
+  }
+
 </div>
 
 <div class="flex justify-end">
   <mat-dialog-actions>
-    <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+    <button (click)="close()" mat-stroked-button>Dismiss</button>
   </mat-dialog-actions>
 </div>

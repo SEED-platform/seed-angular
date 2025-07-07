@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
@@ -14,8 +15,9 @@ import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { ResultsModalComponent } from 'app/modules/data-quality';
 import type { InventoryType } from 'app/modules/inventory'
-import { Subject, switchMap, take } from 'rxjs'
+import { Subject, switchMap, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-save-mappings',
@@ -41,6 +43,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
 
   private _configService = inject(ConfigService)
   private _dataQualityService = inject(DataQualityService)
+  private _dialog = inject(MatDialog)
   private _uploaderService = inject(UploaderService)
   private _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[] = []
@@ -49,6 +52,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
   gridTheme$ = this._configService.gridTheme$
   mappingResults: Record<string, unknown>[] = []
   dqcComplete = false
+  dqcId: number
   inventoryType: InventoryType
 
   progressBarObj = this._uploaderService.defaultProgressBarObj
@@ -89,6 +93,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
             progressBarObj: this.progressBarObj,
           })
         }),
+        tap(({ unique_id }) => { this.dqcId = unique_id }),
       )
       .subscribe()
   }
@@ -139,6 +144,10 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
 
   showDataQualityResults() {
     console.log('open modal showing dqc results')
+    this._dialog.open(ResultsModalComponent, {
+      width: '50rem',
+      data: { orgId: this.orgId, dqcId: this.dqcId },
+    })
   }
 
   ngOnDestroy(): void {

@@ -74,7 +74,7 @@ export class ActionsComponent implements OnDestroy {
     this._dialog.open(MoreActionsModalComponent, {
       width: '40rem',
       autoFocus: false,
-      data: { viewIds: this.selectedViewIds, orgId: this.orgId },
+      data: { viewIds: this.selectedViewIds, orgId: this.orgId, type: this.type },
     })
   }
 
