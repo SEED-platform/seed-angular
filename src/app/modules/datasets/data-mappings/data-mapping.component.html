@@ -31,6 +31,7 @@
   <mat-stepper class="stepper-disable-hover bg-transparent p-0" #stepper [linear]="true">
     <mat-step [completed]="completed[1]" label="Map Data" editable="false">
       <seed-map-data
+      [columnMappingProfiles]="columnMappingProfiles"
       [cycle]="cycle"
       [firstFiveRows]="firstFiveRows"
       [importFile]="importFile"

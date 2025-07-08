@@ -94,9 +94,6 @@ export class MappingService {
     // returns ProgressResponse if already matched
     return this._httpClient.post<ProgressResponse | SubProgressResponse>(url, {})
       .pipe(
-        tap((response) => {
-          console.log('Match merge started:', response)
-        }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error starting match merge')
         }),

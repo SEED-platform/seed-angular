@@ -71,11 +71,17 @@ export class ActionsComponent implements OnDestroy {
   }
 
   openMoreActionsModal() {
-    this._dialog.open(MoreActionsModalComponent, {
+    const dialogRef = this._dialog.open(MoreActionsModalComponent, {
       width: '40rem',
       autoFocus: false,
       data: { viewIds: this.selectedViewIds, orgId: this.orgId, type: this.type },
     })
+
+    dialogRef.afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => { this.refreshInventory.emit() }),
+      ).subscribe()
   }
 
   onAction(action: () => void, select: MatSelect) {

@@ -95,11 +95,11 @@ export class MoreActionsModalComponent implements OnDestroy {
       data: { orgId: this.data.orgId, dqcId },
     })
 
-    this.close()
+    this.close(true)
   }
 
-  close() {
-    this._dialogRef.close()
+  close(refresh = false) {
+    this._dialogRef.close(refresh)
   }
 
   ngOnDestroy(): void {

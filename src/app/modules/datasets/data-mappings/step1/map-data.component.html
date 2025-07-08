@@ -1,20 +1,40 @@
-<!-- CYCLE / PROFILE -->
-<div class="flex gap-8">
-  <div class="vertical-divider"></div>
+<div class="flex flex-col gap-4">
+  <!-- CYCLE -->
   <div class="flex gap-4 border-bottom rounded-lg">
     <div class="text-secondary font-bold text">Cycle:</div>
     <div class="">{{ cycle?.name }}</div>
   </div>
-  <div class="vertical-divider"></div>
+  <mat-divider></mat-divider>
+  <!-- PROFILE -->
   <div class="flex gap-4 border-bottom rounded-lg">
     <div class="text-secondary font-bold text">Column Profile:</div>
-    <div class="">none selected</div>
+    <mat-select        
+      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+      [(value)]="profile"
+      placeholder="No Profile Selected"
+      >
+      <mat-option [value]="null"></mat-option>
+      @for (profile of columnMappingProfiles; track profile.id) {
+      <mat-option [value]="profile">{{ profile.name }}</mat-option>
+      }
+    </mat-select>
+    <a class="flex" 
+      mat-stroked-button
+      [disabled]="!profile" 
+      matTooltip="Apply Profile"
+      (click)="applyProfile()"
+      >
+      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
+    </a>
+    <a class="flex" mat-stroked-button matTooltip="Create New Profile">
+      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+    </a>
   </div>
-  <div class="vertical-divider"></div>
+
 </div>
 
 <!-- GRID CONTROLS -->
-<mat-divider class="my-5"></mat-divider>
+<mat-divider class="my-4"></mat-divider>
   <div class="flex flex-col gap-2 w-100">
     <button mat-stroked-button (click)="copyHeadersToSeed()" [disabled]="!rowData.length">Copy Data File Headers directly to SEED headers</button>
     <!-- <button mat-stroked-button>Toggle Omitted</button> -->

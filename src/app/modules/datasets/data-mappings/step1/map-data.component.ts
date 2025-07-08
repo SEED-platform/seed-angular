@@ -1,27 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatOptionModule } from '@angular/material/core'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatStepperModule } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
+import { Subject } from 'rxjs'
 import { type Column } from '@seed/api/column'
+import type { ColumnMappingProfile } from '@seed/api/column_mapping_profile'
 import type { Cycle } from '@seed/api/cycle'
 import type { DataMappingRow, ImportFile } from '@seed/api/dataset'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { AlertComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
 import type { InventoryDisplayType, Profile } from 'app/modules/inventory'
-import { Subject } from 'rxjs'
 import { HelpComponent } from '../help.component'
 import { buildColumnDefs, gridOptions } from './column-defs'
 import { dataTypeMap, displayToDataTypeMap } from './constants'
@@ -38,6 +40,7 @@ import { dataTypeMap, displayToDataTypeMap } from './constants'
     MatButtonToggleModule,
     MatDividerModule,
     MatIconModule,
+    MatOptionModule,
     MatSidenavModule,
     MatSelectModule,
     MatStepperModule,
@@ -49,6 +52,7 @@ import { dataTypeMap, displayToDataTypeMap } from './constants'
 export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() orgId: number
   @Input() importFile: ImportFile
+  @Input() columnMappingProfiles: ColumnMappingProfile[]
   @Input() cycle: Cycle
   @Input() firstFiveRows: Record<string, unknown>[]
   @Input() mappingSuggestions: MappingSuggestionsResponse
@@ -60,6 +64,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
   private _router = inject(ActivatedRoute)
+  profile: ColumnMappingProfile
   columns: Column[]
   columnNames: string[]
   columnMap: Record<string, Column>
@@ -196,6 +201,29 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     })
   }
 
+  applyProfile() {
+    const mappingsMap = Object.fromEntries(this.profile.mappings.map((m) => [m.from_field, m]))
+    const columnNameMap = Object.fromEntries(this.columns.map((c) => [c.column_name, c.display_name]))
+    this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
+      const mapping = mappingsMap[node.data.from_field]
+      if (!mapping) return // skip if no mapping found
+
+      const displayField = columnNameMap[mapping.to_field] ?? ''
+      node.setDataValue('to_field_display_name', displayField)
+      node.setDataValue('to_field', mapping.to_field)
+      node.setDataValue('from_units', mapping.from_units)
+      node.setDataValue('to_table_name', mapping.to_table_name)
+    })
+  }
+
+  saveProfile() {
+    console.log('save profile')
+  }
+
+  createProfile() {
+    console.log('create profile')
+  }
+
   // Format data for backend consumption
   mapData() {
     if (!this.dataValid) return
@@ -220,7 +248,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   validateData() {
     this.errorMessages = []
     const matchingColumns = this.defaultInventoryType === 'Tax Lot' ? this.matchingTaxLotColumns : this.matchingPropertyColumns
-    const toFields = []
+    let toFields = []
     this.gridApi.forEachNode((node: RowNode<DataMappingRow>) => {
       if (node.data.omit) return // skip omitted rows
       toFields.push(node.data.to_field)
@@ -240,6 +268,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     }
 
     // no duplicates
+    toFields = toFields.filter((f) => f)
     if (toFields.length !== new Set(toFields).size) {
       this.dataValid = false
       this.errorMessages.push('Duplicate headers found. Each SEED Header must be unique.')

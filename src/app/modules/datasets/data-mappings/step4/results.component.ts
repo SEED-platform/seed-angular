@@ -51,7 +51,6 @@ export class ResultsComponent implements OnChanges, OnDestroy {
   hasTaxlotData = false
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('changes', changes)
     if (changes.inProgress.currentValue === false) {
       this.getMatchingResults()
     }

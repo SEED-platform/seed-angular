@@ -12,7 +12,11 @@ import { MatSidenavModule } from '@angular/material/sidenav'
 import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
+import { AgGridAngular } from 'ag-grid-angular'
+import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import { type Column, ColumnService } from '@seed/api/column'
+import type { ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
+import { ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
@@ -25,10 +29,8 @@ import type { ProgressResponse } from '@seed/api/progress'
 import { UserService } from '@seed/api/user'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader'
-import { AgGridAngular } from 'ag-grid-angular'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, Profile } from 'app/modules/inventory'
-import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -62,6 +64,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   @ViewChild(MapDataComponent) mapDataComponent!: MapDataComponent
   @ViewChild(MatchMergeComponent) matchMergeComponent!: MatchMergeComponent
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _columnService = inject(ColumnService)
   private _cycleService = inject(CycleService)
   private _datasetService = inject(DatasetService)
@@ -72,6 +75,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   private _uploaderService = inject(UploaderService)
   private _userService = inject(UserService)
   columns: Column[]
+  columnMappingProfiles: ColumnMappingProfile[] = []
+  columnMappingProfileTypes: ColumnMappingProfileType[]
   columnNames: string[]
   completed = { 1: false, 2: false, 3: false, 4: false }
   currentProfile: Profile
@@ -114,7 +119,10 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     return this._datasetService.getImportFile(this.orgId, this.fileId)
       .pipe(
         take(1),
-        tap((importFile) => { this.importFile = importFile }),
+        tap((importFile) => {
+          this.importFile = importFile
+          this.columnMappingProfileTypes = importFile.source_type === 'BuildingSync Raw' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
+        }),
         catchError(() => {
           return of(null)
         }),
@@ -123,6 +131,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
 
   getMappingData() {
     return forkJoin([
+      this._columnMappingProfileService.getProfiles(this.orgId, this.columnMappingProfileTypes),
       this._cycleService.getCycle(this.orgId, this.importFile.cycle),
       this._mappingService.firstFiveRows(this.orgId, this.fileId),
       this._mappingService.mappingSuggestions(this.orgId, this.fileId),
@@ -130,7 +139,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     ])
       .pipe(
         take(1),
-        tap(([cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
+        tap(([columnMappingProfiles, cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
+          this.columnMappingProfiles = columnMappingProfiles
           this.cycle = cycle
           this.firstFiveRows = firstFiveRows
           this.mappingSuggestions = mappingSuggestions

@@ -10,6 +10,7 @@ import type {
   ColumnMappingProfile,
   ColumnMappingProfileDeleteResponse,
   ColumnMappingProfilesRequest,
+  ColumnMappingProfileType,
   ColumnMappingProfileUpdateResponse,
   ColumnMappingSuggestionResponse,
 } from './column_mapping_profile.types'
@@ -30,9 +31,13 @@ export class ColumnMappingProfileService {
     })
   }
 
-  getProfiles(org_id: number): Observable<ColumnMappingProfile[]> {
+  getProfiles(org_id: number, columnMappingProfileTypes: ColumnMappingProfileType[] = []): Observable<ColumnMappingProfile[]> {
     const url = `/api/v3/column_mapping_profiles/filter/?organization_id=${org_id}`
-    return this._httpClient.post<ColumnMappingProfilesRequest>(url, {}).pipe(
+    const data: Record<string, unknown> = {}
+    if (columnMappingProfileTypes.length) {
+      data.profile_type = columnMappingProfileTypes
+    }
+    return this._httpClient.post<ColumnMappingProfilesRequest>(url, data).pipe(
       map((response) => {
         this._profiles.next(response.data)
         return response.data
