@@ -107,7 +107,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
           field: 'to_table_name',
           editable: false,
           valueFormatter: (params: ValueFormatterParams) => {
-            return (params.value as string).slice(0, -5)
+            return (params.value as string)?.slice(0, -5)
           },
         },
         {

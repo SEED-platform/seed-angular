@@ -7,7 +7,7 @@
   <mat-divider></mat-divider>
   <!-- PROFILE -->
   <div class="flex gap-4 border-bottom rounded-lg">
-    <div class="text-secondary font-bold text">Column Profile:</div>
+    <div class="text-secondary font-bold text my-auto">Column Profile:</div>
     <mat-select        
       class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
       [(value)]="profile"
@@ -18,13 +18,12 @@
       <mat-option [value]="profile">{{ profile.name }}</mat-option>
       }
     </mat-select>
-    <a class="flex" 
-      mat-stroked-button
-      [disabled]="!profile" 
-      matTooltip="Apply Profile"
-      (click)="applyProfile()"
-      >
+    <!-- Profile Controls -->
+    <a class="flex" mat-stroked-button [disabled]="!profile"  matTooltip="Apply Profile" (click)="applyProfile()">
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
+    </a>
+    <a class="flex" mat-stroked-button matTooltip="Save Profile" (click)="saveProfile()">
+      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:floppy-disk"></mat-icon>
     </a>
     <a class="flex" mat-stroked-button matTooltip="Create New Profile">
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>

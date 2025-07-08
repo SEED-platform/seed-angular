@@ -23,12 +23,12 @@ export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterV
   inputCtrl = new FormControl('')
   filteredOptions: string[] = []
 
-  params!: unknown
+  params!: ICellEditorParams & { values?: string[] }
   options: string[] = []
 
-  agInit(params: ICellEditorParams): void {
+  agInit(params: ICellEditorParams & { values?: string[] }): void {
     this.params = params
-    this.options = ((params as unknown) as { values: string[] }).values || []
+    this.options = params.values || []
     this.inputCtrl.setValue(params.value as string)
     this.filteredOptions = [...this.options]
     this.inputCtrl.valueChanges.subscribe((value) => {
@@ -36,6 +36,8 @@ export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterV
       this.filteredOptions = this.options.filter((option) => {
         return option.toLowerCase().startsWith(value.toLowerCase())
       })
+      // update after each keystroke
+      this.params.node.setDataValue(this.params.column.getId(), value)
     })
   }
 

@@ -2,8 +2,9 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject } from 'rxjs'
+import { catchError, map, ReplaySubject, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import type {
   ColumnMapping,
@@ -21,6 +22,7 @@ export class ColumnMappingProfileService {
   private _userService = inject(UserService)
   private _profiles = new ReplaySubject<ColumnMappingProfile[]>(1)
   private _errorService = inject(ErrorService)
+  private _snackBar = inject(SnackBarService)
 
   profiles$ = this._profiles.asObservable()
 
@@ -63,10 +65,11 @@ export class ColumnMappingProfileService {
 
   update(org_id: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfile> {
     const url = `/api/v3/column_mapping_profiles/${profile.id}/?organization_id=${org_id}`
-    return this._httpClient.put<ColumnMappingProfileUpdateResponse>(url, { name: profile.name }).pipe(
+    return this._httpClient.put<ColumnMappingProfileUpdateResponse>(url, profile).pipe(
       map((response) => {
         return response.data
       }),
+      tap(() => { this._snackBar.success('Profile updated successfully') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating profile')
       }),
@@ -88,6 +91,7 @@ export class ColumnMappingProfileService {
   create(org_id: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfileUpdateResponse> {
     const url = `/api/v3/column_mapping_profiles/?organization_id=${org_id}`
     return this._httpClient.post<ColumnMappingProfileUpdateResponse>(url, { ...profile }).pipe(
+      tap(() => { this._snackBar.success('Profile created successfully') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating profile')
       }),

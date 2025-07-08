@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, input, Input, Output } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
@@ -11,12 +11,13 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatStepperModule } from '@angular/material/stepper'
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
 import { Subject } from 'rxjs'
 import { type Column } from '@seed/api/column'
-import type { ColumnMappingProfile } from '@seed/api/column_mapping_profile'
+import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
 import type { Cycle } from '@seed/api/cycle'
 import type { DataMappingRow, ImportFile } from '@seed/api/dataset'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
@@ -44,6 +45,7 @@ import { dataTypeMap, displayToDataTypeMap } from './constants'
     MatSidenavModule,
     MatSelectModule,
     MatStepperModule,
+    MatTooltipModule,
     PageComponent,
     ReactiveFormsModule,
     FormsModule,
@@ -63,6 +65,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
+  private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _router = inject(ActivatedRoute)
   profile: ColumnMappingProfile
   columns: Column[]
@@ -106,6 +109,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       to_field_display_name: null,
       to_table_name: this.defaultInventoryType,
       to_data_type: null,
+      to_field: null,
       from_units: null,
     }
     this.setColumnDefs()
@@ -170,7 +174,6 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       to_field,
       from_units: dataTypeConfig.units,
     })
-
     this.refreshNode(node)
     this.validateData()
   }
@@ -202,6 +205,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   applyProfile() {
+    const toTableMap = { TaxLotState: 'Tax Lot', PropertyState: 'Property' }
     const mappingsMap = Object.fromEntries(this.profile.mappings.map((m) => [m.from_field, m]))
     const columnNameMap = Object.fromEntries(this.columns.map((c) => [c.column_name, c.display_name]))
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
@@ -212,12 +216,32 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       node.setDataValue('to_field_display_name', displayField)
       node.setDataValue('to_field', mapping.to_field)
       node.setDataValue('from_units', mapping.from_units)
-      node.setDataValue('to_table_name', mapping.to_table_name)
+      node.setDataValue('to_table_name', toTableMap[mapping.to_table_name])
     })
   }
 
   saveProfile() {
-    console.log('save profile')
+    // overwrite the existing profile
+    const mappings: ColumnMapping[] = []
+    this.gridApi.forEachNode((node) => {
+      const mapping = this.formatRowToMapping(node.data)
+      if (mapping) mappings.push(mapping)
+    })
+    this.profile.mappings = mappings
+    this._columnMappingProfileService.update(this.orgId, this.profile).subscribe()
+  }
+
+  formatRowToMapping(row: Record<string, unknown>): ColumnMapping {
+    if (!row.to_field) return null
+    const to_table_name = row.to_table_name === 'Tax Lot' ? 'TaxLotState' : 'PropertyState'
+    const mapping: ColumnMapping = {
+      from_field: row.from_field as string,
+      from_units: row.from_units as string,
+      to_field: row.to_field as string,
+      to_table_name,
+    }
+    if (row.omit) mapping.is_omitted = true
+    return mapping
   }
 
   createProfile() {
