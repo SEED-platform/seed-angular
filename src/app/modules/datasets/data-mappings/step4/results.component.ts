@@ -67,17 +67,7 @@ export class ResultsComponent implements OnChanges, OnDestroy {
 
   setGrid(results: MatchingResultsResponse) {
     this.matchingResults = results
-    this.setGeneralGrid()
     this.setInventoryGrids()
-  }
-
-  setGeneralGrid() {
-    this.generalColDefs = [
-      { field: 'import_file_records', headerName: 'Records in File' },
-      { field: 'multiple_cycle_upload', headerName: 'Multi Cycle Upload' },
-    ]
-    const { import_file_records, multiple_cycle_upload } = this.matchingResults
-    this.generalData = [{ import_file_records, multiple_cycle_upload }]
   }
 
   setInventoryGrids() {

@@ -71,10 +71,6 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _dialog = inject(MatDialog)
   private _router = inject(ActivatedRoute)
-  profile: ColumnMappingProfile
-  columns: Column[]
-  columnNames: string[]
-  columnMap: Record<string, Column>
   columnDefs: ColDef[]
   dataValid = false
   defaultInventoryType: InventoryDisplayType = 'Property'
@@ -85,7 +81,14 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   gridOptions = gridOptions
   gridTheme$ = this._configService.gridTheme$
   mappedData: { mappings: DataMappingRow[] } = { mappings: [] }
+  profile: ColumnMappingProfile
+  propertyColumns: Column[] = []
+  propertyColumnMap: Record<string, Column>
+  propertyColumnNames: string[]
   rowData: Record<string, unknown>[] = []
+  taxlotColumns: Column[] = []
+  taxlotColumnMap: Record<string, Column>
+  taxlotColumnNames: string[]
 
   progressBarObj: ProgressBarObj = {
     message: [],
@@ -121,7 +124,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   setColumnDefs() {
     this.columnDefs = buildColumnDefs(
-      this.columnNames,
+      this.propertyColumnNames,
+      this.taxlotColumnNames,
       this.importFile.uploaded_filename,
       this.seedHeaderChange.bind(this),
       this.dataTypeChange.bind(this),
@@ -152,20 +156,23 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   setAllInventoryType(value: InventoryDisplayType) {
     this.defaultInventoryType = value
-    this.gridApi.forEachNode((node) => node.setDataValue('to_table_display_name', value))
+    this.gridApi.forEachNode((node) => node.setDataValue('to_table_name', value))
     this.setColumns()
   }
 
   setColumns() {
-    this.columns = this.defaultInventoryType === 'Tax Lot' ? this.mappingSuggestions?.taxlot_columns : this.mappingSuggestions?.property_columns
-    this.columnNames = this.columns.map((c) => c.display_name)
-    this.columnMap = Object.fromEntries(this.columns.map((c) => [c.display_name, c]))
+    this.propertyColumns = this.mappingSuggestions?.property_columns ?? []
+    this.propertyColumnNames = this.mappingSuggestions?.property_columns.map((c) => c.display_name) ?? []
+    this.propertyColumnMap = Object.fromEntries(this.propertyColumns.map((c) => [c.display_name, c]))
+    this.taxlotColumns = this.mappingSuggestions?.taxlot_columns ?? []
+    this.taxlotColumnNames = this.mappingSuggestions?.taxlot_columns.map((c) => c.display_name) ?? []
+    this.taxlotColumnMap = Object.fromEntries(this.taxlotColumns.map((c) => [c.display_name, c]))
   }
 
   seedHeaderChange = (params: CellValueChangedEvent): void => {
     const node = params.node as RowNode
     const newValue = params.newValue as string
-    const column = this.columnMap[newValue] ?? null
+    const column = this.getColumnMap(node.data)[newValue] ?? null
 
     const dataTypeConfig = dataTypeMap[column?.data_type] ?? { display: 'None', units: null }
     const to_field = column?.column_name ?? newValue
@@ -179,6 +186,16 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     })
     this.refreshNode(node)
     this.validateData()
+  }
+
+  getColumnMap(nodeData: { to_table_name: InventoryDisplayType }) {
+    if (nodeData.to_table_name === 'Tax Lot') return this.taxlotColumnMap
+    if (nodeData.to_table_name === 'Property') return this.propertyColumnMap
+    return this.defaultInventoryType === 'Tax Lot' ? this.taxlotColumnMap : this.propertyColumnMap
+  }
+
+  getColumns() {
+    return this.defaultInventoryType === 'Tax Lot' ? this.taxlotColumns : this.propertyColumns
   }
 
   dataTypeChange = (params: CellValueChangedEvent): void => {
@@ -195,8 +212,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   copyHeadersToSeed() {
-    const { property_columns, taxlot_columns, suggested_column_mappings } = this.mappingSuggestions
-    const columns = this.defaultInventoryType === 'Tax Lot' ? taxlot_columns : property_columns
+    const { suggested_column_mappings } = this.mappingSuggestions
+    const columns = this.getColumns()
     const columnMap: Record<string, string> = columns.reduce((acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }), {})
 
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
@@ -210,7 +227,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   applyProfile() {
     const toTableMap = { TaxLotState: 'Tax Lot', PropertyState: 'Property' }
     const mappingsMap = Object.fromEntries(this.profile.mappings.map((m) => [m.from_field, m]))
-    const columnNameMap = Object.fromEntries(this.columns.map((c) => [c.column_name, c.display_name]))
+    const columnNameMap = Object.fromEntries(this.getColumns().map((c) => [c.column_name, c.display_name]))
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
       const mapping = mappingsMap[node.data.from_field]
       if (!mapping) return // skip if no mapping found
@@ -302,7 +319,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     // at least one matching column
     const hasMatchingCol = toFields.some((col) => matchingColumns.includes(col))
     if (!hasMatchingCol) {
-      const matchingColNames = this.columns.filter((c) => c.is_matching_criteria).map((c) => c.display_name).join(', ')
+      const matchingColNames = this.getColumns().filter((c) => c.is_matching_criteria).map((c) => c.display_name).join(', ')
       this.errorMessages.push(`At least one of the following Property fields is required: ${matchingColNames}.`)
     }
 

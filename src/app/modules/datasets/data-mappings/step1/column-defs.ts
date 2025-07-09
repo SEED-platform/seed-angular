@@ -39,8 +39,18 @@ const dropdownRenderer = (params: ICellRendererParams) => {
 
 const canEditClass = 'bg-primary bg-opacity-25 rounded'
 
+const getColumnOptions = (params: ICellRendererParams, propertyColumnNames: string[], taxlotColumnNames: string[]) => {
+  const data = params.data as { to_table_name: 'Property' | 'Tax Lot' }
+  const to_table_name = data.to_table_name
+  if (to_table_name === 'Tax Lot') {
+    return taxlotColumnNames
+  }
+  return propertyColumnNames
+}
+
 export const buildColumnDefs = (
-  columnNames: string[],
+  propertyColumnNames: string[],
+  taxlotColumnNames: string[],
   uploadedFilename: string,
   seedHeaderChange: (event: CellValueChangedEvent) => void,
   dataTypeChange: (event: CellValueChangedEvent) => void,
@@ -77,9 +87,9 @@ export const buildColumnDefs = (
       field: 'to_field_display_name',
       headerName: 'SEED Header',
       cellEditor: AutocompleteCellComponent,
-      cellEditorParams: {
-        values: columnNames,
-      },
+      cellEditorParams: (params) => {
+        return { values: getColumnOptions(params, propertyColumnNames, taxlotColumnNames)}
+      } ,
       headerComponent: EditHeaderComponent,
       headerComponentParams: {
         name: 'SEED Header',

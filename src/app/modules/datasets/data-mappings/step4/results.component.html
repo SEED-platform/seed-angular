@@ -28,37 +28,41 @@
     </div>
 
     <div>
-      <div class="ml-4 mb-4 flex items-center text-lg font-medium">
+      <div class="ml-4 mb-4 flex items-center justify-center font-medium">
         <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
         <span class="ml-4">Properties</span>
       </div>
   
       <ag-grid-angular
-      [rowData]="propertyData"
-      [columnDefs]="inventoryColDefs"
-      [theme]="gridTheme$ | async"
-      [domLayout]="'autoHeight'"
-      [style.width.px]="400"
-    >
-    </ag-grid-angular>
+        [rowData]="propertyData"
+        [columnDefs]="inventoryColDefs"
+        [theme]="gridTheme$ | async"
+        [domLayout]="'autoHeight'"
+        [style.width.px]="400"
+      >
+      </ag-grid-angular>
     </div>
   }
 
   @if (hasTaxlotData) {
-    <mat-divider class="my-5"></mat-divider>
+    <div class="w-full my-5">
+      <mat-divider></mat-divider>
+    </div>
+
     <div>
-      <div class="m-4 flex items-center text-lg font-medium">
+      <div class="ml-4 mb-4 flex items-center justify-center font-medium">
         <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
         <span class="ml-4">Tax Lots</span>
       </div>
   
       <ag-grid-angular
-      [rowData]="taxlotData"
-      [columnDefs]="inventoryColDefs"
-      [theme]="gridTheme$ | async"
-      [domLayout]="'autoHeight'"
-    >
-    </ag-grid-angular>
+        [rowData]="taxlotData"
+        [columnDefs]="inventoryColDefs"
+        [theme]="gridTheme$ | async"
+        [domLayout]="'autoHeight'"
+        [style.width.px]="400"
+      >
+      </ag-grid-angular>
     </div>
   }
 
