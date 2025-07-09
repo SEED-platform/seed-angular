@@ -39,16 +39,16 @@
 
   <!-- Progress Overlay -->
   @if (showProgress) {
-    <div class="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-gray-900 bg-opacity-95">
+    <div class="absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-95">
       <seed-progress-bar
-      class="w-full"
-      [progress]="progressBarObj.progress"
-      [total]="progressBarObj.total"
-      [title]="progressBarObj.statusMessage || 'In Progress...'">
-    </seed-progress-bar>
+        class="w-full"
+        [progress]="progressBarObj.progress"
+        [total]="progressBarObj.total"
+        [title]="progressBarObj.statusMessage || 'In Progress...'"
+      >
+      </seed-progress-bar>
     </div>
   }
-
 </div>
 
 <div class="flex justify-end">

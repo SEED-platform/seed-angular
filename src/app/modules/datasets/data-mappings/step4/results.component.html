@@ -1,16 +1,11 @@
-<div class="mt-5 flex flex-col gap-5 items-center w-full">
-  
-  @if ( matchingResults) {
+<div class="mt-5 flex w-full flex-col items-center gap-5">
+  @if (matchingResults) {
     <div class="flex justify-center gap-2">
       <a routerLink="/data">
-        <button mat-stroked-button color="primary">
-          Add Another File
-        </button>
+        <button mat-stroked-button color="primary">Add Another File</button>
       </a>
       <a [routerLink]="['/' + inventoryType]">
-        <button mat-raised-button color="primary">
-          View {{ inventoryType | titlecase }}
-        </button>
+        <button mat-raised-button color="primary">View {{ inventoryType | titlecase }}</button>
       </a>
     </div>
 
@@ -33,11 +28,11 @@
     </div>
 
     <div>
-      <div class="ml-4 mb-4 flex items-center justify-center font-medium">
+      <div class="mb-4 ml-4 flex items-center justify-center font-medium">
         <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
         <span class="ml-4">Properties</span>
       </div>
-  
+
       <ag-grid-angular
         [rowData]="propertyData"
         [columnDefs]="inventoryColDefs"
@@ -55,11 +50,11 @@
     </div>
 
     <div>
-      <div class="ml-4 mb-4 flex items-center justify-center font-medium">
+      <div class="mb-4 ml-4 flex items-center justify-center font-medium">
         <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
         <span class="ml-4">Tax Lots</span>
       </div>
-  
+
       <ag-grid-angular
         [rowData]="taxlotData"
         [columnDefs]="inventoryColDefs"
@@ -70,6 +65,4 @@
       </ag-grid-angular>
     </div>
   }
-
-
 </div>

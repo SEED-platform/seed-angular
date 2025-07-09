@@ -8,17 +8,14 @@
   }"
 >
   <div class="h-full-page-tabs" id="content">
-    
     <mat-drawer-container class="h-full">
       <mat-drawer class="w-1/2" #drawer [(opened)]="helpOpened" mode="over" position="end">
         <ng-container *ngTemplateOutlet="helpTemplate"></ng-container>
       </mat-drawer>
       <ng-container *ngTemplateOutlet="mainTemplate"></ng-container>
     </mat-drawer-container>
-    
   </div>
 </seed-page>
-
 
 <!-- HELP CONTENT -->
 <ng-template class="w-1/3" #helpTemplate>
@@ -27,7 +24,6 @@
 
 <!-- MAIN CONTENT -->
 <ng-template #mainTemplate>
-
   <mat-stepper class="stepper-disable-hover bg-transparent p-0" #stepper [linear]="true">
     <ng-template matStepperIcon="edit">
       <!-- for step numbers, show check mark instead of pencil when completed -->
@@ -36,51 +32,39 @@
 
     <mat-step [completed]="completed[1]" label="Map Data">
       <seed-map-data
-      [columnMappingProfiles]="columnMappingProfiles"
-      [cycle]="cycle"
-      [firstFiveRows]="firstFiveRows"
-      [importFile]="importFile"
-      [mappingSuggestions]="mappingSuggestions"
-      [matchingPropertyColumns]="matchingPropertyColumns"
-      [matchingTaxLotColumns]="matchingTaxLotColumns"
-      [orgId]="orgId"
-      [rawColumnNames]="rawColumnNames"
-      (completed)="startMapping()"
-      (defaultInventoryTypeChange)="onDefaultInventoryTypeChange($event)"
+        [columnMappingProfiles]="columnMappingProfiles"
+        [cycle]="cycle"
+        [firstFiveRows]="firstFiveRows"
+        [importFile]="importFile"
+        [mappingSuggestions]="mappingSuggestions"
+        [matchingPropertyColumns]="matchingPropertyColumns"
+        [matchingTaxLotColumns]="matchingTaxLotColumns"
+        [orgId]="orgId"
+        [rawColumnNames]="rawColumnNames"
+        (completed)="startMapping()"
+        (defaultInventoryTypeChange)="onDefaultInventoryTypeChange($event)"
       ></seed-map-data>
     </mat-step>
-    
+
     <mat-step [completed]="completed[2]" label="Mapping" editable="false">
-      <seed-progress-bar
-        [progress]="progressBarObj.progress"
-        [total]="progressBarObj.total"
-        title="Mapping Data..."
-      ></seed-progress-bar>
+      <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total" title="Mapping Data..."></seed-progress-bar>
     </mat-step>
 
     <mat-step [completed]="completed[3]" label="Save Mappings" editable="false">
       <seed-save-mappings
-      [columns]="columns"
-      [cycle]="cycle"
-      [importFile]="importFile"
-      [mappingResultsResponse]="mappingResultsResponse"
-      [org]="org"
-      [orgId]="orgId"
-      (completed)="startMatchMerge()"
-      (backToMapping)="backToMapping()"
+        [columns]="columns"
+        [cycle]="cycle"
+        [importFile]="importFile"
+        [mappingResultsResponse]="mappingResultsResponse"
+        [org]="org"
+        [orgId]="orgId"
+        (completed)="startMatchMerge()"
+        (backToMapping)="backToMapping()"
       ></seed-save-mappings>
     </mat-step>
 
     <mat-step [completed]="completed[4]" label="Matching & Merging" editable="false">
-      <seed-match-merge
-      [importFileId]="fileId"
-      [orgId]="orgId"
-      [inventoryType]="inventoryType"
-      ></seed-match-merge>
+      <seed-match-merge [importFileId]="fileId" [orgId]="orgId" [inventoryType]="inventoryType"></seed-match-merge>
     </mat-step>
-
   </mat-stepper>
-
-  
-
 </ng-template>

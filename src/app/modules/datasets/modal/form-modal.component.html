@@ -9,7 +9,7 @@
     <mat-label>Dataset Name</mat-label>
     <input matInput formControlName="name" placeholder="Dataset Name" />
     @if (form.controls.name?.hasError('valueExists')) {
-    <mat-error>This name already exists.</mat-error>
+      <mat-error>This name already exists.</mat-error>
     }
   </mat-form-field>
 </form>

@@ -1,14 +1,14 @@
 <div>
   @if (inProgress) {
     <seed-progress-bar
-    [progress]="progressBarObj.progress"
-    [total]="progressBarObj.total"
-    [title]="progressBarObj.statusMessage"
-    [showSubProgress]="true"
-    [subProgress]="subProgressBarObj.progress"
-    [subTitle]="subProgressBarObj.statusMessage"
-    [subTotal]="subProgressBarObj.total"
-  ></seed-progress-bar>
+      [progress]="progressBarObj.progress"
+      [total]="progressBarObj.total"
+      [title]="progressBarObj.statusMessage"
+      [showSubProgress]="true"
+      [subProgress]="subProgressBarObj.progress"
+      [subTitle]="subProgressBarObj.statusMessage"
+      [subTotal]="subProgressBarObj.total"
+    ></seed-progress-bar>
   } @else {
     <seed-match-merge-results
       [inProgress]="inProgress"

@@ -11,8 +11,12 @@
         </div>
       }
     </div>
-  
-    <mat-progress-bar [mode]="getProgressMode(progress)" [value]="percent" [ngClass]="{ 'animate-pulse': showSubProgress}"></mat-progress-bar>
+
+    <mat-progress-bar
+      [mode]="getProgressMode(progress)"
+      [value]="percent"
+      [ngClass]="{ 'animate-pulse': showSubProgress }"
+    ></mat-progress-bar>
   </div>
 
   @if (showSubProgress && subProgress && subProgress < 100) {
@@ -22,13 +26,13 @@
           <div class="text-secondary text-md leading-6">{{ subTitle }}</div>
         </div>
         @if (subProgress) {
-        <div class="text-secondary flex flex-col justify-end">
-          {{ subProgressString }}
-        </div>
+          <div class="text-secondary flex flex-col justify-end">
+            {{ subProgressString }}
+          </div>
         }
       </div>
 
-      <mat-progress-bar mode="determinate" [value]="subPercent"></mat-progress-bar>
+      <mat-progress-bar [value]="subPercent" mode="determinate"></mat-progress-bar>
     </div>
   }
 </div>
