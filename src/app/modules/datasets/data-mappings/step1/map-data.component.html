@@ -19,13 +19,13 @@
       }
     </mat-select>
     <!-- Profile Controls -->
-    <a class="flex" mat-stroked-button [disabled]="!profile"  matTooltip="Apply Profile" (click)="applyProfile()">
+    <a class="flex" (click)="applyProfile()" [disabled]="!profile"  matTooltip="Apply Profile" mat-stroked-button>
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
     </a>
-    <a class="flex" mat-stroked-button matTooltip="Save Profile" (click)="saveProfile()">
+    <a class="flex" (click)="saveProfile()" [disabled]="!profile"  matTooltip="Save Profile" mat-stroked-button>
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:floppy-disk"></mat-icon>
     </a>
-    <a class="flex" mat-stroked-button matTooltip="Create New Profile">
+    <a class="flex" (click)="createProfile()" matTooltip="Create Profile" mat-stroked-button>
       <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
     </a>
   </div>

@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
 import { MatOptionModule } from '@angular/material/core'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
@@ -15,8 +16,9 @@ import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
-import { Subject } from 'rxjs'
+import { Subject, switchMap, take } from 'rxjs'
 import { type Column } from '@seed/api/column'
+import type { ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
 import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
 import type { Cycle } from '@seed/api/cycle'
 import type { DataMappingRow, ImportFile } from '@seed/api/dataset'
@@ -24,10 +26,11 @@ import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { AlertComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
-import type { InventoryDisplayType, Profile } from 'app/modules/inventory'
+import type { InventoryDisplayType } from 'app/modules/inventory'
 import { HelpComponent } from '../help.component'
 import { buildColumnDefs, gridOptions } from './column-defs'
 import { dataTypeMap, displayToDataTypeMap } from './constants'
+import { CreateProfileComponent } from './modal/create-profile.component'
 
 @Component({
   selector: 'seed-map-data',
@@ -66,13 +69,13 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
+  private _dialog = inject(MatDialog)
   private _router = inject(ActivatedRoute)
   profile: ColumnMappingProfile
   columns: Column[]
   columnNames: string[]
   columnMap: Record<string, Column>
   columnDefs: ColDef[]
-  currentProfile: Profile
   dataValid = false
   defaultInventoryType: InventoryDisplayType = 'Property'
   defaultRow: Record<string, unknown>
@@ -212,7 +215,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       const mapping = mappingsMap[node.data.from_field]
       if (!mapping) return // skip if no mapping found
 
-      const displayField = columnNameMap[mapping.to_field] ?? ''
+      const displayField = columnNameMap[mapping.to_field] ?? mapping.to_field
       node.setDataValue('to_field_display_name', displayField)
       node.setDataValue('to_field', mapping.to_field)
       node.setDataValue('from_units', mapping.from_units)
@@ -246,6 +249,24 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   createProfile() {
     console.log('create profile')
+    const profileType: ColumnMappingProfileType = this.importFile.source_type === 'BuildingSync' ? 'BuildingSync Custom' : 'Normal'
+    const profileTypes: ColumnMappingProfileType[] = profileType === 'BuildingSync Custom' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
+    const dialogRef = this._dialog.open(CreateProfileComponent, {
+      width: '40rem',
+      data: {
+        existingNames: this.columnMappingProfiles.map((p) => p.name),
+        orgId: this.orgId,
+        profileType,
+      },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        take(1),
+        switchMap(() => this._columnMappingProfileService.getProfiles(this.orgId, profileTypes)),
+      )
+      .subscribe()
   }
 
   // Format data for backend consumption

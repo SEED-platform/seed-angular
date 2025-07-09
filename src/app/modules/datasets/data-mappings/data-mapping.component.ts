@@ -109,6 +109,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
         }),
         switchMap(() => this.getImportFile()),
         filter(Boolean),
+        tap(() => { this.getProfiles() }),
         switchMap(() => this.getMappingData()),
         switchMap(() => this.getColumns()),
       )
@@ -131,7 +132,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
 
   getMappingData() {
     return forkJoin([
-      this._columnMappingProfileService.getProfiles(this.orgId, this.columnMappingProfileTypes),
       this._cycleService.getCycle(this.orgId, this.importFile.cycle),
       this._mappingService.firstFiveRows(this.orgId, this.fileId),
       this._mappingService.mappingSuggestions(this.orgId, this.fileId),
@@ -139,8 +139,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     ])
       .pipe(
         take(1),
-        tap(([columnMappingProfiles, cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
-          this.columnMappingProfiles = columnMappingProfiles
+        tap(([cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
           this.cycle = cycle
           this.firstFiveRows = firstFiveRows
           this.mappingSuggestions = mappingSuggestions
@@ -170,6 +169,16 @@ export class DataMappingComponent implements OnDestroy, OnInit {
           this.taxlotColumns = taxlotColumns
         }),
       )
+  }
+
+  getProfiles() {
+    this._columnMappingProfileService.getProfiles(this.orgId, this.columnMappingProfileTypes)
+      .pipe(
+        switchMap(() => this._columnMappingProfileService.profiles$),
+        takeUntil(this._unsubscribeAll$),
+        tap((profiles) => { this.columnMappingProfiles = profiles }),
+      )
+      .subscribe()
   }
 
   onCompleted(step: number) {

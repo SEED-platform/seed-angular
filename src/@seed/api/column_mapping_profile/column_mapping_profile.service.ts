@@ -33,8 +33,8 @@ export class ColumnMappingProfileService {
     })
   }
 
-  getProfiles(org_id: number, columnMappingProfileTypes: ColumnMappingProfileType[] = []): Observable<ColumnMappingProfile[]> {
-    const url = `/api/v3/column_mapping_profiles/filter/?organization_id=${org_id}`
+  getProfiles(orgId: number, columnMappingProfileTypes: ColumnMappingProfileType[] = []): Observable<ColumnMappingProfile[]> {
+    const url = `/api/v3/column_mapping_profiles/filter/?organization_id=${orgId}`
     const data: Record<string, unknown> = {}
     if (columnMappingProfileTypes.length) {
       data.profile_type = columnMappingProfileTypes
@@ -51,8 +51,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  updateMappings(org_id: number, profile_id: number, mappings: ColumnMapping[]): Observable<ColumnMappingProfile> {
-    const url = `/api/v3/column_mapping_profiles/${profile_id}/?organization_id=${org_id}`
+  updateMappings(orgId: number, profile_id: number, mappings: ColumnMapping[]): Observable<ColumnMappingProfile> {
+    const url = `/api/v3/column_mapping_profiles/${profile_id}/?organization_id=${orgId}`
     return this._httpClient.put<ColumnMappingProfileUpdateResponse>(url, { mappings }).pipe(
       map((response) => {
         return response.data
@@ -63,8 +63,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  update(org_id: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfile> {
-    const url = `/api/v3/column_mapping_profiles/${profile.id}/?organization_id=${org_id}`
+  update(orgId: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfile> {
+    const url = `/api/v3/column_mapping_profiles/${profile.id}/?organization_id=${orgId}`
     return this._httpClient.put<ColumnMappingProfileUpdateResponse>(url, profile).pipe(
       map((response) => {
         return response.data
@@ -76,8 +76,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  delete(org_id: number, profile_id: number): Observable<ColumnMappingProfileDeleteResponse> {
-    const url = `/api/v3/column_mapping_profiles/${profile_id}/?organization_id=${org_id}`
+  delete(orgId: number, profile_id: number): Observable<ColumnMappingProfileDeleteResponse> {
+    const url = `/api/v3/column_mapping_profiles/${profile_id}/?organization_id=${orgId}`
     return this._httpClient.delete<ColumnMappingProfileDeleteResponse>(url).pipe(
       map((response) => {
         return response
@@ -88,8 +88,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  create(org_id: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfileUpdateResponse> {
-    const url = `/api/v3/column_mapping_profiles/?organization_id=${org_id}`
+  create(orgId: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfileUpdateResponse> {
+    const url = `/api/v3/column_mapping_profiles/?organization_id=${orgId}`
     return this._httpClient.post<ColumnMappingProfileUpdateResponse>(url, { ...profile }).pipe(
       tap(() => { this._snackBar.success('Profile created successfully') }),
       catchError((error: HttpErrorResponse) => {
@@ -98,8 +98,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  export(org_id: number, profile_id: number) {
-    const url = `/api/v3/column_mapping_profiles/${profile_id}/csv/?organization_id=${org_id}`
+  export(orgId: number, profile_id: number) {
+    const url = `/api/v3/column_mapping_profiles/${profile_id}/csv/?organization_id=${orgId}`
     return this._httpClient.get(url, { responseType: 'text' }).pipe(
       map((response) => {
         return new Blob([response], { type: 'text/csv;charset: utf-8' })
@@ -110,8 +110,8 @@ export class ColumnMappingProfileService {
     )
   }
 
-  suggestions(org_id: number, headers: string[]) {
-    const url = `/api/v3/column_mapping_profiles/suggestions/?organization_id=${org_id}`
+  suggestions(orgId: number, headers: string[]) {
+    const url = `/api/v3/column_mapping_profiles/suggestions/?organization_id=${orgId}`
     return this._httpClient.post<ColumnMappingSuggestionResponse>(url, { headers }).pipe(
       map((response) => {
         return response.data
