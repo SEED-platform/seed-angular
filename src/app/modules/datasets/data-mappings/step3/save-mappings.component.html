@@ -5,22 +5,19 @@
 
 
 
-<mat-divider class="my-5"></mat-divider>
+<mat-divider class="mt-4 mb-2"></mat-divider>
 <div class="flex justify-between items-center">
-  <div class="flex gap-4 my-2 mx-3">
-    <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
-    <div class="italic text-secondary">Access Level Info</div>
+  <div>
+    <button (click)="backToMapping.emit()" mat-stroked-button> Back to Mapping</button>
   </div>
-
-  <div class="flex gap-4">
+  <div class="flex gap-4 items-center">
     <button 
       (click)="showDataQualityResults()"
       [disabled]="!dqcComplete"
       mat-stroked-button
       [ngClass]="{ 'animate-pulse bg-gray-500': !dqcComplete }" 
     > Data Quality Results</button>
-    <button 
-      class="mb-2" 
+    <button  
       (click)="saveData()"
       color="primary" 
       [disabled]="loading"
@@ -29,12 +26,19 @@
     >Save Data</button>
   </div>
 </div>
+<mat-divider class="my-2"></mat-divider>
 
 @if (propertyResults.length) {
-  <div class="ml-4 mb-4 flex font-medium">
+  <div class="ml-4 mb-4 flex items-center gap-4 font-medium">
     <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
-    <span class="ml-4">Properties</span>
+    <span>Properties</span>
+    <div class="vertical-divider"></div>
+    <div class="flex gap-4 my-2 mx-3">
+      <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
+      <div class="italic text-secondary">Access Level Info</div>
+    </div>
   </div>
+
   <ag-grid-angular
     [rowData]="propertyResults"
     [columnDefs]="propertyDefs"
@@ -47,9 +51,15 @@
 <mat-divider class="my-5"></mat-divider>
 } 
 @if (taxlotResults.length) {
-  <div class="ml-4 mb-4 flex font-medium">
+
+  <div class="ml-4 mb-4 flex items-center gap-4 font-medium">
     <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
-    <span class="ml-4">Tax Lots</span>
+    <span>Tax Lots</span>
+    <div class="vertical-divider"></div>
+    <div class="flex gap-4 my-2 mx-3">
+      <div class="w-10 h-5 bg-primary bg-opacity-25 rounded border"></div>
+      <div class="italic text-secondary">Access Level Info</div>
+    </div>
   </div>
   <ag-grid-angular
     [rowData]="taxlotResults"

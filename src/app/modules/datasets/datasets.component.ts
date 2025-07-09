@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { filter, switchMap, tap } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
 import { CycleService } from '@seed/api/cycle/cycle.service'
 import { type Dataset, DatasetService } from '@seed/api/dataset'
@@ -22,7 +22,6 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-data',
   templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AgGridAngular,
     CommonModule,
@@ -31,7 +30,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     PageComponent,
   ],
 })
-export class DatasetsComponent implements OnInit {
+export class DatasetsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
   private _datasetService = inject(DatasetService)
@@ -39,6 +38,7 @@ export class DatasetsComponent implements OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _dialog = inject(MatDialog)
+  private readonly _unsubscribeAll$ = new Subject<void>()
   columnDefs: ColDef[]
   cycles: Cycle[] = []
   datasets: Dataset[]
@@ -61,14 +61,17 @@ export class DatasetsComponent implements OnInit {
         this.orgId = orgId
         this._datasetService.list(orgId)
       }),
-      switchMap(() => this._cycleService.cycles$),
-      tap((cycles) => { this.cycles = cycles }),
-      switchMap(() => this._datasetService.datasets$),
-      tap((datasets) => {
+      switchMap(() => combineLatest([
+        this._cycleService.cycles$,
+        this._datasetService.datasets$,
+      ])),
+      tap(([cycles, datasets]) => {
+        this.cycles = cycles
         this.datasets = datasets.sort((a, b) => naturalSort(a.name, b.name))
         this.existingNames = datasets.map((ds) => ds.name)
         this.setColumnDefs()
       }),
+      takeUntil(this._unsubscribeAll$),
     ).subscribe()
   }
 
@@ -162,5 +165,10 @@ export class DatasetsComponent implements OnInit {
 
   trackByFn(_index: number, { id }: Dataset) {
     return id
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

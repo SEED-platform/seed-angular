@@ -54,6 +54,7 @@ export const buildColumnDefs = (
   uploadedFilename: string,
   seedHeaderChange: (event: CellValueChangedEvent) => void,
   dataTypeChange: (event: CellValueChangedEvent) => void,
+  validateData: (event?: CellValueChangedEvent) => void,
 ): (ColDef | ColGroupDef)[] => {
   const seedCols: ColDef[] = [
     { field: 'isExtraData', hide: true },
@@ -66,6 +67,7 @@ export const buildColumnDefs = (
       cellEditor: 'agCheckboxCellEditor',
       editable: true,
       width: 70,
+      onCellValueChanged: validateData,
     },
     {
       field: 'to_table_name',

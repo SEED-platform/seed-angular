@@ -1,7 +1,12 @@
 <div class="mt-5 flex flex-col gap-5 items-center w-full">
   
   @if ( matchingResults) {
-    <div class="flex justify-center">
+    <div class="flex justify-center gap-2">
+      <a routerLink="/data">
+        <button mat-stroked-button color="primary">
+          Add Another File
+        </button>
+      </a>
       <a [routerLink]="['/' + inventoryType]">
         <button mat-raised-button color="primary">
           View {{ inventoryType | titlecase }}

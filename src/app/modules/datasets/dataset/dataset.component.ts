@@ -58,7 +58,6 @@ export class DatasetComponent implements OnDestroy, OnInit {
       tap((cycles) => {
         this.cycles = cycles
         this.cyclesMap = cycles.reduce((acc, c) => ({ ...acc, [c.id]: c.name }), {})
-        console.log('cyclesMap', this.cyclesMap)
       }),
     )
   }
@@ -130,7 +129,6 @@ export class DatasetComponent implements OnDestroy, OnInit {
       this.downloadDocument(importFile.file, importFile.uploaded_filename)
     } else if (action === 'dataMapping') {
       void this._router.navigate(['/data/mappings/', importFile.id])
-      console.log('data mapping', importFile)
     } else if (action === 'dataPairing') {
       console.log('data pairing', importFile)
     }
@@ -150,7 +148,6 @@ export class DatasetComponent implements OnDestroy, OnInit {
   }
 
   downloadDocument(file: string, filename: string) {
-    console.log('file', file)
     const a = document.createElement('a')
     const url = file
     a.href = url

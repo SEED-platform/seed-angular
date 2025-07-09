@@ -6,7 +6,7 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
-import type { ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
+import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
 import { ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
 import { SEEDValidators } from '@seed/validators'
 
@@ -31,7 +31,7 @@ export class CreateProfileComponent {
   profileName = ''
   profile: ColumnMappingProfile
 
-  data = inject(MAT_DIALOG_DATA) as { orgId: number; profileType: ColumnMappingProfileType; existingNames: string[] }
+  data = inject(MAT_DIALOG_DATA) as { orgId: number; profileType: ColumnMappingProfileType; mappings: ColumnMapping[]; existingNames: string[] }
   form = new FormGroup({
     name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
   })
@@ -40,7 +40,7 @@ export class CreateProfileComponent {
     this.profile = {
       name: this.form.value.name,
       profile_type: this.data.profileType,
-      mappings: [],
+      mappings: this.data.mappings,
     } as ColumnMappingProfile
 
     this._columnMappingProfileService.create(this.data.orgId, this.profile)

@@ -10,6 +10,7 @@ import { ProgressBarComponent } from '@seed/components'
 import type { CheckProgressLoopParams} from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { ResultsComponent } from './results.component'
+import { InventoryType } from 'app/modules/inventory'
 
 @Component({
   selector: 'seed-match-merge',
@@ -25,7 +26,7 @@ import { ResultsComponent } from './results.component'
 export class MatchMergeComponent implements OnDestroy {
   @Input() importFileId: number
   @Input() orgId: number
-  @Input() inventoryType
+  @Input() inventoryType: InventoryType
 
   private _mappingService = inject(MappingService)
   private _uploaderService = inject(UploaderService)

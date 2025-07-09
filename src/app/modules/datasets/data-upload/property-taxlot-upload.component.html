@@ -46,7 +46,7 @@
 
         
           <div class="flex gap-4">
-            <button class="flex gap-4 w-2/3" mat-flat-button color="primary" (click)="triggerUpload('GeoJSON')">
+            <button class="flex gap-4 w-2/3" mat-stroked-button (click)="triggerUpload('GeoJSON')" disabled="true">
               <mat-icon svgIcon="fa-solid:globe"></mat-icon>
               <span class="inline-block w-40 text-left">Upload GeoJSON</span>
             </button>
@@ -54,7 +54,7 @@
           </div>
         
           <div class="flex gap-4">
-            <button class="flex gap-4 w-2/3" mat-flat-button color="primary" (click)="triggerUpload('BuildingSync Raw')">
+            <button class="flex gap-4 w-2/3" mat-stroked-button (click)="triggerUpload('BuildingSync Raw')" disabled="true">
               <mat-icon svgIcon="fa-solid:building"></mat-icon>
               <span class="inline-block w-40 text-left">Upload BuildingSync</span>
             </button>

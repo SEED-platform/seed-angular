@@ -16,10 +16,9 @@ import { MatSelectModule } from '@angular/material/select'
 import { MatStepper, MatStepperModule } from '@angular/material/stepper'
 import { Router, RouterModule } from '@angular/router'
 import { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
 import type { Dataset } from '@seed/api/dataset'
-import { DatasetService } from '@seed/api/dataset'
-import { ProgressResponse } from '@seed/api/progress'
+import { OrganizationService, OrganizationUserSettings } from '@seed/api/organization'
+import { UserService } from '@seed/api/user'
 import { ProgressBarComponent } from '@seed/components'
 import { ErrorService } from '@seed/services'
 import { ProgressBarObj, UploaderService } from '@seed/services/uploader'
@@ -53,9 +52,10 @@ export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
   @Input() dataset: Dataset
   @Input() orgId: number
   @Output() dismissModal = new EventEmitter<null>()
-  private _datasetService = inject(DatasetService)
-  private _cycleService = inject(CycleService)
+
+  private _organizationService = inject(OrganizationService)
   private _uploaderService = inject(UploaderService)
+  private _userService = inject(UserService)
   private _errorService = inject(ErrorService)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
@@ -65,7 +65,7 @@ export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
   file: File
   fileId: number
   inProgress = false
-  uploading = false
+  orgUserId: number
   progressBarObj: ProgressBarObj = {
     message: [],
     progress: 0,
@@ -76,14 +76,25 @@ export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
     progressLastChecked: null,
   }
   sourceType: 'Assessed Raw' | 'GeoJSON' | 'BuildingSync Raw'
+  uploading = false
+  userSettings: OrganizationUserSettings = {}
 
   form = new FormGroup({
     cycleId: new FormControl<number>(null, Validators.required),
     multiCycle: new FormControl<boolean>(false),
   })
-  
+
   ngAfterViewInit() {
     this.form.patchValue({ cycleId: this.cycles[0]?.id })
+    this._userService.currentUser$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((user) => {
+          this.orgUserId = user.org_user_id
+          this.userSettings = user.settings
+        }),
+      )
+      .subscribe()
   }
 
   step1(fileList: FileList) {
@@ -91,6 +102,8 @@ export class PropertyTaxlotUploadComponent implements AfterViewInit, OnDestroy {
     const cycleId = this.form.get('cycleId')?.value
     const multiCycle = this.form.get('multiCycle')?.value
     this.uploading = true
+    this.userSettings.cycleId = cycleId
+    this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).subscribe()
 
     return this._uploaderService
       .fileUpload(this.orgId, this.file, this.sourceType, this.dataset.id.toString())

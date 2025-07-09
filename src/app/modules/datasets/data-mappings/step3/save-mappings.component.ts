@@ -39,6 +39,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
   @Input() orgId: number
   @Output() completed = new EventEmitter<null>()
+  @Output() backToMapping = new EventEmitter<null>()
 
   private _configService = inject(ConfigService)
   private _dataQualityService = inject(DataQualityService)

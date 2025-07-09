@@ -89,12 +89,13 @@ export class InventoryGridComponent implements OnChanges {
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
     if (!action) return
-    const { property_view_id } = event.data as { property_view_id: string; file: string; filename: string }
+    const { property_view_id, taxlot_view_id } = event.data as { property_view_id: string; taxlot_view_id: string }
+    const viewId = property_view_id || taxlot_view_id
 
     const urlMap = {
-      detail: [`/${this.inventoryType}`, property_view_id],
-      notes: [`/${this.inventoryType}`, property_view_id, 'notes'],
-      meters: [`/${this.inventoryType}`, property_view_id, 'meters'],
+      detail: [`/${this.inventoryType}`, viewId],
+      notes: [`/${this.inventoryType}`, viewId, 'notes'],
+      meters: [`/${this.inventoryType}`, viewId, 'meters'],
     }
 
     return void this._router.navigate(urlMap[action])
@@ -148,7 +149,7 @@ export class InventoryGridComponent implements OnChanges {
 
   actionRenderer = (value, icon: string, action: string) => {
     if (!value) return ''
-    // Allow a single letter to be passed as an indicator
+    // Allow a single letter to be passed as an indicator (like G for groups)
     if (icon.length === 1) {
       return `<span class="font-bold text-lg">${icon}</span>`
     }

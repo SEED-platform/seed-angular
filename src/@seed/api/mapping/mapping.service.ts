@@ -70,9 +70,6 @@ export class MappingService {
     const url = `/api/v3/import_files/${importFileId}/mapping_results/?organization_id=${orgId}`
     return this._httpClient.post<MappingResultsResponse>(url, {})
       .pipe(
-        tap((response) => {
-          console.log(response)
-        }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching mapping results')
         }),

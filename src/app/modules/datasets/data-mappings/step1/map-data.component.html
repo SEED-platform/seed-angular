@@ -1,46 +1,50 @@
-<div class="flex flex-col gap-4">
+<div class="flex flex-row gap-4">
+  
   <!-- CYCLE -->
-  <div class="flex gap-4 border-bottom rounded-lg">
-    <div class="text-secondary font-bold text">Cycle:</div>
-    <div class="">{{ cycle?.name }}</div>
-  </div>
-  <mat-divider></mat-divider>
-  <!-- PROFILE -->
-  <div class="flex gap-4 border-bottom rounded-lg">
-    <div class="text-secondary font-bold text my-auto">Column Profile:</div>
-    <mat-select        
-      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
-      [(value)]="profile"
-      placeholder="No Profile Selected"
-      >
-      <mat-option [value]="null"></mat-option>
-      @for (profile of columnMappingProfiles; track profile.id) {
-      <mat-option [value]="profile">{{ profile.name }}</mat-option>
-      }
-    </mat-select>
-    <!-- Profile Controls -->
-    <a class="flex" (click)="applyProfile()" [disabled]="!profile"  matTooltip="Apply Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
-    </a>
-    <a class="flex" (click)="saveProfile()" [disabled]="!profile"  matTooltip="Save Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:floppy-disk"></mat-icon>
-    </a>
-    <a class="flex" (click)="createProfile()" matTooltip="Create Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
-    </a>
-  </div>
+
+    <div class="flex gap-4 my-auto border-bottom rounded-lg">
+      <div class="text-secondary font-bold text">Cycle:</div>
+      <div class="">{{ cycle?.name }}</div>
+    </div>
+    <div class="vertical-divider"></div>
+    
+    <!-- PROFILE -->
+    <div class="flex gap-4">
+      <div class="text-secondary font-bold text my-auto">Column Profile:</div>
+      <mat-select        
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+        [(value)]="profile"
+        placeholder="No Profile Selected"
+        >
+        <mat-option [value]="null"></mat-option>
+        @for (profile of columnMappingProfiles; track profile.id) {
+        <mat-option [value]="profile">{{ profile.name }}</mat-option>
+        }
+      </mat-select>
+      <!-- Profile Controls -->
+      <a class="flex" (click)="applyProfile()" [disabled]="!profile"  matTooltip="Apply Profile" mat-stroked-button>
+        <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
+      </a>
+      <a class="flex" (click)="saveProfile()" [disabled]="!profile"  matTooltip="Save Profile" mat-stroked-button>
+        <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:floppy-disk"></mat-icon>
+      </a>
+      <a class="flex" (click)="createProfile()" matTooltip="Create Profile" mat-stroked-button>
+        <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+      </a>
+    </div>
 
 </div>
 
 <!-- GRID CONTROLS -->
 <mat-divider class="my-4"></mat-divider>
-  <div class="flex flex-col gap-2 w-100">
-    <button mat-stroked-button (click)="copyHeadersToSeed()" [disabled]="!rowData.length">Copy Data File Headers directly to SEED headers</button>
+  <div class="flex gap-2">
     <!-- <button mat-stroked-button>Toggle Omitted</button> -->
     <mat-button-toggle-group name="invntoryType" [(ngModel)]="defaultInventoryType" (change)="setAllInventoryType($event.value)" appearance="standard">
-      <mat-button-toggle value="Property">Property Types</mat-button-toggle>
-      <mat-button-toggle value="Tax Lot">Tax Lot Types</mat-button-toggle>
+      <mat-button-toggle value="Property">Properties</mat-button-toggle>
+      <mat-button-toggle value="Tax Lot">Tax Lots</mat-button-toggle>
     </mat-button-toggle-group>
+    <button mat-stroked-button (click)="copyHeadersToSeed()" [disabled]="!rowData.length">Copy Data File Headers directly to SEED headers</button>
+
   </div>
 
 <!-- GRID HEADER -->

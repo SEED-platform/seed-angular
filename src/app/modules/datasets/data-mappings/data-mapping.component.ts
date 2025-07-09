@@ -30,7 +30,7 @@ import { UserService } from '@seed/api/user'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType, Profile } from 'app/modules/inventory'
+import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/inventory'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -241,6 +241,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   startMatchMerge() {
     this.nextStep(3)
     this.matchMergeComponent.startMatchMerge()
+    this.completed[4] = true
   }
 
   nextStep(currentStep: number) {
@@ -250,8 +251,17 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     })
   }
 
+  backToMapping() {
+    this.stepper.selectedIndex = 0
+    this.completed = { 1: false, 2: false, 3: false, 4: false }
+  }
+
   toggleHelp = () => {
     this.helpOpened = !this.helpOpened
+  }
+
+  onDefaultInventoryTypeChange(value: InventoryDisplayType) {
+    this.inventoryType = value === 'Tax Lot' ? 'taxlots' : 'properties'
   }
 
   ngOnDestroy(): void {

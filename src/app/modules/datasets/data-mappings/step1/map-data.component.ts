@@ -65,6 +65,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() matchingPropertyColumns: string[]
   @Input() matchingTaxLotColumns: string[]
   @Output() completed = new EventEmitter<null>()
+  @Output() defaultInventoryTypeChange = new EventEmitter<InventoryDisplayType>()
 
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
@@ -129,6 +130,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       this.importFile.uploaded_filename,
       this.seedHeaderChange.bind(this),
       this.dataTypeChange.bind(this),
+      this.validateData.bind(this),
     )
   }
 
@@ -156,6 +158,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   setAllInventoryType(value: InventoryDisplayType) {
     this.defaultInventoryType = value
+    this.defaultInventoryTypeChange.emit(value)
     this.gridApi.forEachNode((node) => node.setDataValue('to_table_name', value))
     this.setColumns()
   }
@@ -242,13 +245,17 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   saveProfile() {
     // overwrite the existing profile
+    this.profile.mappings = this.getMappingsFromGrid()
+    this._columnMappingProfileService.update(this.orgId, this.profile).subscribe()
+  }
+
+  getMappingsFromGrid(): ColumnMapping[] {
     const mappings: ColumnMapping[] = []
     this.gridApi.forEachNode((node) => {
       const mapping = this.formatRowToMapping(node.data)
       if (mapping) mappings.push(mapping)
     })
-    this.profile.mappings = mappings
-    this._columnMappingProfileService.update(this.orgId, this.profile).subscribe()
+    return mappings
   }
 
   formatRowToMapping(row: Record<string, unknown>): ColumnMapping {
@@ -265,7 +272,6 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   createProfile() {
-    console.log('create profile')
     const profileType: ColumnMappingProfileType = this.importFile.source_type === 'BuildingSync' ? 'BuildingSync Custom' : 'Normal'
     const profileTypes: ColumnMappingProfileType[] = profileType === 'BuildingSync Custom' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
     const dialogRef = this._dialog.open(CreateProfileComponent, {
@@ -274,6 +280,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
         existingNames: this.columnMappingProfiles.map((p) => p.name),
         orgId: this.orgId,
         profileType,
+        mappings: this.getMappingsFromGrid(),
       },
     })
 

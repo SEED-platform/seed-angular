@@ -29,7 +29,12 @@
 <ng-template #mainTemplate>
 
   <mat-stepper class="stepper-disable-hover bg-transparent p-0" #stepper [linear]="true">
-    <mat-step [completed]="completed[1]" label="Map Data" editable="false">
+    <ng-template matStepperIcon="edit">
+      <!-- for step numbers, show check mark instead of pencil when completed -->
+      <mat-icon>check</mat-icon>
+    </ng-template>
+
+    <mat-step [completed]="completed[1]" label="Map Data">
       <seed-map-data
       [columnMappingProfiles]="columnMappingProfiles"
       [cycle]="cycle"
@@ -41,6 +46,7 @@
       [orgId]="orgId"
       [rawColumnNames]="rawColumnNames"
       (completed)="startMapping()"
+      (defaultInventoryTypeChange)="onDefaultInventoryTypeChange($event)"
       ></seed-map-data>
     </mat-step>
     
@@ -61,6 +67,7 @@
       [org]="org"
       [orgId]="orgId"
       (completed)="startMatchMerge()"
+      (backToMapping)="backToMapping()"
       ></seed-save-mappings>
     </mat-step>
 
