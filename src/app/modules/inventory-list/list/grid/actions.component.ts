@@ -54,7 +54,7 @@ export class ActionsComponent implements OnDestroy {
         },
         disabled: !this.inventory,
       },
-      { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
+      { name: 'Delete', action: this.deleteStates, disabled: !this.selectedViewIds.length },
       { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
       {
         name: 'More...',
@@ -110,10 +110,11 @@ export class ActionsComponent implements OnDestroy {
     this.gridApi.deselectAll()
   }
 
-  deletePropertyStates = () => {
+  deleteStates = () => {
+    const displayType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { model: `${this.selectedViewIds.length} Property States`, instance: '' },
+      data: { model: `${this.selectedViewIds.length} ${displayType} States`, instance: '' },
     })
 
     dialogRef
@@ -121,7 +122,11 @@ export class ActionsComponent implements OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         filter(Boolean),
-        switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
+        switchMap(() => {
+          return this.type === 'taxlots'
+            ? this._inventoryService.deleteTaxlotStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+            : this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+        }),
         tap(() => {
           this.refreshInventory.emit()
         }),
