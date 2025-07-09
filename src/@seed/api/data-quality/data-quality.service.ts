@@ -4,8 +4,8 @@ import { catchError, map, type Observable, ReplaySubject, switchMap, tap } from 
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DataQualityResults, DataQualityResultsResponse, Rule } from './data-quality.types'
 import type { DQCProgressResponse } from '../progress'
+import type { DataQualityResults, DataQualityResultsResponse, Rule } from './data-quality.types'
 
 @Injectable({ providedIn: 'root' })
 export class DataQualityService {

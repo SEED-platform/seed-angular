@@ -7,10 +7,10 @@ import { of, Subject, switchMap, takeUntil } from 'rxjs'
 import { MappingService } from '@seed/api/mapping'
 import type { ProgressResponse, SubProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
-import type { CheckProgressLoopParams} from '@seed/services/uploader'
+import type { CheckProgressLoopParams } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
+import type { InventoryType } from 'app/modules/inventory'
 import { ResultsComponent } from './results.component'
-import { InventoryType } from 'app/modules/inventory'
 
 @Component({
   selector: 'seed-match-merge',

@@ -5,12 +5,12 @@ import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
-import type { DataQualityResults } from '@seed/api/data-quality'
-import { DataQualityService } from '@seed/api/data-quality'
-import { ConfigService } from '@seed/services'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, takeUntil, tap } from 'rxjs'
+import type { DataQualityResults } from '@seed/api/data-quality'
+import { DataQualityService } from '@seed/api/data-quality'
+import { ConfigService } from '@seed/services'
 
 @Component({
   selector: 'seed-data-quality-results',

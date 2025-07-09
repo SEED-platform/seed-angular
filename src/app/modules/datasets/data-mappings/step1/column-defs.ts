@@ -89,9 +89,9 @@ export const buildColumnDefs = (
       field: 'to_field_display_name',
       headerName: 'SEED Header',
       cellEditor: AutocompleteCellComponent,
-      cellEditorParams: (params) => {
-        return { values: getColumnOptions(params, propertyColumnNames, taxlotColumnNames)}
-      } ,
+      cellEditorParams: (params: ICellRendererParams) => {
+        return { values: getColumnOptions(params, propertyColumnNames, taxlotColumnNames) }
+      },
       headerComponent: EditHeaderComponent,
       headerComponentParams: {
         name: 'SEED Header',

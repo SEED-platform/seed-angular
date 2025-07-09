@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, tap } from 'rxjs'
-import { UserService } from '../user'
-import type { CountDatasetsResponse, Dataset, DatasetResponse, ImportFile, ImportFileResponse, ListDatasetsResponse } from './dataset.types'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { UserService } from '../user'
+import type { CountDatasetsResponse, Dataset, DatasetResponse, ImportFile, ImportFileResponse, ListDatasetsResponse } from './dataset.types'
 
 @Injectable({ providedIn: 'root' })
 export class DatasetService {

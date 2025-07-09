@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
@@ -23,7 +22,7 @@ import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
 import type { MappingSuggestionsResponse } from '@seed/api/mapping'
 import { MappingService } from '@seed/api/mapping'
-import type { Organization } from '@seed/api/organization';
+import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
 import type { ProgressResponse } from '@seed/api/progress'
 import { UserService } from '@seed/api/user'

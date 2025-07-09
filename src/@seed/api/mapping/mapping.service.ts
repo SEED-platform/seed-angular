@@ -1,12 +1,12 @@
-import type { HttpErrorResponse } from '@angular/common/http';
+import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import { catchError, map, type Observable } from 'rxjs'
 import { ErrorService } from '@seed/services'
-import { UserService } from '../user'
-import { catchError, map, tap, type Observable } from 'rxjs'
-import type { FirstFiveRowsResponse, MappingSuggestionsResponse, MatchingResultsResponse, RawColumnNamesResponse } from './mapping.types'
-import { MappedData, MappingResultsResponse } from '../dataset'
+import type { MappedData, MappingResultsResponse } from '../dataset'
 import type { ProgressResponse, SubProgressResponse } from '../progress'
+import { UserService } from '../user'
+import type { FirstFiveRowsResponse, MappingSuggestionsResponse, MatchingResultsResponse, RawColumnNamesResponse } from './mapping.types'
 
 @Injectable({ providedIn: 'root' })
 export class MappingService {
@@ -28,7 +28,7 @@ export class MappingService {
     const url = `/api/v3/import_files/${importFileId}/raw_column_names/?organization_id=${orgId}`
     return this._httpClient.get<RawColumnNamesResponse>(url)
       .pipe(
-        map(({ raw_columns }) => raw_columns ),
+        map(({ raw_columns }) => raw_columns),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching raw column names')
         }),

@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, filter, finalize, interval, map, of, repeat, startWith, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, combineLatest, finalize, interval, of, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
 import type {
@@ -70,7 +70,7 @@ export class UploaderService {
   }
 
   /*
-  * Check the progress of Main Progress and its Sub Progress 
+  * Check the progress of Main Progress and its Sub Progress
   * Main progress will run until it completes
   * Sub Progresses can complete several times and will run continuously until Main Progress is completed
   * the stop$ stream is used to end the Sub Progress stream
@@ -105,8 +105,6 @@ export class UploaderService {
       }),
     )
   }
-
-
 
   greenButtonMetersPreview(orgId: number, viewId: number, systemId: number, fileId: number): Observable<GreenButtonMeterPreview> {
     const url = `/api/v3/import_files/${fileId}/greenbutton_meters_preview/`

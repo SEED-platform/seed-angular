@@ -3,9 +3,9 @@ import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import type { Cycle } from '@seed/api/cycle'
 import type { Dataset } from '@seed/api/dataset'
 import { PropertyTaxlotUploadComponent } from './property-taxlot-upload.component'
-import { Cycle } from '@seed/api/cycle'
 
 @Component({
   selector: 'seed-data-upload-modal',
