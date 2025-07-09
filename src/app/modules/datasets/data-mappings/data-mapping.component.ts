@@ -250,10 +250,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
     })
   }
 
-  onInventoryTypeChange(inventoryType: InventoryType) {
-    this.inventoryType = inventoryType
-  }
-
   toggleHelp = () => {
     this.helpOpened = !this.helpOpened
   }

@@ -23,25 +23,46 @@
       class="mb-2" 
       (click)="saveData()"
       color="primary" 
-      [disabled]="!rowData.length"
+      [disabled]="loading"
       mat-raised-button 
-      [ngClass]="{ 'animate-pulse bg-gray-500': !rowData.length }"
+      [ngClass]="{ 'animate-pulse bg-gray-500': loading }"
     >Save Data</button>
   </div>
 </div>
 
-@if (rowData.length) {
+@if (propertyResults.length) {
+  <div class="ml-4 mb-4 flex font-medium">
+    <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+    <span class="ml-4">Properties</span>
+  </div>
   <ag-grid-angular
-    [rowData]="rowData"
-    [columnDefs]="columnDefs"
+    [rowData]="propertyResults"
+    [columnDefs]="propertyDefs"
     [theme]="gridTheme$ | async"
     [pagination]="true"
     [paginationPageSize]="20"
     [domLayout]="'autoHeight'" 
-    (gridReady)="onGridReady($event)"
   >
 </ag-grid-angular>
-} @else {
+<mat-divider class="my-5"></mat-divider>
+} 
+@if (taxlotResults.length) {
+  <div class="ml-4 mb-4 flex font-medium">
+    <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+    <span class="ml-4">Tax Lots</span>
+  </div>
+  <ag-grid-angular
+    [rowData]="taxlotResults"
+    [columnDefs]="taxlotDefs"
+    [theme]="gridTheme$ | async"
+    [pagination]="true"
+    [paginationPageSize]="20"
+    [domLayout]="'autoHeight'" 
+  >
+  </ag-grid-angular>
+}
+
+@if (loading) {
   <div class="m-10">
     <div class="mb-5 flex items-center space-x-2">
       <mat-icon class="text-primary-600" svgIcon="fa-solid:hourglass-half"></mat-icon>
