@@ -15,7 +15,8 @@ import { UserService } from '@seed/api/user'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
-import { UploadFileModalComponent } from './data-upload/data-upload-modal.component'
+import { DataUploadModalComponent } from './data-upload/data-upload-modal.component'
+import { MeterDataUploadModalComponent } from './data-upload/meter-upload-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -79,10 +80,10 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     this.columnDefs = [
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Name', cellRenderer: this.nameRenderer },
-      { field: 'importfiles', headerName: 'Files', valueGetter: ({ data }: { data: Dataset }) => data.importfiles.length },
-      { field: 'updated_at', headerName: 'Updated At', valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString() },
+      { field: 'importfiles', headerName: 'Files', flex: 0.5, valueGetter: ({ data }: { data: Dataset }) => data.importfiles.length },
+      { field: 'updated_at', headerName: 'Updated At', flex: 0.5, valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString() },
       { field: 'last_modified_by', headerName: 'Last Modified By' },
-      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionsRenderer },
+      { field: 'actions', headerName: 'Actions', cellRenderer: this.actionsRenderer, flex: 1 },
     ]
   }
 
@@ -101,6 +102,10 @@ export class DatasetsComponent implements OnDestroy, OnInit {
       <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800" title="Add Data Files" data-action="addDataFiles">
         <span class="material-icons text-base">add</span>
         <span class="text-sm">Data Files</span>
+      </span>
+      <span class="inline-flex items-center gap-1 cursor-pointer border rounded-full h-8 mt-1 px-3 hover:bg-gray-400" title="Add Meter Data" data-action="addMeterData">
+        <span class="material-icons text-base">add</span>
+        <span class="text-sm">Meter Data</span>
       </span>
       <span class="material-icons cursor-pointer text-secondary my-auto" title="Rename Dataset" data-action="rename">edit</span>
       <span class="material-icons cursor-pointer text-secondary my-auto" title="Delete Dataset" data-action="delete">clear</span>
@@ -123,9 +128,14 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     const dataset = this.datasets.find((ds) => ds.id === id)
 
     if (action === 'addDataFiles') {
-      this._dialog.open(UploadFileModalComponent, {
+      this._dialog.open(DataUploadModalComponent, {
         width: '40rem',
         data: { orgId: this.orgId, dataset, cycles: this.cycles },
+      })
+    } else if (action === 'addMeterData') {
+      this._dialog.open(MeterDataUploadModalComponent, {
+        width: '50rem',
+        data: { orgId: this.orgId, dataset },
       })
     } else if (action === 'rename') {
       this.editDataset(dataset)

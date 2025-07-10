@@ -1,17 +1,20 @@
 // Subset type
 export type ImportFile = {
+  cached_first_row: string;
+  cached_second_to_fifth_row: string;
   created: string;
-  modified: string;
-  deleted: boolean;
-  import_record: number;
   cycle: number;
   cycle_name?: string; // used in dataset.component ag-grid
+  deleted: boolean;
   file: string;
-  uploaded_filename: string;
-  cached_first_row: string;
   id: number;
-  source_type: string;
+  import_record: number;
+  mapping_done: boolean;
+  matching_done: boolean;
+  modified: string;
   num_rows: number;
+  source_type: string;
+  uploaded_filename: string;
 }
 
 // Subset type

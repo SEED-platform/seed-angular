@@ -1,0 +1,16 @@
+<seed-modal-header title="Upload Meter Data" titleIcon="fa-solid:bolt" [close]="close"></seed-modal-header>
+
+<mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
+  <mat-step [completed]="completed[1]" label="File Select">
+    STEP 1
+  </mat-step>
+  <mat-step [completed]="completed[2]" label="Review">
+    STEP 2
+  </mat-step>
+  <mat-step [completed]="completed[3]" label="Upload">
+    STEP 3
+  </mat-step>
+  <mat-step [completed]="completed[2]" label="Review">
+    STEP 4
+  </mat-step>
+</mat-stepper>
