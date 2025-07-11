@@ -180,7 +180,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     this.cycles = cycles
     this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycleId) ?? this.cycles[0]
-    this.cycleId = this.cycle.id
+    this.cycleId = this.cycle?.id
 
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
     this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)

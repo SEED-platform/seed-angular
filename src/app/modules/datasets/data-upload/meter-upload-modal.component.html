@@ -30,19 +30,63 @@
     </div>
     
     @if (uploading) {
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <seed-progress-bar
+        [title]="step1ProgressTitle"
+      ></seed-progress-bar>
     } @else {
       <div class="mt-10 flex justify-end">
         <button [disabled]="!completed[1] && !file" (click)="stepper.next()" mat-raised-button color="primary">Next</button>
       </div> 
     }
   </mat-step>
+  <!-- STEP 2 -->
   <mat-step [completed]="completed[2]" label="Review">
-    STEP 2
+    <!-- Meter grid -->
+    <div class="flex justify-between items-center">
+      <div class="m-4 flex items-center text-lg font-medium">
+        <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+        <span class="ml-4">{{ incomingTitle }} </span>
+      </div>
+   
+      <mat-icon svgIcon="fa-solid:cloud-arrow-down" class="cursor-pointer text-secondary" (click)="csvDownload('proposed_meter_imports')"></mat-icon>
+    </div>
+    <ag-grid-angular
+      [columnDefs]="readingDefs"
+      [rowData]="proposedImports"
+      [theme]="gridTheme$ | async"
+      [style.--ag-spacing.px]="6"
+      [style.height.px]="readingHeight"
+    ></ag-grid-angular>
+
+    <!-- units grid -->
+    <div class="flex justify-between items-center">
+      <div class="m-4 flex items-center text-lg font-medium">
+        <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+        <span class="ml-4">Parsed Energy Types and Units </span>
+      </div>
+
+      <mat-icon svgIcon="fa-solid:cloud-arrow-down" class="cursor-pointer text-secondary" (click)="csvDownload('validated_type_units')"></mat-icon>
+    </div>
+    <ag-grid-angular
+      [columnDefs]="unitDefs"
+      [rowData]="validatedTypeUnits"
+      [theme]="gridTheme$ | async"
+      [style.--ag-spacing.px]="6"
+      [style.height.px]="unitHeight"
+    ></ag-grid-angular>
+
+    <div class="mt-10 flex justify-between">
+      <button (click)="stepper.previous()" mat-stroked-button>Previous</button>
+      @if (completed[2]) {
+        <button (click)="step3()" mat-raised-button color="primary">Next</button>
+      }
+    </div>
   </mat-step>
+  <!-- STEP 3 -->
   <mat-step [completed]="completed[3]" label="Upload">
     STEP 3
   </mat-step>
+  <!-- STEP 4 -->
   <mat-step [completed]="completed[2]" label="Review">
     STEP 4
   </mat-step>

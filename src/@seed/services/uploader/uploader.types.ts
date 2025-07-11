@@ -51,8 +51,9 @@ export type ProposedMeterImport = {
   cycles?: string;
   incoming: number;
   property_id: number;
+  pm_property_id?: number;
   source_id: string;
-  systemId: number;
+  system_id: number;
   type: string;
   successfully_imported?: number;
 }
