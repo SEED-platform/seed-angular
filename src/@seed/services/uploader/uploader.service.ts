@@ -8,6 +8,7 @@ import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,
   GreenButtonMeterPreview,
+  MeterPreviewResponse,
   ProgressBarObj,
   SensorPreviewResponse,
   SensorReadingPreview,
@@ -152,6 +153,15 @@ export class UploaderService {
     return this._httpClient.get<SensorReadingPreview[]>(url, { params }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching sensor readings preview')
+      }),
+    )
+  }
+
+  metersPreview(orgId: number, fileId: number): Observable<MeterPreviewResponse> {
+    const url = `/api/v3/import_files/${fileId}/pm_meters_preview/?organization_id=${orgId}`
+    return this._httpClient.get<MeterPreviewResponse>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching meters preview')
       }),
     )
   }

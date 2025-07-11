@@ -48,6 +48,7 @@ export type GreenButtonMeterPreview = {
 }
 
 export type ProposedMeterImport = {
+  cycles?: string;
   incoming: number;
   property_id: number;
   source_id: string;
@@ -59,4 +60,10 @@ export type ProposedMeterImport = {
 export type ValidatedTypeUnit = {
   parsed_type: string;
   parsed_unit: string;
+}
+
+export type MeterPreviewResponse = {
+  proposed_imports: ProposedMeterImport[];
+  unlinkable_pm_ids: number[];
+  validated_type_units: ValidatedTypeUnit[];
 }

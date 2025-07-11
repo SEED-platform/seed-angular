@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import type { Dataset } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
+import { ModalHeaderComponent } from '@seed/components'
 import { SEEDValidators } from '@seed/validators'
 
 @Component({
@@ -23,6 +24,7 @@ import { SEEDValidators } from '@seed/validators'
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    ModalHeaderComponent,
     ReactiveFormsModule,
   ],
 })
