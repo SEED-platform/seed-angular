@@ -80,6 +80,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   completed = { 1: false, 2: false, 3: false, 4: false }
   currentProfile: Profile
   cycle: Cycle
+  datasetId: number
   fileId = this._router.snapshot.params.id as number
   firstFiveRows: Record<string, unknown>[]
   helpOpened = false
@@ -121,6 +122,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
         take(1),
         tap((importFile) => {
           this.importFile = importFile
+          this.datasetId = importFile.dataset?.id
           this.columnMappingProfileTypes = importFile.source_type === 'BuildingSync Raw' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
         }),
         catchError(() => {

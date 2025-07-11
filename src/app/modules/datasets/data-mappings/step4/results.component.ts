@@ -2,17 +2,21 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
+import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { RouterModule } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { Subject, take, takeUntil, tap } from 'rxjs'
+import { DatasetService } from '@seed/api/dataset'
 import type { MatchingResultsResponse } from '@seed/api/mapping'
 import { MappingService } from '@seed/api/mapping'
 import { ConfigService } from '@seed/services'
+import { UploaderService } from '@seed/services/uploader'
 import type { InventoryType } from 'app/modules/inventory'
+import { MeterDataUploadModalComponent } from '../../data-upload/meter-upload-modal.component'
 
 @Component({
   selector: 'seed-match-merge-results',
@@ -28,13 +32,18 @@ import type { InventoryType } from 'app/modules/inventory'
   ],
 })
 export class ResultsComponent implements OnChanges, OnDestroy {
-  @Input() importFileId: number
-  @Input() orgId: number
+  @Input() cycleId: number
+  @Input() datasetId: number
   @Input() inventoryType: InventoryType
+  @Input() importFileId: number
   @Input() inProgress = true
+  @Input() orgId: number
 
   private _configService = inject(ConfigService)
+  private _datasetService = inject(DatasetService)
+  private _dialog = inject(MatDialog)
   private _mappingService = inject(MappingService)
+  private _uploaderService = inject(UploaderService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   gridTheme$ = this._configService.gridTheme$
@@ -49,6 +58,8 @@ export class ResultsComponent implements OnChanges, OnDestroy {
   taxlotData: Record<string, unknown>[] = []
   hasPropertyData = false
   hasTaxlotData = false
+  checkingMeterTab = true
+  showMeterButton = true
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.inProgress.currentValue === false) {
@@ -61,6 +72,16 @@ export class ResultsComponent implements OnChanges, OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((results) => { this.setGrid(results) }),
+      )
+      .subscribe()
+
+    this._datasetService.checkMetersTabExists(this.orgId, this.importFileId)
+      .pipe(
+        take(1),
+        tap((hasData) => {
+          this.checkingMeterTab = false
+          this.showMeterButton = hasData
+        }),
       )
       .subscribe()
   }
@@ -99,6 +120,20 @@ export class ResultsComponent implements OnChanges, OnDestroy {
 
   readableString(str: string) {
     return str.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+  }
+
+  importMeters() {
+    this.showMeterButton = false
+    this._uploaderService.file$
+      .pipe(
+        take(1),
+        tap((file) => {
+          this._dialog.open(MeterDataUploadModalComponent, {
+            width: '60rem',
+            data: { orgId: this.orgId, datasetId: this.datasetId, cycleId: this.cycleId, file },
+          })
+        }),
+      ).subscribe()
   }
 
   ngOnDestroy(): void {

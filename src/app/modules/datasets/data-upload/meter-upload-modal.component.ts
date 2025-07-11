@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnDestroy } from '@angular/core'
+import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
@@ -34,7 +34,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     ProgressBarComponent,
   ],
 })
-export class MeterDataUploadModalComponent implements OnDestroy {
+export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
 
   private _dialogRef = inject(MatDialogRef<MeterDataUploadModalComponent>)
@@ -81,7 +81,14 @@ export class MeterDataUploadModalComponent implements OnDestroy {
     { field: 'parsed_unit', headerName: 'Unit', flex: 1 },
   ]
 
-  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number }
+  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number; file: File }
+
+  ngAfterViewInit(): void {
+    // if a file is passed, start upload immediately (from the property upload stepper)
+    if (this.data.file) {
+      this.skipToStep1()
+    }
+  }
 
   step1(fileList: FileList) {
     if (fileList.length !== 1) return
@@ -161,6 +168,18 @@ export class MeterDataUploadModalComponent implements OnDestroy {
       imported_meters: this.importedMeters,
     }
     csvDownload(title, data[title])
+  }
+
+  skipToStep1() {
+    const fileList = this.createFileList(this.data.file)
+    this.step1(fileList)
+  }
+
+  createFileList(file: File) {
+    const dt = new DataTransfer()
+    dt.items.add(file)
+    const fileList = dt.files
+    return fileList
   }
 
   ngOnDestroy() {

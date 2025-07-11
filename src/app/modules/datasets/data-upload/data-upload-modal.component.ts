@@ -108,6 +108,7 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
 
   step1(fileList: FileList) {
     this.file = fileList?.[0]
+    this._uploaderService.setFile(this.file)
     const cycleId = this.form.get('cycleId')?.value
     const multiCycle = this.form.get('multiCycle')?.value
     this.uploading = true

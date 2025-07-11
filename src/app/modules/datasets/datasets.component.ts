@@ -135,7 +135,7 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     } else if (action === 'addMeterData' && this.cycles.length) {
       this._dialog.open(MeterDataUploadModalComponent, {
         width: '60rem',
-        data: { orgId: this.orgId, datasetId: dataset.id, cycleId: this.cycles[0].id },
+        data: { orgId: this.orgId, datasetId: dataset.id, cycleId: this.cycles[0].id, file: null },
       })
     } else if (action === 'rename') {
       this.editDataset(dataset)

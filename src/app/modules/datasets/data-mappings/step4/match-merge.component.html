@@ -11,10 +11,12 @@
     ></seed-progress-bar>
   } @else {
     <seed-match-merge-results
+      [cycleId]="cycleId"
+      [datasetId]="datasetId"
       [inProgress]="inProgress"
-      [orgId]="orgId"
-      [importFileId]="importFileId"
       [inventoryType]="inventoryType"
+      [importFileId]="importFileId"
+      [orgId]="orgId"
     ></seed-match-merge-results>
   }
 </div>

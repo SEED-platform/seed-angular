@@ -64,7 +64,13 @@
     </mat-step>
 
     <mat-step [completed]="completed[4]" label="Matching & Merging" editable="false">
-      <seed-match-merge [importFileId]="fileId" [orgId]="orgId" [inventoryType]="inventoryType"></seed-match-merge>
+      <seed-match-merge
+      [cycleId]="cycle?.id"
+      [datasetId]="datasetId"
+      [importFileId]="fileId" 
+      [inventoryType]="inventoryType"
+      [orgId]="orgId" 
+      ></seed-match-merge>
     </mat-step>
   </mat-stepper>
 </ng-template>

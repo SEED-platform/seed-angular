@@ -24,9 +24,11 @@ import { ResultsComponent } from './results.component'
   ],
 })
 export class MatchMergeComponent implements OnDestroy {
+  @Input() datasetId: number
+  @Input() cycleId: number
   @Input() importFileId: number
-  @Input() orgId: number
   @Input() inventoryType: InventoryType
+  @Input() orgId: number
 
   private _mappingService = inject(MappingService)
   private _uploaderService = inject(UploaderService)

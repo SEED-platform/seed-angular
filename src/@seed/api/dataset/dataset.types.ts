@@ -5,6 +5,7 @@ export type ImportFile = {
   created: string;
   cycle: number;
   cycle_name?: string; // used in dataset.component ag-grid
+  dataset: Dataset;
   deleted: boolean;
   file: string;
   id: number;
@@ -33,7 +34,7 @@ export type Dataset = {
   super_organization: number;
   id: number;
   model: 'data_importer.importrecord';
-  importfiles: ImportFile[];
+  importfiles?: ImportFile[];
 }
 
 export type ListDatasetsResponse = {

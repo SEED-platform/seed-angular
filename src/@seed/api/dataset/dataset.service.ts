@@ -122,4 +122,14 @@ export class DatasetService {
       }),
     )
   }
+
+  checkMetersTabExists(orgId: number, fileId: number): Observable<boolean> {
+    const url = `/api/v3/import_files/${fileId}/check_meters_tab_exists?organization_id=${orgId}`
+    return this._httpClient.get<{ status: string; data: boolean }>(url).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error checking meters tab existence')
+      }),
+    )
+  }
 }

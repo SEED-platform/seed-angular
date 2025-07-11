@@ -7,6 +7,16 @@
       <a [routerLink]="['/' + inventoryType]">
         <button mat-raised-button color="primary">View {{ inventoryType | titlecase }}</button>
       </a>
+      @if(showMeterButton) {
+        <button 
+          (click)="importMeters()" 
+          [ngClass]="{ 'animate-pulse': checkingMeterTab}" 
+          mat-raised-button
+          color="primary" 
+          [disabled]="checkingMeterTab"
+          >Import meters</button>
+      }
+
     </div>
 
     <div class="text-lg font-bold">
