@@ -50,6 +50,7 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   ]
   file?: File
   fileId: number
+  cycleId: number
   completed = { 1: false, 2: false, 3: false, 4: false }
   inProgress = false
   incomingTitle: string
@@ -74,7 +75,7 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
     { field: 'parsed_unit', headerName: 'Unit', flex: 1 },
   ]
 
-  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number }
+  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number }
 
   ngAfterViewInit() {
     console.log('init')
@@ -117,7 +118,29 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   }
 
   step3() {
-    console.log('step3')
+    this.stepper.next()
+    this.inProgress = true
+    const { orgId, cycleId } = this.data
+
+    const successFn = () => {
+      this.completed[3] = true
+      setTimeout(() => {
+        this.stepper.next()
+      })
+    }
+
+    const failureFn = () => this.inProgress = false
+
+    this._uploaderService.saveRawData(orgId, cycleId, this.fileId)
+      .pipe(
+        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
+          progressKey: progress_key,
+          successFn,
+          failureFn,
+          progressBarObj: this.progressBarObj,
+        })),
+      )
+      .subscribe()
   }
 
   setIncomingTitle(response: { proposed_imports: ProposedMeterImport[] }) {

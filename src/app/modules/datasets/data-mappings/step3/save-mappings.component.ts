@@ -74,8 +74,6 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
     const successFn = () => {
       this.dqcComplete = true
     }
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const failureFn = () => {}
 
     this._dataQualityService.startDataQualityCheckForImportFile(this.orgId, this.importFile.id)
       .pipe(
@@ -83,10 +81,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
         switchMap(({ progress_key }) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
-            failureFn,
             progressBarObj: this.progressBarObj,
           })
         }),

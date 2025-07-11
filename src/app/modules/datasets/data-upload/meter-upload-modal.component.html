@@ -84,7 +84,13 @@
   </mat-step>
   <!-- STEP 3 -->
   <mat-step [completed]="completed[3]" label="Upload">
-    STEP 3
+    @if (inProgress) {
+      <seed-progress-bar
+        [progress]="progressBarObj.progress"
+        [total]="progressBarObj.total"
+        title="Uploading Sensor Data..."
+      ></seed-progress-bar>
+    }
   </mat-step>
   <!-- STEP 4 -->
   <mat-step [completed]="completed[2]" label="Review">

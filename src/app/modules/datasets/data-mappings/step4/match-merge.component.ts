@@ -62,21 +62,15 @@ export class MatchMergeComponent implements OnDestroy {
     }
 
     const { progress_data, sub_progress_data } = data
-    const baseParams = { offset: 0, multiplier: 1 }
     const mainParams: CheckProgressLoopParams = {
       progressKey: progress_data.progress_key,
       successFn,
-      failureFn: () => void 0,
       progressBarObj: this.progressBarObj,
-      ...baseParams,
     }
 
     const subParams: CheckProgressLoopParams = {
       progressKey: sub_progress_data.progress_key,
-      successFn: () => void 0,
-      failureFn: () => void 0,
       progressBarObj: this.subProgressBarObj,
-      ...baseParams,
     }
 
     return this._uploaderService.checkProgressLoopMainSub(mainParams, subParams)

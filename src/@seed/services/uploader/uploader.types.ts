@@ -15,10 +15,10 @@ export type ProgressBarObj = {
 
 export type CheckProgressLoopParams = {
   progressKey: string;
-  offset: number;
-  multiplier: number;
-  successFn: () => void;
-  failureFn: () => void;
+  offset?: number;
+  multiplier?: number;
+  successFn?: () => void;
+  failureFn?: () => void;
   progressBarObj: ProgressBarObj;
   subProgress?: boolean;
 }

@@ -127,15 +127,15 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     const { id } = event.data as { id: number }
     const dataset = this.datasets.find((ds) => ds.id === id)
 
-    if (action === 'addDataFiles') {
+    if (action === 'addDataFiles' && this.cycles.length) {
       this._dialog.open(DataUploadModalComponent, {
         width: '40rem',
         data: { orgId: this.orgId, dataset, cycles: this.cycles },
       })
-    } else if (action === 'addMeterData') {
+    } else if (action === 'addMeterData' && this.cycles.length) {
       this._dialog.open(MeterDataUploadModalComponent, {
         width: '60rem',
-        data: { orgId: this.orgId, datasetId: dataset.id },
+        data: { orgId: this.orgId, datasetId: dataset.id, cycleId: this.cycles[0].id },
       })
     } else if (action === 'rename') {
       this.editDataset(dataset)

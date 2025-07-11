@@ -158,8 +158,6 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
         switchMap((data) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: data.progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

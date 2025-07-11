@@ -38,10 +38,10 @@ export class UploaderService {
    */
   checkProgressLoop({
     progressKey,
-    offset,
-    multiplier,
-    successFn,
-    failureFn,
+    offset = 0,
+    multiplier = 1,
+    successFn = () => null,
+    failureFn = () => null,
     progressBarObj,
     subProgress = false,
   }: CheckProgressLoopParams): Observable<ProgressResponse> {
@@ -166,10 +166,10 @@ export class UploaderService {
     )
   }
 
-  saveRawData(orgId: number, cycleId: number, fileId: number, multipleCycleUpload = false): Observable<unknown> {
+  saveRawData(orgId: number, cycleId: number, fileId: number, multipleCycleUpload = false): Observable<ProgressResponse> {
     const url = `/api/v3/import_files/${fileId}/start_save_data/?organization_id=${orgId}`
     const body = { cycle_id: cycleId, multiple_cycle_upload: multipleCycleUpload }
-    return this._httpClient.post(url, body).pipe(
+    return this._httpClient.post<ProgressResponse>(url, body).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error saving raw data')
       }),
