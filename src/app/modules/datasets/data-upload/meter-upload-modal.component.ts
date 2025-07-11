@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { AfterViewInit, OnDestroy } from '@angular/core'
+import type { OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
@@ -14,7 +14,7 @@ import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj, ProposedMeterImport, ValidatedTypeUnit } from '@seed/services/uploader/uploader.types'
+import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader/uploader.types'
 import { csvDownload } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -34,7 +34,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
     ProgressBarComponent,
   ],
 })
-export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
+export class MeterDataUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
 
   private _dialogRef = inject(MatDialogRef<MeterDataUploadModalComponent>)
@@ -51,14 +51,15 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   file?: File
   fileId: number
   cycleId: number
-  completed = { 1: false, 2: false, 3: false, 4: false }
+  completed = { 1: false, 2: false, 3: false }
   inProgress = false
-  incomingTitle: string
+  readingGridTitle: string
   uploading = false
   gridTheme$ = this._configService.gridTheme$
   progressBarObj: ProgressBarObj = this._uploaderService.defaultProgressBarObj
-  proposedImports: ProposedMeterImport[] = []
+  proposedImports: MeterImport[] = []
   readingHeight = 0
+  importedMeters: MeterImport[] = []
   step1ProgressTitle = 'Uploading file...'
   unitHeight = 0
   validatedTypeUnits: ValidatedTypeUnit[] = []
@@ -70,16 +71,17 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
     { field: 'type', headerName: 'Type' },
     { field: 'incoming', headerName: 'Incoming' },
   ]
+  importedDefs: ColDef[] = [
+    ...this.readingDefs,
+    { field: 'successfully_imported', headerName: 'Successfully Imported' },
+    { field: 'errors', headerName: 'Errors' },
+  ]
   unitDefs: ColDef[] = [
     { field: 'parsed_type', headerName: 'Type', flex: 1 },
     { field: 'parsed_unit', headerName: 'Unit', flex: 1 },
   ]
 
   data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number }
-
-  ngAfterViewInit() {
-    console.log('init')
-  }
 
   step1(fileList: FileList) {
     if (fileList.length !== 1) return
@@ -100,9 +102,10 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
         }),
         switchMap(() => this._uploaderService.metersPreview(orgId, this.fileId)),
         tap((response) => {
-          this.setIncomingTitle(response)
-          this.proposedImports = response.proposed_imports
-          this.validatedTypeUnits = response.validated_type_units
+          const { proposed_imports, validated_type_units } = response
+          this.setReadingTitle(proposed_imports)
+          this.proposedImports = proposed_imports
+          this.validatedTypeUnits = validated_type_units
           this.readingHeight = Math.min(this.proposedImports.length * 35 + 42, 250)
           this.unitHeight = Math.min(this.validatedTypeUnits.length * 35 + 42, 200)
           this.stepper.next()
@@ -124,6 +127,8 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
 
     const successFn = () => {
       this.completed[3] = true
+      this.importedMeters = this.progressBarObj.message as MeterImport[]
+      this.setReadingTitle(this.importedMeters)
       setTimeout(() => {
         this.stepper.next()
       })
@@ -143,16 +148,19 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
       .subscribe()
   }
 
-  setIncomingTitle(response: { proposed_imports: ProposedMeterImport[] }) {
-    const { proposed_imports } = response
-    const meterCount = proposed_imports.length
-    const propertyCount = new Set(proposed_imports.map((m) => m.pm_property_id)).size
-    this.incomingTitle = `${meterCount > 1 ? `${meterCount} Meters` : '1 Meter'} from ${propertyCount > 1 ? `${propertyCount} Properties` : '1 Property'}`
+  setReadingTitle(meterImports: MeterImport[]) {
+    const meterCount = meterImports.length
+    const propertyCount = new Set(meterImports.map((m) => m.pm_property_id)).size
+    this.readingGridTitle = `${meterCount > 1 ? `${meterCount} Meters` : '1 Meter'} from ${propertyCount > 1 ? `${propertyCount} Properties` : '1 Property'}`
   }
 
-  csvDownload(title: 'proposed_meter_imports' | 'validated_type_units') {
-    const data = title === 'proposed_meter_imports' ? this.proposedImports : this.validatedTypeUnits
-    csvDownload(title, data)
+  csvDownload(title: 'proposed_meter_imports' | 'validated_type_units' | 'imported_meters') {
+    const data = {
+      proposed_meter_imports: this.proposedImports,
+      validated_type_units: this.validatedTypeUnits,
+      imported_meters: this.importedMeters,
+    }
+    csvDownload(title, data[title])
   }
 
   ngOnDestroy() {
