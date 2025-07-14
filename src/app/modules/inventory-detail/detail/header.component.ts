@@ -7,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import { MatTableModule } from '@angular/material/table'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
@@ -22,7 +22,6 @@ import { MapComponent } from './map.component'
   templateUrl: './header.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     LabelComponent,
     MapComponent,

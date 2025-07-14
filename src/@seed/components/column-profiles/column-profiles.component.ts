@@ -8,7 +8,7 @@ import type { MatSelectChange } from '@angular/material/select'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
@@ -29,7 +29,6 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
   templateUrl: './column-profiles.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     PageComponent,
     MatButtonModule,

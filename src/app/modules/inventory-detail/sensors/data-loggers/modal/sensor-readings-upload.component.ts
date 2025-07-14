@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { catchError, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
@@ -24,7 +24,6 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './sensor-readings-upload.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     MatButtonModule,
     MatDialogModule,

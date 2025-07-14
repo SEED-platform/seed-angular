@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { combineLatest, EMPTY, switchMap, tap } from 'rxjs'
@@ -22,7 +22,7 @@ import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/i
 @Component({
   selector: 'seed-inventory-list-cross-cycles',
   templateUrl: './cross-cycles.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule, MatSelectModule, PageComponent],
+  imports: [AgGridAngular, CommonModule, MatIconModule, MatSelectModule, PageComponent],
 })
 export class CrossCyclesComponent implements OnInit {
   private _route = inject(ActivatedRoute)

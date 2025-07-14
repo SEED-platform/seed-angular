@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
@@ -18,7 +18,6 @@ ModuleRegistry.registerModules([AllCommunityModule])
   templateUrl: './grid.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     // CellHeaderMenuComponent,
     CommonModule,
     InventoryGridControlsComponent,

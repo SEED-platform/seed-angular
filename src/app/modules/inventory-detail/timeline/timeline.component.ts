@@ -3,7 +3,7 @@ import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { tap } from 'rxjs'
@@ -13,7 +13,7 @@ import { NotFoundComponent, PageComponent } from '@seed/components'
 @Component({
   selector: 'seed-inventory-detail-timeline',
   templateUrl: './timeline.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class TimelineComponent implements OnInit {
   private _organizationService = inject(OrganizationService)

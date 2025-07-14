@@ -7,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatProgressBar } from '@angular/material/progress-bar'
 import { Router } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { finalize, Subject, tap } from 'rxjs'
@@ -27,7 +27,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-inventory-detail-history',
   templateUrl: './history-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatDividerModule, MatProgressBar],
+  imports: [AgGridAngular, CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatDividerModule, MatProgressBar],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {
   @Input() columns: Column[]

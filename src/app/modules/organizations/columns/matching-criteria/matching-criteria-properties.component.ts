@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatTooltipModule } from '@angular/material/tooltip'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import { combineLatest, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
 import { CriteriaListComponent } from './criteria-list.component'
@@ -20,7 +20,6 @@ import { MatchingCriteriaComponent } from './matching-criteria.component'
   encapsulation: ViewEncapsulation.None,
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     CriteriaListComponent,
     FormsModule,

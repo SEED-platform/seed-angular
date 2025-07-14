@@ -4,7 +4,7 @@ import { Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -22,7 +22,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MapComponent, MatIconModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, MapComponent, MatIconModule, NotFoundComponent, PageComponent],
 })
 export class UbidsComponent implements OnDestroy, OnInit {
   @ViewChild(MapComponent) mapComponent!: MapComponent

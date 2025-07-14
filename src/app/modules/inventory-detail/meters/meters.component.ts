@@ -7,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
@@ -31,7 +31,6 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
   templateUrl: './meters.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     MatButtonModule,
     MatIconModule,

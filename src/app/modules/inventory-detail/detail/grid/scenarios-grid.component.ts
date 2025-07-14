@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Scenario } from '@seed/api/scenario'
 import { ScenarioService } from '@seed/api/scenario/scenario.service'
@@ -14,7 +14,7 @@ type FieldType = 'annual_electricity_savings' | 'annual_peak_electricity_reducti
 @Component({
   selector: 'seed-inventory-detail-scenarios-grid',
   templateUrl: './scenarios-grid.component.html',
-  imports: [CommonModule, AgGridAngular, AgGridModule, MatIconModule],
+  imports: [CommonModule, AgGridAngular, MatIconModule],
 })
 export class ScenariosGridComponent implements OnChanges {
   @Input() orgId: number

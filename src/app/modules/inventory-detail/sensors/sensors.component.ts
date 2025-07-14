@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { CycleService } from '@seed/api/cycle/cycle.service'
@@ -25,7 +25,6 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
   templateUrl: './sensors.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     DataLoggersGridComponent,
     MatIconModule,

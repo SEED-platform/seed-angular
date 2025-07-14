@@ -4,7 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, Theme } from 'ag-grid-community'
 import { filter, type Observable, switchMap } from 'rxjs'
 import { type DataLogger, SensorService } from '@seed/api/sensor'
@@ -16,7 +16,7 @@ import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-data-loggers-grid',
   templateUrl: './data-loggers-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MatDividerModule, MatIconModule],
 })
 export class DataLoggersGridComponent implements OnChanges {
   @Input() cycleId: number

@@ -4,7 +4,6 @@ import { Component, inject } from '@angular/core'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
@@ -33,8 +32,6 @@ import {
   selector: 'seed-inventory-detail',
   templateUrl: './detail.component.html',
   imports: [
-    AgGridAngular,
-    AgGridModule,
     BuildingFilesGridComponent,
     CommonModule,
     DocumentsGridComponent,

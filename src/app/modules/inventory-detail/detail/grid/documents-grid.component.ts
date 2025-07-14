@@ -4,7 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
 import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { Subject, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
@@ -16,7 +16,7 @@ import { DocumentUploadModalComponent } from '../modal/document-upload.component
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
   templateUrl: './documents-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, DocumentUploadModalComponent, MatButtonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, DocumentUploadModalComponent, MatButtonModule, MatIconModule],
 })
 export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization

@@ -11,7 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatSelectModule } from '@angular/material/select'
 import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
@@ -28,7 +28,6 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './green-button-upload-modal.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     FormsModule,
     MatButtonModule,

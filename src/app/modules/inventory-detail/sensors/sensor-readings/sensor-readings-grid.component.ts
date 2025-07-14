@@ -6,7 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSelectModule } from '@angular/material/select'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import type { ReadingInterval, SensorReading, SensorUsage } from '@seed/api/sensor'
@@ -19,7 +19,6 @@ import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
   templateUrl: './sensor-readings-grid.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     MatCheckboxModule,
     MatDividerModule,
