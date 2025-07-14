@@ -19,7 +19,7 @@ import { MeterService } from '@seed/api/meters'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { ProgressBarObj, MeterImport, ValidatedTypeUnit } from '@seed/services/uploader'
+import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 

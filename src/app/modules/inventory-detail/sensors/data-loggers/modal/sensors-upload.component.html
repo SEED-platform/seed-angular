@@ -87,11 +87,7 @@
   <!-- STEP 4 -->
   <mat-step [completed]="completed[3]" label="Review">
     @if (proposedImports.length) {
-      <ag-grid-angular
-        [columnDefs]="columnDefs"
-        [rowData]="importedSensors"
-        [theme]="gridTheme$ | async"
-        [style.height.px]="gridHeight">
+      <ag-grid-angular [columnDefs]="columnDefs" [rowData]="importedSensors" [theme]="gridTheme$ | async" [style.height.px]="gridHeight">
       </ag-grid-angular>
     }
     <div class="mt-10 flex justify-end">

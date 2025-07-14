@@ -1,4 +1,4 @@
-<seed-modal-header title="Upload Property / Tax Lot Data" titleIcon="fa-solid:arrow-up-from-bracket" [close]="close"></seed-modal-header>
+<seed-modal-header [close]="close" title="Upload Property / Tax Lot Data" titleIcon="fa-solid:arrow-up-from-bracket"></seed-modal-header>
 
 <mat-stepper class="stepper-disable-hover" #stepper [linear]="true" (selectionChange)="onStepChange($event)">
   <!-- STEP 1: select file -->
@@ -12,7 +12,7 @@
 
             <mat-select formControlName="cycleId">
               @for (cycle of cycles; track $index) {
-              <mat-option [value]="cycle.id">{{ cycle.name }}</mat-option>
+                <mat-option [value]="cycle.id">{{ cycle.name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -24,8 +24,13 @@
         <mat-divider class="my-4"></mat-divider>
 
         <!-- File select -->
-        <input class="pointer-events-none invisible absolute h-0 w-0 opacity-0" #fileInput [accept]="allowedTypes"
-          (change)="step1(fileInput.files)" type="file" />
+        <input
+          class="pointer-events-none invisible absolute h-0 w-0 opacity-0"
+          #fileInput
+          [accept]="allowedTypes"
+          (change)="step1(fileInput.files)"
+          type="file"
+        />
 
         <div class="flex w-full flex-col gap-2">
           <div class="flex gap-4">
@@ -35,8 +40,7 @@
             </button>
             <span class="text-secondary my-auto">.csv, .xls, .xslx</span>
           </div>
-          <div class="text-secondary mb-2 ml-4">Note: only the first sheet of multi-sheet Excel files will be imported.
-          </div>
+          <div class="text-secondary mb-2 ml-4">Note: only the first sheet of multi-sheet Excel files will be imported.</div>
 
           <div class="flex gap-4">
             <button class="flex w-2/3 gap-4" (click)="triggerUpload('GeoJSON')" mat-stroked-button disabled="true">
@@ -47,8 +51,7 @@
           </div>
 
           <div class="flex gap-4">
-            <button class="flex w-2/3 gap-4" (click)="triggerUpload('BuildingSync Raw')" mat-stroked-button
-              disabled="true">
+            <button class="flex w-2/3 gap-4" (click)="triggerUpload('BuildingSync Raw')" mat-stroked-button disabled="true">
               <mat-icon svgIcon="fa-solid:building"></mat-icon>
               <span class="inline-block w-40 text-left">Upload BuildingSync</span>
             </button>
@@ -59,18 +62,17 @@
     </div>
 
     @if (uploading) {
-    <mat-progress-bar class="my-5" mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar class="my-5" mode="indeterminate"></mat-progress-bar>
     } @else {
-    <!-- spacer -->
-    <div class="my-5"></div>
+      <!-- spacer -->
+      <div class="my-5"></div>
     }
   </mat-step>
 
   <!-- STEP 2: Upload -->
   <mat-step [completed]="completed[2]" [editable]="false" label="Uploading">
     @if (inProgress) {
-    <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total"
-      title="Uploading Data..."></seed-progress-bar>
+      <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total" title="Uploading Data..."></seed-progress-bar>
     }
   </mat-step>
 
