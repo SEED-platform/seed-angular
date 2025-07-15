@@ -1,10 +1,71 @@
-<div class="flex justify-between gap-4 overflow-hidden">
+<!-- TRIGGER -->
+<div class="w-full flex justify-between gap-4 overflow-hidden" #trigger>
   <span class="my-auto">{{ params.displayName }}</span>
-  <mat-icon class="scale-50 cursor-pointer" (click)="toggleMenu($event)" svgIcon="fa-solid:chevron-down"></mat-icon>
+  <mat-icon class="scale-50" [svgIcon]="sortIcon"></mat-icon>
+  <mat-icon class="scale-50 cursor-pointer" (click)="toggleMenu()" svgIcon="fa-solid:chevron-down"></mat-icon>
 </div>
-<!-- THIS IS IN DEVELOPMENT -->
-@if (menuVisible) {
-  <div class="cell-menu absolute z-[1000] w-48 rounded-md border border-gray-300 bg-white p-2 shadow-lg">
-    <button (click)="sortAsc()">Sort Asc</button>
+
+<!-- MENU -->
+<ng-template #menu>
+  <div 
+    class="w-80 p-2 border text-sm rounded cursor-pointer"
+    [class.bg-gray-800]="scheme === 'dark'"
+    [class.bg-white]="scheme === 'light'"
+  >
+
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol('asc')">
+      <mat-icon svgIcon="fa-solid:arrow-up" class="scale-50"></mat-icon>
+      <span>Sort Ascending</span>
+    </div>
+    
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol('desc')">
+      <mat-icon svgIcon="fa-solid:arrow-down" class="scale-50"></mat-icon>
+      <span>Sort Descending</span>
+    </div>
+    
+    @if (sortIcon) {
+      <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol(null)">
+        <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
+        <span>Clear Sort</span>
+      </div>
+    }
+
+    <mat-divider></mat-divider>
+
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
+      [ngClass]="{'': scheme === 'dark'}" (click)="pinCol('left')">
+      <mat-icon [svgIcon]="'fa-solid:thumbtack'" class="scale-50"></mat-icon>
+      <span>Pin Left</span>
+    </div>
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
+      [ngClass]="{'': scheme === 'dark'}" (click)="pinCol('right')">
+      <mat-icon svgIcon="fa-solid:thumbtack" class="scale-50"></mat-icon>
+      <span>Pin right</span>
+    </div>
+    @if (pinState) {
+      <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
+        [ngClass]="{'': scheme === 'dark'}" (click)="pinCol(null)">
+        <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
+        <span>Unpin</span>
+      </div>
+    }
+
+    <mat-divider></mat-divider>
+
+    <!-- RESET COLUMNS -->
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
+      [ngClass]="{'': scheme === 'dark'}" (click)="resetCol()">
+      <mat-icon svgIcon="fa-solid:rotate" class="scale-50"></mat-icon>
+      <span>Reset This Column</span>
+    </div>
+    
+    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
+      [ngClass]="{'': scheme === 'dark'}" (click)="resetAll()">
+      <div class="w-6"></div>
+      <span>Reset All Columns</span>
+    </div>
+    
   </div>
-}
+
+</ng-template>
+
