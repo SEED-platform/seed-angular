@@ -5,7 +5,10 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
+import { take } from 'rxjs'
 import type { Label } from '@seed/api/label'
+import type { OrganizationUserSettings } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api/organization'
 import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
@@ -28,16 +31,20 @@ export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
   @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
+  @Input() orgId: number
+  @Input() orgUserId: number
   @Input() pagination!: Pagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
+  @Input() userSettings: OrganizationUserSettings
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
   @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
 
   agPageSize = 100
@@ -209,7 +216,17 @@ export class InventoryGridComponent implements OnChanges {
     this.gridApi.autoSizeColumns(columns)
     this.gridApi.refreshClientSideRowModel()
     this.gridApi.refreshCells({ force: true })
+    this.resetUserSettings()
+
     this.gridReset.emit()
+  }
+
+  resetUserSettings() {
+    this.userSettings = {}
+
+    this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
+      .pipe((take(1)))
+      .subscribe()
   }
 
   /*
