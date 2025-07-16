@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { RouterModule } from '@angular/router'
 import { of, Subject, switchMap, takeUntil } from 'rxjs'
@@ -9,6 +9,7 @@ import type { ProgressResponse, SubProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
 import type { CheckProgressLoopParams } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
 import { ResultsComponent } from './results.component'
 
@@ -29,9 +30,11 @@ export class MatchMergeComponent implements OnDestroy {
   @Input() importFileId: number
   @Input() inventoryType: InventoryType
   @Input() orgId: number
+  @Output() matchMergeComplete = new EventEmitter<null>()
 
   private _mappingService = inject(MappingService)
   private _uploaderService = inject(UploaderService)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   inProgress = true
 
@@ -60,7 +63,9 @@ export class MatchMergeComponent implements OnDestroy {
 
   checkProgress(data: SubProgressResponse) {
     const successFn = () => {
+      this.matchMergeComplete.emit()
       this.inProgress = false
+      this._snackBar.success('Data Upload Complete')
     }
 
     const { progress_data, sub_progress_data } = data

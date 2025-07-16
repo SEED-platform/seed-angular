@@ -79,6 +79,7 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
     progressLastChecked: null,
   }
   sourceType: 'Assessed Raw' | 'GeoJSON' | 'BuildingSync Raw'
+  title = 'Upload Property / Tax Lot Data'
   uploading = false
   userSettings: OrganizationUserSettings = {}
 
@@ -151,17 +152,18 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
   }
 
   step2(progressKey: string) {
+    this.title = 'Uploading...'
     this.inProgress = true
 
     const failureFn = () => {
       this._snackBar.alert('File Upload Failed')
+      this.inProgress = false
     }
 
     const successFn = () => {
       this.completed[2] = true
-      setTimeout(() => {
-        this.stepper.next()
-      })
+      this.inProgress = false
+      this.title = 'Upload Complete'
     }
 
     this._uploaderService

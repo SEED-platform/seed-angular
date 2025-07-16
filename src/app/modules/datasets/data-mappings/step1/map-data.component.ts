@@ -79,6 +79,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   errorMessages: string[] = []
   fileId = this._router.snapshot.params.id as number
   gridApi: GridApi
+  gridHeight = 0
   gridOptions = gridOptions
   gridTheme$ = this._configService.gridTheme$
   mappedData: { mappings: DataMappingRow[] } = { mappings: [] }
@@ -150,10 +151,18 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     for (const row of this.rowData) {
       row.omit = false
     }
+    this.getGridHeight()
   }
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
+  }
+
+  getGridHeight() {
+    const vh = window.innerHeight - 285 // header + footer
+    if (!this.rowData?.length) return
+
+    this.gridHeight = Math.min(this.rowData.length * 42 + 50, vh)
   }
 
   setAllInventoryType(value: InventoryDisplayType) {

@@ -76,9 +76,7 @@
   [columnDefs]="columnDefs"
   [gridOptions]="gridOptions"
   [theme]="gridTheme$ | async"
-  [pagination]="true"
-  [paginationPageSize]="20"
-  [domLayout]="'autoHeight'"
+  [style.height.px]="gridHeight"
   (gridReady)="onGridReady($event)"
 >
 </ag-grid-angular>

@@ -88,7 +88,9 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   inventoryType: InventoryType = 'properties'
   mappingResultsResponse: MappingResultsResponse
   mappingSuggestions: MappingSuggestionsResponse
+  matchingPropertyColumnDisplayNames = ''
   matchingPropertyColumns: string[] = []
+  matchingTaxLotColumnDisplayNames = ''
   matchingTaxLotColumns: string[] = []
   org: Organization
   orgId: number
@@ -168,6 +170,12 @@ export class DataMappingComponent implements OnDestroy, OnInit {
           this.matchingTaxLotColumns = matchingTaxLotColumns as string[]
           this.propertyColumns = propertyColumns
           this.taxlotColumns = taxlotColumns
+
+          const propertyMap = new Map(propertyColumns.filter((c) => c.table_name === 'PropertyState').map((c) => [c.column_name, c.display_name]))
+          const taxlotMap = new Map(taxlotColumns.filter((c) => c.table_name === 'TaxLotState').map((c) => [c.column_name, c.display_name]))
+
+          this.matchingPropertyColumnDisplayNames = this.matchingPropertyColumns.map((name) => propertyMap.get(name) || name).join(', ')
+          this.matchingTaxLotColumnDisplayNames = this.matchingTaxLotColumns.map((name) => taxlotMap.get(name) || name).join(', ')
         }),
       )
   }
@@ -240,6 +248,9 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   startMatchMerge() {
     this.nextStep(3)
     this.matchMergeComponent.startMatchMerge()
+  }
+
+  onMatchComplete() {
     this.completed[4] = true
   }
 

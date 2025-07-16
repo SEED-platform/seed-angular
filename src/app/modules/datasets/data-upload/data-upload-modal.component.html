@@ -1,4 +1,4 @@
-<seed-modal-header [close]="close" title="Upload Property / Tax Lot Data" titleIcon="fa-solid:arrow-up-from-bracket"></seed-modal-header>
+<seed-modal-header [close]="close" [title]="title" titleIcon="fa-solid:arrow-up-from-bracket"></seed-modal-header>
 
 <mat-stepper class="stepper-disable-hover" #stepper [linear]="true" (selectionChange)="onStepChange($event)">
   <!-- STEP 1: select file -->
@@ -73,17 +73,14 @@
   <mat-step [completed]="completed[2]" [editable]="false" label="Uploading">
     @if (inProgress) {
       <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total" title="Uploading Data..."></seed-progress-bar>
+    } @else {
+      <div class="mt-5 flex w-full justify-between">
+        <button (click)="goToStep1()" mat-stroked-button>Select New File</button>
+        <button (click)="goToMapping()" mat-flat-button color="primary">
+          <mat-icon class="mx-2 scale-50" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
+          <span>Continue to Mapping</span>
+        </button>
+      </div>
     }
-  </mat-step>
-
-  <!-- STEP 3: Complete -->
-  <mat-step [completed]="completed[3]" label="Mapping">
-    <div class="flex w-full justify-between">
-      <button (click)="goToStep1()" mat-stroked-button>Select New File</button>
-      <button (click)="goToMapping()" mat-flat-button color="primary">
-        <mat-icon class="mx-2 scale-50" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
-        <span>Continue to Mapping</span>
-      </button>
-    </div>
   </mat-step>
 </mat-stepper>

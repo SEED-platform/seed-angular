@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, Input } from '@angular/core'
 
 @Component({
   selector: 'seed-data-mapping-help',
@@ -6,4 +6,7 @@ import { Component } from '@angular/core'
   imports: [],
 })
 export class HelpComponent {
+  @Input() completed: Record<number, boolean>
+  @Input() matchingPropertyColumnDisplayNames: string
+  @Input() matchingTaxLotColumnDisplayNames: string
 }

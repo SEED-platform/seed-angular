@@ -137,6 +137,7 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
       this.importedMeters = this.progressBarObj.message as MeterImport[]
       this.setReadingTitle(this.importedMeters)
       setTimeout(() => {
+        this._snackBar.success('Meter Upload Complete')
         this.stepper.next()
       })
     }
