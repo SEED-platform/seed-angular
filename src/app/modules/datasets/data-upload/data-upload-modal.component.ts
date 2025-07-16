@@ -1,4 +1,3 @@
-import type { StepperSelectionEvent } from '@angular/cdk/stepper'
 import { CommonModule } from '@angular/common'
 import type { HttpErrorResponse } from '@angular/common/http'
 import type { AfterViewInit, ElementRef, OnDestroy } from '@angular/core'
