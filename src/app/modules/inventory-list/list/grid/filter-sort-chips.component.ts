@@ -20,8 +20,8 @@ export class FilterSortChipsComponent implements OnChanges {
   filterChips: FilterSortChip[] = []
   sortChips: FilterSortChip[] = []
 
-  ngOnChanges({ userSettings }: SimpleChanges) {
-    if (userSettings?.currentValue) {
+  ngOnChanges({ userSettings, columnDefs }: SimpleChanges) {
+    if (userSettings?.currentValue || columnDefs?.currentValue) {
       this.getFilterChips()
       this.getSortChips()
     }

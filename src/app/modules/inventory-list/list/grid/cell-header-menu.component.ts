@@ -4,41 +4,53 @@ import { TemplatePortal } from '@angular/cdk/portal'
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, TemplateRef } from '@angular/core'
 import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
+import { MatButtonModule } from '@angular/material/button'
+import { MatDividerModule } from '@angular/material/divider'
 import { MatIconModule } from '@angular/material/icon'
+import { MatSelectModule } from '@angular/material/select'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { Column, GridApi, IHeaderParams } from 'ag-grid-community'
+import { take } from 'rxjs'
+import { OrganizationService, type OrganizationUserSettings } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
 import { ConfigService } from '@seed/services'
-import { MatCardModule } from '@angular/material/card'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatButtonModule } from '@angular/material/button'
-import { MatSelectModule } from '@angular/material/select'
-import { trueGray } from 'tailwindcss/colors'
+import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-cell-header-menu',
   templateUrl: './cell-header-menu.component.html',
-  imports: [CommonModule, MatCardModule, MatDividerModule, MatButtonModule, MatIconModule, MatSelectModule],
+  imports: [CommonModule, MatDividerModule, MatButtonModule, MatIconModule, MatSelectModule],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit {
   @ViewChild('menu') menuTemplate!: TemplateRef<unknown>
   @ViewChild('trigger') trigger!: FlexibleConnectedPositionStrategyOrigin
 
   private _configService = inject(ConfigService)
-  params: IHeaderParams
-  overlay = inject(Overlay)
-  vcr = inject(ViewContainerRef)
-  overlayRef: OverlayRef
+  private _organizationService = inject(OrganizationService)
+  private _overlay = inject(Overlay)
+  private _vcr = inject(ViewContainerRef)
   column: Column<unknown>
+  gridApi: GridApi
+  opened = false
+  orgId: number
+  orgUserId: number
+  overlayRef: OverlayRef
+  params: IHeaderParams
+  pinState: unknown
   scheme: 'dark' | 'light'
   sortIcon = ''
-  pinState: unknown
-  opened = false
-  gridApi: GridApi
+  type: InventoryType
+  userSettings: OrganizationUserSettings
 
-  agInit(params: IHeaderParams): void {
+  agInit(params: IHeaderParams & { currentUser: CurrentUser; type: InventoryType }): void {
     this.params = params
     this.column = params.column
     this.gridApi = params.api
+    this.type = params.type
+    const { org_id, org_user_id, settings } = params.currentUser
+    this.orgId = org_id
+    this.orgUserId = org_user_id
+    this.userSettings = settings
   }
 
   ngAfterViewInit(): void {
@@ -70,7 +82,7 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
   }
 
   setOverlay() {
-    const positionStrategy = this.overlay
+    const positionStrategy = this._overlay
       .position()
       .flexibleConnectedTo(this.trigger)
       .withPositions([
@@ -82,7 +94,7 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
         },
       ])
 
-    this.overlayRef = this.overlay.create({
+    this.overlayRef = this._overlay.create({
       positionStrategy,
       hasBackdrop: true,
       backdropClass: 'transparent-backdrop',
@@ -99,7 +111,7 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
     if (this.overlayRef?.hasAttached()) {
       this.overlayRef.detach()
     } else {
-      const portal = new TemplatePortal(this.menuTemplate, this.vcr)
+      const portal = new TemplatePortal(this.menuTemplate, this._vcr)
       this.overlayRef?.attach(portal)
     }
   }
@@ -109,6 +121,11 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
       state: [{ colId: this.params.column.getColId(), sort: direction }],
       defaultState: { sort: null },
     })
+    const dir = direction === 'desc' ? '-' : ''
+    const colDef = this.column.getColDef()
+    const sort = `${dir}${colDef.field}`
+    this.userSettings.sorts?.[this.type].push(sort)
+
     this.detach()
   }
 
@@ -131,8 +148,10 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
     this.detach()
   }
 
-  tempAction() {
-    console.log('temp action')
+  updateOrgUserSettings() {
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
+      .pipe(take(1))
+      .subscribe()
   }
 
   detach() {

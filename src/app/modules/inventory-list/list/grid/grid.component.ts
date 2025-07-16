@@ -9,6 +9,7 @@ import { take } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import type { OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
 import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
@@ -29,6 +30,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
+  @Input() currentUser: CurrentUser
   @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
   @Input() orgId: number
@@ -112,7 +114,7 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   getColumnDefs() {
-    const stateColumns = this.columnDefs.map((c) => ({ ...c, headerComponent: CellHeaderMenuComponent }))
+    const stateColumns = this.addHeaderMenu()
 
     this.columnDefs = [
       { headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef,
@@ -130,6 +132,18 @@ export class InventoryGridComponent implements OnChanges {
       this.buildLabelsCell(),
     ]
     return shortcutColumns
+  }
+
+  addHeaderMenu() {
+    const stateColumns = this.columnDefs.map((c) => ({
+      ...c,
+      headerComponent: CellHeaderMenuComponent,
+      headerComponentParams: {
+        currentUser: this.currentUser,
+        type: this.type,
+      },
+    }))
+    return stateColumns
   }
 
   buildShortcutColumn(field: string, headerName: string, maxWidth: number, icon: string, action: string = null): ColDef {
@@ -223,7 +237,6 @@ export class InventoryGridComponent implements OnChanges {
 
   resetUserSettings() {
     this.userSettings = {}
-
     this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
       .pipe((take(1)))
       .subscribe()
