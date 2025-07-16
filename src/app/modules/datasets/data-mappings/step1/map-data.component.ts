@@ -162,7 +162,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     const vh = window.innerHeight - 285 // header + footer
     if (!this.rowData?.length) return
 
-    this.gridHeight = Math.min(this.rowData.length * 42 + 50, vh)
+    this.gridHeight = Math.min(this.rowData.length * 42 + 100, vh)
   }
 
   setAllInventoryType(value: InventoryDisplayType) {

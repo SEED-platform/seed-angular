@@ -61,7 +61,7 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
   private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   allowedTypes: string
-  completed = { 1: false, 2: false, 3: false }
+  completed = { 1: false, 2: false }
   cycles: Cycle[]
   dataset: Dataset
   file: File
@@ -183,23 +183,14 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
     void this._router.navigate(['/data/mappings', this.fileId])
   }
 
-  goToStep1() {
-    this.completed[3] = true
-    this.stepper.selectedIndex = 0
-  }
-
-  onStepChange(event: StepperSelectionEvent) {
-    const index = event.selectedIndex
-    if (index === 0) this.resetStepper()
-  }
-
   resetStepper() {
-    this.completed = { 1: false, 2: false, 3: false }
+    this.completed = { 1: false, 2: false }
     this.file = null
     this.fileId = null
     this.fileInput.nativeElement.value = ''
     this.inProgress = false
     this.uploading = false
+    this.stepper.reset()
   }
 
   ngOnDestroy(): void {

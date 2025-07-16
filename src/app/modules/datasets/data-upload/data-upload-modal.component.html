@@ -1,8 +1,7 @@
 <seed-modal-header [close]="close" [title]="title" titleIcon="fa-solid:arrow-up-from-bracket"></seed-modal-header>
-
-<mat-stepper class="stepper-disable-hover" #stepper [linear]="true" (selectionChange)="onStepChange($event)">
+<mat-stepper class="stepper-disable-hover" #stepper [linear]="true">
   <!-- STEP 1: select file -->
-  <mat-step [completed]="completed[1]" label="File Select">
+  <mat-step [completed]="completed[1]" label="File Select" editable="false">
     <div class="">
       <form class="flex flex-col" [formGroup]="form">
         <!-- Cycle -->
@@ -75,7 +74,7 @@
       <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total" title="Uploading Data..."></seed-progress-bar>
     } @else {
       <div class="mt-5 flex w-full justify-between">
-        <button (click)="goToStep1()" mat-stroked-button>Select New File</button>
+        <button (click)="resetStepper()" mat-stroked-button>Select New File</button>
         <button (click)="goToMapping()" mat-flat-button color="primary">
           <mat-icon class="mx-2 scale-50" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
           <span>Continue to Mapping</span>
