@@ -2,34 +2,17 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatButtonToggleModule } from '@angular/material/button-toggle'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSidenavModule } from '@angular/material/sidenav'
 import type { MatStepper } from '@angular/material/stepper'
-import { MatStepperModule } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
-import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import type { ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
-import { ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
-import { DatasetService } from '@seed/api/dataset'
-import type { MappingSuggestionsResponse } from '@seed/api/mapping'
-import { MappingService } from '@seed/api/mapping'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { ProgressResponse } from '@seed/api/progress'
-import { UserService } from '@seed/api/user'
+import type { Column, ColumnMappingProfile, ColumnMappingProfileType, Cycle, ImportFile, MappingResultsResponse, MappingSuggestionsResponse, Organization, ProgressResponse } from '@seed/api'
+import { ColumnMappingProfileService, ColumnService, CycleService, DatasetService, MappingService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
+import { AgGridAngular } from 'ag-grid-angular'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/inventory'
+import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import { HelpComponent } from './help.component'
 import { MapDataComponent } from './step1/map-data.component'
 import { SaveMappingsComponent } from './step3/save-mappings.component'
@@ -45,13 +28,7 @@ import { MatchMergeComponent } from './step4/match-merge.component'
     HelpComponent,
     MapDataComponent,
     MatchMergeComponent,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatDividerModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatStepperModule,
+    MaterialImports,
     PageComponent,
     ProgressBarComponent,
     ReactiveFormsModule,
