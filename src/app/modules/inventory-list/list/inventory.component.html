@@ -42,8 +42,9 @@
     <!-- Filter and Sort chips -->
     @if (gridApi && columnDefs) {
       <seed-inventory-filter-sort-chips
-        [gridApi]="gridApi"
+        [columns]="columns"
         [columnDefs]="columnDefs"
+        [gridApi]="gridApi"
         [type]="type"
         [userSettings]="userSettings"
       ></seed-inventory-filter-sort-chips>

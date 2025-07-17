@@ -123,7 +123,7 @@ export type FilterSortChip = {
   original: string;
 }
 
-export type InventoryDependencies = [CurrentUser, Cycle[], Label[], Profile[]]
+export type InventoryDependencies = [Column[], CurrentUser, Cycle[], Label[], Profile[]]
 
 type AccessLevelInstance = {
   id: number;
