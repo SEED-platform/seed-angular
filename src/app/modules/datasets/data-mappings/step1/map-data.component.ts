@@ -231,7 +231,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
       const fileHeader = node.data.from_field
       const suggestedColumnName = suggested_column_mappings[fileHeader][1]
-      const displayName = columnMap[suggestedColumnName]
+      const displayName = columnMap[suggestedColumnName] ?? fileHeader
       node.setDataValue('to_field_display_name', displayName)
     })
   }
