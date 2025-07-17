@@ -7,15 +7,14 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle, Dataset } from '@seed/api'
-import { CycleService, DatasetService } from '@seed/api'
-import { UserService } from '@seed/api'
+import { CycleService, DatasetService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { DataUploadModalComponent } from './data-upload/data-upload-modal.component'
 import { MeterDataUploadModalComponent } from './data-upload/meter-upload-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
-import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-data',

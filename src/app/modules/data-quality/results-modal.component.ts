@@ -2,13 +2,13 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef } from 'ag-grid-community'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { DataQualityResults } from '@seed/api'
 import { DataQualityService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef } from 'ag-grid-community'
-import { Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-data-quality-results',
@@ -16,7 +16,7 @@ import { Subject, takeUntil, tap } from 'rxjs'
   imports: [
     AgGridAngular,
     CommonModule,
-    MaterialImports
+    MaterialImports,
   ],
 })
 export class ResultsModalComponent implements OnDestroy, OnInit {

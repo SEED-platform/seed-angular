@@ -1,10 +1,10 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { ErrorService } from '@seed/services'
-import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, tap } from 'rxjs'
+import { ErrorService } from '@seed/services'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import type {
   ColumnMapping,

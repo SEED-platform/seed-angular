@@ -1,7 +1,7 @@
 import { Clipboard } from '@angular/cdk/clipboard'
 import { Component, inject, input } from '@angular/core'
-import { SnackBarService } from '../../../app/core/snack-bar/snack-bar.service'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from '../../../app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-clipboard',

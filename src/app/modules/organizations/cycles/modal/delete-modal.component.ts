@@ -6,8 +6,8 @@ import type { Cycle } from '@seed/api'
 import { CycleService } from '@seed/api'
 import { AlertComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
-import { UploaderService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services'
+import { UploaderService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({

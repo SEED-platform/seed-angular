@@ -1,5 +1,5 @@
-import { Column, CurrentUser, Cycle, Label, Scenario } from '@seed/api'
 import type { ColDef, ValueGetterParams } from 'ag-grid-community'
+import type { Column, CurrentUser, Cycle, Label, Scenario } from '@seed/api'
 
 export type InventoryDisplayType = 'Property' | 'Tax Lot'
 export type InventoryStateType = 'PropertyState' | 'TaxLotState'

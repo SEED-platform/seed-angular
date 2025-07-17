@@ -6,8 +6,8 @@ import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 import { MaterialImports } from '@seed/materials'
+import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 
 @Component({
   selector: 'seed-vertical-navigation-basic-item',

@@ -21,7 +21,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   imports: [
     AgGridAngular,
     CommonModule,
-    MaterialImports,    
+    MaterialImports,
     ModalHeaderComponent,
     ProgressBarComponent,
   ],

@@ -1,9 +1,9 @@
 import type { AfterViewInit, ElementRef } from '@angular/core'
 import { Component, ViewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MaterialImports } from '@seed/materials'
 import type { ICellEditorAngularComp } from 'ag-grid-angular'
 import type { ICellEditorParams } from 'ag-grid-community'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-ag-grid-auto-complete-cell',

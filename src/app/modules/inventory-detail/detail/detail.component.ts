@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import type { Column, CurrentUser, Label, Organization, OrganizationUserSettings} from '@seed/api';
+import type { Column, CurrentUser, Label, Organization, OrganizationUserSettings } from '@seed/api'
 import { ColumnService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
