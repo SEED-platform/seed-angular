@@ -1,14 +1,14 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { SalesforceMapping } from '@seed/api/salesforce'
 import { SalesforceService } from '@seed/api/salesforce'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-salesforce-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [MatButtonModule, MatDialogModule],
+  imports: [MaterialImports],
 })
 export class DeleteModalComponent implements OnInit {
   private _salesforceService = inject(SalesforceService)

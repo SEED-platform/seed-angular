@@ -1,13 +1,12 @@
 import { Clipboard } from '@angular/cdk/clipboard'
 import { Component, inject, input } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import { SnackBarService } from '../../../app/core/snack-bar/snack-bar.service'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-clipboard',
   templateUrl: './clipboard.component.html',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MaterialImports],
 })
 export class ClipboardComponent {
   private _clipboard = inject(Clipboard)

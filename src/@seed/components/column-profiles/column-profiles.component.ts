@@ -1,23 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatSelectChange } from '@angular/material/select'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { Column, CurrentUser } from '@seed/api'
+import { ColumnService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
@@ -31,11 +23,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
     AgGridAngular,
     CommonModule,
     PageComponent,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    MatSidenavModule,
-    MatTooltipModule,
+    MaterialImports,
     ModalComponent,
   ],
 })

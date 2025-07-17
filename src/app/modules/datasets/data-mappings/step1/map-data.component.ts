@@ -3,20 +3,12 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatButtonToggleModule } from '@angular/material/button-toggle'
-import { MatOptionModule } from '@angular/material/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatStepperModule } from '@angular/material/stepper'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import type { Column, ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType, Cycle, DataMappingRow, ImportFile, MappingSuggestionsResponse } from '@seed/api'
 import { ColumnMappingProfileService } from '@seed/api'
 import { AlertComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -36,15 +28,7 @@ import { CreateProfileComponent } from './modal/create-profile.component'
     AlertComponent,
     CommonModule,
     HelpComponent,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatDividerModule,
-    MatIconModule,
-    MatOptionModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatStepperModule,
-    MatTooltipModule,
+    MaterialImports,
     PageComponent,
     ReactiveFormsModule,
     FormsModule,

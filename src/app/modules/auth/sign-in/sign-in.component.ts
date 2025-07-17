@@ -2,18 +2,13 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
 import { ConfigService } from '@seed/api/config'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { TermsService } from '@seed/services'
 import { AuthService } from 'app/core/auth/auth.service'
 
@@ -25,12 +20,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   imports: [
     AlertComponent,
     FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
+    MaterialImports,
     ReactiveFormsModule,
     RouterLink,
   ],

@@ -1,22 +1,19 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { SalesforceMapping } from '@seed/api/salesforce'
 import { SalesforceService } from '@seed/api/salesforce'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-salesforce-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [FormsModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)

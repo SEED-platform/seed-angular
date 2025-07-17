@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router } from '@angular/router'
 import { filter, Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
@@ -14,6 +12,7 @@ import {
   VerticalNavigationGroupItemComponent,
   VerticalNavigationSpacerItemComponent,
 } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 
 @Component({
@@ -22,8 +21,7 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    MatIconModule,
-    MatTooltipModule,
+    MaterialImports,
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,

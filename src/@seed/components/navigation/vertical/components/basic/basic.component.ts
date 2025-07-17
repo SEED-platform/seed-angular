@@ -1,20 +1,19 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-vertical-navigation-basic-item',
   templateUrl: './basic.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, MatTooltipModule, RouterLink, RouterLinkActive, SharedImports],
+  imports: [CommonModule, MaterialImports, RouterLink, RouterLinkActive, SharedImports],
 })
 export class VerticalNavigationBasicItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { RouterModule } from '@angular/router'
+import { MaterialImports } from '@seed/materials'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, take, takeUntil, tap } from 'rxjs'
@@ -24,10 +21,7 @@ import { MeterDataUploadModalComponent } from '../../data-upload/meter-upload-mo
   imports: [
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-    MatProgressBarModule,
+    MaterialImports,
     RouterModule,
   ],
 })

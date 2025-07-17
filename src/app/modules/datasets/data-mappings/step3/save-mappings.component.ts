@@ -1,11 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, switchMap, take, tap } from 'rxjs'
@@ -18,6 +14,7 @@ import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
 import { ResultsModalComponent } from 'app/modules/data-quality'
 import type { InventoryType } from 'app/modules/inventory'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-save-mappings',
@@ -25,10 +22,7 @@ import type { InventoryType } from 'app/modules/inventory'
   imports: [
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressBarModule,
+    MaterialImports,
   ],
 })
 export class SaveMappingsComponent implements OnChanges, OnDestroy {

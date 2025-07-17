@@ -3,16 +3,8 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import type { AfterViewInit, ElementRef, OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSelectModule } from '@angular/material/select'
-import { type MatStepper, MatStepperModule } from '@angular/material/stepper'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { type MatStepper } from '@angular/material/stepper'
 import { Router, RouterModule } from '@angular/router'
 import { catchError, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle } from '@seed/api/cycle'
@@ -25,22 +17,14 @@ import { ErrorService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-data-upload-modal',
   templateUrl: './data-upload-modal.component.html',
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatStepperModule,
+    MaterialImports,
     ModalHeaderComponent,
     ProgressBarComponent,
     ReactiveFormsModule,

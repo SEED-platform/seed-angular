@@ -1,13 +1,10 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { booleanAttribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatMenuModule } from '@angular/material/menu'
 import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
+import { MaterialImports } from '@seed/materials'
 import { sha256 } from '@seed/utils'
 import { AuthService } from 'app/core/auth/auth.service'
 
@@ -17,7 +14,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'user',
-  imports: [MatButtonModule, MatDividerModule, MatIconModule, MatMenuModule],
+  imports: [MaterialImports],
 })
 export class UserComponent implements OnInit, OnDestroy {
   private _authService = inject(AuthService)

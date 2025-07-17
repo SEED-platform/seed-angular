@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
@@ -18,6 +16,7 @@ import { naturalSort } from '@seed/utils'
 import { DataUploadModalComponent } from './data-upload/data-upload-modal.component'
 import { MeterDataUploadModalComponent } from './data-upload/meter-upload-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-data',
@@ -26,8 +25,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   imports: [
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatIconModule,
+    MaterialImports,
     PageComponent,
   ],
 })

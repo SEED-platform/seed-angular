@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { RouterModule } from '@angular/router'
 import { of, Subject, switchMap, takeUntil } from 'rxjs'
 import { MappingService } from '@seed/api/mapping'
@@ -12,13 +11,14 @@ import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
 import { ResultsComponent } from './results.component'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-match-merge',
   templateUrl: './match-merge.component.html',
   imports: [
     CommonModule,
-    MatButtonModule,
+    MaterialImports,
     ProgressBarComponent,
     RouterModule,
     ResultsComponent,

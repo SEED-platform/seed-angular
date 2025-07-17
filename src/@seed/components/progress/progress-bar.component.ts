@@ -1,14 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-progress-bar',
   templateUrl: './progress-bar.component.html',
-  imports: [CommonModule, MatDividerModule, MatProgressBarModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class ProgressBarComponent {
   @Input() total: number

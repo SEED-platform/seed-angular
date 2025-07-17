@@ -2,15 +2,11 @@ import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { Dataset } from '@seed/api/dataset'
 import { DatasetService } from '@seed/api/dataset'
 import { ModalHeaderComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 
 @Component({
@@ -18,12 +14,7 @@ import { SEEDValidators } from '@seed/validators'
   templateUrl: './form-modal.component.html',
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
+    MaterialImports,
     ModalHeaderComponent,
     ReactiveFormsModule,
   ],
