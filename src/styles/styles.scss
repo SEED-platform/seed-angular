@@ -216,3 +216,7 @@
     border-radius: 25px !important;
   }
 }
+
+.menu-option {
+  @apply w-full p-2 flex items-center gap-4 rounded hover:bg-[#F4F5F4] hover:dark:bg-[#2E3B4A] text-sm cursor-pointer
+}

@@ -14,23 +14,23 @@
 <!-- MENU -->
 <ng-template #menu>
   <div 
-    class="w-80 p-2 border text-sm rounded cursor-pointer"
+    class="w-80 p-2 border text-sm rounded"
     [class.bg-[#2A3341]]="scheme === 'dark'"
     [class.bg-white]="scheme === 'light'"
   >
 
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol('asc')">
+    <div class="menu-option" (click)="sortCol('asc')">
       <mat-icon svgIcon="fa-solid:arrow-up" class="scale-50"></mat-icon>
       <span>Sort Ascending</span>
     </div>
     
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol('desc')">
+    <div class="menu-option" (click)="sortCol('desc')">
       <mat-icon svgIcon="fa-solid:arrow-down" class="scale-50"></mat-icon>
       <span>Sort Descending</span>
     </div>
     
     @if (sortIcon) {
-      <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50" [ngClass]="{'': scheme === 'dark'}" (click)="sortCol(null)">
+      <div class="menu-option" (click)="sortCol(null)">
         <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
         <span>Clear Sort</span>
       </div>
@@ -38,19 +38,16 @@
 
     <mat-divider></mat-divider>
 
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
-      [ngClass]="{'': scheme === 'dark'}" (click)="pinCol('left')">
+    <div class="menu-option" (click)="pinCol('left')">
       <mat-icon [svgIcon]="'fa-solid:thumbtack'" class="scale-50"></mat-icon>
       <span>Pin Left</span>
     </div>
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
-      [ngClass]="{'': scheme === 'dark'}" (click)="pinCol('right')">
+    <div class="menu-option" (click)="pinCol('right')">
       <mat-icon svgIcon="fa-solid:thumbtack" class="scale-50"></mat-icon>
       <span>Pin right</span>
     </div>
     @if (pinState) {
-      <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
-        [ngClass]="{'': scheme === 'dark'}" (click)="pinCol(null)">
+      <div class="menu-option" (click)="pinCol(null)">
         <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
         <span>Unpin</span>
       </div>
@@ -59,14 +56,12 @@
     <mat-divider></mat-divider>
 
     <!-- RESET COLUMNS -->
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
-      [ngClass]="{'': scheme === 'dark'}" (click)="resetCol()">
+    <div class="menu-option" (click)="resetCol()">
       <mat-icon svgIcon="fa-solid:rotate" class="scale-50"></mat-icon>
       <span>Reset This Column</span>
     </div>
     
-    <div class="w-full p-2 flex items-center gap-4 rounded hover:bg-primary hover:bg-opacity-50"
-      [ngClass]="{'': scheme === 'dark'}" (click)="resetAll()">
+    <div class="menu-option" (click)="resetAll()">
       <div class="w-6"></div>
       <span>Reset All Columns</span>
     </div>

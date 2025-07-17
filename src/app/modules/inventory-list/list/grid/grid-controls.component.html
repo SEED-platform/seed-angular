@@ -1,5 +1,43 @@
 <div class="mx-2 flex justify-between">
-  <mat-icon class="scale-75 cursor-pointer" (click)="resetGrid()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid"></mat-icon>
+  <!-- <mat-icon class="scale-75 cursor-pointer" (click)="resetGrid()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid"></mat-icon> -->
+  <mat-icon class="scale-75 cursor-pointer" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid Menu" [matMenuTriggerFor]="menu"></mat-icon>
+
+  <mat-menu #menu="matMenu">
+    <div class="px-0">
+      @if (gridApi) {
+        <div class="menu-option"
+          [ngClass]="{'': scheme === 'dark'}" (click)="resetGrid()">
+          <mat-icon svgIcon="fa-solid:rotate" class="scale-50"></mat-icon>
+          <span class="w-200">Reset Grid</span>
+        </div>
+        <mat-divider class="mx-3 my-1"></mat-divider>
+        <div class="menu-option"
+          [ngClass]="{'': scheme === 'dark'}" (click)="resetColumns()">
+          <div class="w-6"></div>
+          <span>Reset Columns</span>
+        </div>
+        <div class="menu-option"
+          [ngClass]="{'': scheme === 'dark'}" (click)="resetFilters()">
+          <div class="w-6"></div>
+          <span>Reset Filters</span>
+        </div>
+        <div class="menu-option"
+          [ngClass]="{'': scheme === 'dark'}" (click)="resetSorts()">
+          <div class="w-6"></div>
+          <span>Reset Sorts</span>
+        </div>
+        <mat-divider class="mx-3 my-1"></mat-divider>
+      }
+
+      <div class="menu-option"
+        [ngClass]="{'': scheme === 'dark'}" (click)="resetUserSettings()">
+        <div class="w-6"></div>
+        <span>Reset User Settings</span>
+      </div>
+    </div>
+
+  </mat-menu>
+  
   <div class="my-auto flex justify-end">
     @if (selectedViewIds.length > 0) {
       <span class="my-auto mr-10">({{ selectedViewIds.length }} selected)</span>

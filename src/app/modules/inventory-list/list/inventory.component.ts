@@ -293,12 +293,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
     return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
   }
 
-  onGridReset() {
-    this.userSettings.filters = {}
-    this.userSettings.sorts = {}
-    this.refreshInventory$.next()
-  }
-
   onPageChange(page: number) {
     this.page = page
     this.refreshInventory$.next()

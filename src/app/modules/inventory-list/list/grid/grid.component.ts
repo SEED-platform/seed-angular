@@ -5,7 +5,6 @@ import { Router } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { take } from 'rxjs'
 import type { Label } from '@seed/api/label'
 import type { OrganizationUserSettings } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
@@ -218,28 +217,6 @@ export class InventoryGridComponent implements OnChanges {
         return value ? eGui : ''
       },
     }
-  }
-
-  resetGrid = () => {
-    if (!this.gridApi) return
-
-    const columns = this.gridApi.getColumns()
-    this.gridApi.setFilterModel(null)
-    this.gridApi.applyColumnState({ state: [], applyOrder: true })
-    this.gridApi.resetColumnState()
-    this.gridApi.autoSizeColumns(columns)
-    this.gridApi.refreshClientSideRowModel()
-    this.gridApi.refreshCells({ force: true })
-    this.resetUserSettings()
-
-    this.gridReset.emit()
-  }
-
-  resetUserSettings() {
-    this.userSettings = {}
-    this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
-      .pipe((take(1)))
-      .subscribe()
   }
 
   /*
