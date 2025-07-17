@@ -19,7 +19,7 @@ import { MeterService } from '@seed/api/meters'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ProgressBarComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import type { ProgressBarObj, ProposedMeterImport, ValidatedTypeUnit } from '@seed/services/uploader'
+import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -56,9 +56,9 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
   completed = { 1: false, 2: false }
   file: File
   fileId: number
-  proposedImports: ProposedMeterImport[] = []
+  proposedImports: MeterImport[] = []
   typeUnits: ValidatedTypeUnit[] = []
-  importedData: ProposedMeterImport[] = []
+  importedData: MeterImport[] = []
   gridTheme$ = this._configService.gridTheme$
   inProgress = false
   uploading = false
@@ -142,7 +142,7 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
       this._meterService.list(orgId, viewId)
       this._meterService.listReadings(orgId, viewId, interval, excludedIds)
       this._snackBar.success('Meter data uploaded successfully')
-      this.importedData = this.progressBarObj.message as ProposedMeterImport[]
+      this.importedData = this.progressBarObj.message as MeterImport[]
       setTimeout(() => {
         this.stepper.next()
       })
@@ -158,8 +158,6 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
         switchMap((data) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: data.progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

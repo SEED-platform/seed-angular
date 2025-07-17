@@ -33,3 +33,5 @@ export type ColumnMappingSuggestionResponse = {
   status: string;
   data: Record<string, ['PropertyState' | 'TaxLotState', string, number]>;
 }
+
+export type ColumnMappingProfileType = 'Normal' | 'BuildingSync Default' | 'BuildingSync Custom'

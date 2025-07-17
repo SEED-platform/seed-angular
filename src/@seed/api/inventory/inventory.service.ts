@@ -162,6 +162,20 @@ export class InventoryService {
     )
   }
 
+  deleteTaxlotStates({ orgId, viewIds }: DeleteParams): Observable<object> {
+    const url = '/api/v3/taxlots/batch_delete/'
+    const data = { taxlot_view_ids: viewIds }
+    const options = { params: { organization_id: orgId }, body: data }
+    return this._httpClient.delete(url, options).pipe(
+      tap(() => {
+        this._snackBar.success('Tax lot states deleted')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting tax lot states')
+      }),
+    )
+  }
+
   /*
    * Get PropertyView or TaxLotView
    */

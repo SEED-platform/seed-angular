@@ -213,3 +213,11 @@
     border-radius: 25px !important;
   }
 }
+
+.vertical-divider {
+  @apply border
+}
+
+.mock-button {
+  @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
+}

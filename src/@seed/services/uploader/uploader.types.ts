@@ -15,11 +15,12 @@ export type ProgressBarObj = {
 
 export type CheckProgressLoopParams = {
   progressKey: string;
-  offset: number;
-  multiplier: number;
-  successFn: () => void;
-  failureFn: () => void;
+  offset?: number;
+  multiplier?: number;
+  successFn?: () => void;
+  failureFn?: () => void;
   progressBarObj: ProgressBarObj;
+  subProgress?: boolean;
 }
 
 export type UpdateProgressBarObjParams = {
@@ -42,15 +43,18 @@ export type SensorPreviewResponse = {
 export type SensorReadingPreview = { column_name: string; exists: boolean; num_readings: number }
 
 export type GreenButtonMeterPreview = {
-  proposed_imports: ProposedMeterImport[];
+  proposed_imports: MeterImport[];
   validated_type_units: ValidatedTypeUnit[];
 }
 
-export type ProposedMeterImport = {
+export type MeterImport = {
+  cycles?: string;
+  errors?: string;
   incoming: number;
   property_id: number;
+  pm_property_id?: number;
   source_id: string;
-  systemId: number;
+  system_id: number;
   type: string;
   successfully_imported?: number;
 }
@@ -58,4 +62,10 @@ export type ProposedMeterImport = {
 export type ValidatedTypeUnit = {
   parsed_type: string;
   parsed_unit: string;
+}
+
+export type MeterPreviewResponse = {
+  proposed_imports: MeterImport[];
+  unlinkable_pm_ids: number[];
+  validated_type_units: ValidatedTypeUnit[];
 }

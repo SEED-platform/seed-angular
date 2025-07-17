@@ -23,6 +23,7 @@
         [selectedViewIds]="selectedViewIds"
         [type]="type"
         (refreshInventory)="refreshInventory$.next()"
+        (selectedAll)="onSelectAll($event)"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->

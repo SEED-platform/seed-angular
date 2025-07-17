@@ -78,8 +78,8 @@ export class SensorsGridComponent implements OnChanges {
   actionRenderer() {
     return `
       <div class="mt-2 flex gap-2 align-center">
-        <span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
-        <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }

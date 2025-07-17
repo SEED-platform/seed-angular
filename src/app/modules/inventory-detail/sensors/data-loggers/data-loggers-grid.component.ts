@@ -74,16 +74,16 @@ export class DataLoggersGridComponent implements OnChanges {
   actionRenderer() {
     return `
       <div class="flex gap-2 align-center">
-        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900" title="Add Sensors" data-action="addSensors">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-full h-8 mt-1 px-3 hover:bg-blue-200 dark:hover:bg-sky-900" title="Add Sensors" data-action="addSensors">
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Sensors</span>
         </span>
-        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addReadings">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-full h-8 mt-1 px-3 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addReadings">
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Readings</span>
         </span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }

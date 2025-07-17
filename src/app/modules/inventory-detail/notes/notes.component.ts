@@ -145,8 +145,8 @@ export class NotesComponent implements OnDestroy, OnInit {
     const canEdit = params.data.type === 'Manually Created'
     return `
       <div class="flex gap-2 mt-2 align-center">
-      <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
-      ${canEdit ? '<span class="material-icons-outlined action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
+      <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${canEdit ? '<span class="material-icons-outlined  cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }

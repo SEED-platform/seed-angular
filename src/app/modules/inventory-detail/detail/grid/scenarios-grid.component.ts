@@ -73,7 +73,7 @@ export class ScenariosGridComponent implements OnChanges {
   }
 
   actionRenderer = () => {
-    return '<span class="material-icons mt-2 action-icon cursor-pointer text-secondary">clear</span>'
+    return '<span class="material-icons mt-2  cursor-pointer text-secondary">clear</span>'
   }
 
   onCellClicked(event: CellClickedEvent) {

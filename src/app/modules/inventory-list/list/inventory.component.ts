@@ -155,7 +155,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    */
   getDependencies(org_id: number) {
     this.orgId = org_id
-    this._cycleService.get(this.orgId)
+    this._cycleService.getCycles(this.orgId)
 
     return combineLatest([
       this._userService.currentUser$,
@@ -180,7 +180,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     this.cycles = cycles
     this.cycle = this.cycles.find((c) => c.id === this.userSettings?.cycleId) ?? this.cycles[0]
-    this.cycleId = this.cycle.id
+    this.cycleId = this.cycle?.id
 
     this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
     this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
@@ -268,7 +268,13 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+    this.selectedViewIds = this.type === 'taxlots'
+      ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
+      : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+  }
+
+  onSelectAll(selectedViewIds: number[]) {
+    this.selectedViewIds = selectedViewIds
   }
 
   onProfileChange(id: number) {

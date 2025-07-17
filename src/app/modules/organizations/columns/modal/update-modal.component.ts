@@ -50,8 +50,6 @@ export class UpdateModalComponent implements OnDestroy, OnInit {
     this._uploaderService
       .checkProgressLoop({
         progressKey: this.data.progressResponse.progress_key,
-        offset: 0,
-        multiplier: 1,
         successFn,
         failureFn,
         progressBarObj: this.progressBarObj,

@@ -2,12 +2,14 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, interval, of, switchMap, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, combineLatest, finalize, interval, of, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,
   GreenButtonMeterPreview,
+  MeterPreviewResponse,
+  ProgressBarObj,
   SensorPreviewResponse,
   SensorReadingPreview,
   UpdateProgressBarObjParams,
@@ -19,26 +21,36 @@ export class UploaderService {
   private _httpClient = inject(HttpClient)
   private _errorService = inject(ErrorService)
 
+  get defaultProgressBarObj(): ProgressBarObj {
+    return {
+      message: [],
+      progress: 0,
+      total: 100,
+      complete: false,
+      statusMessage: '',
+      progressLastUpdated: null,
+      progressLastChecked: null,
+    }
+  }
+
   /*
    * Checks a progress key for updates until it completes
    */
   checkProgressLoop({
     progressKey,
-    offset,
-    multiplier,
-    successFn,
-    failureFn,
+    offset = 0,
+    multiplier = 1,
+    successFn = () => null,
+    failureFn = () => null,
     progressBarObj,
+    subProgress = false,
   }: CheckProgressLoopParams): Observable<ProgressResponse> {
     const isCompleted = (status: string) => ['error', 'success', 'warning'].includes(status)
 
-    return interval(750).pipe(
+    let progressLoop$ = interval(750).pipe(
       switchMap(() => this.checkProgress(progressKey)),
       tap((response) => {
         this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
-      }),
-      takeWhile((response) => !isCompleted(response.status), true), // end stream
-      tap((response) => {
         if (response.status === 'success') successFn()
       }),
       catchError(() => {
@@ -47,6 +59,39 @@ export class UploaderService {
         return throwError(() => new Error('Progress check failed'))
       }),
     )
+
+    // subProgress loops run until parent progress completes
+    if (!subProgress) {
+      progressLoop$ = progressLoop$.pipe(
+        takeWhile((response) => !isCompleted(response.status), true), // end stream
+      )
+    }
+
+    return progressLoop$
+  }
+
+  /*
+  * Check the progress of Main Progress and its Sub Progress
+  * Main progress will run until it completes
+  * Sub Progresses can complete several times and will run continuously until Main Progress is completed
+  * the stop$ stream is used to end the Sub Progress stream
+  */
+  checkProgressLoopMainSub(mainParams: CheckProgressLoopParams, subParams: CheckProgressLoopParams) {
+    const stop$ = new Subject<void>()
+    const main$ = this.checkProgressLoop(mainParams)
+      .pipe(
+        finalize(() => {
+          stop$.next()
+          stop$.complete()
+        }),
+      )
+
+    const sub$ = this.checkProgressLoop({ ...subParams, subProgress: true })
+      .pipe(
+        takeUntil(stop$),
+      )
+
+    return combineLatest([main$, sub$])
   }
 
   /*
@@ -112,10 +157,19 @@ export class UploaderService {
     )
   }
 
-  saveRawData(orgId: number, cycleId: number, fileId: number, multipleCycleUpload = false): Observable<unknown> {
+  metersPreview(orgId: number, fileId: number): Observable<MeterPreviewResponse> {
+    const url = `/api/v3/import_files/${fileId}/pm_meters_preview/?organization_id=${orgId}`
+    return this._httpClient.get<MeterPreviewResponse>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching meters preview')
+      }),
+    )
+  }
+
+  saveRawData(orgId: number, cycleId: number, fileId: number, multipleCycleUpload = false): Observable<ProgressResponse> {
     const url = `/api/v3/import_files/${fileId}/start_save_data/?organization_id=${orgId}`
     const body = { cycle_id: cycleId, multiple_cycle_upload: multipleCycleUpload }
-    return this._httpClient.post(url, body).pipe(
+    return this._httpClient.post<ProgressResponse>(url, body).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error saving raw data')
       }),

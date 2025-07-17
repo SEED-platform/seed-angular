@@ -60,3 +60,24 @@ export type UnitNames =
   | 'MJ/m²/year'
   | 'kWh/m²/year'
   | 'kBtu/m²/year'
+
+export type DataQualityResultsResponse = {
+  data: DataQualityResults[];
+}
+
+export type DataQualityResults = {
+  [key: string]: unknown;
+  data_quality_results: DataQualityResult[];
+}
+
+export type DataQualityResult = {
+  condition: string;
+  detailed_message: string;
+  field: string;
+  formatted_field: string;
+  label: string;
+  message: string;
+  severity: string;
+  table_name: string;
+  value: unknown;
+}
