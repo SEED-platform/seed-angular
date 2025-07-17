@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { MatSelectModule } from '@angular/material/select'
 import type { Cycle } from '@seed/api/cycle'
+import { MaterialImports } from '@seed/materials'
 import type { Profile } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-config-selector',
   templateUrl: './config-selector.component.html',
-  imports: [MatSelectModule],
+  imports: [MaterialImports],
 })
 export class ConfigSelectorComponent {
   @Input() label = ''

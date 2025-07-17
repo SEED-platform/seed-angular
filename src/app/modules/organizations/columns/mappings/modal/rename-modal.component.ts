@@ -7,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
-import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
+import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column-mapping-profile'
 
 @Component({
   selector: 'seed-column-mappings-rename-modal',

@@ -1,15 +1,12 @@
 import { CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop'
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIcon } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltip } from '@angular/material/tooltip'
 import { Subject, takeUntil } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import type { ProgressResponse } from '@seed/api/progress'
+import type { Column, ProgressResponse } from '@seed/api'
+import { ColumnService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { UpdateModalComponent } from '../modal/update-modal.component'
 
@@ -17,7 +14,7 @@ import { UpdateModalComponent } from '../modal/update-modal.component'
   selector: 'seed-organizations-column-geocoding-properties',
   templateUrl: './geocoding.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports, CdkDropList, CdkDrag, MatButtonModule, MatIcon, MatSelectModule, MatTooltip, ReactiveFormsModule],
+  imports: [SharedImports, CdkDropList, CdkDrag, MaterialImports, ReactiveFormsModule],
 })
 export class GeocodingComponent implements OnDestroy {
   protected _columnService = inject(ColumnService)

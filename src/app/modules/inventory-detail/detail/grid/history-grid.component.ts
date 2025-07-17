@@ -1,20 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBar } from '@angular/material/progress-bar'
+import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { finalize, Subject, tap } from 'rxjs'
-import type { Column, GenericColumn } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
-import type { OrganizationUserSettings } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { Column, CurrentUser, GenericColumn, OrganizationUserSettings } from '@seed/api'
+import { InventoryService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -27,7 +22,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-inventory-detail-history',
   templateUrl: './history-grid.component.html',
-  imports: [AgGridAngular, CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatDividerModule, MatProgressBar],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {
   @Input() columns: Column[]

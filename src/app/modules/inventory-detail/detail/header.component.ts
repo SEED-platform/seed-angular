@@ -1,17 +1,14 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { type MatSelect, MatSelectModule } from '@angular/material/select'
-import { MatTableModule } from '@angular/material/table'
+import { type MatSelect } from '@angular/material/select'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import type { AccessLevelInstance, Organization } from '@seed/api/organization'
 import { LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { ModalComponent } from '../../column-list-profile/modal/modal.component'
@@ -25,11 +22,7 @@ import { MapComponent } from './map.component'
     CommonModule,
     LabelComponent,
     MapComponent,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatTableModule,
-    MatSelectModule,
+    MaterialImports,
     ModalComponent,
   ],
 })

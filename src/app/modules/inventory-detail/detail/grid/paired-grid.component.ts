@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -10,13 +9,14 @@ import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import type { Organization } from '@seed/api/organization'
 import { PairingService } from '@seed/api/pairing'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { GenericRelatedInventory, InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-paired-grid',
   templateUrl: './paired-grid.component.html',
-  imports: [AgGridAngular, CommonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class PairedGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { type ValidationErrors, type ValidatorFn } from '@angular/forms'
-import type { DataQualityFormGroup } from '@seed/api/data-quality'
-import type { Rule } from '@seed/api/data-quality/data-quality.types'
+import type { DataQualityFormGroup } from '@seed/api'
+import type { Rule } from '@seed/api/data-quality'
 import { DATATYPE_LOOKUP } from './constants'
 
 @Injectable({ providedIn: 'root' })

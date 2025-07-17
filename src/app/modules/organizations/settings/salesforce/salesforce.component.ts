@@ -1,27 +1,14 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { MatTabsModule } from '@angular/material/tabs'
+import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import type { Label } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { SalesforceConfig, SalesforceMapping } from '@seed/api/salesforce'
-import { SalesforceService } from '@seed/api/salesforce'
+import type { Column, Label, Organization, SalesforceConfig, SalesforceMapping } from '@seed/api'
+import { ColumnService, LabelService, OrganizationService, SalesforceService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { DeleteModalComponent, FormModalComponent } from './modal'
 
@@ -29,15 +16,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
   selector: 'seed-organizations-settings-salesforce',
   templateUrl: './salesforce.component.html',
   imports: [
-    MatButtonModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
-    MatTableModule,
-    MatTabsModule,
+    MaterialImports,
     PageComponent,
     ReactiveFormsModule,
     SharedImports,

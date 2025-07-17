@@ -1,12 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatCardModule } from '@angular/material/card'
-import { MatDialogModule } from '@angular/material/dialog'
-import { MatGridListModule } from '@angular/material/grid-list'
-import { MatIconModule } from '@angular/material/icon'
-import { MatListModule } from '@angular/material/list'
-import { MatTabsModule } from '@angular/material/tabs'
 import { RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import { filter, Subject, tap } from 'rxjs'
@@ -16,6 +10,7 @@ import { type Cycle, CycleService } from '@seed/api/cycle'
 import { UserService } from '@seed/api/user'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-analyses',
@@ -24,12 +19,7 @@ import { SharedImports } from '@seed/directives'
     AnalysesGridComponent,
     AgGridAngular,
     CommonModule,
-    MatCardModule,
-    MatDialogModule,
-    MatGridListModule,
-    MatIconModule,
-    MatListModule,
-    MatTabsModule,
+    MaterialImports,
     NotFoundComponent,
     PageComponent,
     RouterLink,

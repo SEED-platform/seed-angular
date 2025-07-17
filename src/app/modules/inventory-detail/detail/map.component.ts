@@ -1,9 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit } from '@angular/core'
 import { Component, Input } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { defaults as defaultControls } from 'ol/control'
 import WKT from 'ol/format/WKT'
 import TileLayer from 'ol/layer/Tile'
@@ -16,12 +13,13 @@ import VectorSource from 'ol/source/Vector'
 import Stroke from 'ol/style/Stroke'
 import Style from 'ol/style/Style'
 import View from 'ol/View'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryType, State } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-map',
   templateUrl: './map.component.html',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class MapComponent implements AfterViewInit {
   @Input() state: State

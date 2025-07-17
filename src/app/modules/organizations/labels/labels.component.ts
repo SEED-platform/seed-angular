@@ -1,17 +1,12 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatTableDataSource } from '@angular/material/table'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Label } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { Label, Organization } from '@seed/api'
+import { LabelService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, LabelComponent, PageComponent, TableContainerComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { FormModalComponent } from './modal'
 
 @Component({
@@ -21,11 +16,7 @@ import { FormModalComponent } from './modal'
     LabelComponent,
     PageComponent,
     TableContainerComponent,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatTableModule,
+    MaterialImports,
   ],
 })
 export class LabelsComponent implements OnInit, OnDestroy {

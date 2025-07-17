@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile } from '@seed/api/column_mapping_profile'
+import { type ColumnMapping, type ColumnMappingProfile } from '@seed/api/column-mapping-profile'
 import { SEEDValidators } from '@seed/validators'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 

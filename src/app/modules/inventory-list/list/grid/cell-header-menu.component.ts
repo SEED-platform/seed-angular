@@ -1,12 +1,12 @@
 import { Component } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { IHeaderParams } from 'ag-grid-community'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-inventory-grid-cell-header-menu',
   templateUrl: './cell-header-menu.component.html',
-  imports: [MatIconModule],
+  imports: [MaterialImports],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp {
   // THIS COMPONENT IS STILL IN DEVELOPMENT

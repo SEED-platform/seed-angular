@@ -1,20 +1,17 @@
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
-import { NoteService } from '@seed/api/notes'
-import type { Note, NoteData } from '@seed/api/notes/notes.types'
+import type { Note, NoteData } from '@seed/api'
+import { NoteService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-notes-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [FormsModule, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatInputModule, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy {
   private _noteService = inject(NoteService)

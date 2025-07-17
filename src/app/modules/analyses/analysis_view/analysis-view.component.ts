@@ -1,20 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { AnalysesMessage, Analysis, View } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import type { AnalysesMessage, Analysis, Cycle, View } from '@seed/api'
+import { AnalysisService, CycleService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { SafeUrlPipe } from '@seed/pipes/safe-url/safe-url.pipe'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory'
@@ -22,7 +17,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-analysis-view',
   templateUrl: './analysis-view.component.html',
-  imports: [AgGridAngular, CommonModule, MatIconModule, MatDividerModule, NotFoundComponent, PageComponent, RouterModule, SafeUrlPipe],
+  imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent, RouterModule, SafeUrlPipe],
 })
 export class AnalysisViewComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)

@@ -1,11 +1,6 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatIconModule } from '@angular/material/icon'
 import type { ProgressBarMode } from '@angular/material/progress-bar'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import { type Feature, Overlay } from 'ol'
 import { defaults as defaultControls } from 'ol/control'
@@ -28,14 +23,11 @@ import Text from 'ol/style/Text'
 import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
 import { filter, finalize, last, map, mergeMap, range, scan, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { CurrentUser, Label, LabelOperator, OrgCycle } from '@seed/api'
+import { LabelService, OrganizationService, UserService } from '@seed/api'
 import { InventoryService } from '@seed/api/inventory'
-import type { Label, LabelOperator } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { OrgCycle } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { MapService } from '@seed/services/map'
 import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
 import { LabelsComponent } from './labels.component'
@@ -47,11 +39,7 @@ type Layer = VectorLayer | TileLayer
   templateUrl: './map.component.html',
   imports: [
     LabelsComponent,
-    MatCheckboxModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatTooltipModule,
+    MaterialImports,
     NotFoundComponent,
     PageComponent,
     ProgressBarComponent,

@@ -1,28 +1,22 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { combineLatest, EMPTY, switchMap, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
-import type { Organization, OrgCycle } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { Column, CurrentUser, Organization, OrgCycle } from '@seed/api'
+import { ColumnService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryDisplayType, InventoryType, Profile } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-list-cross-cycles',
   templateUrl: './cross-cycles.component.html',
-  imports: [AgGridAngular, CommonModule, MatIconModule, MatSelectModule, PageComponent],
+  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent],
 })
 export class CrossCyclesComponent implements OnInit {
   private _route = inject(ActivatedRoute)

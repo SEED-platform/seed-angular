@@ -2,29 +2,23 @@ import type { KeyValue } from '@angular/common'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { AnalysesMessage, Analysis, AnalysisOutputFile, View } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import { type Cycle, CycleService } from '@seed/api/cycle'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { AnalysesMessage, Analysis, AnalysisOutputFile, CurrentUser, Cycle, View } from '@seed/api'
+import { AnalysisService, CycleService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials/material.module'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-analyses-analysis',
   templateUrl: './analysis.component.html',
-  imports: [AgGridAngular, CommonModule, MatButtonModule, MatDividerModule, MatIconModule, PageComponent, RouterLink, SharedImports],
+  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent, RouterLink, SharedImports],
 })
 export class AnalysisComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)

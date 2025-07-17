@@ -2,16 +2,12 @@ import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { Observable } from 'rxjs'
 import { catchError, map, of, tap } from 'rxjs'
 import type { Ubid, UbidDetails } from '@seed/api/ubid'
 import { UbidService } from '@seed/api/ubid'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
@@ -20,12 +16,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
   templateUrl: './form-modal.component.html',
   imports: [
     FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatDialogActions,
-    MatIconModule,
-    MatInputModule,
+    MaterialImports,
     ReactiveFormsModule,
   ],
 })

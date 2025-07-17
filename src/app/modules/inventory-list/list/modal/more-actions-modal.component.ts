@@ -1,13 +1,10 @@
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, switchMap, take, tap } from 'rxjs'
 import { DataQualityService } from '@seed/api/data-quality'
 import { ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
 import { ResultsModalComponent } from 'app/modules/data-quality'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
@@ -16,11 +13,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
   selector: 'seed-inventory-more-actions-modal',
   templateUrl: './more-actions-modal.component.html',
   imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
+    MaterialImports,
     ProgressBarComponent,
     ResultsModalComponent,
   ],

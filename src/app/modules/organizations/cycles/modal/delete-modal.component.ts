@@ -1,22 +1,19 @@
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
+import type { Cycle } from '@seed/api'
+import { CycleService } from '@seed/api'
 import { AlertComponent } from '@seed/components'
-import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { MaterialImports } from '@seed/materials'
+import { UploaderService } from '@seed/services'
+import type { ProgressBarObj } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [AlertComponent, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatProgressBarModule],
+  imports: [AlertComponent, MaterialImports],
 })
 export class DeleteModalComponent implements OnDestroy {
   private _cycleService = inject(CycleService)

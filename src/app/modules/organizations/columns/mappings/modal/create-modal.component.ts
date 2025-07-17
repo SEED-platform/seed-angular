@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatSelectModule } from '@angular/material/select'
 import { map } from 'rxjs'
 import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
+import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column-mapping-profile'
 import { SharedImports } from '@seed/directives'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 

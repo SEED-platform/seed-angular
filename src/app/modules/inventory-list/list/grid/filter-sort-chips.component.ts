@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, Input } from '@angular/core'
-import { MatChipsModule } from '@angular/material/chips'
-import { MatIconModule } from '@angular/material/icon'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { OrganizationUserSettings } from '@seed/api/organization'
+import { MaterialImports } from '@seed/materials'
 import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
-  imports: [CommonModule, MatChipsModule, MatIconModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class FilterSortChipsComponent implements OnChanges {
   @Input() gridApi: GridApi

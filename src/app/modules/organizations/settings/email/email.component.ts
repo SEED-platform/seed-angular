@@ -1,26 +1,18 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
 import { Subject, takeUntil } from 'rxjs'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { Organization } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-organizations-settings-email',
   templateUrl: './email.component.html',
   imports: [
-    MatButtonModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
+    MaterialImports,
     PageComponent,
     ReactiveFormsModule,
     SharedImports,

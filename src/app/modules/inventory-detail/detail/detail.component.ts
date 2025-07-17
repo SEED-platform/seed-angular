@@ -1,22 +1,14 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
-import type { Label } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { Organization, OrganizationUserSettings } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { Column, CurrentUser, Label, Organization, OrganizationUserSettings} from '@seed/api';
+import { ColumnService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import {
@@ -37,8 +29,7 @@ import {
     DocumentsGridComponent,
     HeaderComponent,
     HistoryGridComponent,
-    MatDividerModule,
-    MatIconModule,
+    MaterialImports,
     PageComponent,
     PairedGridComponent,
     ScenariosGridComponent,

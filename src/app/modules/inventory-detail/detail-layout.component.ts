@@ -1,8 +1,6 @@
 import type { AfterViewInit, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatDrawer } from '@angular/material/sidenav'
-import { MatSidenavModule } from '@angular/material/sidenav'
 import { ActivatedRoute, RouterOutlet } from '@angular/router'
 import { filter, forkJoin, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api/inventory'
@@ -11,12 +9,13 @@ import { UserService } from '@seed/api/user'
 import type { NavigationItem } from '@seed/components'
 import { DrawerService, VerticalNavigationComponent } from '@seed/components'
 import { ScrollResetDirective } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from '../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-layout',
   templateUrl: './detail-layout.component.html',
-  imports: [MatIconModule, MatSidenavModule, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
+  imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class DetailLayoutComponent implements AfterViewInit, OnInit {
   @ViewChild('drawer') drawer!: MatDrawer

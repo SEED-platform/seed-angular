@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import type { ICellRenderer, ICellRendererParams, IRowNode } from 'ag-grid-community'
-import type { ColumnMapping } from '@seed/api/column_mapping_profile'
+import type { ColumnMapping } from '@seed/api/column-mapping-profile'
 
 @Component({
   selector: 'seed-organizations-column-mappings-delete-action',

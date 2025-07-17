@@ -7,7 +7,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 
 @Component({

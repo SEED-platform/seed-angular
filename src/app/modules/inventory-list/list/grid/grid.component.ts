@@ -4,14 +4,10 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Label } from '@seed/api/label'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
-// import { CellHeaderMenuComponent } from './cell-header-menu.component'
+import type { FiltersSorts, InventoryType, Pagination } from 'app/modules/inventory'
 import { InventoryGridControlsComponent } from './grid-controls.component'
-
-ModuleRegistry.registerModules([AllCommunityModule])
 
 @Component({
   selector: 'seed-inventory-grid',

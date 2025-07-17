@@ -13,7 +13,6 @@ export class NoteService {
   private _errorService = inject(ErrorService)
   private _notes = new BehaviorSubject<Note[]>([])
   private _httpClient = inject(HttpClient)
-  private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
 
   notes$ = this._notes.asObservable()
