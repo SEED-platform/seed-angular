@@ -1,21 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Analysis } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { InventoryService } from '@seed/api/inventory'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import type { Analysis, Cycle } from '@seed/api'
+import { AnalysisService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
@@ -25,8 +19,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
     AnalysesGridComponent,
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatIconModule,
+    MaterialImports,
     NotFoundComponent,
     PageComponent,
     SharedImports,

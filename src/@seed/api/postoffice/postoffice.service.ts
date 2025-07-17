@@ -1,7 +1,7 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
-import { UserService } from '@seed/api/user'
+import { UserService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import type { CreateEmailTemplateResponse, EmailTemplate, ListEmailTemplatesResponse } from './postoffice.types'
 

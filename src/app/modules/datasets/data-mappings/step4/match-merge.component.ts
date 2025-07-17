@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { RouterModule } from '@angular/router'
 import { of, Subject, switchMap, takeUntil } from 'rxjs'
-import { MappingService } from '@seed/api/mapping'
-import type { ProgressResponse, SubProgressResponse } from '@seed/api/progress'
+import type { ProgressResponse, SubProgressResponse } from '@seed/api'
+import { MappingService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import type { CheckProgressLoopParams } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -18,7 +18,7 @@ import { ResultsComponent } from './results.component'
   templateUrl: './match-merge.component.html',
   imports: [
     CommonModule,
-    MatButtonModule,
+    MaterialImports,
     ProgressBarComponent,
     RouterModule,
     ResultsComponent,

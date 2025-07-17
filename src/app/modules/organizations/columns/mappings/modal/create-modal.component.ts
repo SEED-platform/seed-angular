@@ -1,30 +1,19 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { map } from 'rxjs'
-import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { ColumnMappingProfileService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
   imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
+    MaterialImports,
     ReactiveFormsModule,
     SharedImports,
     SeedHeaderAutocompleteComponent,

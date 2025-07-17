@@ -1,11 +1,10 @@
 import { Component } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-admin',
   templateUrl: './admin.component.html',
-  imports: [MatButtonModule, MatIconModule, SharedImports],
+  imports: [MaterialImports, SharedImports],
 })
 export class AdminComponent {}

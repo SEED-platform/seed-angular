@@ -1,13 +1,9 @@
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api/column_mapping_profile'
-import { ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api'
+import { ColumnMappingProfileService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 
 @Component({
@@ -15,12 +11,7 @@ import { SEEDValidators } from '@seed/validators'
   templateUrl: './create-profile.component.html',
   imports: [
     FormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDialogModule,
+    MaterialImports,
     ReactiveFormsModule,
   ],
 })

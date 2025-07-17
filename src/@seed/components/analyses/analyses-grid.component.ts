@@ -2,21 +2,20 @@ import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, SimpleChanges } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, switchMap, take } from 'rxjs'
-import type { Analysis, Highlight } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import type { Cycle } from '@seed/api/cycle'
+import type { Analysis, Cycle, Highlight } from '@seed/api'
+import { AnalysisService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 
 @Component({
   selector: 'seed-analyses-grid',
   templateUrl: './analyses-grid.component.html',
-  imports: [AgGridAngular, CommonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   @Input() orgId: number

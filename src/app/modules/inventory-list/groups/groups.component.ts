@@ -3,16 +3,15 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { GroupsService } from '@seed/api/groups/groups.service'
-import type { InventoryGroup } from '@seed/api/groups/groups.types'
-import { OrganizationService } from '@seed/api/organization'
+import type { InventoryGroup } from '@seed/api'
+import { GroupsService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -20,7 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, FormModalComponent, MatIconModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, FormModalComponent, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)

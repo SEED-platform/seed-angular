@@ -2,8 +2,6 @@ import type { BooleanInput } from '@angular/cdk/coercion'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { NavigationEnd, Router } from '@angular/router'
 import { filter, Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
@@ -15,6 +13,7 @@ import {
   VerticalNavigationGroupItemComponent,
   VerticalNavigationSpacerItemComponent,
 } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 
 @Component({
@@ -24,8 +23,7 @@ import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    MatTooltipModule,
-    MatIconModule,
+    MaterialImports,
     VerticalNavigationBasicItemComponent,
     forwardRef(() => VerticalNavigationCollapsibleItemComponent),
     VerticalNavigationDividerItemComponent,

@@ -2,17 +2,11 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDivider } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { GroupsService } from '@seed/api/groups/groups.service'
-import type { InventoryGroup } from '@seed/api/groups/groups.types'
-import { type AccessLevelInstancesByDepth, type AccessLevelsByDepth, OrganizationService } from '@seed/api/organization'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, InventoryGroup } from '@seed/api'
+import { GroupsService, OrganizationService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 
 @Component({
@@ -21,13 +15,7 @@ import { SEEDValidators } from '@seed/validators'
   imports: [
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDivider,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
+    MaterialImports,
     ReactiveFormsModule,
   ],
 })

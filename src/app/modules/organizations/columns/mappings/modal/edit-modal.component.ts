@@ -1,16 +1,9 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile } from '@seed/api/column_mapping_profile'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 
@@ -18,14 +11,7 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
   selector: 'seed-column-mappings-edit-modal',
   templateUrl: './edit-modal.component.html',
   imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
+    MaterialImports,
     ReactiveFormsModule,
     SeedHeaderAutocompleteComponent,
   ],

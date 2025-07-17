@@ -2,15 +2,12 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import type { ReadingInterval, SensorReading, SensorUsage } from '@seed/api/sensor'
-import { SensorService } from '@seed/api/sensor'
+import type { ReadingInterval, SensorReading, SensorUsage } from '@seed/api'
+import { SensorService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import type { Pagination } from 'app/modules/inventory/inventory.types'
 import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
 
@@ -19,12 +16,8 @@ import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
   templateUrl: './sensor-readings-grid.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatIconModule,
-    MatSelectModule,
+    MaterialImports,
     InventoryGridControlsComponent,
     FormsModule,
   ],

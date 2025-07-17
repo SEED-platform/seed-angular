@@ -2,16 +2,12 @@ import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
 import { finalize, take } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import type { SEEDConfig } from '@seed/services'
 import { ConfigService } from '@seed/services'
 import { SEEDValidators } from '@seed/validators'
@@ -25,11 +21,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   imports: [
     AlertComponent,
     FormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
+    MaterialImports,
     ReactiveFormsModule,
     RouterLink,
   ],

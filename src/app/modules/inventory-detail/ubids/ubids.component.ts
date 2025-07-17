@@ -2,18 +2,15 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
-import { OrganizationService } from '@seed/api/organization'
-import type { Ubid } from '@seed/api/ubid'
-import { UbidService } from '@seed/api/ubid/ubid.service'
-import { UserService } from '@seed/api/user'
+import type { Ubid } from '@seed/api'
+import { InventoryService, OrganizationService, UbidService, UserService } from '@seed/api'
 import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { MapComponent } from '../detail'
@@ -22,7 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MapComponent, MatIconModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, MapComponent, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class UbidsComponent implements OnDestroy, OnInit {
   @ViewChild(MapComponent) mapComponent!: MapComponent

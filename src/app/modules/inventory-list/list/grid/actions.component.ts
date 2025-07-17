@@ -1,12 +1,12 @@
 import type { OnDestroy } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { type MatSelect, MatSelectModule } from '@angular/material/select'
+import { type MatSelect } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
+import { InventoryService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
 import { MoreActionsModalComponent } from '../modal'
@@ -14,7 +14,7 @@ import { MoreActionsModalComponent } from '../modal'
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [DeleteModalComponent, MatFormFieldModule, MatSelectModule],
+  imports: [DeleteModalComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy {
   @Input() cycleId: number

@@ -14,7 +14,7 @@ import type {
   ColumnMappingProfileType,
   ColumnMappingProfileUpdateResponse,
   ColumnMappingSuggestionResponse,
-} from './column_mapping_profile.types'
+} from './column-mapping-profile.types'
 
 @Injectable({ providedIn: 'root' })
 export class ColumnMappingProfileService {

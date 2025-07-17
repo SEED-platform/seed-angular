@@ -1,4 +1,4 @@
-import type { Rule, UnitSymbols } from '@seed/api/data-quality'
+import type { Rule, UnitSymbols } from '@seed/api'
 
 export class DataQualityUtils {
   private static _unitLookup = {

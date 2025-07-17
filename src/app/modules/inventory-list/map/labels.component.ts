@@ -1,29 +1,16 @@
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatAutocompleteModule } from '@angular/material/autocomplete'
-import { MatButtonModule } from '@angular/material/button'
-import { MatChipsModule } from '@angular/material/chips'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import type { Label, LabelOperator } from '@seed/api/label'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser, Label, LabelOperator } from '@seed/api'
+import { OrganizationService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { isOrderedSubset } from '@seed/utils/string-matching.util'
 
 @Component({
   selector: 'seed-inventory-list-map-labels',
   templateUrl: './labels.component.html',
   imports: [
-    MatAutocompleteModule,
-    MatButtonModule,
-    MatChipsModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
+    MaterialImports,
     FormsModule,
   ],
 })

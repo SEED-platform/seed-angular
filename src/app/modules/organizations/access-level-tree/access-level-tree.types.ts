@@ -1,4 +1,4 @@
-import type { AccessLevelInstance } from '@seed/api/organization'
+import type { AccessLevelInstance } from '@seed/api'
 
 export type EditAccessLevelsData = {
   accessLevelNames: string[];

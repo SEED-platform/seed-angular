@@ -1,7 +1,7 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, switchMap, tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { DQCProgressResponse } from '../progress'

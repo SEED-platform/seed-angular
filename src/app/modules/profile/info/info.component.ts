@@ -1,27 +1,21 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
 import { Subject, takeUntil } from 'rxjs'
-import type { CurrentUser, UserUpdateRequest } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { CurrentUser, UserUpdateRequest } from '@seed/api'
+import { UserService } from '@seed/api'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-profile-info',
   templateUrl: './info.component.html',
   imports: [
     AlertComponent,
-    MatIconModule,
     FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MaterialImports,
     ReactiveFormsModule,
-    MatButtonModule,
     SharedImports,
   ],
 })

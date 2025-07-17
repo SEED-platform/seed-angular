@@ -1,19 +1,14 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { AnalysisService } from '@seed/api/analysis/analysis.service'
-import type { AnalysisSummary, AnalysisSummaryStats } from '@seed/api/analysis/analysis.types'
-import type { OrgCycle } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import { type CurrentUser, UserService } from '@seed/api/user'
+import type { AnalysisSummary, AnalysisSummaryStats, CurrentUser, OrgCycle } from '@seed/api'
+import { AnalysisService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
@@ -22,7 +17,7 @@ type CellRendererParams = { value: string; data: { is_extra_data: boolean } }
 @Component({
   selector: 'seed-inventory-list-summary',
   templateUrl: './summary.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule, MatSelectModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class SummaryComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)

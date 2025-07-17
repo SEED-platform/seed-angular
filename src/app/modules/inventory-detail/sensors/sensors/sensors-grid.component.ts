@@ -2,19 +2,18 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowNode, Theme } from 'ag-grid-community'
 import { filter, type Observable, switchMap } from 'rxjs'
-import { type Sensor, SensorService } from '@seed/api/sensor'
+import { type Sensor, SensorService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-inventory-detail-sensors-grid',
   templateUrl: './sensors-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class SensorsGridComponent implements OnChanges {
   @Input() sensors: Sensor[]

@@ -2,17 +2,14 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import type { MatDialogRef } from '@angular/material/dialog'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatDialog } from '@angular/material/dialog'
+import { MatTableDataSource } from '@angular/material/table'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { DataQualityService, type Rule } from '@seed/api/data-quality'
-import { LabelService } from '@seed/api/label'
-import { OrganizationService } from '@seed/api/organization'
+import type { Rule } from '@seed/api'
+import { DataQualityService, LabelService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { DataQualityUtils } from '../data-quality.utils'
 import { FormModalComponent } from './modal/form-modal.component'
 
@@ -23,11 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
     CommonModule,
     FormsModule,
     LabelComponent,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatTableModule,
+    MaterialImports,
   ],
 })
 export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnInit {

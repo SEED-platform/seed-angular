@@ -1,15 +1,13 @@
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { MaterialImports } from '@seed/materials'
 import { ModalHeaderComponent } from '../modal'
 
 @Component({
   standalone: true,
   selector: 'seed-delete-modal',
   templateUrl: './delete-modal.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, ModalHeaderComponent],
+  imports: [MaterialImports, ModalHeaderComponent],
 })
 export class DeleteModalComponent {
   private _dialogRef = inject(MatDialogRef<DeleteModalComponent>)

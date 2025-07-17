@@ -2,16 +2,12 @@ import { CommonModule } from '@angular/common'
 import { HttpEventType } from '@angular/common/http'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { filter, last, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
-import { ProgressService } from '@seed/api/progress'
+import { OrganizationService, ProgressService } from '@seed/api'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import type { UploadInstancesData } from '../access-level-tree.types'
 
 @Component({
@@ -22,11 +18,7 @@ import type { UploadInstancesData } from '../access-level-tree.types'
   imports: [
     AlertComponent,
     CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
+    MaterialImports,
     TranslocoDirective,
   ],
 })

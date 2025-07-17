@@ -1,20 +1,16 @@
 import type { AfterViewInit, ElementRef } from '@angular/core'
 import { Component, ViewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatAutocompleteModule } from '@angular/material/autocomplete'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
 import type { ICellEditorAngularComp } from 'ag-grid-angular'
 import type { ICellEditorParams } from 'ag-grid-community'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-ag-grid-auto-complete-cell',
   templateUrl: './autocomplete.component.html',
   imports: [
     FormsModule,
-    MatAutocompleteModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MaterialImports,
     ReactiveFormsModule,
   ],
 })

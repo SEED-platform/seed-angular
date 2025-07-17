@@ -1,18 +1,15 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import type { MatDialogRef } from '@angular/material/dialog'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatDialog } from '@angular/material/dialog'
+import { MatTableDataSource } from '@angular/material/table'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { BriefOrganization, OrganizationUser } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { UserAuth } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { BriefOrganization, OrganizationUser, UserAuth } from '@seed/api'
+import { OrganizationService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import type { Config } from '@seed/components/page/page.types'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { FormModalComponent } from './modal/form-modal.component'
 import { ResetPasswordsModalComponent } from './modal/reset-passwords-modal.component'
@@ -20,7 +17,7 @@ import { ResetPasswordsModalComponent } from './modal/reset-passwords-modal.comp
 @Component({
   selector: 'seed-organizations-members',
   templateUrl: './members.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, PageComponent, SharedImports, TableContainerComponent],
+  imports: [MaterialImports, PageComponent, SharedImports, TableContainerComponent],
 })
 export class MembersComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

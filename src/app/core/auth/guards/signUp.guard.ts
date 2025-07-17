@@ -2,7 +2,7 @@ import { inject } from '@angular/core'
 import type { CanActivateFn } from '@angular/router'
 import { Router } from '@angular/router'
 import { map } from 'rxjs'
-import { ConfigService } from '@seed/api/config'
+import { ConfigService } from '@seed/api'
 
 export const SignUpGuard: CanActivateFn = () => {
   const configService = inject(ConfigService)

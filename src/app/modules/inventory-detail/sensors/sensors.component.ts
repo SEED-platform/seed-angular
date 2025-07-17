@@ -2,18 +2,14 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { DatasetService } from '@seed/api/dataset'
-import { OrganizationService } from '@seed/api/organization'
-import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api/sensor'
-import { SensorService } from '@seed/api/sensor'
-import { UserService } from '@seed/api/user'
+import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api'
+import { CycleService, DatasetService, OrganizationService, SensorService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { DataLoggersGridComponent } from './data-loggers/data-loggers-grid.component'
 import { FormModalComponent } from './data-loggers/modal/form-modal.component'
@@ -25,10 +21,9 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
   templateUrl: './sensors.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     DataLoggersGridComponent,
-    MatIconModule,
+    MaterialImports,
     NotFoundComponent,
     PageComponent,
     SensorsGridComponent,

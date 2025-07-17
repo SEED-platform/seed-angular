@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-building-files-grid',
   templateUrl: './building-files-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class BuildingFilesGridComponent implements OnInit {
   @Input() view: ViewResponse

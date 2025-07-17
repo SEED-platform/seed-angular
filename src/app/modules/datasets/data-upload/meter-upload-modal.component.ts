@@ -1,18 +1,14 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
-import { MatStepperModule } from '@angular/material/stepper'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { catchError, EMPTY, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import { DatasetService } from '@seed/api/dataset'
+import { DatasetService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader/uploader.types'
@@ -25,13 +21,8 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   imports: [
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressBarModule,
+    MaterialImports,
     ModalHeaderComponent,
-    MatStepperModule,
     ProgressBarComponent,
   ],
 })

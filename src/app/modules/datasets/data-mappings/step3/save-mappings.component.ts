@@ -1,19 +1,13 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, switchMap, take, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import type { Cycle } from '@seed/api/cycle'
-import { DataQualityService } from '@seed/api/data-quality'
-import type { ImportFile, MappingResultsResponse } from '@seed/api/dataset'
-import type { Organization } from '@seed/api/organization'
+import type { Column, Cycle, ImportFile, MappingResultsResponse, Organization } from '@seed/api'
+import { DataQualityService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
 import { ResultsModalComponent } from 'app/modules/data-quality'
@@ -25,10 +19,7 @@ import type { InventoryType } from 'app/modules/inventory'
   imports: [
     AgGridAngular,
     CommonModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatProgressBarModule,
+    MaterialImports,
   ],
 })
 export class SaveMappingsComponent implements OnChanges, OnDestroy {
