@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import type { OrganizationUserSettings } from '@seed/api/organization'
+import type { OrganizationUserSettings } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
 

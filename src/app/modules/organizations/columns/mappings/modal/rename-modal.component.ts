@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column-mapping-profile'
+import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

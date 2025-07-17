@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { tap } from 'rxjs'
-import { type Sensor, SensorService } from '@seed/api/sensor'
+import { type Sensor, SensorService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 

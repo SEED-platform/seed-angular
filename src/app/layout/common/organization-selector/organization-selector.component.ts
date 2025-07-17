@@ -1,10 +1,8 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization/organization.service'
-import type { BriefOrganization } from '@seed/api/organization/organization.types'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { BriefOrganization, CurrentUser } from '@seed/api'
+import { OrganizationService, UserService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

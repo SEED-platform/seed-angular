@@ -3,7 +3,7 @@ import type { WordArray } from 'crypto-es/lib/core'
 import { Utf8 } from 'crypto-es/lib/core'
 import { Base64 } from 'crypto-es/lib/enc-base64'
 import { HmacSHA256 } from 'crypto-es/lib/sha256'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser } from '@seed/api'
 import { MockApiService } from '@seed/mock-api'
 import { user as userData } from 'app/mock-api/common/user/data'
 

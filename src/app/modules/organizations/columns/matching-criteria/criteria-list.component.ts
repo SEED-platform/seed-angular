@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core'
-import { type Column } from '@seed/api/column'
+import { type Column } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 

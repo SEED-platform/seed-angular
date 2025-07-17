@@ -1,9 +1,8 @@
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import type { Label, LabelOperator } from '@seed/api/label'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser, Label, LabelOperator } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { isOrderedSubset } from '@seed/utils/string-matching.util'
 

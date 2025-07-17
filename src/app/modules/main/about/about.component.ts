@@ -1,7 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
-import { VersionService } from '@seed/api/version'
+import { VersionService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { TermsService } from '@seed/services'

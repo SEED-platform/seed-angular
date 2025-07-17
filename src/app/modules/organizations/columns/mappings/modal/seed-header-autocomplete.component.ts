@@ -3,7 +3,7 @@ import { Component, Input, type OnChanges, type OnInit, type SimpleChanges } fro
 import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { map, type Observable, startWith } from 'rxjs'
-import { type Column } from '@seed/api/column'
+import { type Column } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 

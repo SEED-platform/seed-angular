@@ -1,9 +1,6 @@
 import { inject } from '@angular/core'
 import { forkJoin } from 'rxjs'
-import { ConfigService } from '@seed/api/config'
-import { OrganizationService } from '@seed/api/organization/organization.service'
-import { UserService } from '@seed/api/user'
-import { VersionService } from '@seed/api/version'
+import { ConfigService, OrganizationService, UserService, VersionService } from '@seed/api'
 
 export const configResolver = () => {
   const configService = inject(ConfigService)

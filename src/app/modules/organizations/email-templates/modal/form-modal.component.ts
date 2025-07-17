@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject } from 'rxjs'
-import { type EmailTemplate, PostOfficeService } from '@seed/api/postoffice'
+import { type EmailTemplate, PostOfficeService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

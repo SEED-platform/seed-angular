@@ -6,14 +6,14 @@ import type { MatStepper } from '@angular/material/stepper'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { catchError, EMPTY, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import { DatasetService } from '@seed/api/dataset'
+import { DatasetService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader/uploader.types'
 import { csvDownload } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-meter-data-upload-modal',

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import type { ICellRenderer, ICellRendererParams, IRowNode } from 'ag-grid-community'
-import type { ColumnMapping } from '@seed/api/column-mapping-profile'
+import type { ColumnMapping } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

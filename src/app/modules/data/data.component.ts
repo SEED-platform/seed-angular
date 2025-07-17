@@ -6,7 +6,7 @@ import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
 import { from, skip } from 'rxjs'
 import { UserService } from '@seed/api'
-import type { Dataset } from '@seed/api/dataset'
+import type { Dataset } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 

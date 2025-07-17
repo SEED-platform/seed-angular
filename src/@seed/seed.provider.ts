@@ -15,7 +15,6 @@ import {
   SplashScreenService,
 } from '@seed/services'
 import { MockApiService } from '../app/mock-api'
-import { MaterialImports } from './materials'
 
 export type SEEDProviderConfig = {
   mockApi?: {
@@ -47,7 +46,7 @@ export const provideSEED = (config: SEEDProviderConfig): (Provider | Environment
       useValue: config.seed ?? {},
     },
 
-    importProvidersFrom(MaterialImports),
+    importProvidersFrom(MatDialogModule),
     provideEnvironmentInitializer(() => inject(ConfirmationService)),
 
     provideHttpClient(withInterceptors([loadingInterceptor])),

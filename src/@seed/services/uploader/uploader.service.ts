@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, combineLatest, finalize, interval, of, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
-import type { ProgressResponse } from '@seed/api/progress'
+import type { ProgressResponse } from '@seed/api'
 import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,

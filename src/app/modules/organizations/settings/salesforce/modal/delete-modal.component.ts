@@ -1,8 +1,8 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import type { SalesforceMapping } from '@seed/api/salesforce'
-import { SalesforceService } from '@seed/api/salesforce'
+import type { SalesforceMapping } from '@seed/api'
+import { SalesforceService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

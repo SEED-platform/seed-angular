@@ -5,7 +5,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
-import { ConfigService } from '@seed/api/config'
+import { ConfigService } from '@seed/api'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'

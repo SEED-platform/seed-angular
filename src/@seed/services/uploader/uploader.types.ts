@@ -1,5 +1,5 @@
-import type { ProgressResponse } from '@seed/api/progress'
-import type { Sensor } from '@seed/api/sensor'
+import type { ProgressResponse } from '@seed/api'
+import type { Sensor } from '@seed/api'
 
 export type ProgressBarObj = {
   message: unknown;

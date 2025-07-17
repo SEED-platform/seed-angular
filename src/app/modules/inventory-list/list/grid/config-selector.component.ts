@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import type { Cycle } from '@seed/api/cycle'
+import type { Cycle } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { Profile } from '../../../inventory/inventory.types'
 

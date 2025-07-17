@@ -3,7 +3,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { EMPTY, finalize, switchMap, tap } from 'rxjs'
 import { InventoryService } from '@seed/api'
-import type { Column } from '@seed/api/column'
+import type { Column } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'

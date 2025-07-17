@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { map } from 'rxjs'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column-mapping-profile'
+import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
 @Component({

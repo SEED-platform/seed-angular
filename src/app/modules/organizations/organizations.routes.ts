@@ -1,8 +1,7 @@
 import { inject } from '@angular/core'
 import type { Routes, UrlSegment } from '@angular/router'
 import { switchMap, take } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import { OrganizationService, UserService } from '@seed/api'
 import type { OrganizationGenericTypeMatcher } from './organizations.types'
 import {
   AccessLevelTreeComponent,
