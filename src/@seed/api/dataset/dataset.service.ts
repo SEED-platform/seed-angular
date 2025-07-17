@@ -132,4 +132,15 @@ export class DatasetService {
       }),
     )
   }
+
+  reuseInventoryFileForMeters(orgId: number, fileId: number): Observable<number> {
+    const url = '/api/v3/import_files/reuse_inventory_file_for_meters/'
+    const data = { organization_id: orgId, import_file_id: fileId }
+    return this._httpClient.post<{ import_file_id: number }>(url, data).pipe(
+      map(({ import_file_id }) => import_file_id),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error reusing file for meter data')
+      }),
+    )
+  }
 }

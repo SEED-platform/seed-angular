@@ -123,17 +123,10 @@ export class ResultsComponent implements OnChanges, OnDestroy {
   }
 
   importMeters() {
-    this.showMeterButton = false
-    this._uploaderService.file$
-      .pipe(
-        take(1),
-        tap((file) => {
-          this._dialog.open(MeterDataUploadModalComponent, {
-            width: '60rem',
-            data: { orgId: this.orgId, datasetId: this.datasetId, cycleId: this.cycleId, file },
-          })
-        }),
-      ).subscribe()
+    this._dialog.open(MeterDataUploadModalComponent, {
+      width: '60rem',
+      data: { orgId: this.orgId, datasetId: this.datasetId, cycleId: this.cycleId, reusedImportFileId: this.importFileId },
+    })
   }
 
   ngOnDestroy(): void {

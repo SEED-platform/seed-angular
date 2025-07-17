@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, finalize, interval, of, ReplaySubject, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
+import { catchError, combineLatest, finalize, interval, of, Subject, switchMap, takeUntil, takeWhile, tap, throwError } from 'rxjs'
 import type { ProgressResponse } from '@seed/api/progress'
 import { ErrorService } from '../error'
 import type {
@@ -20,8 +20,6 @@ import type {
 export class UploaderService {
   private _httpClient = inject(HttpClient)
   private _errorService = inject(ErrorService)
-  private _file = new ReplaySubject<File>(1)
-  file$ = this._file.asObservable()
 
   get defaultProgressBarObj(): ProgressBarObj {
     return {
@@ -33,10 +31,6 @@ export class UploaderService {
       progressLastUpdated: null,
       progressLastChecked: null,
     }
-  }
-
-  setFile(file: File) {
-    this._file.next(file)
   }
 
   /*

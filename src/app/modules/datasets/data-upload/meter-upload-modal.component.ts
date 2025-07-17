@@ -10,7 +10,8 @@ import type { MatStepper } from '@angular/material/stepper'
 import { MatStepperModule } from '@angular/material/stepper'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
-import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, EMPTY, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { DatasetService } from '@seed/api/dataset'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
@@ -37,6 +38,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
 
+  private _datasetService = inject(DatasetService)
   private _dialogRef = inject(MatDialogRef<MeterDataUploadModalComponent>)
   private _configService = inject(ConfigService)
   private _uploaderService = inject(UploaderService)
@@ -49,9 +51,10 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
     'text/plain',
   ]
   file?: File
-  fileId: number
+  importFileId: number
   cycleId: number
   completed = { 1: false, 2: false, 3: false }
+  defaultFileName = 'No file selected'
   inProgress = false
   readingGridTitle: string
   uploading = false
@@ -81,13 +84,28 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
     { field: 'parsed_unit', headerName: 'Unit', flex: 1 },
   ]
 
-  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number; file: File }
+  data = inject(MAT_DIALOG_DATA) as { datasetId: string; orgId: number; cycleId: number; reusedImportFileId: number }
 
   ngAfterViewInit(): void {
-    // if a file is passed, start upload immediately (from the property upload stepper)
-    if (this.data.file) {
-      this.skipToStep1()
+    // if a file is passed from the inventory upload stepper, start upload immediately
+    if (this.data.reusedImportFileId) {
+      this.defaultFileName = 'Reusing inventory file'
+      this.reuseInventoryFileForMeters()
     }
+  }
+
+  reuseInventoryFileForMeters() {
+    this.uploading = true
+    this.completed[1] = true
+    this.step1ProgressTitle = 'Analyzing file...'
+
+    this._datasetService.reuseInventoryFileForMeters(this.data.orgId, this.data.reusedImportFileId)
+      .pipe(
+        take(1),
+        tap((importFileId) => this.importFileId = importFileId),
+        switchMap(() => this.getMetersPreview()),
+      )
+      .subscribe()
   }
 
   step1(fileList: FileList) {
@@ -103,11 +121,19 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap(({ import_file_id }) => {
-          this.fileId = import_file_id
+          this.importFileId = import_file_id
           this.completed[1] = true
           this.step1ProgressTitle = 'Analyzing file...'
         }),
-        switchMap(() => this._uploaderService.metersPreview(orgId, this.fileId)),
+        switchMap(() => this.getMetersPreview()),
+      )
+      .subscribe()
+  }
+
+  getMetersPreview() {
+    const { orgId } = this.data
+    return this._uploaderService.metersPreview(orgId, this.importFileId)
+      .pipe(
         tap((response) => {
           const { proposed_imports, validated_type_units } = response
           this.setReadingTitle(proposed_imports)
@@ -124,7 +150,6 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
           return EMPTY
         }),
       )
-      .subscribe()
   }
 
   step3() {
@@ -144,7 +169,7 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
 
     const failureFn = () => this.inProgress = false
 
-    this._uploaderService.saveRawData(orgId, cycleId, this.fileId)
+    this._uploaderService.saveRawData(orgId, cycleId, this.importFileId)
       .pipe(
         switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
           progressKey: progress_key,
@@ -152,6 +177,14 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
           failureFn,
           progressBarObj: this.progressBarObj,
         })),
+        catchError(() => {
+          this.completed[3] = true
+          setTimeout(() => {
+            this._snackBar.alert('Error Uploading Meters')
+            this.stepper.next()
+          })
+          return EMPTY
+        }),
       )
       .subscribe()
   }
@@ -169,11 +202,6 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
       imported_meters: this.importedMeters,
     }
     csvDownload(title, data[title])
-  }
-
-  skipToStep1() {
-    const fileList = this.createFileList(this.data.file)
-    this.step1(fileList)
   }
 
   createFileList(file: File) {
