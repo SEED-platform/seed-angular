@@ -1,25 +1,18 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatMenuModule } from '@angular/material/menu'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import type { GridApi } from 'ag-grid-community'
 import { take } from 'rxjs'
-import type { OrganizationUserSettings } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser, OrganizationUserSettings } from '@seed/api'
+import { OrganizationService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { Pagination } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-controls',
   templateUrl: './grid-controls.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule, MatDividerModule, MatIconModule, MatMenuModule, MatTooltipModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class InventoryGridControlsComponent implements OnChanges, OnInit {
   @Input() currentUser!: CurrentUser

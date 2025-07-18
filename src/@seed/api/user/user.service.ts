@@ -14,7 +14,7 @@ import type {
   UserAuth,
   UserAuthResponse,
   UserUpdateRequest,
-} from '@seed/api/user'
+} from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { type OrganizationUserSettings } from '../organization'
 

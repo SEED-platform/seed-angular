@@ -1,26 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import type { Dataset } from '@seed/api/dataset'
-import { DatasetService } from '@seed/api/dataset'
-import type { GroupService } from '@seed/api/groups'
-import { GroupsService } from '@seed/api/groups'
-import type { Meter, MeterUsage } from '@seed/api/meters'
-import { MeterService } from '@seed/api/meters'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import type { Cycle, Dataset, GroupService, Meter, MeterUsage } from '@seed/api'
+import { CycleService, DatasetService, GroupsService, MeterService, OrganizationService, UserService } from '@seed/api'
 import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { ViewResponse } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -31,12 +20,8 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
   templateUrl: './meters.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    MatDividerModule,
+    MaterialImports,
     NotFoundComponent,
     PageComponent,
   ],
@@ -122,7 +107,6 @@ export class MetersComponent implements OnDestroy, OnInit {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
     this._groupsService.listForInventory(this.orgId, [this.viewId])
-    this._cycleService.get(this.orgId)
 
     this._meterService.meters$
       .pipe(
@@ -164,12 +148,9 @@ export class MetersComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
-    this._datasetService
-      .listDatasets(this.orgId)
+    this._datasetService.datasets$
       .pipe(
-        tap((datasets) => {
-          this.datasets = datasets
-        }),
+        tap((datasets) => { this.datasets = datasets }),
       )
       .subscribe()
   }
@@ -207,8 +188,8 @@ export class MetersComponent implements OnDestroy, OnInit {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center">
-      <span class="material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
-      ${this.groupIds.length ? '<span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
+      <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+      ${this.groupIds.length ? '<span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>' : ''}
       </div>
     `
   }

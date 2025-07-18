@@ -1,23 +1,14 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatMenuModule } from '@angular/material/menu'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs'
-import type { AccessLevelInstance, AccessLevelTree } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { AccessLevelInstance, AccessLevelTree, CurrentUser } from '@seed/api'
+import { OrganizationService, UserService } from '@seed/api'
 import type { DrawerMode } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { ImageOverlayDirective, SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { MediaWatcherService } from '@seed/services'
 import type {
   CreateInstanceData,
@@ -38,14 +29,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
   imports: [
     CommonModule,
     ImageOverlayDirective,
-    MatButtonModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatMenuModule,
-    MatSidenavModule,
-    MatTooltipModule,
+    MaterialImports,
     PageComponent,
     SharedImports,
   ],

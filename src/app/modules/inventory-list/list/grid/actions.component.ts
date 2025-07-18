@@ -1,12 +1,12 @@
 import type { OnDestroy } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { type MatSelect, MatSelectModule } from '@angular/material/select'
+import { type MatSelect } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
+import { InventoryService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
 import { MoreActionsModalComponent } from '../modal'
@@ -14,7 +14,7 @@ import { MoreActionsModalComponent } from '../modal'
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [DeleteModalComponent, MatFormFieldModule, MatSelectModule],
+  imports: [DeleteModalComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy {
   @Input() cycleId: number
@@ -26,6 +26,7 @@ export class ActionsComponent implements OnDestroy {
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<null>()
+  @Output() selectedAll = new EventEmitter<number[]>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -53,7 +54,7 @@ export class ActionsComponent implements OnDestroy {
         },
         disabled: !this.inventory,
       },
-      { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
+      { name: 'Delete', action: this.deleteStates, disabled: !this.selectedViewIds.length },
       { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
       {
         name: 'More...',
@@ -70,11 +71,17 @@ export class ActionsComponent implements OnDestroy {
   }
 
   openMoreActionsModal() {
-    this._dialog.open(MoreActionsModalComponent, {
+    const dialogRef = this._dialog.open(MoreActionsModalComponent, {
       width: '40rem',
       autoFocus: false,
-      data: { viewIds: this.selectedViewIds, orgId: this.orgId },
+      data: { viewIds: this.selectedViewIds, orgId: this.orgId, type: this.type },
     })
+
+    dialogRef.afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap(() => { this.refreshInventory.emit() }),
+      ).subscribe()
   }
 
   onAction(action: () => void, select: MatSelect) {
@@ -95,6 +102,7 @@ export class ActionsComponent implements OnDestroy {
     const paramString = params.toString()
     this._inventoryService.getAgInventory(paramString, {}).subscribe(({ results }: { results: number[] }) => {
       this.selectedViewIds = results
+      this.selectedAll.emit(this.selectedViewIds)
     })
   }
 
@@ -102,10 +110,11 @@ export class ActionsComponent implements OnDestroy {
     this.gridApi.deselectAll()
   }
 
-  deletePropertyStates = () => {
+  deleteStates = () => {
+    const displayType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { model: `${this.selectedViewIds.length} Property States`, instance: '' },
+      data: { model: `${this.selectedViewIds.length} ${displayType} States`, instance: '' },
     })
 
     dialogRef
@@ -113,7 +122,11 @@ export class ActionsComponent implements OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         filter(Boolean),
-        switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
+        switchMap(() => {
+          return this.type === 'taxlots'
+            ? this._inventoryService.deleteTaxlotStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+            : this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+        }),
         tap(() => {
           this.refreshInventory.emit()
         }),

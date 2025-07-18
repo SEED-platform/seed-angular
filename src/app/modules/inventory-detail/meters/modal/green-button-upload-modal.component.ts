@@ -2,24 +2,17 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
-import { MatStepperModule } from '@angular/material/stepper'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
-import { MeterService } from '@seed/api/meters'
-import type { ProgressResponse } from '@seed/api/progress'
+import type { ProgressResponse } from '@seed/api'
+import { MeterService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
-import type { ProgressBarObj, ProposedMeterImport, ValidatedTypeUnit } from '@seed/services/uploader'
+import type { MeterImport, ProgressBarObj, ValidatedTypeUnit } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -28,17 +21,9 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './green-button-upload-modal.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatStepperModule,
+    MaterialImports,
     ProgressBarComponent,
     ReactiveFormsModule,
   ],
@@ -47,7 +32,6 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
   private _dialogRef = inject(MatDialogRef<GreenButtonUploadModalComponent>)
   private _configService = inject(ConfigService)
-  private _inventoryService = inject(InventoryService)
   private _meterService = inject(MeterService)
   private _snackBar = inject(SnackBarService)
   private _uploaderService = inject(UploaderService)
@@ -56,9 +40,9 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
   completed = { 1: false, 2: false }
   file: File
   fileId: number
-  proposedImports: ProposedMeterImport[] = []
+  proposedImports: MeterImport[] = []
   typeUnits: ValidatedTypeUnit[] = []
-  importedData: ProposedMeterImport[] = []
+  importedData: MeterImport[] = []
   gridTheme$ = this._configService.gridTheme$
   inProgress = false
   uploading = false
@@ -142,7 +126,7 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
       this._meterService.list(orgId, viewId)
       this._meterService.listReadings(orgId, viewId, interval, excludedIds)
       this._snackBar.success('Meter data uploaded successfully')
-      this.importedData = this.progressBarObj.message as ProposedMeterImport[]
+      this.importedData = this.progressBarObj.message as MeterImport[]
       setTimeout(() => {
         this.stepper.next()
       })
@@ -158,8 +142,6 @@ export class GreenButtonUploadModalComponent implements OnDestroy {
         switchMap((data) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: data.progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

@@ -2,29 +2,24 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, signal } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
 import { Subject, take, takeUntil } from 'rxjs'
-import type { CurrentUser, PasswordUpdateRequest } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { CurrentUser, PasswordUpdateRequest } from '@seed/api'
+import { UserService } from '@seed/api'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { SEEDConfig } from '@seed/services'
 import { ConfigService } from '@seed/services'
 import { SEEDValidators } from '@seed/validators'
+
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
   imports: [
     AlertComponent,
     FormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
+    MaterialImports,
     ReactiveFormsModule,
     SharedImports,
   ],

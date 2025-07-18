@@ -1,22 +1,19 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { catchError, EMPTY, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type ProgressResponse } from '@seed/api/progress'
+import type { Column, ProgressResponse } from '@seed/api'
+import { ColumnService } from '@seed/api'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { type ProgressBarObj, UploaderService } from '@seed/services/uploader'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-columns-matching-criteria-confirm-modal',
   templateUrl: './confirm-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule, MatProgressBarModule],
+  imports: [AlertComponent, CommonModule, MaterialImports],
 })
 export class ConfirmModalComponent implements OnDestroy {
   private _columnService = inject(ColumnService)
@@ -69,8 +66,6 @@ export class ConfirmModalComponent implements OnDestroy {
         switchMap(({ progress_key }) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

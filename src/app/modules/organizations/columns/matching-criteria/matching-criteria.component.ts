@@ -4,8 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, Subject, takeUntil, tap } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type Organization, OrganizationService } from '@seed/api/organization'
+import { type Column, ColumnService, type Organization, OrganizationService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
@@ -78,7 +77,7 @@ export class MatchingCriteriaComponent implements OnDestroy {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="delete">clear</span>
+        <span class="material-icons cursor-pointer text-secondary" data-action="delete">clear</span>
       </div>
     `
   }

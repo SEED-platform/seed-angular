@@ -1,22 +1,20 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { of, Subject, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import type { Organization } from '@seed/api/organization'
-import { PairingService } from '@seed/api/pairing'
+import type { Column, Organization } from '@seed/api'
+import { ColumnService, PairingService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { GenericRelatedInventory, InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-paired-grid',
   templateUrl: './paired-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class PairedGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
@@ -98,7 +96,7 @@ export class PairedGridComponent implements OnChanges, OnDestroy {
   }
 
   unpairRenderer = () => {
-    return '<span class="material-icons mt-2 action-icon cursor-pointer text-secondary">clear</span>'
+    return '<span class="material-icons mt-2  cursor-pointer text-secondary">clear</span>'
   }
 
   get gridHeight() {

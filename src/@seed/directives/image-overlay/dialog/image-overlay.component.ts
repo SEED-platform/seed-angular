@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog'
+import { MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MaterialImports } from '@seed/materials'
 import type { ImageOverlayData } from '../image-overlay.types'
 
 @Component({
   selector: 'seed-image-overlay',
   templateUrl: './image-overlay.component.html',
-  imports: [MatButtonModule, MatDialogModule],
+  imports: [MaterialImports],
   styles: ':host { @apply flex }',
 })
 export class OverlayImageComponent {

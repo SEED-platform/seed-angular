@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import type { ICellRenderer, ICellRendererParams, IRowNode } from 'ag-grid-community'
-import type { ColumnMapping } from '@seed/api/column_mapping_profile'
+import type { ColumnMapping } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-organizations-column-mappings-delete-action',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './action-buttons.component.html',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MaterialImports],
 })
 export class ActionButtonsComponent implements ICellRenderer {
   data: ColumnMapping

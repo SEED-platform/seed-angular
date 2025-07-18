@@ -1,21 +1,12 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatOptionModule } from '@angular/material/core'
-import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { combineLatest, distinctUntilChanged, type Observable, Subject, takeUntil } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { type DataQualityFormGroup, DataQualityService, type Rule } from '@seed/api/data-quality'
-import { type Label, LabelService } from '@seed/api/label'
+import type { Column, DataQualityFormGroup, Label, Rule } from '@seed/api'
+import { DataQualityService, LabelService } from '@seed/api'
 import { LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { CONDITIONS, DATATYPES_BY_CONDITION, SEVERITIES, UNITS } from '../../constants'
 import { DataQualityValidator } from '../../data-quality.validator'
 
@@ -24,16 +15,7 @@ import { DataQualityValidator } from '../../data-quality.validator'
   templateUrl: './form-modal.component.html',
   imports: [
     FormsModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatOptionModule,
-    MatSelectModule,
-    MatSlideToggleModule,
+    MaterialImports,
     LabelComponent,
     ReactiveFormsModule,
   ],

@@ -1,21 +1,11 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatOptionModule } from '@angular/material/core'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { GroupService, GroupSystem, InventoryGroup } from '@seed/api/groups'
-import { GroupsService } from '@seed/api/groups'
-import type { Meter, MeterConfig } from '@seed/api/meters'
-import { MeterService } from '@seed/api/meters'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import type { GroupService, GroupSystem, InventoryGroup, Meter, MeterConfig } from '@seed/api'
+import { GroupsService, MeterService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
@@ -23,23 +13,14 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './form-modal.component.html',
   imports: [
     FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatOptionModule,
-    MatSelectModule,
+    MaterialImports,
     ReactiveFormsModule,
   ],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
-  private _organizationService = inject(OrganizationService)
   private _groupsService = inject(GroupsService)
   private _meterService = inject(MeterService)
-  private _userService = inject(UserService)
   private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   data = inject(MAT_DIALOG_DATA) as { meter: Meter; orgId: number; groupId: number | null; viewId: number | null }

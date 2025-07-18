@@ -4,22 +4,19 @@ import { TemplatePortal } from '@angular/cdk/portal'
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, TemplateRef } from '@angular/core'
 import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { Column, GridApi, IHeaderParams } from 'ag-grid-community'
 import { take } from 'rxjs'
-import { OrganizationService, type OrganizationUserSettings } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser, OrganizationUserSettings } from '@seed/api'
+import { OrganizationService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-cell-header-menu',
   templateUrl: './cell-header-menu.component.html',
-  imports: [CommonModule, MatDividerModule, MatButtonModule, MatIconModule, MatSelectModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit {
   @ViewChild('menu') menuTemplate!: TemplateRef<unknown>

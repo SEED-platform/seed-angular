@@ -1,12 +1,9 @@
 import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop'
 import { Component, type OnInit, ViewEncapsulation } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIcon } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltip } from '@angular/material/tooltip'
 import { takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { GeocodingComponent } from './geocoding.component'
 
@@ -14,7 +11,7 @@ import { GeocodingComponent } from './geocoding.component'
   selector: 'seed-organizations-column-geocoding-taxlots',
   templateUrl: './geocoding.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports, CdkDropList, CdkDrag, MatButtonModule, MatIcon, MatSelectModule, MatTooltip, ReactiveFormsModule],
+  imports: [SharedImports, CdkDropList, CdkDrag, MaterialImports, ReactiveFormsModule],
 })
 export class GeocodingTaxlotsComponent extends GeocodingComponent implements OnInit {
   type = 'TaxLotState'

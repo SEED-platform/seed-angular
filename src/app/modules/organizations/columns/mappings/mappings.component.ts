@@ -1,12 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIcon } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type {
   CellClassParams,
@@ -19,14 +14,14 @@ import type {
   IRowNode,
   ValueFormatterParams,
 } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { saveAs } from 'file-saver'
 import { combineLatest, filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { type Column, MappableColumnService } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { ColumnMappingProfileService, MappableColumnService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { type ComponentCanDeactivate } from '@seed/guards/pending-changes.guard'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ActionButtonsComponent } from './action-buttons.component'
@@ -34,8 +29,6 @@ import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
-
-ModuleRegistry.registerModules([AllCommunityModule])
 
 type DataType = {
   id: string;
@@ -55,12 +48,8 @@ type RenderMapping = ColumnMapping & {
     AgGridAngular,
     CommonModule,
     SharedImports,
-    MatButtonModule,
-    MatIcon,
-    MatFormFieldModule,
+    MaterialImports,
     ReactiveFormsModule,
-    MatSelectModule,
-    MatTooltipModule,
   ],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
@@ -107,7 +96,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
           field: 'to_table_name',
           editable: false,
           valueFormatter: (params: ValueFormatterParams) => {
-            return (params.value as string).slice(0, -5)
+            return (params.value as string)?.slice(0, -5)
           },
         },
         {

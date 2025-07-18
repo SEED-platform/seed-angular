@@ -1,18 +1,16 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatDialog } from '@angular/material/dialog'
+import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { DerivedColumn } from '@seed/api/derived-column'
-import { DerivedColumnService } from '@seed/api/derived-column'
-import { UserService } from '@seed/api/user'
+import type { DerivedColumn } from '@seed/api'
+import { DerivedColumnService, UserService } from '@seed/api'
 import { DeleteModalComponent, InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
-import type { InventoryDisplayType, InventoryType } from '../../inventory/inventory.types'
+import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
@@ -21,10 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   encapsulation: ViewEncapsulation.None,
   imports: [
     InventoryTabComponent,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatTableModule,
+    MaterialImports,
     PageComponent,
     SharedImports,
     TableContainerComponent,

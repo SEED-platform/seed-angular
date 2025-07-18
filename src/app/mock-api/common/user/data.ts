@@ -1,4 +1,4 @@
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser } from '@seed/api'
 
 export const user: CurrentUser = {
   first_name: 'Alex',

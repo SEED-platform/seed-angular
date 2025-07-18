@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
-import type { ProgressResponse } from '@seed/api/progress'
+import type { ProgressResponse } from '@seed/api'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
 import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -14,7 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-columns-update-modal',
   templateUrl: './update-modal.component.html',
-  imports: [AlertComponent, CommonModule, MatButtonModule, MatDialogModule, MatProgressBarModule],
+  imports: [AlertComponent, CommonModule, MaterialImports],
 })
 export class UpdateModalComponent implements OnDestroy, OnInit {
   private _uploaderService = inject(UploaderService)
@@ -50,8 +49,6 @@ export class UpdateModalComponent implements OnDestroy, OnInit {
     this._uploaderService
       .checkProgressLoop({
         progressKey: this.data.progressResponse.progress_key,
-        offset: 0,
-        multiplier: 1,
         successFn,
         failureFn,
         progressBarObj: this.progressBarObj,

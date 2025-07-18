@@ -1,10 +1,11 @@
 import { HttpClient, type HttpErrorResponse } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { catchError, type Observable, ReplaySubject, switchMap, tap } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { catchError, map, type Observable, ReplaySubject, switchMap, tap } from 'rxjs'
+import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { Rule } from './data-quality.types'
+import type { DQCProgressResponse } from '../progress'
+import type { DataQualityResults, DataQualityResultsResponse, Rule } from './data-quality.types'
 
 @Injectable({ providedIn: 'root' })
 export class DataQualityService {
@@ -76,6 +77,40 @@ export class DataQualityService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error resetting data quality rules')
+      }),
+    )
+  }
+
+  startDataQualityCheckForImportFile(orgId: number, importFileId: number): Observable<DQCProgressResponse> {
+    const url = `/api/v3/import_files/${importFileId}/start_data_quality_checks/?organization_id=${orgId}`
+    return this._httpClient.post<DQCProgressResponse>(url, {})
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error starting data quality checks for import file')
+        }),
+      )
+  }
+
+  startDataQualityCheckForOrg(orgId: number, property_view_ids: number[], taxlot_view_ids: number[], goal_id: number): Observable<DQCProgressResponse> {
+    const url = `/api/v3/data_quality_checks/${orgId}/start/`
+    const data = {
+      property_view_ids,
+      taxlot_view_ids,
+      goal_id,
+    }
+    return this._httpClient.post<DQCProgressResponse>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching data quality results for organization')
+      }),
+    )
+  }
+
+  getDataQualityResults(orgId: number, runId: number): Observable<DataQualityResults[]> {
+    const url = `/api/v3/data_quality_checks/results/?organization_id=${orgId}&run_id=${runId}`
+    return this._httpClient.get<DataQualityResultsResponse>(url).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching data quality results')
       }),
     )
   }

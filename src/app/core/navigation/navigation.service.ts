@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { DatasetService } from '@seed/api/dataset'
+import { DatasetService } from '@seed/api'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { SeedNavigationService } from '@seed/components'
 

@@ -1,31 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialogModule } from '@angular/material/dialog'
-import { MatExpansionModule } from '@angular/material/expansion'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTabsModule } from '@angular/material/tabs'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { InventoryService } from '@seed/api/inventory'
-import type { Label } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { OrganizationUserResponse, OrganizationUserSettings } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { Column, CurrentUser, Cycle, Label, OrganizationUserResponse, OrganizationUserSettings } from '@seed/api'
+import { ColumnService, CycleService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import type {
   AgFilterResponse,
@@ -34,7 +18,7 @@ import type {
   InventoryType,
   Pagination,
   Profile,
-} from '../../inventory/inventory.types'
+} from 'app/modules/inventory'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 
 @Component({
@@ -46,14 +30,7 @@ import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, In
     CommonModule,
     ConfigSelectorComponent,
     FilterSortChipsComponent,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatTabsModule,
-    MatTooltipModule,
+    MaterialImports,
     PageComponent,
     SharedImports,
     InventoryTabComponent,
@@ -158,7 +135,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    */
   getDependencies(org_id: number) {
     this.orgId = org_id
-    this._cycleService.get(this.orgId)
+    this._cycleService.getCycles(this.orgId)
     const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
 
     return combineLatest([
@@ -274,7 +251,13 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    this.selectedViewIds = this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+    this.selectedViewIds = this.type === 'taxlots'
+      ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
+      : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+  }
+
+  onSelectAll(selectedViewIds: number[]) {
+    this.selectedViewIds = selectedViewIds
   }
 
   onProfileChange(id: number) {

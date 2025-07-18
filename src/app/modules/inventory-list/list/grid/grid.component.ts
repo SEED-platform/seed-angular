@@ -2,26 +2,20 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import type { Label } from '@seed/api/label'
-import type { OrganizationUserSettings } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
-
-ModuleRegistry.registerModules([AllCommunityModule])
 
 @Component({
   selector: 'seed-inventory-grid',
   templateUrl: './grid.component.html',
   imports: [
     AgGridAngular,
-    AgGridModule,
     CellHeaderMenuComponent,
     CommonModule,
     InventoryGridControlsComponent,
@@ -97,12 +91,13 @@ export class InventoryGridComponent implements OnChanges {
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
     if (!action) return
-    const { property_view_id } = event.data as { property_view_id: string; file: string; filename: string }
+    const { property_view_id, taxlot_view_id } = event.data as { property_view_id: string; taxlot_view_id: string }
+    const viewId = property_view_id || taxlot_view_id
 
     const urlMap = {
-      detail: [`/${this.inventoryType}`, property_view_id],
-      notes: [`/${this.inventoryType}`, property_view_id, 'notes'],
-      meters: [`/${this.inventoryType}`, property_view_id, 'meters'],
+      detail: [`/${this.inventoryType}`, viewId],
+      notes: [`/${this.inventoryType}`, viewId, 'notes'],
+      meters: [`/${this.inventoryType}`, viewId, 'meters'],
     }
 
     return void this._router.navigate(urlMap[action])
@@ -175,7 +170,7 @@ export class InventoryGridComponent implements OnChanges {
 
   actionRenderer = (value, icon: string, action: string) => {
     if (!value) return ''
-    // Allow a single letter to be passed as an indicator
+    // Allow a single letter to be passed as an indicator (like G for groups)
     if (icon.length === 1) {
       return `<span class="font-bold text-lg">${icon}</span>`
     }

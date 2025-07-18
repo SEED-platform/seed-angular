@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { Subject, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
-import type { Organization } from '@seed/api/organization'
+import type { Organization } from '@seed/api'
+import { InventoryService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryDocument, InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { DocumentUploadModalComponent } from '../modal/document-upload.component'
@@ -16,7 +15,7 @@ import { DocumentUploadModalComponent } from '../modal/document-upload.component
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
   templateUrl: './documents-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, DocumentUploadModalComponent, MatButtonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, DocumentUploadModalComponent, MaterialImports],
 })
 export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
@@ -72,8 +71,8 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center">
-        <span class="material-icons action-icon cursor-pointer text-secondary" title="Download" data-action="download">cloud_download</span>
-        <span class="material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="delete">clear</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Download" data-action="download">cloud_download</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="delete">clear</span>
       </div>
     `
   }

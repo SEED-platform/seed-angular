@@ -220,3 +220,11 @@
 .menu-option {
   @apply w-full p-2 flex items-center gap-4 rounded hover:bg-[#F4F5F4] hover:dark:bg-[#2E3B4A] text-sm cursor-pointer
 }
+
+.vertical-divider {
+  @apply border
+}
+
+.mock-button {
+  @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
+}

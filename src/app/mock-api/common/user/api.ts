@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core'
-import type { CurrentUser } from '@seed/api/user'
+import type { CurrentUser } from '@seed/api'
 import { MockApiService } from '@seed/mock-api'
 import { user as userData } from './data'
 

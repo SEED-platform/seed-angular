@@ -2,35 +2,19 @@ import { formatDate } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject, takeUntil } from 'rxjs'
-import type { AuditTemplateConfig, AuditTemplateReportType } from '@seed/api/audit-template'
-import { AuditTemplateService } from '@seed/api/audit-template'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { AuditTemplateConfig, AuditTemplateReportType, Organization } from '@seed/api'
+import { AuditTemplateService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-organizations-settings-audit-template',
   templateUrl: './audit-template.component.html',
   imports: [
-    MatButtonModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
+    MaterialImports,
     PageComponent,
     ReactiveFormsModule,
     SharedImports,

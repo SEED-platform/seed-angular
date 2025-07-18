@@ -2,13 +2,12 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, Theme } from 'ag-grid-community'
 import { filter, type Observable, switchMap } from 'rxjs'
-import { type DataLogger, SensorService } from '@seed/api/sensor'
+import { type DataLogger, SensorService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { FormModalComponent } from './modal/form-modal.component'
 import { SensorReadingsUploadModalComponent } from './modal/sensor-readings-upload.component'
 import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
@@ -16,7 +15,7 @@ import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-data-loggers-grid',
   templateUrl: './data-loggers-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatDividerModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class DataLoggersGridComponent implements OnChanges {
   @Input() cycleId: number
@@ -74,16 +73,16 @@ export class DataLoggersGridComponent implements OnChanges {
   actionRenderer() {
     return `
       <div class="flex gap-2 align-center">
-        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900" title="Add Sensors" data-action="addSensors">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-full h-8 mt-1 px-3 hover:bg-blue-200 dark:hover:bg-sky-900" title="Add Sensors" data-action="addSensors">
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Sensors</span>
         </span>
-        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-lg h-8 mt-1 px-2 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addReadings">
+        <span class="inline-flex items-center gap-1 cursor-pointer text-secondary border rounded-full h-8 mt-1 px-3 hover:bg-blue-200 dark:hover:bg-sky-900"" title="Add Readings" data-action="addReadings">
           <span class="material-icons text-base">add</span>
           <span class="text-sm">Readings</span>
         </span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
-        <span class="mt-2 material-icons action-icon cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Edit" data-action="edit">edit</span>
+        <span class="mt-2 material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }

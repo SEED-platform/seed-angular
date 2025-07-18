@@ -2,16 +2,15 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, type OnChanges, type OnInit, type SimpleChanges } from '@angular/core'
 import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
-import { MatAutocompleteModule } from '@angular/material/autocomplete'
-import { MatInputModule } from '@angular/material/input'
 import { map, type Observable, startWith } from 'rxjs'
-import { type Column } from '@seed/api/column'
+import { type Column } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-header-autocomplete',
   templateUrl: './seed-header-autocomplete.component.html',
-  imports: [CommonModule, SharedImports, MatAutocompleteModule, MatInputModule, ReactiveFormsModule],
+  imports: [CommonModule, SharedImports, MaterialImports, ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

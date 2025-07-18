@@ -86,11 +86,7 @@
 
   <mat-step [completed]="completed[3]" label="Upload">
     @if (inProgress) {
-      <seed-progress-bar
-        [progress]="progressBarObj.progress"
-        [total]="progressBarObj.total"
-        title="Uploading Sensor Data..."
-      ></seed-progress-bar>
+      <seed-progress-bar [progress]="progressBarObj.progress" [total]="progressBarObj.total" title="Uploading File..."></seed-progress-bar>
     }
   </mat-step>
 

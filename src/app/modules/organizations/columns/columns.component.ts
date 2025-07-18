@@ -1,16 +1,13 @@
 import { CommonModule, Location } from '@angular/common'
 import type { AfterViewInit, OnInit, Type } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatDrawer } from '@angular/material/sidenav'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatTabsModule } from '@angular/material/tabs'
 import { Title } from '@angular/platform-browser'
 import { Router, RouterOutlet } from '@angular/router'
 import { DrawerService, InventoryTabComponent, type NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory'
 import { ColumnDataTypesHelpComponent } from './data-types/help.component'
 import { ColumnGeocodingHelpComponent } from './geocoding/help.component'
@@ -27,10 +24,7 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: 
     CommonModule,
     SharedImports,
     InventoryTabComponent,
-    MatButtonModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatTabsModule,
+    MaterialImports,
     PageComponent,
     VerticalNavigationComponent,
     RouterOutlet,
