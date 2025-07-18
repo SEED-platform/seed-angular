@@ -5,8 +5,8 @@ import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { CurrentUser, Cycle, Label, OrganizationUserResponse, OrganizationUserSettings } from '@seed/api'
-import { CycleService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
+import type { Column, CurrentUser, Cycle, Label, OrganizationUserResponse, OrganizationUserSettings } from '@seed/api'
+import { ColumnService, CycleService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -20,7 +20,6 @@ import type {
   Profile,
 } from 'app/modules/inventory'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
-// import { CellHeaderMenuComponent } from './grid/cell-header-menu.component'
 
 @Component({
   selector: 'seed-inventory',
@@ -40,6 +39,7 @@ import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, In
 })
 export class InventoryComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
+  private _columnService = inject(ColumnService)
   private _cycleService = inject(CycleService)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
@@ -49,6 +49,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
   chunk = 100
+  columns: Column[] = []
   columnDefs: ColDef[] = []
   currentUser: CurrentUser
   cycle: Cycle
@@ -135,8 +136,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   getDependencies(org_id: number) {
     this.orgId = org_id
     this._cycleService.getCycles(this.orgId)
+    const columns$ = this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$
 
     return combineLatest([
+      columns$,
       this._userService.currentUser$,
       this._cycleService.cycles$,
       this._labelService.labels$,
@@ -147,10 +150,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
   /*
    * set class variables: cycles, profiles, inventory. returns profile id
    */
-  setDependencies([currentUser, cycles, labels, profiles]: InventoryDependencies) {
+  setDependencies([columns, currentUser, cycles, labels, profiles]: InventoryDependencies) {
     if (!cycles) {
       return null
     }
+    this.columns = columns
 
     const { org_user_id, settings } = currentUser
     this.currentUser = currentUser
@@ -270,12 +274,6 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   updateOrgUserSettings(): Observable<OrganizationUserResponse> {
     return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
-  }
-
-  onGridReset() {
-    this.userSettings.filters = {}
-    this.userSettings.sorts = {}
-    this.refreshInventory$.next()
   }
 
   onPageChange(page: number) {

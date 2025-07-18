@@ -43,8 +43,9 @@
     <!-- Filter and Sort chips -->
     @if (gridApi && columnDefs) {
       <seed-inventory-filter-sort-chips
-        [gridApi]="gridApi"
+        [columns]="columns"
         [columnDefs]="columnDefs"
+        [gridApi]="gridApi"
         [type]="type"
         [userSettings]="userSettings"
       ></seed-inventory-filter-sort-chips>
@@ -54,17 +55,20 @@
     <seed-inventory-grid
       #grid
       [columnDefs]="columnDefs"
+      [currentUser]="currentUser"
       [inventoryType]="type"
       [labelMap]="labelMap"
+      [orgId]="orgId"
+      [orgUserId]="orgUserId"
       [pagination]="pagination"
       [rowData]="rowData"
       [selectedViewIds]="selectedViewIds"
       [type]="type"
+      [userSettings]="userSettings"
       (pageChange)="onPageChange($event)"
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"
       (selectionChanged)="onSelectionChanged()"
-      (gridReset)="onGridReset()"
     ></seed-inventory-grid>
   </div>
 </div>

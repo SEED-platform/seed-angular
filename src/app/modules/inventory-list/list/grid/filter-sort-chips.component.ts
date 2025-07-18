@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import type { OrganizationUserSettings } from '@seed/api'
+import type { Column, OrganizationUserSettings } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
 
@@ -12,15 +12,17 @@ import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../
   imports: [CommonModule, MaterialImports],
 })
 export class FilterSortChipsComponent implements OnChanges {
-  @Input() gridApi: GridApi
+  @Input() columns: Column[]
   @Input() columnDefs: ColDef[]
+  @Input() gridApi: GridApi
   @Input() userSettings: OrganizationUserSettings
   @Input() type: InventoryType
   filterChips: FilterSortChip[] = []
   sortChips: FilterSortChip[] = []
 
-  ngOnChanges({ userSettings }: SimpleChanges) {
-    if (userSettings?.currentValue) {
+  ngOnChanges(changes: SimpleChanges) {
+    const { userSettings, columnDefs } = changes
+    if (userSettings?.currentValue || columnDefs?.currentValue) {
       this.getFilterChips()
       this.getSortChips()
     }
@@ -38,12 +40,20 @@ export class FilterSortChipsComponent implements OnChanges {
     this.filterChips = []
     for (const columnName of Object.keys(this.filters)) {
       const colDef = this.columnDefs.find(({ field }) => field === columnName)
-
-      if (!colDef) return
-
-      const displayName = this.buildFilterDisplayName(colDef, this.filters[columnName])
-      const chip = { field: colDef.field, displayName, original: columnName }
-      this.filterChips.push(chip)
+      if (colDef) {
+        this.filterChips.push({
+          field: colDef.field,
+          displayName: this.buildFilterDisplayName(colDef, this.filters[columnName]),
+          original: columnName,
+        })
+      } else {
+        const column = this.columns.find((c) => c.name === columnName)
+        this.filterChips.push({
+          field: columnName,
+          displayName: column?.display_name ?? columnName,
+          original: columnName,
+        })
+      }
     }
   }
 
@@ -53,11 +63,21 @@ export class FilterSortChipsComponent implements OnChanges {
       const direction = sort.startsWith('-') ? 'desc' : 'asc'
       sort = sort.replace(/^-/, '')
       const colDef = this.columnDefs.find(({ field }) => field === sort)
-
-      if (!colDef) return
-
-      const chip = { field: colDef.field, displayName: `${colDef.headerName} ${direction}`, original: sort }
-      this.sortChips.push(chip)
+      if (colDef) {
+        this.sortChips.push({
+          field: colDef.field,
+          displayName: `${colDef.headerName} ${direction}`,
+          original: sort,
+        })
+      } else {
+        const column = this.columns.find((c) => c.name === sort)
+        const displayName = column?.display_name ?? sort
+        this.sortChips.push({
+          field: sort,
+          displayName: `${displayName} ${direction}`,
+          original: sort,
+        })
+      }
     }
   }
 

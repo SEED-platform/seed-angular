@@ -4,9 +4,11 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import type { Label } from '@seed/api'
+import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryType, Pagination } from 'app/modules/inventory'
+import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
+import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
 @Component({
@@ -14,25 +16,30 @@ import { InventoryGridControlsComponent } from './grid-controls.component'
   templateUrl: './grid.component.html',
   imports: [
     AgGridAngular,
-    // CellHeaderMenuComponent,
+    CellHeaderMenuComponent,
     CommonModule,
     InventoryGridControlsComponent,
   ],
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
+  @Input() currentUser: CurrentUser
   @Input() inventoryType: string
   @Input() labelMap: Record<number, Label>
+  @Input() orgId: number
+  @Input() orgUserId: number
   @Input() pagination!: Pagination
   @Input() rowData!: Record<string, unknown>[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
+  @Input() userSettings: OrganizationUserSettings
   @Output() pageChange = new EventEmitter<number>()
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
   @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
 
   agPageSize = 100
@@ -74,6 +81,7 @@ export class InventoryGridComponent implements OnChanges {
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
+    this.gridApi.autoSizeAllColumns()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
@@ -101,31 +109,48 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   getColumnDefs() {
+    const stateColumns = this.addHeaderMenu()
+
     this.columnDefs = [
       { headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef,
-      { headerName: 'Details', children: this.columnDefs } as ColGroupDef,
+      { headerName: 'Details', children: stateColumns } as ColGroupDef,
     ]
   }
 
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 85, 'share'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 80, 'bolt', 'meters'),
-      this.buildShortcutColumn('notes_count', 'Notes', 80, 'mode_comment', 'notes'),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 80, 'G'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'share'),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 78, 'bolt', 'meters'),
+      this.buildShortcutColumn('notes_count', 'Notes', 71, 'mode_comment', 'notes'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', 79, 'G'),
       this.buildLabelsCell(),
     ]
     return shortcutColumns
   }
 
-  buildShortcutColumn(field: string, headerName: string, width: number, icon: string, action: string = null): ColDef {
+  addHeaderMenu() {
+    const stateColumns = this.columnDefs.map((c) => ({
+      ...c,
+      headerComponent: CellHeaderMenuComponent,
+      headerComponentParams: {
+        currentUser: this.currentUser,
+        type: this.type,
+      },
+    }))
+    return stateColumns
+  }
+
+  buildShortcutColumn(field: string, headerName: string, maxWidth: number, icon: string, action: string = null): ColDef {
     return {
       field,
       headerName,
-      width,
+      maxWidth,
       filter: false,
       sortable: false,
+      suppressMovable: true,
+      headerClass: 'white-space-normal',
+      cellClass: 'overflow-hidden',
       cellRenderer: ({ value }) => this.actionRenderer(value, icon, action),
     }
   }
@@ -137,7 +162,9 @@ export class InventoryGridComponent implements OnChanges {
       headerName: 'Info',
       filter: false,
       sortable: false,
-      width: 60,
+      resizable: false,
+      suppressMovable: true,
+      maxWidth: 60,
       cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
     }
   }
@@ -164,6 +191,7 @@ export class InventoryGridComponent implements OnChanges {
       width: 80,
       filter: false,
       sortable: false,
+      suppressMovable: true,
       // labels come in as an array of ids [1,2,3]. Ag grid needs them formatted as a string
       valueFormatter: ({ value }: { value: number[] }) => {
         const labels = value
@@ -185,17 +213,6 @@ export class InventoryGridComponent implements OnChanges {
         return value ? eGui : ''
       },
     }
-  }
-
-  resetGrid = () => {
-    if (!this.gridApi) return
-
-    this.gridApi.setFilterModel(null)
-    this.gridApi.applyColumnState({ state: [], applyOrder: true })
-    this.gridApi.resetColumnState()
-    this.gridApi.refreshClientSideRowModel()
-    this.gridApi.refreshCells({ force: true })
-    this.gridReset.emit()
   }
 
   /*

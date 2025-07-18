@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { type MatSelect } from '@angular/material/select'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { filter, take, tap } from 'rxjs'
 import type { AccessLevelInstance, Label, Organization } from '@seed/api'
 import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -208,9 +209,13 @@ export class HeaderComponent implements OnInit {
       },
     })
 
-    dialogRef.afterClosed().subscribe((message) => {
-      if (message === 'refresh') this.refreshDetail.emit()
-    })
+    dialogRef.afterClosed()
+      .pipe(
+        take(1),
+        filter(Boolean),
+        tap(() => { this.refreshDetail.emit() }),
+      )
+      .subscribe()
   }
 
   trackByFn(_index: number, { id }: AccessLevelInstance) {
