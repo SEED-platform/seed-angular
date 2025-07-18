@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import type { GridApi } from 'ag-grid-community'
-import { take } from 'rxjs'
+import { take, tap } from 'rxjs'
 import type { CurrentUser, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -51,15 +51,11 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.resetColumns()
     this.resetFilters()
     this.resetSorts()
-    this.gridApi.refreshClientSideRowModel()
-    this.gridApi.refreshCells({ force: true })
     this.resetUserSettings()
   }
 
   resetColumns() {
-    const columns = this.gridApi.getColumns()
-    this.gridApi.resetColumnState()
-    this.gridApi.autoSizeColumns(columns)
+    this.gridApi.autoSizeAllColumns()
   }
 
   resetFilters() {
@@ -72,6 +68,7 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
 
   resetSorts() {
     this.gridApi.applyColumnState({ state: [], applyOrder: true })
+    this.gridApi.resetColumnState()
     this.userSettings.sorts = this.currentUser.settings?.sorts ?? {}
     this.userSettings.sorts.properties = []
     this.userSettings.sorts.taxlots = []
@@ -86,7 +83,14 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
   updateOrgUser() {
     const { org_id, org_user_id } = this.currentUser
     this._organizationService.updateOrganizationUser(org_user_id, org_id, this.userSettings)
-      .pipe((take(1)))
+      .pipe(
+        take(1),
+        tap(() => {
+          this.gridApi.refreshClientSideRowModel()
+          this.gridApi.refreshCells({ force: true })
+          this.gridApi.onSortChanged()
+        }),
+      )
       .subscribe()
   }
 }

@@ -81,6 +81,7 @@ export class InventoryGridComponent implements OnChanges {
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
+    this.gridApi.autoSizeAllColumns()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
