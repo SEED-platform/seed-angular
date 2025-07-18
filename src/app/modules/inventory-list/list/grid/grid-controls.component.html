@@ -1,20 +1,25 @@
 <div class="mx-2 flex justify-between">
-  <!-- <mat-icon class="scale-75 cursor-pointer" (click)="resetGrid()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid"></mat-icon> -->
-  <mat-icon class="scale-75 cursor-pointer" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid Menu" [matMenuTriggerFor]="menu"></mat-icon>
+  <mat-icon class="scale-75 cursor-pointer" (click)="resetGrid()" svgIcon="fa-solid:arrows-rotate" matTooltip="Reset Grid"></mat-icon>
 
-  <mat-menu #menu="matMenu">
+  <!--  POTENTIAL RESET MENU FOR MORE CONTROL -->
+
+  <!-- <mat-icon
+    class="scale-75 cursor-pointer"
+    [matMenuTriggerFor]="menu"
+    svgIcon="fa-solid:arrows-rotate"
+    matTooltip="Reset Grid Menu"
+  ></mat-icon> -->
+
+  <!-- <mat-menu #menu="matMenu">
     <div class="px-0">
       @if (gridApi) {
-        <div class="menu-option"
-          [ngClass]="{'': scheme === 'dark'}" (click)="resetGrid()">
-          <mat-icon svgIcon="fa-solid:rotate" class="scale-50"></mat-icon>
+        <div class="menu-option" [ngClass]="{ '': scheme === 'dark' }" (click)="resetGrid()">
+          <mat-icon class="scale-50" svgIcon="fa-solid:rotate"></mat-icon>
           <span class="w-200">Reset Grid</span>
         </div>
         <mat-divider class="mx-3 my-1"></mat-divider>
-        
-        <!-- POTENTIAL MENU OPTIONS -->
 
-        <!-- <div class="menu-option"
+        <div class="menu-option"
           [ngClass]="{'': scheme === 'dark'}" (click)="resetColumns()">
           <div class="w-6"></div>
           <span>Reset Columns</span>
@@ -29,18 +34,16 @@
           <div class="w-6"></div>
           <span>Reset Sorts</span>
         </div>
-        <mat-divider class="mx-3 my-1"></mat-divider> -->
+        <mat-divider class="mx-3 my-1"></mat-divider>
       }
 
-      <div class="menu-option"
-        [ngClass]="{'': scheme === 'dark'}" (click)="resetUserSettings()">
+      <div class="menu-option" [ngClass]="{ '': scheme === 'dark' }" (click)="resetUserSettings()">
         <div class="w-6"></div>
         <span>Reset User Settings</span>
       </div>
     </div>
+  </mat-menu> -->
 
-  </mat-menu>
-  
   <div class="my-auto flex justify-end">
     @if (selectedViewIds.length > 0) {
       <span class="my-auto mr-10">({{ selectedViewIds.length }} selected)</span>

@@ -1,37 +1,32 @@
 <!-- TRIGGER -->
-<div class="w-full flex justify-between gap-4 overflow-hidden" #trigger>
+<div class="flex w-full justify-between gap-4 overflow-hidden" #trigger>
   <div class="flex gap-4">
     <span class="my-auto">{{ params.displayName }}</span>
     @if (sortIcon) {
       <mat-icon class="scale-50" [svgIcon]="sortIcon"></mat-icon>
     }
   </div>
-  <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded" (click)="toggleMenu()">
-    <mat-icon class="scale-50"  svgIcon="fa-solid:ellipsis-vertical"></mat-icon>
+  <div class="cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-gray-800" (click)="toggleMenu()">
+    <mat-icon class="scale-50" svgIcon="fa-solid:ellipsis-vertical"></mat-icon>
   </div>
 </div>
 
 <!-- MENU -->
 <ng-template #menu>
-  <div 
-    class="w-80 p-2 border text-sm rounded"
-    [class.bg-[#2A3341]]="scheme === 'dark'"
-    [class.bg-white]="scheme === 'light'"
-  >
-
+  <div class="w-80 rounded border p-2 text-sm" [class.bg-[#2A3341]]="scheme === 'dark'" [class.bg-white]="scheme === 'light'">
     <div class="menu-option" (click)="sortCol('asc')">
-      <mat-icon svgIcon="fa-solid:arrow-up" class="scale-50"></mat-icon>
+      <mat-icon class="scale-50" svgIcon="fa-solid:arrow-up"></mat-icon>
       <span>Sort Ascending</span>
     </div>
-    
+
     <div class="menu-option" (click)="sortCol('desc')">
-      <mat-icon svgIcon="fa-solid:arrow-down" class="scale-50"></mat-icon>
+      <mat-icon class="scale-50" svgIcon="fa-solid:arrow-down"></mat-icon>
       <span>Sort Descending</span>
     </div>
-    
+
     @if (sortIcon) {
       <div class="menu-option" (click)="sortCol(null)">
-        <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
+        <mat-icon class="scale-50" svgIcon="fa-solid:minus"></mat-icon>
         <span>Clear Sort</span>
       </div>
     }
@@ -39,34 +34,24 @@
     <mat-divider></mat-divider>
 
     <div class="menu-option" (click)="pinCol('left')">
-      <mat-icon [svgIcon]="'fa-solid:thumbtack'" class="scale-50"></mat-icon>
+      <mat-icon class="scale-50" [svgIcon]="'fa-solid:thumbtack'"></mat-icon>
       <span>Pin Left</span>
     </div>
     <div class="menu-option" (click)="pinCol('right')">
-      <mat-icon svgIcon="fa-solid:thumbtack" class="scale-50"></mat-icon>
+      <mat-icon class="scale-50" svgIcon="fa-solid:thumbtack"></mat-icon>
       <span>Pin right</span>
     </div>
     @if (pinState) {
       <div class="menu-option" (click)="pinCol(null)">
-        <mat-icon svgIcon="fa-solid:minus" class="scale-50"></mat-icon>
+        <mat-icon class="scale-50" svgIcon="fa-solid:minus"></mat-icon>
         <span>Unpin</span>
       </div>
     }
 
     <mat-divider></mat-divider>
-
-    <!-- RESET COLUMNS -->
-    <div class="menu-option" (click)="resetCol()">
-      <mat-icon svgIcon="fa-solid:rotate" class="scale-50"></mat-icon>
-      <span>Reset This Column</span>
+    <div class="menu-option" (click)="hideCol()">
+      <mat-icon class="scale-50" svgIcon="fa-solid:eye-slash"></mat-icon>
+      <span>Hide Column</span>
     </div>
-    
-    <div class="menu-option" (click)="resetAll()">
-      <div class="w-6"></div>
-      <span>Reset All Columns</span>
-    </div>
-    
   </div>
-
 </ng-template>
-

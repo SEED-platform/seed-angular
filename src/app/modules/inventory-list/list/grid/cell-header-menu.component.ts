@@ -127,21 +127,12 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
   }
 
   pinCol(direction: 'left' | 'right' | null): void {
-    this.gridApi.setColumnsPinned([this.params.column], direction)
+    this.gridApi.setColumnsPinned([this.column], direction)
     this.detach()
   }
 
-  resetCol() {
-    const colId = this.column.getColId()
-    this.gridApi.applyColumnState({ state: [{ colId }], defaultState: {} })
-    this.gridApi.autoSizeColumns([this.column])
-    this.detach()
-  }
-
-  resetAll() {
-    const columns = this.gridApi.getColumns()
-    this.gridApi.resetColumnState()
-    this.gridApi.autoSizeColumns(columns)
+  hideCol() {
+    this.gridApi.setColumnsVisible([this.column], false)
     this.detach()
   }
 

@@ -51,7 +51,6 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.resetColumns()
     this.resetFilters()
     this.resetSorts()
-    this.resetUserSettings()
   }
 
   resetColumns() {
@@ -72,11 +71,6 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.userSettings.sorts = this.currentUser.settings?.sorts ?? {}
     this.userSettings.sorts.properties = []
     this.userSettings.sorts.taxlots = []
-    this.updateOrgUser()
-  }
-
-  resetUserSettings() {
-    this.userSettings = {}
     this.updateOrgUser()
   }
 
