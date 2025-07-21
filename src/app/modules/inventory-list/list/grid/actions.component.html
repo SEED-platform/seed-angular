@@ -1,14 +1,192 @@
-<div class="mr-1 flex flex-col">
-  <mat-label class="text-secondary text-sm">Actions</mat-label>
-  <mat-select
-    class="h-6 w-60 rounded border border-gray-500 p-3 text-sm"
-    #actionSelect
-    (selectionChange)="onAction($event.value.action, actionSelect)"
-    panelClass="fit-content-select"
-    placeholder="Select Action"
-  >
-    @for (item of actions; track $index) {
-      <mat-option class="!h-3 text-sm" [value]="item" [disabled]="item.disabled">{{ item.name }}</mat-option>
-    }
-  </mat-select>
+
+<div class="text-secondary text-sm">
+  Actions
+  <div mat-button [matMenuTriggerFor]="menu" class="mr-1 px-2 w-50 flex items-center justify-between border border-gray-500 rounded cursor-pointer">
+    <div class="text-sm text-secondary">Select Action</div>
+    <mat-icon svgIcon="fa-solid:chevron-down" class="scale-50"></mat-icon>
+  </div>
 </div>
+
+<mat-menu #menu="matMenu" class="menu-compact border w-80 text-sm rounded">
+    <seed-menu-item label="Select All" (action)="selectAll()"></seed-menu-item>
+    <seed-menu-item label="Select None" (action)="deselectAll()"></seed-menu-item>
+    <mat-divider></mat-divider>
+    <seed-menu-item 
+      label="Delete"
+      icon="fa-solid:trash-can"
+      [disabled]="!hasSelection"
+      (action)="deleteStates()"
+    ></seed-menu-item>
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="Merge"
+      icon="fa-solid:share-nodes"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+    <seed-menu-item 
+      label="Only Show Populated Columns"
+      icon="fa-solid:filter"
+      (action)="openShowPopulatedColumnsModal()"
+    ></seed-menu-item>
+    <!-- Access Levels -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Access Levels</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Update"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Hide"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <!-- Analyses -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Analyses</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Run"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <!-- Audit Template -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Audit Template</span>
+    <div>
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Export"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Update"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <mat-divider class="my-0"></mat-divider>
+
+    <!-- DATA QUALITY DATA -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Data Quality</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Run Check"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <!-- DERIVED DATA -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Derived Data</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Update"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <mat-divider class="my-0"></mat-divider>
+
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="Email"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="Export"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="FEMP CTS Export"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="Geocode"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+
+    <!-- Groups -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Groups</span>
+    <div >
+      <seed-menu-item 
+      label="Add / Remove"
+      [disabled]="!hasSelection"
+      (action)="openGroupsModal()">
+      </seed-menu-item>
+    </div>
+    <!-- Labels -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Labels</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Add / Remove"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <mat-divider class="my-0"></mat-divider>
+
+    <seed-menu-item 
+      class="line-through text-secondary"
+      label="Set Update Time to Now"
+      [disabled]="!hasSelection"
+      (action)="tempAction()"
+    ></seed-menu-item>
+
+    <!-- SalesForce -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Salesforce</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Update"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+    <!-- UBID -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">UBID</span>
+    <div >
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Add / Update"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Compare"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+      <seed-menu-item 
+      class="line-through text-secondary"
+      label="Decode"
+      [disabled]="!hasSelection"
+      (action)="tempAction()">
+      </seed-menu-item>
+    </div>
+
+</mat-menu>

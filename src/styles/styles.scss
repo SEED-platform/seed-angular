@@ -229,3 +229,13 @@
 .mock-button {
   @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
 }
+
+.menu-compact {
+  padding: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .menu-option {
+    padding: 0.25rem !important;
+  }
+}

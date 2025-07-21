@@ -203,3 +203,8 @@ export type MatchingCriteriaColumnsResponse = {
   PropertyState: string[];
   TaxLotState: string[];
 }
+
+export type FilterByViewsResponse = {
+  access_level_instance_ids: number[];
+  status: string;
+}

@@ -92,4 +92,20 @@ export class GroupsService {
       }),
     )
   }
+
+  bulkUpdate(orgId: number, addGroupIds: number[], removeGroupIds: number[], viewIds: number[], type: 'property' | 'tax_lot'): Observable<unknown> {
+    const url = `/api/v3/inventory_group_mappings/put/?organization_id=${orgId}`
+    const data = {
+      inventory_ids: viewIds,
+      add_group_ids: addGroupIds,
+      remove_group_ids: removeGroupIds,
+      inventory_type: type,
+    }
+    return this._httpClient.put(url, data).pipe(
+      tap(() => { this.list(orgId) }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating groups')
+      }),
+    )
+  }
 }
