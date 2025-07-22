@@ -8,7 +8,8 @@ import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { GroupsModalComponent } from '../actions'
+import { GroupsModalComponent } from '../../../inventory/actions'
+import { AliChangeModalComponent } from '../../../inventory/actions/ali-change-modal.component'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -117,6 +118,21 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
         this.refreshInventory.emit()
       }
     })
+  }
+
+  openAliChangeModal() {
+    const dialogRef = this._dialog.open(AliChangeModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewIds: this.selectedViewIds,
+      },
+    })
+
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      tap(() => { this.refreshInventory.emit() }),
+    ).subscribe()
   }
 
   openGroupsModal() {

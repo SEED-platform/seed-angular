@@ -324,4 +324,15 @@ export class InventoryService {
       }),
     )
   }
+
+  movePropertiesToAccessLevelInstance(orgId: number, aliId: number, viewIds: number[]): Observable<unknown> {
+    const url = `/api/v3/properties/move_properties_to/?organization_id=${orgId}`
+    const data = { property_view_ids: viewIds, access_level_instance_id: aliId }
+    return this._httpClient.post(url, data).pipe(
+      tap(() => { this._snackBar.success('Properties moved successfully') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error moving properties')
+      }),
+    )
+  }
 }

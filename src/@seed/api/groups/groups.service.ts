@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import { BehaviorSubject, catchError, map, type Observable, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { InventoryType } from 'app/modules/inventory'
 import { OrganizationService } from '../organization'
 import type { InventoryGroup, InventoryGroupResponse, InventoryGroupsResponse } from './groups.types'
 
@@ -34,8 +35,9 @@ export class GroupsService {
       .subscribe()
   }
 
-  listForInventory(orgId: number, inventoryIds: number[]) {
-    const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=properties`
+  // inventoryIds (Property/TaxLot[]) are not viewIds
+  listForInventory(orgId: number, inventoryIds: number[], type: InventoryType) {
+    const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=${type}`
     const body = { selected: inventoryIds }
     this._httpClient
       .post<InventoryGroupsResponse>(url, body)

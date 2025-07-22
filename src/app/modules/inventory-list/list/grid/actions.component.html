@@ -33,12 +33,13 @@
     <mat-divider class="my-0"></mat-divider>
     <span class="text-sm text-secondary">Access Levels</span>
     <div >
-      <seed-menu-item 
-      class="line-through text-secondary"
-      label="Update"
-      [disabled]="!hasSelection"
-      (action)="tempAction()">
-      </seed-menu-item>
+      @if (type === 'properties') {
+        <seed-menu-item 
+        label="Edit"
+        [disabled]="!hasSelection"
+        (action)="openAliChangeModal()">
+        </seed-menu-item>
+      }
       <seed-menu-item 
       class="line-through text-secondary"
       label="Hide"
