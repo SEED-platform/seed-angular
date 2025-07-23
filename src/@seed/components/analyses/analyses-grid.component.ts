@@ -97,6 +97,7 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
       Completed: 'bg-green-900 text-white',
       Failed: 'bg-red-900 text-white',
       Running: 'bg-primary text-white animate-pulse',
+      Creating: 'bg-primary text-white animate-pulse',
     }
 
     return `<div class="overflow-hidden ${styleMap[value]} px-2">${value}</div>`

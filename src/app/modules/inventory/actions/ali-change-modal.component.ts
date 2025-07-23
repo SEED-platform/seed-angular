@@ -45,12 +45,12 @@ export class AliChangeModalComponent implements OnInit, OnDestroy {
       this._organizationService.accessLevelInstancesByDepth$,
     ])
       .pipe(
-        take(1),
         tap(([tree, accessLevelsByDepth]) => {
           this.accessLevelNames = tree.accessLevelNames
           this.accessLevelInstancesByDepth = accessLevelsByDepth
           this.getPossibleAccessLevelInstances(this.form.get('access_level')?.value)
         }),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }

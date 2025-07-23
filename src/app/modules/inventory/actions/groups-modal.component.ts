@@ -38,6 +38,7 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   aliId: number
   // aliIds: number[] = []
   currentUser: CurrentUser
+  existingNames: string[] = []
   gridTheme$ = this._configService.gridTheme$
   groups: InventoryGroup[] = []
   aliGroups: (InventoryGroup & { add: boolean; remove: boolean })[] = []
@@ -46,13 +47,10 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   allSameAli = true
   loading = true
 
-  data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[]; existingGroupNames: string[] }
+  data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[] }
 
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
-      Validators.required,
-      SEEDValidators.uniqueValue(this.data.existingGroupNames),
-    ]),
+    name: new FormControl<string | null>('', Validators.required), // existing names set when data is fetched
     organization: new FormControl<number>(this.data.orgId),
     inventory_type: new FormControl<InventoryDisplayType>(this.data.type === 'taxlots' ? 'Tax Lot' : 'Property'),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
@@ -75,11 +73,19 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
 
   setGroups(groups: InventoryGroup[]) {
     this.groups = groups
+    this.existingNames = groups.map((g) => g.name)
+    const nameCtrl = this.form.get('name')
+    nameCtrl?.setValidators([
+      Validators.required,
+      SEEDValidators.uniqueValue(this.existingNames),
+    ])
+
     this.aliGroups = this.groups
       .filter((g) => this.aliIds.includes(g.access_level_instance))
       .map((group) => ({ ...group, add: false, remove: false }))
     this.aliId = this.aliGroups[0]?.access_level_instance
     this.allSameAli = this.aliGroups.every((g) => g.access_level_instance === this.aliId)
+
     if (this.allSameAli) {
       this.form.patchValue({ access_level_instance: this.aliId })
     }
@@ -89,7 +95,7 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   setGrid() {
     this.setRowData()
     this.columnDefs = [
-      { field: 'name', headerName: 'Group Name' },
+      { field: 'name', headerName: 'Group Name', flex: 1 },
       { field: 'access_level_instance_data.name', headerName: 'Access Level Instance' },
       { field: 'inventory_list', headerName: 'Inventory', flex: 0.5, valueFormatter: ({ data }: { data: InventoryGroup }) => String(data.inventory_list.length) },
       { field: 'add', headerName: 'Add', flex: 0.5, editable: this.allSameAli, headerClass: () => this.allSameAli ? '' : 'text-secondary' },
@@ -117,7 +123,6 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
 
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
-    this.gridApi.autoSizeAllColumns()
   }
 
   onSubmit() {

@@ -3,7 +3,7 @@
 
 // colors for text alerts
 :root {
-  --primary-text-color: rgb(29 78 216);
+  --primary-text-color: rgb(29, 78, 216);
   --success-text-color: rgb(21 128 61);
   --info-text-color: theme('colors.cyan.600');
   --warning-text-color: rgb(180 83 9);
@@ -238,4 +238,42 @@
   .menu-option {
     padding: 0.25rem !important;
   }
+}
+
+.border-button-toggle-group {
+  @apply rounded-full w-fit gap-0 !important;
+  border: 1px solid rgb(170, 170, 170) !important;
+
+  .mat-button-toggle {
+    @apply rounded-none m-0 !important;
+  }
+
+  .mat-button-toggle:not(:first-child) {
+    border-left: 1px solid rgb(170, 170, 170) !important;
+  }
+
+  // Uncomment to change checked button to primary color
+  // .mat-button-toggle-checked {
+  //   @apply dark:bg-primary dark:bg-opacity-50 !important;
+  // }
+}
+
+
+.compact-form {
+  label, span {
+    @apply text-sm !important;
+  }
+
+  .mat-mdc-form-field-flex,
+  .mat-mdc-form-field-infix {
+    @apply text-sm h-10 min-h-10 !important;
+  }
+
+  .no-sub {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none !important;
+    }
+  }
+
+
 }

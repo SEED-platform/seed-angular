@@ -1,5 +1,6 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import type { MatDialogRef } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -7,9 +8,10 @@ import { GroupsService, InventoryService } from '@seed/api'
 import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
-import type { InventoryType, Profile } from '../../../inventory/inventory.types'
+import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
 import { GroupsModalComponent } from '../../../inventory/actions'
 import { AliChangeModalComponent } from '../../../inventory/actions/ali-change-modal.component'
+import type { InventoryType, Profile } from '../../../inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -32,14 +34,9 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
   hasSelection: boolean
-  existingGroupNames: string[] = []
 
   ngOnInit(): void {
-    this._groupsService.list(this.orgId)
-    this._groupsService.groups$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      tap((groups) => { this.existingGroupNames = groups.map((g) => g.name) }),
-    ).subscribe()
+    return
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -113,11 +110,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       },
     })
 
-    dialogRef.afterClosed().subscribe((id) => {
-      if (id) {
-        this.refreshInventory.emit()
-      }
-    })
+    this.afterClosed(dialogRef)
   }
 
   openAliChangeModal() {
@@ -129,10 +122,19 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      tap(() => { this.refreshInventory.emit() }),
-    ).subscribe()
+    this.afterClosed(dialogRef)
+  }
+
+  openAnalysisRunModal() {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewIds: this.selectedViewIds,
+      },
+    })
+
+    this.afterClosed(dialogRef)
   }
 
   openGroupsModal() {
@@ -142,10 +144,13 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
         orgId: this.orgId,
         type: this.type,
         viewIds: this.selectedViewIds,
-        existingGroupNames: this.existingGroupNames,
       },
     })
 
+    this.afterClosed(dialogRef)
+  }
+
+  afterClosed(dialogRef: MatDialogRef<unknown>) {
     dialogRef.afterClosed().pipe(
       filter(Boolean),
       tap(() => { this.refreshInventory.emit() }),

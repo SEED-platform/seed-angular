@@ -25,6 +25,14 @@ export type Analysis = {
   _finished_with_tasks: boolean; // used to determine if an analysis has no currently running tasks
 }
 
+export type AnalysisCreateData = {
+  name: string;
+  service: AnalysisServiceType;
+  configuration: Record<string, unknown>;
+  property_view_ids: number[];
+  access_level_instance_id: number;
+}
+
 export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation'
 
 // Analysis by View type
@@ -108,3 +116,23 @@ export type AnalysisSummaryStats = {
   display_name: string;
   is_extra_data: boolean;
 }
+
+export type SavingsTarget = 'AGGRESSIVE' | 'CONSERVATIVE' | 'NOMINAL'
+export type SelectMeters = 'all' | 'date_range' | 'select_cycle'
+export type BenchmarkDataType = 'DEFAULT' | 'GENERATE'
+
+export type BETTERConfig = {
+  benchmark_data_type: BenchmarkDataType;
+  cycle_id: number;
+  enable_pvwatts: boolean;
+  meter: { start_date: string; end_date: string };
+  min_model_r_squared: number;
+  preprocess_meters: boolean;
+  portfolio_analysis: boolean;
+  savings_target: SavingsTarget;
+  select_meters: SelectMeters;
+}
+
+export type AnalysisConfig = BETTERConfig | Record<string, unknown>
+// type GenericConfigForm = FormGroup<Record<string, FormControl<unknown>>>
+// export type AnalysisConfigFormGroup = BETTERConfigGroup | GenericConfigForm
