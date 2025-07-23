@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { AnalysisCreateData, AnalysisServiceType, CurrentUser, Cycle } from '@seed/api'
+import type { AnalysisConfig, AnalysisCreateData, AnalysisServiceType, CurrentUser, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, UserService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
-import { BetterConfigComponent } from './analysis-config/better-config.component'
+import { BetterConfigComponent, SimpleConfigComponent } from './analysis-config'
 
 @Component({
   selector: 'seed-analysis-run-modal',
@@ -23,16 +23,16 @@ import { BetterConfigComponent } from './analysis-config/better-config.component
     ModalHeaderComponent,
     ReactiveFormsModule,
     RouterModule,
+    SimpleConfigComponent,
   ],
 })
 export class AnalysisRunModalComponent implements OnInit, OnDestroy {
-  @ViewChild(BetterConfigComponent) childBetter!: BetterConfigComponent
-
   private _analysisService = inject(AnalysisService)
   private _dialogRef = inject(MatDialogRef<AnalysisRunModalComponent>)
   private _cycleService = inject(CycleService)
   private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
+  config: AnalysisConfig = {}
   currentUser: CurrentUser
   cycles: Cycle[] = []
   cycle: Cycle
@@ -40,13 +40,13 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   runningAnalysis = false
 
   serviceTypes = [
-    'BETTER',
-    'BSyncr',
-    'Building Upgrade Recommendation',
-    'CO2',
-    'EEEJ',
-    'Element Statistics',
-    'EUI',
+    { value: 'BETTER', display: 'BETTER' },
+    { value: 'BSyncr', display: 'BSyncr' },
+    { value: 'Building Upgrade Recommendation', display: 'Building Upgrade Recommendation' },
+    { value: 'CO2', display: 'Average Annual CO2' },
+    { value: 'EEEJ', display: 'Energy Equity & Environmental Justice (EEEJ)' },
+    { value: 'Element Statistics', display: 'Element Statistics' },
+    { value: 'EUI', display: 'EUI' },
   ]
 
   existingNames: string[] = []
@@ -107,16 +107,13 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
       .subscribe()
   }
 
-  onFormChange(form: FormGroup) {
-    this.configInvalid = form.invalid
+  onFormChange(configForm: FormGroup) {
+    this.configInvalid = configForm.invalid
+    this.config = configForm.value as AnalysisConfig
   }
 
   onSubmit() {
-    const configMap: Record<string, unknown> = {
-      BETTER: this.childBetter.form.value,
-      BSyncr: null,
-    }
-    const data = { ...this.form.value, configuration: configMap[this.form.value.service] } as AnalysisCreateData
+    const data = { ...this.form.value, configuration: this.config } as AnalysisCreateData
 
     this._analysisService.create(this.data.orgId, data).subscribe(() => {
       this.runningAnalysis = true

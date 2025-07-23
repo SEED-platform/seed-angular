@@ -1,11 +1,10 @@
 <form class="flex flex-col gap-2 compact-form" [formGroup]="form">
 
-  <div class="text-secondary text-sm my-2">
+  <div class="text-secondary text-sm my-4">
     The BETTER analysis leverages better.lbl.gov to calculate energy, cost, and GHG emission savings by comparing the
     property's change point model with a benchmarked model. The results include saving potential and a list of recommended
     high-level energy conservation measures.
     <mat-divider class="mt-2"></mat-divider>
-
   </div>
 
   <div class="flex gap-4">
@@ -74,6 +73,9 @@
         <input matInput [matDatepicker]="endDatePicker" formControlName="end_date">
         <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #endDatePicker></mat-datepicker>
+        @if (form.get('meter.end_date')?.hasError('dateBefore')) {
+          <mat-error>End date must be after start date.</mat-error>
+        }
       </mat-form-field>
     </div>
   }

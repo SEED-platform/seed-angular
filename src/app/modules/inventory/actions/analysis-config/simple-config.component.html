@@ -1,0 +1,17 @@
+<div class="text-secondary text-sm my-4">
+  {{ aboutMap[service] }}
+  <mat-divider class="mt-2"></mat-divider>
+</div>
+  
+@if (service === 'BSyncr') {
+  <form [formGroup]="formBSyncr" class="compact-form">
+    <mat-form-field class="w-full">
+      <mat-label>BSyncr Model Selection</mat-label>
+      <mat-select formControlName="model_type">
+        @for (option of bsyncrModelOptions; track option) {
+          <mat-option [value]="option" class="compact-form">{{ option }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+}

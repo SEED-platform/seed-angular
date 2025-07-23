@@ -118,7 +118,7 @@ export type AnalysisSummaryStats = {
 }
 
 export type SavingsTarget = 'AGGRESSIVE' | 'CONSERVATIVE' | 'NOMINAL'
-export type SelectMeters = 'all' | 'date_range' | 'select_cycle'
+export type SelectMetersType = 'all' | 'date_range' | 'select_cycle'
 export type BenchmarkDataType = 'DEFAULT' | 'GENERATE'
 
 export type BETTERConfig = {
@@ -130,9 +130,9 @@ export type BETTERConfig = {
   preprocess_meters: boolean;
   portfolio_analysis: boolean;
   savings_target: SavingsTarget;
-  select_meters: SelectMeters;
+  select_meters: SelectMetersType;
 }
 
 export type AnalysisConfig = BETTERConfig | Record<string, unknown>
-// type GenericConfigForm = FormGroup<Record<string, FormControl<unknown>>>
-// export type AnalysisConfigFormGroup = BETTERConfigGroup | GenericConfigForm
+
+export type BSyncrModelTypes = 'Simple Linear Regression' | 'Three bsyncrOptionsParameter Linear Model Cooling' | 'Three Parameter Linear Model Heating' | 'Four Parameter Linear Model'

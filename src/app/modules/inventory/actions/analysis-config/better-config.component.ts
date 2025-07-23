@@ -3,8 +3,9 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { BenchmarkDataType, Cycle, SavingsTarget, SelectMeters } from '@seed/api'
+import type { BenchmarkDataType, Cycle, SavingsTarget, SelectMetersType } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
+import { SEEDValidators } from '@seed/validators'
 
 @Component({
   selector: 'seed-better-config',
@@ -24,13 +25,13 @@ export class BetterConfigComponent implements OnInit, OnDestroy {
     enable_pvwatts: new FormControl<boolean>(false),
     meter: new FormGroup({
       start_date: new FormControl<string>(null),
-      end_date: new FormControl<string>(null),
+      end_date: new FormControl<string>(null, SEEDValidators.afterDate('start_date')),
     }),
     min_model_r_squared: new FormControl<number>(0.6, [Validators.required]),
     preprocess_meters: new FormControl<boolean>(false),
     portfolio_analysis: new FormControl<boolean>(false),
     savings_target: new FormControl<SavingsTarget>(null, [Validators.required]),
-    select_meters: new FormControl<SelectMeters>('all', [Validators.required]),
+    select_meters: new FormControl<SelectMetersType>('all', [Validators.required]),
   })
   benchmarkDataTypes: BenchmarkDataType[] = ['DEFAULT', 'GENERATE']
   savingsTargets: SavingsTarget[] = ['AGGRESSIVE', 'CONSERVATIVE', 'NOMINAL']
@@ -56,14 +57,16 @@ export class BetterConfigComponent implements OnInit, OnDestroy {
       )
       .subscribe()
 
-    // this.form.get('cycle_id')?.valueChanges
-    //   .pipe(
-    //     tap((selection) => {
-    //       const cycle = this.cycles.find((c) => c.id === selection)
-    //       console.log('selection', selection)
-    //     })
-    //   )
-    //   .subscribe()
+    this.form.get('select_meters')?.valueChanges
+      .pipe(
+        tap((selection) => {
+          if (selection !== 'date_range') {
+            this.form.get('meter.start_date')?.setValue(null)
+            this.form.get('meter.end_date')?.setValue(null)
+          }
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

@@ -20,7 +20,7 @@
         <mat-label>Service</mat-label>
         <mat-select formControlName="service">
           @for (service of serviceTypes; track service) {
-            <mat-option [value]="service" class="compact-form">{{ service }}</mat-option>
+            <mat-option [value]="service.value" class="compact-form">{{ service.display }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -33,6 +33,14 @@
         [viewIds]="data.viewIds"
         (formChange)="onFormChange($event)"
       ></seed-better-config>
+    } @else if (form.value.service === 'Building Upgrade Recommendation') {
+      <div>BUR analysis in development...</div>
+    } @else if (form.value.service) {
+      <seed-simple-config
+        [cycles]="cycles"
+        [service]="form.value.service"
+        (formChange)="onFormChange($event)"
+      ></seed-simple-config>
     }
 
     <!-- Gradient to indicate scrolling -->
