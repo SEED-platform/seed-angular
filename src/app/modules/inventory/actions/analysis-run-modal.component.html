@@ -34,7 +34,10 @@
         (formChange)="onFormChange($event)"
       ></seed-better-config>
     } @else if (service === 'Building Upgrade Recommendation') {
-      <div>BUR analysis in development...</div>
+      <seed-bur-config
+        [orgId]="data.orgId"
+        (formChange)="onFormChange($event)"
+      ></seed-bur-config>
     } @else if (service) {
       <seed-simple-config
         [cycles]="cycles"

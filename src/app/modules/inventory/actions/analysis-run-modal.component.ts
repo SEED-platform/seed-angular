@@ -10,13 +10,14 @@ import { AnalysisService, CycleService, UserService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
-import { BetterConfigComponent, SimpleConfigComponent } from './analysis-config'
+import { BetterConfigComponent, BurConfigComponent, SimpleConfigComponent } from './analysis-config'
 
 @Component({
   selector: 'seed-analysis-run-modal',
   templateUrl: './analysis-run-modal.component.html',
   imports: [
     BetterConfigComponent,
+    BurConfigComponent,
     CommonModule,
     FormsModule,
     MaterialImports,

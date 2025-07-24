@@ -47,15 +47,17 @@
       </seed-menu-item>
     </div>
     <!-- Analyses -->
-    <mat-divider class="my-0"></mat-divider>
-    <span class="text-sm text-secondary">Analyses</span>
-    <div >
-      <seed-menu-item 
-      label="Run"
-      [disabled]="!hasSelection"
-      (action)="openAnalysisRunModal()">
-      </seed-menu-item>
-    </div>
+    @if (type === 'properties') {
+      <mat-divider class="my-0"></mat-divider>
+      <span class="text-sm text-secondary">Analyses</span>
+      <div >
+        <seed-menu-item 
+        label="Run"
+        [disabled]="!hasSelection"
+        (action)="openAnalysisRunModal()">
+        </seed-menu-item>
+      </div>
+    }
     <!-- Audit Template -->
     <mat-divider class="my-0"></mat-divider>
     <span class="text-sm text-secondary">Audit Template</span>
