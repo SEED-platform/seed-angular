@@ -45,7 +45,7 @@ export class DQCResultsModalComponent implements OnDestroy, OnInit {
   }
 
   setGrid() {
-    if (this.results.length) {
+    if (this.results?.length) {
       this.setColumnDefs()
       this.setRowData()
     }
