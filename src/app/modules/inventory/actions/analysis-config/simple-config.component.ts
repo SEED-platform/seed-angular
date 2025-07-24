@@ -1,9 +1,10 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { Subject, takeUntil, tap } from 'rxjs'
 import type { AnalysisServiceType, BSyncrModelTypes, Cycle, SelectMetersType } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { SEEDValidators } from '@seed/validators'
 
 @Component({
   selector: 'seed-simple-config',
@@ -37,7 +38,7 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
     select_meters: new FormControl<SelectMetersType>('all'),
     meter: new FormGroup({
       start_date: new FormControl<string>(null),
-      end_date: new FormControl<string>(null),
+      end_date: new FormControl<string>(null, SEEDValidators.afterDate('start_date')),
     }),
   })
   formCO2 = new FormGroup({
@@ -55,12 +56,11 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
       'Element Statistics': this.formES,
     }
     this.form = this.formMap[this.service]
-    this.formChange.emit(this.form)
+    this.watchForm()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.service) {
-      console.log(changes.service)
       this.form = this.formMap[this.service]
       if (!this.form) return
 
@@ -73,6 +73,33 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
       .pipe(
         tap(() => { this.formChange.emit(this.form) }),
         takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
+
+    if (this.service === 'EUI') {
+      this.form.get('cycle_id')?.setValue(this.cycles?.[0]?.id || null)
+      this.watchSelectMeters()
+    }
+  }
+
+  watchSelectMeters() {
+    this.form.get('select_meters')?.valueChanges
+      .pipe(
+        tap((selection) => {
+          // reset dates
+          if (selection !== 'date_range') {
+            for (const field of ['meter.start_date', 'meter.end_date']) {
+              if (this.form.get(field)?.value) {
+                this.form.get(field)?.setValue(null)
+              }
+            }
+          }
+          // reset cycle_id
+          if (selection === 'select_cycle' && !this.form.get('cycle_id')?.value) {
+            const defaultCycleId = this.cycles?.[0]?.id || null
+            this.form.get('cycle_id')?.setValue(defaultCycleId)
+          }
+        }),
       )
       .subscribe()
   }

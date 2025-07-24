@@ -18,7 +18,7 @@
 
       <mat-form-field class="no-sub">
         <mat-label>Service</mat-label>
-        <mat-select formControlName="service">
+        <mat-select formControlName="service" panelClass="fit-content-select">
           @for (service of serviceTypes; track service) {
             <mat-option [value]="service.value" class="compact-form">{{ service.display }}</mat-option>
           }
@@ -26,26 +26,28 @@
       </mat-form-field>
     </form>
 
-    @if (form.value.service === 'BETTER') {
+    @if (service === 'BETTER') {
       <seed-better-config
         [cycles]="cycles" 
         [orgId]="data.orgId"
         [viewIds]="data.viewIds"
         (formChange)="onFormChange($event)"
       ></seed-better-config>
-    } @else if (form.value.service === 'Building Upgrade Recommendation') {
+    } @else if (service === 'Building Upgrade Recommendation') {
       <div>BUR analysis in development...</div>
-    } @else if (form.value.service) {
+    } @else if (service) {
       <seed-simple-config
         [cycles]="cycles"
-        [service]="form.value.service"
+        [service]="service"
         (formChange)="onFormChange($event)"
       ></seed-simple-config>
     }
 
-    <!-- Gradient to indicate scrolling -->
-    <div class="h-6"></div>
-    <div class="pointer-events-none sticky bottom-0 left-0 w-full h-12 bg-gradient-to-t dark:from-slate-800 from-white to-transparent"></div>
+    <!-- Gradient to indicate scrolling for larger configs -->
+    @if (['BETTER', 'Building Upgrade Recommendation'].includes(service)) {
+      <div class="h-6"></div>
+      <div class="pointer-events-none sticky bottom-0 left-0 w-full h-12 bg-gradient-to-t dark:from-slate-800 from-white to-transparent"></div>
+    }
 
   </div>
 } @else {

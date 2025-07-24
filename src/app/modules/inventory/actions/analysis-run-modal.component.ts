@@ -40,12 +40,12 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   runningAnalysis = false
 
   serviceTypes = [
+    { value: 'CO2', display: 'Average Annual CO2' },
     { value: 'BETTER', display: 'BETTER' },
     { value: 'BSyncr', display: 'BSyncr' },
     { value: 'Building Upgrade Recommendation', display: 'Building Upgrade Recommendation' },
-    { value: 'CO2', display: 'Average Annual CO2' },
-    { value: 'EEEJ', display: 'Energy Equity & Environmental Justice (EEEJ)' },
     { value: 'Element Statistics', display: 'Element Statistics' },
+    { value: 'EEEJ', display: 'Energy Equity & Environmental Justice (EEEJ)' },
     { value: 'EUI', display: 'EUI' },
   ]
 
@@ -112,9 +112,12 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
     this.config = configForm.value as AnalysisConfig
   }
 
+  get service() {
+    return this.form.value.service
+  }
+
   onSubmit() {
     const data = { ...this.form.value, configuration: this.config } as AnalysisCreateData
-
     this._analysisService.create(this.data.orgId, data).subscribe(() => {
       this.runningAnalysis = true
     })
