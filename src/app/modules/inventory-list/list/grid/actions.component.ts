@@ -1,6 +1,6 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import type { MatDialogRef } from '@angular/material/dialog';
+import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -8,9 +8,8 @@ import { GroupsService, InventoryService } from '@seed/api'
 import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
-import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
-import { GroupsModalComponent } from '../../../inventory/actions'
-import { AliChangeModalComponent } from '../../../inventory/actions/ali-change-modal.component'
+import { DQCStartModalComponent } from 'app/modules/data-quality'
+import { AliChangeModalComponent, AnalysisRunModalComponent, GroupsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
 
 @Component({
@@ -135,6 +134,18 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     })
 
     this.afterClosed(dialogRef)
+  }
+
+  startDataQualityCheck() {
+    this._dialog.open(DQCStartModalComponent, {
+      width: '40rem',
+      disableClose: true,
+      data: {
+        orgId: this.orgId,
+        type: this.type,
+        viewIds: this.selectedViewIds,
+      },
+    })
   }
 
   openGroupsModal() {
