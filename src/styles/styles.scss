@@ -273,6 +273,8 @@
       display: none !important;
     }
   }
+}
 
-
+.no-header .mat-horizontal-stepper-header-container {
+  display: none !important;
 }

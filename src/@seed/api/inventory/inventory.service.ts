@@ -22,6 +22,7 @@ import type {
   UpdateInventoryResponse,
   ViewResponse,
 } from 'app/modules/inventory/inventory.types'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
@@ -332,6 +333,20 @@ export class InventoryService {
       tap(() => { this._snackBar.success('Properties moved successfully') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error moving properties')
+      }),
+    )
+  }
+
+  updateDerivedData(orgId: number, propertyViewIds: number[], taxlotViewIds: number[]): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/update_derived_data/'
+    const data = {
+      organization_id: orgId,
+      property_view_ids: propertyViewIds,
+      taxlot_view_ids: taxlotViewIds,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating derived data')
       }),
     )
   }

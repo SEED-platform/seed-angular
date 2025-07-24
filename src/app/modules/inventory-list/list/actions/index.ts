@@ -1,0 +1,1 @@
+export * from './update-derived-data.component'

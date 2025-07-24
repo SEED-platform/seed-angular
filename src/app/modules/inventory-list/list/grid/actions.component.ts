@@ -11,6 +11,7 @@ import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.comp
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import { AliChangeModalComponent, AnalysisRunModalComponent, GroupsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
+import { UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -137,7 +138,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   }
 
   startDataQualityCheck() {
-    this._dialog.open(DQCStartModalComponent, {
+    const dialogRef = this._dialog.open(DQCStartModalComponent, {
       width: '40rem',
       disableClose: true,
       data: {
@@ -146,6 +147,19 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
         viewIds: this.selectedViewIds,
       },
     })
+    this.afterClosed(dialogRef)
+  }
+
+  openDerivedDataUpdateModal() {
+    const dialogRef = this._dialog.open(UpdateDerivedDataComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        viewIds: this.selectedViewIds,
+        type: this.type,
+      },
+    })
+    this.afterClosed(dialogRef)
   }
 
   openGroupsModal() {
