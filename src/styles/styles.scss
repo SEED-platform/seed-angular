@@ -265,16 +265,20 @@
 
   .mat-mdc-form-field-flex,
   .mat-mdc-form-field-infix {
-    @apply text-sm h-10 min-h-10 !important;
+    @apply text-sm h-10 min-h-10 my-auto !important;
   }
+}
 
-  .no-sub {
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none !important;
-    }
+.no-sub {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
   }
 }
 
 .no-header .mat-horizontal-stepper-header-container {
   display: none !important;
+}
+
+.mat-mdc-text-field-wrapper .mdc-notched-outline__notch {
+  border-left: none !important;
 }

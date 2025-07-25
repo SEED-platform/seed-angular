@@ -1,26 +1,21 @@
-<seed-modal-header
-  title="Run Analysis"
-  titleIcon="fa-solid:chart-bar"
-
-></seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Run Analysis" titleIcon="fa-solid:chart-bar"></seed-modal-header>
 
 @if (!runningAnalysis) {
-
   <div class="relative max-h-[60vh] overflow-y-auto !text-sm">
-    <form class="flex flex-col gap-1 compact-form" [formGroup]="form">
+    <form class="compact-form flex flex-col gap-1" [formGroup]="form">
       <mat-form-field class="mt-1">
         <mat-label>Group Name</mat-label>
-          <input matInput formControlName="name">
-          @if (form.controls.name?.hasError('valueExists')) {
-            <mat-error>This name already exists.</mat-error>
-          }
+        <input matInput formControlName="name" />
+        @if (form.controls.name?.hasError('valueExists')) {
+          <mat-error>This name already exists.</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field class="no-sub">
         <mat-label>Service</mat-label>
         <mat-select formControlName="service" panelClass="fit-content-select">
           @for (service of serviceTypes; track service) {
-            <mat-option [value]="service.value" class="compact-form">{{ service.display }}</mat-option>
+            <mat-option class="compact-form" [value]="service.value">{{ service.display }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -28,43 +23,35 @@
 
     @if (service === 'BETTER') {
       <seed-better-config
-        [cycles]="cycles" 
+        [cycles]="cycles"
         [orgId]="data.orgId"
         [viewIds]="data.viewIds"
         (formChange)="onFormChange($event)"
       ></seed-better-config>
     } @else if (service === 'Building Upgrade Recommendation') {
-      <seed-bur-config
-        [orgId]="data.orgId"
-        (formChange)="onFormChange($event)"
-      ></seed-bur-config>
+      <seed-bur-config [orgId]="data.orgId" (formChange)="onFormChange($event)"></seed-bur-config>
     } @else if (service) {
-      <seed-simple-config
-        [cycles]="cycles"
-        [service]="service"
-        (formChange)="onFormChange($event)"
-      ></seed-simple-config>
+      <seed-simple-config [cycles]="cycles" [service]="service" (formChange)="onFormChange($event)"></seed-simple-config>
     }
 
     <!-- Gradient to indicate scrolling for larger configs -->
     @if (['BETTER', 'Building Upgrade Recommendation'].includes(service)) {
       <div class="h-6"></div>
-      <div class="pointer-events-none sticky bottom-0 left-0 w-full h-12 bg-gradient-to-t dark:from-slate-800 from-white to-transparent"></div>
+      <div
+        class="pointer-events-none sticky bottom-0 left-0 h-12 w-full bg-gradient-to-t from-white to-transparent dark:from-slate-800"
+      ></div>
     }
-
   </div>
 } @else {
   <div class="flex justify-center gap-2">
-    <a routerLink="/analyses" (click)="close(true)">
+    <a (click)="close(true)" routerLink="/analyses">
       <button mat-raised-button color="primary">View Analyses</button>
     </a>
   </div>
 }
 
-
-<div class="flex justify-end gap-2 mt-4">
-  @if(!runningAnalysis) {
-    <button (click)="onSubmit()" [disabled]="form.invalid || configInvalid" mat-raised-button color="primary">Run</button>
+<div class="mt-4 flex justify-end gap-2">
+  @if (!runningAnalysis) {
+    <button [disabled]="form.invalid || configInvalid" (click)="onSubmit()" mat-raised-button color="primary">Run</button>
   }
-  <button (click)="close()" mat-stroked-button>Dismiss</button>
 </div>

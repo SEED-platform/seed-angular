@@ -34,10 +34,10 @@
 <div class="flex gap-2">
   <!-- <button mat-stroked-button>Toggle Omitted</button> -->
   <mat-button-toggle-group
+    class="border-button-toggle-group"
     [(ngModel)]="defaultInventoryType"
     (change)="setAllInventoryType($event.value)"
     name="invntoryType"
-    class="border-button-toggle-group"
     appearance="standard"
   >
     <mat-button-toggle value="Property">Properties</mat-button-toggle>

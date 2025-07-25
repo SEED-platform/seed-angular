@@ -1,10 +1,8 @@
-<seed-modal-header
-  title="Change Inventory Access Level"
-  titleIcon="fa-solid:wrench"
-></seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Change Inventory Access Level" titleIcon="fa-solid:wrench"></seed-modal-header>
 
 <div class="text-secondary m-4">
-  Please select an Access Level and Access Level Instance to move {{ data.viewIds.length }} {{ data.viewIds.length === 1 ? 'property' : 'properties'}} to.
+  Please select an Access Level and Access Level Instance to move {{ data.viewIds.length }}
+  {{ data.viewIds.length === 1 ? 'property' : 'properties' }} to.
 </div>
 <form class="flex flex-col gap-4" [formGroup]="form">
   <mat-form-field>
@@ -26,7 +24,6 @@
   </mat-form-field>
 </form>
 
-<div class="flex justify-end gap-2 mt-4">
-  <button (click)="onSubmit()" [disabled]="form.invalid" mat-raised-button color="primary">Move Properties</button>
-  <button (click)="close()" mat-stroked-button>Dismiss</button>
+<div class="mt-4 flex justify-end gap-2">
+  <button [disabled]="form.invalid" (click)="onSubmit()" mat-raised-button color="primary">Move Properties</button>
 </div>
