@@ -16,9 +16,11 @@ export type ProgressResponse = {
 }
 
 export type FullProgressResponse = {
-  progress: ProgressResponse;
-  progress_key: string;
+  progress?: ProgressResponse;
+  progress_key?: string;
   status?: string;
+  errors?: unknown;
+  message?: string;
 }
 
 export type SubProgressResponse = {

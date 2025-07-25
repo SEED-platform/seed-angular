@@ -1,0 +1,15 @@
+<seed-modal-header
+  title="Add / Remove Labels"
+  titleIcon="fa-solid:tags"
+></seed-modal-header>
+
+<ag-grid-angular
+  [rowData]="labels"
+  [columnDefs]="columnDefs"
+  [domLayout]="'autoHeight'"
+  [pagination]="true"
+  [paginationPageSize]="10"
+  [paginationPageSizeSelector]="false"
+  [theme]="gridTheme$ | async"]
+  (cellValueChanged)="onCellValueChanged($event)"
+></ag-grid-angular>

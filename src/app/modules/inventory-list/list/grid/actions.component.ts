@@ -39,6 +39,14 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     return
   }
 
+  baseData() {
+    return {
+      orgId: this.orgId,
+      type: this.type,
+      viewIds: this.selectedViewIds,
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.selectedViewIds) {
       this.hasSelection = this.selectedViewIds.length > 0
@@ -53,7 +61,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     this.gridApi.selectAll()
     const inventory_type = this.type === 'taxlots' ? 'taxlot' : 'property'
     const params = new URLSearchParams({
-      cycle: this.cycleId.toString(),
+      cycle: this.cycleId?.toString(),
       ids_only: 'true',
       include_related: 'true',
       organization_id: this.orgId.toString(),
@@ -116,36 +124,24 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   openAliChangeModal() {
     const dialogRef = this._dialog.open(AliChangeModalComponent, {
       width: '40rem',
-      data: {
-        orgId: this.orgId,
-        viewIds: this.selectedViewIds,
-      },
+      data: this.baseData(),
     })
-
     this.afterClosed(dialogRef)
   }
 
   openAnalysisRunModal() {
     const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
       width: '40rem',
-      data: {
-        orgId: this.orgId,
-        viewIds: this.selectedViewIds,
-      },
+      data: this.baseData(),
     })
-
     this.afterClosed(dialogRef)
   }
 
-  startDataQualityCheck() {
+  openDataQualityCheck() {
     const dialogRef = this._dialog.open(DQCStartModalComponent, {
       width: '40rem',
       disableClose: true,
-      data: {
-        orgId: this.orgId,
-        type: this.type,
-        viewIds: this.selectedViewIds,
-      },
+      data: this.baseData(),
     })
     this.afterClosed(dialogRef)
   }
@@ -153,11 +149,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   openDerivedDataUpdateModal() {
     const dialogRef = this._dialog.open(UpdateDerivedDataComponent, {
       width: '40rem',
-      data: {
-        orgId: this.orgId,
-        viewIds: this.selectedViewIds,
-        type: this.type,
-      },
+      data: this.baseData(),
     })
     this.afterClosed(dialogRef)
   }
@@ -165,13 +157,16 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   openGroupsModal() {
     const dialogRef = this._dialog.open(GroupsModalComponent, {
       width: '50rem',
-      data: {
-        orgId: this.orgId,
-        type: this.type,
-        viewIds: this.selectedViewIds,
-      },
+      data: this.baseData(),
     })
+    this.afterClosed(dialogRef)
+  }
 
+  openLabelsModal() {
+    const dialogRef = this._dialog.open(GroupsModalComponent, {
+      width: '50rem',
+      data: this.baseData(),
+    })
     this.afterClosed(dialogRef)
   }
 

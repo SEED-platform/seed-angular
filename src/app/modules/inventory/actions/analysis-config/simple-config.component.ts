@@ -56,7 +56,7 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
       'Element Statistics': this.formES,
     }
     this.form = this.formMap[this.service]
-    this.watchForm()
+    this.formChange.emit(this.form)
   }
 
   ngOnChanges(changes: SimpleChanges): void {

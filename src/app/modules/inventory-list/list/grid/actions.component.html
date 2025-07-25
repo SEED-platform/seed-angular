@@ -84,7 +84,7 @@
       <seed-menu-item 
       label="Run Check"
       [disabled]="!hasSelection"
-      (action)="startDataQualityCheck()">
+      (action)="openDataQualityCheck()">
       </seed-menu-item>
     </div>
     <!-- DERIVED DATA -->
@@ -98,7 +98,30 @@
       </seed-menu-item>
     </div>
     <mat-divider class="my-0"></mat-divider>
-
+    <!-- Groups -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Groups</span>
+    <div >
+      <seed-menu-item 
+      label="Add / Remove"
+      [disabled]="!hasSelection"
+      (action)="openGroupsModal()">
+      </seed-menu-item>
+    </div>
+    <!-- Labels -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Labels</span>
+    <div >
+      <seed-menu-item 
+      label="Add / Remove"
+      [disabled]="!hasSelection"
+      (action)="openLabelsModal()">
+      </seed-menu-item>
+    </div>
+    <mat-divider class="my-0"></mat-divider>
+    <!-- MISC / OTHER -->
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-sm text-secondary">Other</span>
     <seed-menu-item 
       class="line-through text-secondary"
       label="Email"
@@ -123,37 +146,12 @@
       [disabled]="!hasSelection"
       (action)="tempAction()"
     ></seed-menu-item>
-
-    <!-- Groups -->
-    <mat-divider class="my-0"></mat-divider>
-    <span class="text-sm text-secondary">Groups</span>
-    <div >
-      <seed-menu-item 
-      label="Add / Remove"
-      [disabled]="!hasSelection"
-      (action)="openGroupsModal()">
-      </seed-menu-item>
-    </div>
-    <!-- Labels -->
-    <mat-divider class="my-0"></mat-divider>
-    <span class="text-sm text-secondary">Labels</span>
-    <div >
-      <seed-menu-item 
-      class="line-through text-secondary"
-      label="Add / Remove"
-      [disabled]="!hasSelection"
-      (action)="tempAction()">
-      </seed-menu-item>
-    </div>
-    <mat-divider class="my-0"></mat-divider>
-
     <seed-menu-item 
       class="line-through text-secondary"
       label="Set Update Time to Now"
       [disabled]="!hasSelection"
       (action)="tempAction()"
     ></seed-menu-item>
-
     <!-- SalesForce -->
     <mat-divider class="my-0"></mat-divider>
     <span class="text-sm text-secondary">Salesforce</span>

@@ -163,7 +163,10 @@ export class AnalysisService {
   create(orgId: number, data: AnalysisCreateData): Observable<FullProgressResponse> {
     const url = `/api/v3/analyses/?organization_id=${orgId}&start_analysis=true`
     return this._httpClient.post<FullProgressResponse>(url, data).pipe(
-      tap(() => {
+      tap((response) => {
+        if (response.status === 'error') {
+          return this._errorService.handleError(response.errors as HttpErrorResponse, 'Error creating analysis')
+        }
         this._snackBar.success('Running Analysis')
         this.getAnalyses(orgId)
       }),
