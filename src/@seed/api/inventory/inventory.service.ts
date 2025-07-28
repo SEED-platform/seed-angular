@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, take, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type {
@@ -12,6 +12,7 @@ import type {
   GenericView,
   GenericViewsResponse,
   InventoryDisplayType,
+  InventoryExportData,
   InventoryType,
   InventoryTypeGoal,
   NewProfileData,
@@ -347,6 +348,26 @@ export class InventoryService {
     return this._httpClient.post<ProgressResponse>(url, data).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating derived data')
+      }),
+    )
+  }
+
+  startInventoryExport(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
+    return this._httpClient.get<ProgressResponse>(url).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting export')
+      }),
+    )
+  }
+
+  exportInventory(orgId: number, type: InventoryType, data: InventoryExportData): Observable<Blob> {
+    const url = `/api/v3/tax_lot_properties/export/?inventory_type=${type}&organization_id=${orgId}`
+    return this._httpClient.post(url, data, { responseType: 'blob' }).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting export')
       }),
     )
   }

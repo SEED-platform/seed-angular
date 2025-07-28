@@ -9,7 +9,7 @@ import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import { DQCStartModalComponent } from 'app/modules/data-quality'
-import { AliChangeModalComponent, AnalysisRunModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
+import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
 import { UpdateDerivedDataComponent } from '../actions'
 
@@ -118,6 +118,14 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       },
     })
 
+    this.afterClosed(dialogRef)
+  }
+
+  openExportModal() {
+    const dialogRef = this._dialog.open(ExportModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), profileId: this.profile?.id || null },
+    })
     this.afterClosed(dialogRef)
   }
 
