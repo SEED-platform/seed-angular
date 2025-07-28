@@ -80,7 +80,6 @@
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Other</span>
   <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Email"></seed-menu-item>
-  <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Export"></seed-menu-item>
   <seed-menu-item
     class="text-secondary line-through"
     [disabled]="!hasSelection"
@@ -89,10 +88,9 @@
   ></seed-menu-item>
   <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Geocode"></seed-menu-item>
   <seed-menu-item
-    class="text-secondary line-through"
     [disabled]="!hasSelection"
-    (action)="tempAction()"
-    label="Set Update Time to Now"
+    (action)="openRefreshMetadataModal()"
+    label="Refresh Updated Timestamp"
   ></seed-menu-item>
   <!-- SalesForce -->
   <mat-divider class="my-0"></mat-divider>

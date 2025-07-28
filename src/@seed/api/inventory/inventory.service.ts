@@ -371,4 +371,30 @@ export class InventoryService {
       }),
     )
   }
+
+  startRefreshMetadata(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_set_update_to_now/?organization_id=${orgId}`
+    return this._httpClient.get<ProgressResponse>(url).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting metadata refresh')
+      }),
+    )
+  }
+
+  refreshMetadata(orgId: number, propertyViews: number[], taxlotViews: number[], progressKey: string): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/set_update_to_now/'
+    const data = {
+      organization_id: orgId,
+      property_views: propertyViews,
+      taxlot_views: taxlotViews,
+      progress_key: progressKey,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error refreshing metadata')
+      }),
+    )
+  }
 }
