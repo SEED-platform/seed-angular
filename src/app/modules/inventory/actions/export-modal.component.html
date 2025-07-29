@@ -20,10 +20,8 @@
           <mat-checkbox formControlName="include_meter_readings"
             >Include Meter Readings <span class="text-secondary"> (Only recommended for small exports)</span>
           </mat-checkbox>
-
         } @else if (form.value.export_type === 'csv') {
           <mat-checkbox formControlName="include_meter_readings"> Include Label Header</mat-checkbox>
-
         } @else {
           <div class="h-10"></div>
         }
