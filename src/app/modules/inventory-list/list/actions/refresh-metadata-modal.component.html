@@ -1,17 +1,9 @@
-<seed-modal-header
-  title="Refresh Inventory"
-  titleIcon="fa-solid:clock"
-  [close]="close.bind(this)"
->
-</seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Refresh Inventory" titleIcon="fa-solid:clock"> </seed-modal-header>
 
 @if (!inProgress) {
-  <div class="text-secondary">
-    This will set the selected inventory's 'Updated' timestamp to {{ currentTime }}.
-  </div>
-}
+  <div class="text-secondary">This will set the selected inventory's 'Updated' timestamp to {{ currentTime }}.</div>
 
-@else {
+} @else {
   <seed-progress-bar
     [progress]="progressBarObj.progress"
     [title]="progressBarObj.statusMessage || 'Refreshing inventory metadata...'"

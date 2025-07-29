@@ -1,13 +1,13 @@
-import type { OnDestroy, OnInit} from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { forkJoin, Subject, tap } from 'rxjs'
 import { GeocodeService } from '@seed/api'
 import type { ConfidenceSummary, GeocodingColumns } from '@seed/api/geocode/geocode.types'
 import { AlertComponent, ModalHeaderComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { forkJoin, Subject, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-geocode-modal',

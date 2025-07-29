@@ -2,12 +2,12 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
+import { Subject, switchMap } from 'rxjs'
 import { InventoryService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { Subject, switchMap } from 'rxjs'
 
 @Component({
   selector: 'seed-update-derived-data',

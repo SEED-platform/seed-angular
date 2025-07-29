@@ -87,11 +87,7 @@
     label="FEMP CTS Export"
   ></seed-menu-item>
   <seed-menu-item [disabled]="!hasSelection" (action)="openGeocodeModal()" label="Geocode"></seed-menu-item>
-  <seed-menu-item
-    [disabled]="!hasSelection"
-    (action)="openRefreshMetadataModal()"
-    label="Refresh Updated Timestamp"
-  ></seed-menu-item>
+  <seed-menu-item [disabled]="!hasSelection" (action)="openRefreshMetadataModal()" label="Refresh Updated Timestamp"></seed-menu-item>
   <!-- SalesForce -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Salesforce</span>

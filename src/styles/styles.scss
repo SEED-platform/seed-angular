@@ -3,7 +3,7 @@
 
 // colors for text alerts
 :root {
-  --primary-text-color: rgb(29, 78, 216);
+  --primary-text-color: rgb(29 78 216);
   --success-text-color: rgb(21 128 61);
   --info-text-color: theme('colors.cyan.600');
   --warning-text-color: rgb(180 83 9);
@@ -241,14 +241,14 @@
 
 .border-button-toggle-group {
   @apply rounded-full w-fit gap-0 !important;
-  border: 1px solid rgb(170, 170, 170) !important;
+  border: 1px solid rgb(170 170 170) !important;
 
   .mat-button-toggle {
     @apply rounded-none m-0 !important;
   }
 
   .mat-button-toggle:not(:first-child) {
-    border-left: 1px solid rgb(170, 170, 170) !important;
+    border-left: 1px solid rgb(170 170 170) !important;
   }
 
   // Uncomment to change checked button to primary color

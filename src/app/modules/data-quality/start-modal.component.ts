@@ -1,11 +1,11 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
+import { switchMap, takeUntil, tap } from 'rxjs'
+import { Subject } from 'rxjs/internal/Subject'
 import { DataQualityService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
 import { UploaderService } from '@seed/services/uploader/uploader.service'
-import { switchMap, takeUntil, tap } from 'rxjs'
-import { Subject } from 'rxjs/internal/Subject'
 import type { InventoryType } from '../inventory'
 import { DQCResultsModalComponent } from './results-modal.component'
 

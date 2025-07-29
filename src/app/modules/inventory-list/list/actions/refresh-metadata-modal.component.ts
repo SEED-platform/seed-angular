@@ -1,13 +1,13 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { combineLatest, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { combineLatest, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-refresh-metadata-modal',

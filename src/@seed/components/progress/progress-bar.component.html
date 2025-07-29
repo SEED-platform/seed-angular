@@ -12,11 +12,7 @@
       }
     </div>
 
-    <mat-progress-bar
-      [mode]="getProgressMode(progress)"
-      [value]="percent"
-      class="animate-pulse"
-    ></mat-progress-bar>
+    <mat-progress-bar class="animate-pulse" [mode]="getProgressMode(progress)" [value]="percent"></mat-progress-bar>
   </div>
 
   @if (showSubProgress && subProgress && subProgress < 100) {

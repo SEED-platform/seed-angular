@@ -1,10 +1,10 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { ErrorService } from '@seed/services'
-import type { InventoryType } from 'app/modules/inventory'
 import type { Observable } from 'rxjs'
 import { catchError } from 'rxjs'
+import { ErrorService } from '@seed/services'
+import type { InventoryType } from 'app/modules/inventory'
 import type { ConfidenceSummary, GeocodingColumns } from './geocode.types'
 
 @Injectable({ providedIn: 'root' })

@@ -1,15 +1,10 @@
-<seed-modal-header
-  title="Export Data"
-  titleIcon="fa-solid:download"
-  [close]="close.bind(this)"
->
-</seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Export Data" titleIcon="fa-solid:download"> </seed-modal-header>
 
 <div class="m-5">
   <mat-stepper class="no-header" #stepper>
     <!-- STEP 1: FORM -->
     <mat-step>
-      <form [formGroup]="form" class="compact-form flex flex-col  gap-2">
+      <form class="compact-form flex flex-col gap-2" [formGroup]="form">
         <mat-form-field class="mt-1 w-full">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" />
@@ -22,21 +17,20 @@
         </mat-button-toggle-group>
 
         @if (form.value.export_type === 'geojson') {
-        <mat-checkbox formControlName="include_meter_readings">Include Meter Readings <span class="text-secondary"> (Only
-            recommended for small exports)</span> </mat-checkbox>
-        }
+          <mat-checkbox formControlName="include_meter_readings"
+            >Include Meter Readings <span class="text-secondary"> (Only recommended for small exports)</span>
+          </mat-checkbox>
 
-        @else if (form.value.export_type === 'csv') {
-        <mat-checkbox formControlName="include_meter_readings"> Include Label Header</mat-checkbox>
-        }
+        } @else if (form.value.export_type === 'csv') {
+          <mat-checkbox formControlName="include_meter_readings"> Include Label Header</mat-checkbox>
 
-        @else {
-        <div class="h-10"></div>
+        } @else {
+          <div class="h-10"></div>
         }
       </form>
 
       <div class="mt-4 flex justify-end gap-2">
-        <button (click)="export()" mat-raised-button color="primary" [disabled]="form.invalid">Export</button>
+        <button [disabled]="form.invalid" (click)="export()" mat-raised-button color="primary">Export</button>
       </div>
     </mat-step>
 
@@ -48,7 +42,5 @@
         [total]="progressBarObj.total"
       ></seed-progress-bar>
     </mat-step>
-      
   </mat-stepper>
 </div>
-

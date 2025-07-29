@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { naturalSort } from '@seed/utils'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api'
 import { ColumnService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
+import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-bur-config',
