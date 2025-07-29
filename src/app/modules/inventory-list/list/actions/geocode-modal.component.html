@@ -23,7 +23,17 @@
     <div translate>{{ t('SUGGEST_TO_VERIFY') }}</div>
   } -->
 
-  <!-- @if (notGeocoded) {
+  @if (pSummary?.not_geocoded || tSummary?.not_geocoded || true) {
+    <seed-alert class="m-1" type="info" appearance="border" showIcon="false">
+      <span>{{ t('NOT_GEOCODED_PREVIOUSLY') }}</span>
+      @if (pSummary?.not_geocoded) {<li>{{ pSummary?.not_geocoded }} properties </li>}
+      @if (tSummary?.not_geocoded) {<li>{{ tSummary?.not_geocoded }} tax lots</li>}
+    </seed-alert>
+  }
+
+  <!-- @if (pre_properties_geocoded_high_confidence || pre_properties_geocoded_low_confidence || pre_properties_geocoded_manually ||
+  pre_properties_geocode_not_possible || pre_tax_lots_geocoded_high_confidence || pre_tax_lots_geocoded_low_confidence ||
+  pre_tax_lots_geocoded_manually || pre_tax_lots_geocode_not_possible") {
 
   } -->
 </div>

@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { forkJoin, Subject, tap } from 'rxjs'
 import { GeocodeService } from '@seed/api'
-import type { ConfidenceSummary, GeocodingColumns } from '@seed/api/geocode/geocode.types'
+import type { ConfidenceSummary, GeocodingColumns, InventoryConfidenceSummary } from '@seed/api/geocode/geocode.types'
 import { AlertComponent, ModalHeaderComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -26,6 +26,8 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
   hasGeoColumns = true
   suggestVerify = true
   notGeocoded = false
+  pSummary: InventoryConfidenceSummary
+  tSummary: InventoryConfidenceSummary
 
   geocodeState: 'verify' | 'geocode' | 'result' | 'fail' = 'verify'
 
@@ -66,7 +68,8 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
 
   processConfidenceSummary(confidenceSummary: ConfidenceSummary) {
     this.confidenceSummary = confidenceSummary
-    // Process the confidence summary as needed
+    this.pSummary = confidenceSummary.properties
+    this.tSummary = confidenceSummary.taxlots
   }
 
   close(success = false) {
