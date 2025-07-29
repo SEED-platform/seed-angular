@@ -86,7 +86,7 @@
     (action)="tempAction()"
     label="FEMP CTS Export"
   ></seed-menu-item>
-  <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Geocode"></seed-menu-item>
+  <seed-menu-item [disabled]="!hasSelection" (action)="openGeocodeModal()" label="Geocode"></seed-menu-item>
   <seed-menu-item
     [disabled]="!hasSelection"
     (action)="openRefreshMetadataModal()"

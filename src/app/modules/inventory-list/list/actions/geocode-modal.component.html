@@ -1,0 +1,40 @@
+<seed-modal-header
+  title="Geocode Inventory"
+  titleIcon="fa-solid:map"
+  [close]="close.bind(this)"
+>
+</seed-modal-header>
+
+<!-- CONTENT -->
+<div *transloco="let t">
+  @if (!hasApiKey) {
+    <seed-alert type="error" appearance="outline" showIcon="false" class="m-1">
+      <div class="my-1">
+        {{ t('NO_MAPQUEST_API_KEY_FOR_ORG') }}
+      </div>
+      <div class="my-1 text-red-secondary">
+        {{ t('DIRECTIONS_FOR_UPDATING_MQ_API_KEY') }}
+      </div>
+    </seed-alert>
+  }
+
+  @if (!geocodingEnabled) {
+    <seed-alert type="error" appearance="outline" showIcon="false" class="m-1">
+      {{ t('Geocoding has been disabled for this organization.') }}
+    </seed-alert>
+  }
+
+  <!-- @if (suggestVerify) {
+    <div translate>{{ t('SUGGEST_TO_VERIFY') }}</div>
+  } -->
+
+  <!-- @if (notGeocoded) {
+
+  } -->
+
+
+</div>
+
+<div class="mt-4 flex justify-end gap-2">
+  <button [disabled]="!valid" (click)="onSubmit()" mat-raised-button color="primary">Geocode</button>
+</div>
