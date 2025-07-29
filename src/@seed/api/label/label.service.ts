@@ -2,11 +2,11 @@ import type { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, switchMap } from 'rxjs'
+import { catchError, map, ReplaySubject, switchMap, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import type { InventoryType, InventoryTypeSingular } from 'app/modules/inventory/inventory.types'
 import { UserService } from '../user'
 import type { Label } from './label.types'
 
@@ -81,10 +81,7 @@ export class LabelService {
   create(label: Label): Observable<Label> {
     const url = `/api/v3/labels/?organization_id=${label.organization_id}`
     return this._httpClient.post<Label>(url, { ...label }).pipe(
-      map((response) => {
-        this._snackBar.success('Label Created')
-        return response
-      }),
+      tap(() => { this._snackBar.success('Label Created') }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error creating label: ${error.message}`)
       }),
@@ -126,6 +123,21 @@ export class LabelService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error updating labels: ${error.message}`)
+      }),
+    )
+  }
+
+  updateLabelInventory(orgId: number, viewIds: number[], type: InventoryType, addLabelIds: number[], removeLabelIds: number[]): Observable<HttpResponse<null>> {
+    const singularType: InventoryTypeSingular = type === 'taxlots' ? 'taxlot' : 'property'
+    const url = `/api/v3/labels_${singularType}/?organization_id=${orgId}`
+    const data = { inventory_ids: viewIds, add_label_ids: addLabelIds, remove_label_ids: removeLabelIds }
+    return this._httpClient.put<HttpResponse<null>>(url, data).pipe(
+      map((response) => {
+        this._snackBar.success('Labels updated for inventory')
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error updating label inventory: ${error.message}`)
       }),
     )
   }

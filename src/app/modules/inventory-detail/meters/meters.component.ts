@@ -106,7 +106,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   setStreams() {
     this._meterService.list(this.orgId, this.viewId)
     this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
-    this._groupsService.listForInventory(this.orgId, [this.viewId])
+    this._groupsService.listForInventory(this.orgId, [this.viewId], 'properties')
 
     this._meterService.meters$
       .pipe(

@@ -64,7 +64,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   getDependencies() {
     setTimeout(() => {
       if (this.data.meter.property_id) {
-        this._groupsService.listForInventory(this.data.orgId, [this.data.meter.property_id])
+        this._groupsService.listForInventory(this.data.orgId, [this.data.meter.property_id], 'properties')
       } else {
         this._groupsService.list(this.data.orgId)
       }

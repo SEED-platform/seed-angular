@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, take, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type {
@@ -12,6 +12,7 @@ import type {
   GenericView,
   GenericViewsResponse,
   InventoryDisplayType,
+  InventoryExportData,
   InventoryType,
   InventoryTypeGoal,
   NewProfileData,
@@ -22,6 +23,7 @@ import type {
   UpdateInventoryResponse,
   ViewResponse,
 } from 'app/modules/inventory/inventory.types'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
@@ -321,6 +323,77 @@ export class InventoryService {
       // }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error fetching ${inventoryType}`)
+      }),
+    )
+  }
+
+  movePropertiesToAccessLevelInstance(orgId: number, aliId: number, viewIds: number[]): Observable<unknown> {
+    const url = `/api/v3/properties/move_properties_to/?organization_id=${orgId}`
+    const data = { property_view_ids: viewIds, access_level_instance_id: aliId }
+    return this._httpClient.post(url, data).pipe(
+      tap(() => { this._snackBar.success('Properties moved successfully') }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error moving properties')
+      }),
+    )
+  }
+
+  updateDerivedData(orgId: number, propertyViewIds: number[], taxlotViewIds: number[]): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/update_derived_data/'
+    const data = {
+      organization_id: orgId,
+      property_view_ids: propertyViewIds,
+      taxlot_view_ids: taxlotViewIds,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating derived data')
+      }),
+    )
+  }
+
+  startInventoryExport(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
+    return this._httpClient.get<ProgressResponse>(url).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting export')
+      }),
+    )
+  }
+
+  exportInventory(orgId: number, type: InventoryType, data: InventoryExportData): Observable<Blob> {
+    const url = `/api/v3/tax_lot_properties/export/?inventory_type=${type}&organization_id=${orgId}`
+    return this._httpClient.post(url, data, { responseType: 'blob' }).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting export')
+      }),
+    )
+  }
+
+  startRefreshMetadata(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_set_update_to_now/?organization_id=${orgId}`
+    return this._httpClient.get<ProgressResponse>(url).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting metadata refresh')
+      }),
+    )
+  }
+
+  refreshMetadata(orgId: number, propertyViews: number[], taxlotViews: number[], progressKey: string): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/set_update_to_now/'
+    const data = {
+      organization_id: orgId,
+      property_views: propertyViews,
+      taxlot_views: taxlotViews,
+      progress_key: progressKey,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error refreshing metadata')
       }),
     )
   }

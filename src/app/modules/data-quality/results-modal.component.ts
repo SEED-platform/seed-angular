@@ -19,11 +19,11 @@ import { ConfigService } from '@seed/services'
     MaterialImports,
   ],
 })
-export class ResultsModalComponent implements OnDestroy, OnInit {
+export class DQCResultsModalComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _configService = inject(ConfigService)
   private _dataQualityService = inject(DataQualityService)
-  private _dialog = inject(MatDialogRef<ResultsModalComponent>)
+  private _dialog = inject(MatDialogRef<DQCResultsModalComponent>)
 
   data = inject(MAT_DIALOG_DATA) as { orgId: number; dqcId: number }
 
@@ -45,7 +45,7 @@ export class ResultsModalComponent implements OnDestroy, OnInit {
   }
 
   setGrid() {
-    if (this.results.length) {
+    if (this.results?.length) {
       this.setColumnDefs()
       this.setRowData()
     }
@@ -64,21 +64,22 @@ export class ResultsModalComponent implements OnDestroy, OnInit {
       warning: 'bg-amber-500 text-white',
     }
 
+    const errorDef = {
+      field: 'detailed_message',
+      headerName: 'Error Message',
+      cellClass: ({ data }: { data: { severity: string } }) => {
+        return styleLookup[data?.severity] || ''
+      },
+    }
+
     const resultDefs = [
       { field: 'table_name', headerName: 'Table' },
       { field: 'formatted_field', headerName: 'Field' },
       { field: 'label', headerName: 'Applied Label' },
       { field: 'severity', hide: true },
-      {
-        field: 'detailed_message',
-        headerName: 'Error Message',
-        cellClass: ({ data }: { data: { severity: string } }) => {
-          return styleLookup[data?.severity] || ''
-        },
-      },
     ]
 
-    this.columnDefs = [...matchingColDefs, ...resultDefs]
+    this.columnDefs = [errorDef, ...matchingColDefs, ...resultDefs]
   }
 
   setRowData() {

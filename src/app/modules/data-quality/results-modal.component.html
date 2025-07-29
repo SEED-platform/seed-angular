@@ -9,9 +9,10 @@
       [columnDefs]="columnDefs"
       [rowData]="rowData"
       [theme]="gridTheme$ | async"
-      [domLayout]="'autoHeight'"
+      [style.height.px]="520"
       [pagination]="true"
       [paginationPageSize]="10"
+      [paginationPageSizeSelector]="[10, 50, 100]"
     >
     </ag-grid-angular>
   } @else {

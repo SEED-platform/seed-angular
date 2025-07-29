@@ -255,3 +255,13 @@ export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
 
 export type CrossCyclesResponse = Record<string, Record<string, unknown>[]>
+
+export type InventoryExportData = {
+  export_type: 'csv' | 'xlsx' | 'geojson';
+  filename: string;
+  ids: number[];
+  include_meter_readings: boolean;
+  include_notes: boolean;
+  profile_id: number;
+  progress_key: string;
+}

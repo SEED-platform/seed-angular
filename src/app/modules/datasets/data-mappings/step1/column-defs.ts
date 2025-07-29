@@ -37,7 +37,7 @@ const dropdownRenderer = (params: ICellRendererParams) => {
   `
 }
 
-const canEditClass = 'bg-primary bg-opacity-25 rounded'
+const canEditClass = 'bg-primary bg-opacity-25'
 
 const getColumnOptions = (params: ICellRendererParams, propertyColumnNames: string[], taxlotColumnNames: string[]) => {
   const data = params.data as { to_table_name: 'Property' | 'Tax Lot' }

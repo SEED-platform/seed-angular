@@ -20,6 +20,7 @@ import type {
   CreateAccessLevelInstanceRequest,
   EditAccessLevelInstanceRequest,
   EditAccessLevelInstanceResponse,
+  FilterByViewsResponse,
   MatchingCriteriaColumnsResponse,
   Organization,
   OrganizationResponse,
@@ -180,6 +181,17 @@ export class OrganizationService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error renaming access level instance')
+      }),
+    )
+  }
+
+  filterAccessLevelsByViews(orgId: number, type: InventoryType, viewIds: number[]): Observable<number[]> {
+    const url = `/api/v3/organizations/${orgId}/access_levels/filter_by_views/`
+    const data = { inventory_type: type, view_ids: viewIds }
+    return this._httpClient.post<FilterByViewsResponse>(url, data).pipe(
+      map(({ access_level_instance_ids }) => access_level_instance_ids),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error filtering access levels by views')
       }),
     )
   }

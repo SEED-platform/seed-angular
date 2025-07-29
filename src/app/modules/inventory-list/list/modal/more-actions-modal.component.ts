@@ -6,7 +6,7 @@ import { DataQualityService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
-import { ResultsModalComponent } from 'app/modules/data-quality'
+import { DQCResultsModalComponent } from 'app/modules/data-quality'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
@@ -15,7 +15,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
   imports: [
     MaterialImports,
     ProgressBarComponent,
-    ResultsModalComponent,
+    DQCResultsModalComponent,
   ],
 })
 export class MoreActionsModalComponent implements OnDestroy {
@@ -79,7 +79,7 @@ export class MoreActionsModalComponent implements OnDestroy {
   }
 
   openDataQualityResultsModal(dqcId: number) {
-    this._dialog.open(ResultsModalComponent, {
+    this._dialog.open(DQCResultsModalComponent, {
       width: '50rem',
       data: { orgId: this.data.orgId, dqcId },
     })

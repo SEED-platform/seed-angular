@@ -157,7 +157,6 @@
   @apply inline !text-gray-700 dark:!text-secondary !text-xs;
 }
 
-.dark 
 .fit-content-select.mat-mdc-select-panel {
   min-height: fit-content !important;
 }
@@ -228,4 +227,59 @@
 
 .mock-button {
   @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
+}
+
+.menu-compact {
+  padding: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .menu-option {
+    padding: 0.25rem !important;
+  }
+}
+
+.border-button-toggle-group {
+  @apply rounded-full w-fit gap-0 !important;
+
+  border: 1px solid rgb(170 170 170) !important;
+
+  .mat-button-toggle {
+    @apply rounded-none m-0 !important;
+  }
+
+  .mat-button-toggle:not(:first-child) {
+    border-left: 1px solid rgb(170 170 170) !important;
+  }
+
+  // Uncomment to change checked button to primary color
+  // .mat-button-toggle-checked {
+  //   @apply dark:bg-primary dark:bg-opacity-50 !important;
+  // }
+}
+
+
+.compact-form {
+  label, span {
+    @apply text-sm !important;
+  }
+
+  .mat-mdc-form-field-flex,
+  .mat-mdc-form-field-infix {
+    @apply text-sm h-10 min-h-10 my-auto !important;
+  }
+}
+
+.no-sub {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none !important;
+  }
+}
+
+.no-header .mat-horizontal-stepper-header-container {
+  display: none !important;
+}
+
+.mat-mdc-text-field-wrapper .mdc-notched-outline__notch {
+  border-left: none !important;
 }

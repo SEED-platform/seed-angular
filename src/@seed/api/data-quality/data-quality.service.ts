@@ -4,7 +4,7 @@ import { catchError, map, type Observable, ReplaySubject, switchMap, tap } from 
 import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { DQCProgressResponse } from '../progress'
+import type { FullProgressResponse } from '../progress'
 import type { DataQualityResults, DataQualityResultsResponse, Rule } from './data-quality.types'
 
 @Injectable({ providedIn: 'root' })
@@ -81,9 +81,9 @@ export class DataQualityService {
     )
   }
 
-  startDataQualityCheckForImportFile(orgId: number, importFileId: number): Observable<DQCProgressResponse> {
+  startDataQualityCheckForImportFile(orgId: number, importFileId: number): Observable<FullProgressResponse> {
     const url = `/api/v3/import_files/${importFileId}/start_data_quality_checks/?organization_id=${orgId}`
-    return this._httpClient.post<DQCProgressResponse>(url, {})
+    return this._httpClient.post<FullProgressResponse>(url, {})
       .pipe(
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error starting data quality checks for import file')
@@ -91,14 +91,14 @@ export class DataQualityService {
       )
   }
 
-  startDataQualityCheckForOrg(orgId: number, property_view_ids: number[], taxlot_view_ids: number[], goal_id: number): Observable<DQCProgressResponse> {
+  startDataQualityCheckForOrg(orgId: number, property_view_ids: number[], taxlot_view_ids: number[], goal_id: number): Observable<FullProgressResponse> {
     const url = `/api/v3/data_quality_checks/${orgId}/start/`
     const data = {
       property_view_ids,
       taxlot_view_ids,
       goal_id,
     }
-    return this._httpClient.post<DQCProgressResponse>(url, data).pipe(
+    return this._httpClient.post<FullProgressResponse>(url, data).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching data quality results for organization')
       }),

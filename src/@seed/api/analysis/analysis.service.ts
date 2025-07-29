@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable, Subscription } from 'rxjs'
 import { BehaviorSubject, catchError, interval, map, Subject, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs'
+import type { FullProgressResponse } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
-import type { AnalysesMessage, Analysis, AnalysisResponse, AnalysisServiceType, AnalysisSummary, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, PropertyAnalysesResponse, View } from './analysis.types'
+import type { AnalysesMessage, Analysis, AnalysisCreateData, AnalysisResponse, AnalysisServiceType, AnalysisSummary, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, PropertyAnalysesResponse, View } from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {
@@ -155,6 +156,22 @@ export class AnalysisService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting analysis')
+      }),
+    )
+  }
+
+  create(orgId: number, data: AnalysisCreateData): Observable<FullProgressResponse> {
+    const url = `/api/v3/analyses/?organization_id=${orgId}&start_analysis=true`
+    return this._httpClient.post<FullProgressResponse>(url, data).pipe(
+      tap((response) => {
+        if (response.status === 'error') {
+          return this._errorService.handleError(response.errors as HttpErrorResponse, 'Error creating analysis')
+        }
+        this._snackBar.success('Running Analysis')
+        this.getAnalyses(orgId)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating analysis')
       }),
     )
   }

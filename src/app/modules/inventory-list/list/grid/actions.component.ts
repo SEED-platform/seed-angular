@@ -1,22 +1,24 @@
-import type { OnDestroy } from '@angular/core'
+import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { type MatSelect } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api'
-import { DeleteModalComponent } from '@seed/components'
+import { GroupsService, InventoryService } from '@seed/api'
+import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
+import { DQCStartModalComponent } from 'app/modules/data-quality'
+import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { MoreActionsModalComponent } from '../modal'
+import { GeocodeModalComponent, RefreshMetadataModalComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [DeleteModalComponent, MaterialImports],
+  imports: [MenuItemComponent, DeleteModalComponent, MaterialImports],
 })
-export class ActionsComponent implements OnDestroy {
+export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
   @Input() gridApi: GridApi
   @Input() inventory: Record<string, unknown>[]
@@ -28,72 +30,38 @@ export class ActionsComponent implements OnDestroy {
   @Output() refreshInventory = new EventEmitter<null>()
   @Output() selectedAll = new EventEmitter<number[]>()
   private _inventoryService = inject(InventoryService)
+  private _groupsService = inject(GroupsService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  hasSelection: boolean
 
-  get actions() {
-    return [
-      {
-        name: 'Select All',
-        action: () => {
-          this.selectAll()
-        },
-        disabled: false,
-      },
-      {
-        name: 'Select None',
-        action: () => {
-          this.deselectAll()
-        },
-        disabled: false,
-      },
-      {
-        name: 'Only Show Populated Columns',
-        action: () => {
-          this.openShowPopulatedColumnsModal()
-        },
-        disabled: !this.inventory,
-      },
-      { name: 'Delete', action: this.deleteStates, disabled: !this.selectedViewIds.length },
-      { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
-      {
-        name: 'More...',
-        action: () => {
-          this.openMoreActionsModal()
-        },
-        disabled: !this.selectedViewIds.length,
-      },
-    ]
+  ngOnInit(): void {
+    return
+  }
+
+  baseData() {
+    return {
+      orgId: this.orgId,
+      type: this.type,
+      viewIds: this.selectedViewIds,
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.selectedViewIds) {
+      this.hasSelection = this.selectedViewIds.length > 0
+    }
   }
 
   tempAction() {
     console.log('temp action')
   }
 
-  openMoreActionsModal() {
-    const dialogRef = this._dialog.open(MoreActionsModalComponent, {
-      width: '40rem',
-      autoFocus: false,
-      data: { viewIds: this.selectedViewIds, orgId: this.orgId, type: this.type },
-    })
-
-    dialogRef.afterClosed()
-      .pipe(
-        filter(Boolean),
-        tap(() => { this.refreshInventory.emit() }),
-      ).subscribe()
-  }
-
-  onAction(action: () => void, select: MatSelect) {
-    action()
-    select.value = null
-  }
-
   selectAll() {
     this.gridApi.selectAll()
     const inventory_type = this.type === 'taxlots' ? 'taxlot' : 'property'
     const params = new URLSearchParams({
-      cycle: this.cycleId.toString(),
+      cycle: this.cycleId?.toString(),
       ids_only: 'true',
       include_related: 'true',
       organization_id: this.orgId.toString(),
@@ -150,11 +118,87 @@ export class ActionsComponent implements OnDestroy {
       },
     })
 
-    dialogRef.afterClosed().subscribe((id) => {
-      if (id) {
-        this.refreshInventory.emit()
-      }
+    this.afterClosed(dialogRef)
+  }
+
+  openExportModal() {
+    const dialogRef = this._dialog.open(ExportModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), profileId: this.profile?.id || null },
     })
+    this.afterClosed(dialogRef)
+  }
+
+  openAliChangeModal() {
+    const dialogRef = this._dialog.open(AliChangeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openAnalysisRunModal() {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openDataQualityCheck() {
+    const dialogRef = this._dialog.open(DQCStartModalComponent, {
+      width: '40rem',
+      disableClose: true,
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openDerivedDataUpdateModal() {
+    const dialogRef = this._dialog.open(UpdateDerivedDataComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openGroupsModal() {
+    const dialogRef = this._dialog.open(GroupsModalComponent, {
+      width: '50rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openLabelsModal() {
+    const dialogRef = this._dialog.open(LabelsModalComponent, {
+      width: '50rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openRefreshMetadataModal() {
+    const dialogRef = this._dialog.open(RefreshMetadataModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openGeocodeModal() {
+    const dialogRef = this._dialog.open(GeocodeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  afterClosed(dialogRef: MatDialogRef<unknown>) {
+    dialogRef.afterClosed().pipe(
+      filter(Boolean),
+      tap(() => { this.refreshInventory.emit() }),
+    ).subscribe()
   }
 
   ngOnDestroy(): void {

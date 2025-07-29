@@ -10,7 +10,7 @@ import { DataQualityService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { UploaderService } from '@seed/services/uploader'
-import { ResultsModalComponent } from 'app/modules/data-quality'
+import { DQCResultsModalComponent } from 'app/modules/data-quality'
 import type { InventoryType } from 'app/modules/inventory'
 
 @Component({
@@ -122,7 +122,7 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
   }
 
   showDataQualityResults() {
-    this._dialog.open(ResultsModalComponent, {
+    this._dialog.open(DQCResultsModalComponent, {
       width: '50rem',
       data: { orgId: this.orgId, dqcId: this.dqcId },
     })
