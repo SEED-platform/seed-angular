@@ -55,7 +55,7 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
   }
 
   get valid() {
-    return this.hasApiKey && this.geocodingEnabled && this.hasGeoColumns
+    return this.geocodeState === 'verify' && this.hasApiKey && this.geocodingEnabled && this.hasGeoColumns
   }
 
   ngOnInit(): void {
