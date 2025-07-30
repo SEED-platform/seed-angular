@@ -1,6 +1,6 @@
 export type ConfidenceSummary = {
-  properties: InventoryConfidenceSummary;
-  taxlots: InventoryConfidenceSummary;
+  properties?: InventoryConfidenceSummary;
+  taxlots?: InventoryConfidenceSummary;
 }
 
 export type InventoryConfidenceSummary = {

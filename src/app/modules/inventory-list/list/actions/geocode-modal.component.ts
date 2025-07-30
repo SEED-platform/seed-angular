@@ -1,26 +1,31 @@
+import type { HttpErrorResponse } from '@angular/common/http'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { forkJoin, Subject, tap } from 'rxjs'
 import { GeocodeService } from '@seed/api'
 import type { ConfidenceSummary, GeocodingColumns, InventoryConfidenceSummary } from '@seed/api/geocode/geocode.types'
-import { AlertComponent, ModalHeaderComponent } from '@seed/components'
+import { AlertComponent, ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import { catchError, EMPTY, forkJoin, Subject, switchMap, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-geocode-modal',
   templateUrl: './geocode-modal.component.html',
-  imports: [AlertComponent, MaterialImports, ModalHeaderComponent, SharedImports],
+  imports: [AlertComponent, MaterialImports, ModalHeaderComponent, ProgressBarComponent, SharedImports],
 })
 export class GeocodeModalComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<GeocodeModalComponent>)
   private _geocodeService = inject(GeocodeService)
   private _unsubscribeAll$ = new Subject<void>()
 
-  confidenceSummary: ConfidenceSummary
   geocodingEnabled = true
+  geoColumns: GeocodingColumns = {
+    PropertyState: [],
+    TaxLotState: [],
+  }
+  confidenceSummary: ConfidenceSummary = {}
   hasApiKey = true
   hasEnoughGeoCols = true
   hasGeoColumns = true
@@ -28,8 +33,20 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
   notGeocoded = false
   pSummary: InventoryConfidenceSummary
   tSummary: InventoryConfidenceSummary
+  pMessages: boolean
+  tMessages: boolean
+  pNotGeocoded: boolean
+  tNotGeocoded: boolean
+  errorMessage: string
 
-  geocodeState: 'verify' | 'geocode' | 'result' | 'fail' = 'verify'
+  geocodeState: 'verify' | 'geocoding' | 'result' | 'fail' = 'verify'
+
+  typeMap = {
+    verify: 'warning',
+    geocode: 'primary',
+    result: 'success',
+    fail: 'warn',
+  }
 
   data = inject(MAT_DIALOG_DATA) as {
     orgId: number;
@@ -67,17 +84,39 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
   }
 
   processConfidenceSummary(confidenceSummary: ConfidenceSummary) {
-    this.confidenceSummary = confidenceSummary
-    this.pSummary = confidenceSummary.properties
-    this.tSummary = confidenceSummary.taxlots
+    const { properties, taxlots } = confidenceSummary
+    this.pSummary = properties
+    this.tSummary = taxlots
+
+    this.pMessages = !!properties && !!(properties.high_confidence || properties.low_confidence || properties.manual || properties.missing_address_components)
+    this.tMessages = !!taxlots && !!(taxlots.high_confidence || taxlots.low_confidence || taxlots.manual || taxlots.missing_address_components)
   }
 
   close(success = false) {
     this._dialogRef.close(success)
   }
 
-  onSubmit() {
-    console.log('submit')
+  geocodeBuildings() {
+    this.geocodeState = 'geocoding'
+    this.processGeoColumns({ PropertyState: [], TaxLotState: [] }) // reset columns
+    this.processConfidenceSummary({}) // reset confidence summary
+
+    const { orgId, viewIds, type } = this.data
+    this._geocodeService.geocode(orgId, viewIds, type)
+      .pipe(
+        switchMap(() => this._geocodeService.confidenceSummary(this.data.orgId, this.data.viewIds, this.data.type)),
+        tap((confidenceSummary) => {
+          this.processConfidenceSummary(confidenceSummary)
+          this.geocodeState = 'result'
+        }),
+        catchError((error: HttpErrorResponse) => {
+          const defaultMessage = 'An error occurred while geocoding.'
+          this.geocodeState = 'fail'
+          this.errorMessage = error.message ?? defaultMessage
+          return EMPTY
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {
