@@ -96,6 +96,6 @@
     </seed-menu-item>
     <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Compare">
     </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Decode"> </seed-menu-item>
+    <seed-menu-item [disabled]="!hasSelection" (action)="openUbidDecodeModal()" label="Decode"></seed-menu-item>
   </div>
 </mat-menu>

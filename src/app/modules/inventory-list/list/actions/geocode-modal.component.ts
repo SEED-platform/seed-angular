@@ -20,24 +20,24 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
   private _geocodeService = inject(GeocodeService)
   private _unsubscribeAll$ = new Subject<void>()
 
+  confidenceSummary: ConfidenceSummary = {}
+  errorMessage: string
   geocodingEnabled = true
   geoColumns: GeocodingColumns = {
     PropertyState: [],
     TaxLotState: [],
   }
-  confidenceSummary: ConfidenceSummary = {}
   hasApiKey = true
   hasEnoughGeoCols = true
   hasGeoColumns = true
-  suggestVerify = true
   notGeocoded = false
-  pSummary: InventoryConfidenceSummary
-  tSummary: InventoryConfidenceSummary
   pMessages: boolean
-  tMessages: boolean
   pNotGeocoded: boolean
+  pSummary: InventoryConfidenceSummary
+  suggestVerify = true
+  tMessages: boolean
   tNotGeocoded: boolean
-  errorMessage: string
+  tSummary: InventoryConfidenceSummary
 
   geocodeState: 'verify' | 'geocoding' | 'result' | 'fail' = 'verify'
 

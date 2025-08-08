@@ -2,15 +2,17 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { Column, InventoryService, MatchingService, MappableColumnService } from '@seed/api'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { Observable } from 'rxjs'
+import { catchError, combineLatest, EMPTY, Subject, take, tap } from 'rxjs'
+import type { Column } from '@seed/api'
+import { InventoryService, MappableColumnService, MatchingService } from '@seed/api'
 import { AlertComponent, ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import { ColDef, GridApi, GridOptions, GridReadyEvent, RowDragEndEvent, RowSelectedEvent } from 'ag-grid-community'
 import type { FilterResponse, InventoryType, State } from 'app/modules/inventory/inventory.types'
-import { catchError, combineLatest, EMPTY, finalize, Observable, Subject, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-merge-modal',
@@ -32,22 +34,22 @@ export class MergeModalComponent implements OnInit, OnDestroy {
   private _mappableColumnService = inject(MappableColumnService)
   private _inventoryService = inject(InventoryService)
   private _unsubscribeAll$ = new Subject<void>()
-  status: 'loading' | 'review' | 'confirm' | 'complete' | 'error' = 'loading'
-  columns: Column[] = []
-  inventory: FilterResponse
-  metersExist = false
-  loading: boolean
-  gridTheme$ = this._configService.gridTheme$
-  preGridApi: GridApi
-  postData: Record<string, unknown>[] = []
   colDefs: ColDef[] = []
-  preData: State[] = []
-  gridOptions: GridOptions = { rowDragManaged: true }
-  gridHeight = 400
-  title = 'Merge Inventory'
-  results: string[] = []
+  columns: Column[] = []
   errorMessage: string = null
+  gridHeight = 400
+  gridOptions: GridOptions = { rowDragManaged: true }
+  gridTheme$ = this._configService.gridTheme$
+  inventory: FilterResponse
+  loading: boolean
   matchingColumnDisplayNames: string[] = []
+  metersExist = false
+  postData: Record<string, unknown>[] = []
+  preData: State[] = []
+  preGridApi: GridApi
+  results: string[] = []
+  status: 'loading' | 'review' | 'confirm' | 'complete' | 'error' = 'loading'
+  title = 'Merge Inventory'
 
   data = inject(MAT_DIALOG_DATA) as {
     cycleId: number;

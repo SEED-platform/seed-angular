@@ -1,4 +1,5 @@
 export * from './geocode-modal.component'
 export * from './merge-modal.component'
 export * from './refresh-metadata-modal.component'
+export * from './ubid-decode.component'
 export * from './update-derived-data.component'
