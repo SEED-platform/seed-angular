@@ -108,5 +108,9 @@
 </div>
 
 <div class="mt-4 flex justify-end gap-2">
-  <button [disabled]="!valid" (click)="geocodeBuildings()" mat-raised-button color="primary">Geocode</button>
+  @if (geocodeState === 'verify') {
+    <button [disabled]="!valid" (click)="geocodeBuildings()" mat-raised-button color="primary">Geocode</button>
+  } @else if (['result', 'fail'].includes(geocodeState)) {
+    <button (click)="close(geocodeState === 'result')" mat-raised-button color="primary">Close</button>
+  }
 </div>

@@ -397,4 +397,13 @@ export class InventoryService {
       }),
     )
   }
+
+  propertiesMetersExist(orgId: number, propertyViewIds: number[]): Observable<boolean> {
+    const url = `/api/v3/properties/meters_exist/?organization_id=${orgId}`
+    return this._httpClient.post<boolean>(url, { property_view_ids: propertyViewIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error checking if meters exist for properties')
+      }),
+    )
+  }
 }
