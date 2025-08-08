@@ -123,6 +123,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
+    this._organizationService.orgUserSettings$
+      .pipe(
+        tap((settings) => this.userSettings = settings),
+      )
+      .subscribe()
+
     this.refreshInventory$.pipe(switchMap(() => this.refreshInventory())).subscribe()
   }
 
@@ -347,6 +353,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
+    console.log(this.userSettings.pins.properties)
     this.refreshInventory$.next()
   }
 
