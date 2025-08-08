@@ -207,6 +207,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    * returns a null observable to track completion
    */
   loadInventory(): Observable<null> {
+    this.validateCycleId()
     if (!this.cycleId) return of(null)
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
@@ -238,12 +239,20 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ) as Observable<null>
   }
 
+  validateCycleId() {
+    if (!this.cycleId) this.cycleId = null
+    const settingsCycleId = this.userSettings?.cycleId
+    if (!settingsCycleId) return
+    if (settingsCycleId !== this.cycleId) this.cycleId = settingsCycleId
+  }
+
   /*
    * on initial page load, set any filters and sorts from the user settings
    */
   setFilterSorts() {
     this.setFilters()
     this.setSorts()
+    this.setPins()
   }
 
   onGridReady(gridApi: GridApi) {
@@ -304,6 +313,26 @@ export class InventoryComponent implements OnDestroy, OnInit {
       if (colDef) colDef.sort = direction
     }
     this.gridApi.onSortChanged()
+  }
+
+  setPins() {
+    if (!this.userSettings.pins) return
+
+    const { left, right } = this.userSettings.pins[this.type] || {}
+
+    for (const col of left) {
+      const colDef = this.columnDefs.find((c) => c.field === col)
+      if (colDef) {
+        colDef.pinned = 'left'
+      }
+    }
+
+    for (const col of right) {
+      const colDef = this.columnDefs.find((c) => c.field === col)
+      if (colDef) {
+        colDef.pinned = 'right'
+      }
+    }
   }
 
   get sorts() {

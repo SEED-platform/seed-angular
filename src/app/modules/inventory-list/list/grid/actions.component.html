@@ -15,15 +15,9 @@
   <seed-menu-item (action)="deselectAll()" label="Select None"></seed-menu-item>
   <mat-divider></mat-divider>
   <seed-menu-item [disabled]="!hasSelection" (action)="deleteStates()" label="Delete" icon="fa-solid:trash-can"></seed-menu-item>
-  <seed-menu-item
-    class="text-secondary line-through"
-    [disabled]="!hasSelection"
-    (action)="tempAction()"
-    label="Merge"
-    icon="fa-solid:share-nodes"
-  ></seed-menu-item>
-  <seed-menu-item (action)="openShowPopulatedColumnsModal()" label="Only Show Populated Columns" icon="fa-solid:filter"></seed-menu-item>
   <seed-menu-item [disabled]="!hasSelection" (action)="openExportModal()" label="Export" icon="fa-solid:download"></seed-menu-item>
+  <seed-menu-item [disabled]="selectedViewIds.length < 2" (action)="openMergeModal()" label="Merge" icon="fa-solid:code-merge"></seed-menu-item>
+  <seed-menu-item (action)="openShowPopulatedColumnsModal()" label="Only Show Populated Columns" icon="fa-solid:filter"></seed-menu-item>
   <!-- Access Levels -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Access Levels</span>

@@ -49,8 +49,10 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
 
   resetGrid() {
     this.resetColumns()
+    this.resetPins()
     this.resetFilters()
     this.resetSorts()
+    this.updateOrgUser()
   }
 
   resetColumns() {
@@ -62,7 +64,6 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.userSettings.filters = this.currentUser.settings.filters ?? {}
     this.userSettings.filters.properties = {}
     this.userSettings.filters.taxlots = {}
-    this.updateOrgUser()
   }
 
   resetSorts() {
@@ -71,7 +72,13 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.userSettings.sorts = this.currentUser.settings?.sorts ?? {}
     this.userSettings.sorts.properties = []
     this.userSettings.sorts.taxlots = []
-    this.updateOrgUser()
+  }
+
+  resetPins() {
+    this.userSettings.pins = this.currentUser.settings?.pins ?? {}
+    this.userSettings.pins.properties = { left: [], right: [] }
+    this.userSettings.pins.taxlots = { left: [], right: [] }
+    this.gridApi.applyColumnState({ defaultState: { pinned: null } })
   }
 
   updateOrgUser() {

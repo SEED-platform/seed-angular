@@ -11,7 +11,7 @@ import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.comp
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { GeocodeModalComponent, RefreshMetadataModalComponent, UpdateDerivedDataComponent } from '../actions'
+import { GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -102,6 +102,22 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       .subscribe()
   }
 
+  openExportModal() {
+    const dialogRef = this._dialog.open(ExportModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openMergeModal() {
+    const dialogRef = this._dialog.open(MergeModalComponent, {
+      width: '50rem',
+      data: { ...this.baseData(), cycleId: this.cycleId, profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
   openShowPopulatedColumnsModal() {
     const dialogRef = this._dialog.open(ModalComponent, {
       width: '40rem',
@@ -121,13 +137,6 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     this.afterClosed(dialogRef)
   }
 
-  openExportModal() {
-    const dialogRef = this._dialog.open(ExportModalComponent, {
-      width: '40rem',
-      data: { ...this.baseData(), profileId: this.profile?.id || null },
-    })
-    this.afterClosed(dialogRef)
-  }
 
   openAliChangeModal() {
     const dialogRef = this._dialog.open(AliChangeModalComponent, {
