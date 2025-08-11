@@ -94,7 +94,7 @@
   <div>
     <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Add / Update">
     </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Compare">
+    <seed-menu-item [disabled]="selectedViewIds.length !== 2" (action)="openUbidCompareModal()" label="Compare">
     </seed-menu-item>
     <seed-menu-item [disabled]="!hasSelection" (action)="openUbidDecodeModal()" label="Decode"></seed-menu-item>
   </div>

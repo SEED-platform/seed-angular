@@ -11,7 +11,7 @@ import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.comp
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
+import { GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -137,7 +137,6 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     this.afterClosed(dialogRef)
   }
 
-
   openAliChangeModal() {
     const dialogRef = this._dialog.open(AliChangeModalComponent, {
       width: '40rem',
@@ -197,6 +196,14 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
 
   openGeocodeModal() {
     const dialogRef = this._dialog.open(GeocodeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidCompareModal() {
+    const dialogRef = this._dialog.open(UbidCompareComponent, {
       width: '40rem',
       data: this.baseData(),
     })

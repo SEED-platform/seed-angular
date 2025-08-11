@@ -117,4 +117,14 @@ export class UbidService {
       }),
     )
   }
+
+  compareUbids(orgId: number, ubid1: string, ubid2: string): Observable<number> {
+    const url = `/api/v3/ubid/get_jaccard_index/?organization_id=${orgId}`
+    return this._httpClient.post<{ status: string; data: number }>(url, { ubid1, ubid2 }).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error comparing UBIDs')
+      }),
+    )
+  }
 }
