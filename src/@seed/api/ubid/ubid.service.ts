@@ -127,4 +127,18 @@ export class UbidService {
       }),
     )
   }
+
+  getUbidModelsByView(orgId: number, viewId: number, type: InventoryType): Observable<Ubid[]> {
+    const url = `/api/v3/ubid/ubids_by_view/?organization_id=${orgId}`
+    const data = {
+      view_id: viewId,
+      type: type === 'taxlots' ? 'taxlot' : 'property',
+    }
+    return this._httpClient.post<{ status: string; data: Ubid[] }>(url, data).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching UBID models')
+      }),
+    )
+  }
 }

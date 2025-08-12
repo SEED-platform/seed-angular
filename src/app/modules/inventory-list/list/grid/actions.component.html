@@ -92,7 +92,7 @@
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">UBID</span>
   <div>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Add / Update">
+    <seed-menu-item [disabled]="selectedViewIds.length !== 1" (action)="openUbidModal()" label="Add / Update">
     </seed-menu-item>
     <seed-menu-item [disabled]="selectedViewIds.length !== 2" (action)="openUbidCompareModal()" label="Compare">
     </seed-menu-item>
