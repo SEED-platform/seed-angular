@@ -36,12 +36,14 @@
     </div>
   }
   <!-- Audit Template -->
-  <mat-divider class="my-0"></mat-divider>
-  <span class="text-secondary text-sm">Audit Template</span>
-  <div>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Export"> </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Update"> </seed-menu-item>
-  </div>
+  @if (type === 'properties') {
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-secondary text-sm">Audit Template</span>
+    <div>
+      <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Export"> </seed-menu-item>
+      <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Update"> </seed-menu-item>
+    </div>
+  }
   <mat-divider class="my-0"></mat-divider>
 
   <!-- DATA QUALITY DATA -->
@@ -74,12 +76,9 @@
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Other</span>
   <seed-menu-item [disabled]="!hasSelection" (action)="openEmailModal()" label="Email"></seed-menu-item>
-  <seed-menu-item
-    class="text-secondary line-through"
-    [disabled]="!hasSelection"
-    (action)="tempAction()"
-    label="FEMP CTS Export"
-  ></seed-menu-item>
+  @if (type === 'properties') {
+    <seed-menu-item [disabled]="!hasSelection" (action)="openFempExportModal()" label="FEMP CTS Export"></seed-menu-item>
+  }
   <seed-menu-item [disabled]="!hasSelection" (action)="openGeocodeModal()" label="Geocode"></seed-menu-item>
   <seed-menu-item [disabled]="!hasSelection" (action)="openRefreshMetadataModal()" label="Refresh Updated Timestamp"></seed-menu-item>
   <!-- SalesForce -->

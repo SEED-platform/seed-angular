@@ -11,7 +11,7 @@ import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.comp
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent, UbidModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { EmailModalComponent, GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
+import { EmailModalComponent, FempExportModalComponent, GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -203,6 +203,14 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
         stateIds: this.selectedStateIds,
         type: this.type,
       },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openFempExportModal() {
+    const dialogRef = this._dialog.open(FempExportModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
     })
     this.afterClosed(dialogRef)
   }
