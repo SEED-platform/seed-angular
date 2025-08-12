@@ -11,7 +11,7 @@ import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.comp
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent, UbidModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
+import { EmailModalComponent, GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -25,6 +25,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() orgId: number
   @Input() profile: Profile
   @Input() profiles: Profile[]
+  @Input() selectedStateIds: number[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<null>()
@@ -190,6 +191,18 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     const dialogRef = this._dialog.open(RefreshMetadataModalComponent, {
       width: '40rem',
       data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openEmailModal() {
+    const dialogRef = this._dialog.open(EmailModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        stateIds: this.selectedStateIds,
+        type: this.type,
+      },
     })
     this.afterClosed(dialogRef)
   }

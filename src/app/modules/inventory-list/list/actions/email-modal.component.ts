@@ -1,0 +1,64 @@
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { RouterModule } from '@angular/router'
+import type { EmailTemplate} from '@seed/api'
+import { PostOfficeService } from '@seed/api'
+import { ModalHeaderComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
+import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import { Subject, take, tap } from 'rxjs'
+
+@Component({
+  selector: 'seed-email-modal',
+  templateUrl: './email-modal.component.html',
+  imports: [
+    FormsModule,
+    MaterialImports,
+    ModalHeaderComponent,
+    RouterModule,
+  ],
+})
+export class EmailModalComponent implements OnInit, OnDestroy {
+  private _dialogRef = inject(MatDialogRef<EmailModalComponent>)
+  private _postOfficeService = inject(PostOfficeService)
+  private _unsubscribeAll$ = new Subject<void>()
+
+  emailTemplates: EmailTemplate[] = []
+  selectedTemplateId: number
+
+  data = inject(MAT_DIALOG_DATA) as {
+    orgId: number;
+    stateIds: number[];
+    type: InventoryType;
+  }
+
+  ngOnInit(): void {
+    this._postOfficeService.getEmailTemplates(this.data.orgId)
+      .pipe(
+        tap((emailTemplates) => { this.emailTemplates = emailTemplates }),
+        take(1),
+      )
+      .subscribe()
+  }
+
+  // selectTemplate()
+  onSubmit() {
+    this._postOfficeService.sendEmail(this.data.orgId, this.data.stateIds, this.selectedTemplateId, this.data.type)
+      .pipe(
+        tap((response) => { console.log(response) }),
+        take(1),
+      )
+      .subscribe()
+  }
+
+  close() {
+    this._dialogRef.close()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+}

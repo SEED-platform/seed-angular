@@ -73,7 +73,7 @@
   <!-- MISC / OTHER -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Other</span>
-  <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Email"></seed-menu-item>
+  <seed-menu-item [disabled]="!hasSelection" (action)="openEmailModal()" label="Email"></seed-menu-item>
   <seed-menu-item
     class="text-secondary line-through"
     [disabled]="!hasSelection"

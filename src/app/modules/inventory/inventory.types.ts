@@ -239,8 +239,12 @@ export type State = {
   files: BuildingFile[];
   labels: number[];
   measures: Record<string, unknown>[];
+  property_state_id?: number;
+  property_view_id?: number;
   related?: State[];
   scenarios: Scenario[];
+  taxlot_state_id?: number;
+  taxlot_view_id?: number;
 }
 
 export type UpdateInventoryResponse = {

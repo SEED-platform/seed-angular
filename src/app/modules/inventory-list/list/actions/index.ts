@@ -1,3 +1,4 @@
+export * from './email-modal.component'
 export * from './geocode-modal.component'
 export * from './merge-modal.component'
 export * from './refresh-metadata-modal.component'

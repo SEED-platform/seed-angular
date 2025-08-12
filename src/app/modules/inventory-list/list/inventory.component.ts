@@ -18,6 +18,7 @@ import type {
   InventoryType,
   Pagination,
   Profile,
+  State,
 } from 'app/modules/inventory'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 
@@ -71,6 +72,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   refreshInventory$ = new Subject<void>()
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
+  selectedStateIds: number[] = []
   taxlotProfiles: Profile[]
   userSettings: OrganizationUserSettings = {}
 
@@ -266,13 +268,25 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    this.selectedViewIds = this.type === 'taxlots'
-      ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
-      : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+    // this.selectedViewIds = this.type === 'taxlots'
+    //   ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
+    //   : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+
+    const selectedRows = this.gridApi.getSelectedRows() as State[]
+    if (this.type === 'taxlots') {
+      this.selectedViewIds = selectedRows.map((state) => state.taxlot_view_id)
+      this.selectedStateIds = selectedRows.map((state) => state.taxlot_state_id)
+    } else {
+      this.selectedViewIds = selectedRows.map((state) => state.property_view_id)
+      this.selectedStateIds = selectedRows.map((state) => state.property_state_id)
+    }
   }
 
   onSelectAll(selectedViewIds: number[]) {
     this.selectedViewIds = selectedViewIds
+    this.selectedStateIds = this.type === 'taxlots'
+      ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
+      : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
   }
 
   onProfileChange(id: number) {

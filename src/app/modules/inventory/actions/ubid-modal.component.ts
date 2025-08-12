@@ -107,7 +107,8 @@ export class UbidModalComponent implements OnInit, OnDestroy {
   }
 
   getGridHeight() {
-    this.gridHeight = Math.min(this.ubids.length * 42 + 50, 400)
+    const rowLength = this.ubids.length || 1
+    this.gridHeight = Math.min(rowLength * 42 + 50, 400)
   }
 
   onGridReady(agGrid: GridReadyEvent) {
