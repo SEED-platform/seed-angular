@@ -16,7 +16,7 @@ export type CheckProgressLoopParams = {
   progressKey: string;
   offset?: number;
   multiplier?: number;
-  successFn?: () => void;
+  successFn?: (response: ProgressResponse) => void;
   failureFn?: () => void;
   progressBarObj: ProgressBarObj;
   subProgress?: boolean;
@@ -68,3 +68,5 @@ export type MeterPreviewResponse = {
   unlinkable_pm_ids: number[];
   validated_type_units: ValidatedTypeUnit[];
 }
+
+export type ExportDataType = 'csv' | 'xlsx' | 'geojson'

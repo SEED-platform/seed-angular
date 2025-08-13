@@ -263,5 +263,4 @@ export type InventoryExportData = {
   include_meter_readings: boolean;
   include_notes: boolean;
   profile_id: number;
-  progress_key: string;
 }
