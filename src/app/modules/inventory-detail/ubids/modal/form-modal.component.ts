@@ -62,9 +62,7 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .update(this.data.orgId, this.data.viewId, this.data.ubid.id, ubidDetails, this.data.type)
         .pipe(
-          tap((response) => {
-            this.close(preferred)
-          }),
+          tap(() => { this.close(preferred) }),
         )
         .subscribe()
     } else {
@@ -73,9 +71,7 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .create(this.data.orgId, this.data.viewId, ubidDetails, this.data.type)
         .pipe(
-          tap((response) => {
-            this.close(preferred)
-          }),
+          tap(() => { this.close(preferred) }),
         )
         .subscribe()
     }

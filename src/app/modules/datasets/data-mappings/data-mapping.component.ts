@@ -78,7 +78,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   rawColumnNames: string[] = []
   taxlotColumns: Column[]
 
-
   ngOnInit(): void {
     // this._userService.currentOrganizationId$
     this._organizationService.currentOrganization$
