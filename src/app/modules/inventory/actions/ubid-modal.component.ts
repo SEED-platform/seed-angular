@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, finalize, forkJoin, map, of, Subject, switchMap, take, tap } from 'rxjs'
-import type { Ubid} from '@seed/api';
+import type { Ubid } from '@seed/api'
 import { InventoryService, UbidService } from '@seed/api'
 import { AlertComponent, ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'

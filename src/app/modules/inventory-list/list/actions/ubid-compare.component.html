@@ -1,9 +1,4 @@
-<seed-modal-header
-  title="Compare UBIDs"
-  titleIcon="fa-solid:code-compare"
-  [close]="close.bind(this)"
->
-</seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Compare UBIDs" titleIcon="fa-solid:code-compare"> </seed-modal-header>
 
 <div class="flex flex-col">
   <div class="text-secondary my-4">
@@ -26,14 +21,13 @@
     </mat-form-field>
   </form>
 
-  <div class="h-7 text-lg mx-auto">
+  <div class="mx-auto h-7 text-lg">
     @if (result !== null) {
-      UBID Comparison: <span class="font-bold"> {{ result | number:'1.2-2' }} - {{ jaccardQuality(result) }}</span>
+      UBID Comparison: <span class="font-bold"> {{ result | number: '1.2-2' }} - {{ jaccardQuality(result) }}</span>
     }
   </div>
-  
 </div>
 
 <div class="mt-4 flex justify-end gap-2">
-  <button (click)="onSubmit()" [disabled]="!form.valid" mat-raised-button color="primary">Compare</button>
+  <button [disabled]="!form.valid" (click)="onSubmit()" mat-raised-button color="primary">Compare</button>
 </div>

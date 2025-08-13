@@ -1,25 +1,12 @@
-<seed-modal-header
-  title="Decode Inventory UBID"
-  titleIcon="fa-solid:map"
-  [close]="close.bind(this)"
-></seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="Decode Inventory UBID" titleIcon="fa-solid:map"></seed-modal-header>
 
 <div>
   @if (status === 'error') {
     <seed-alert type="error">{{ errorMessage }}</seed-alert>
-  }
-
-  @else if (status === 'inProgress') {
+  } @else if (status === 'inProgress') {
     <seed-progress-bar></seed-progress-bar>
-  }
-
-  @else {
-    <ag-grid-angular
-      [columnDefs]="colDefs"
-      [rowData]="rowData"
-      [style.height.px]="gridHeight"
-      [theme]="gridTheme$ | async"
-    >
+  } @else {
+    <ag-grid-angular [columnDefs]="colDefs" [rowData]="rowData" [style.height.px]="gridHeight" [theme]="gridTheme$ | async">
     </ag-grid-angular>
   }
 </div>

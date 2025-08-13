@@ -1,15 +1,16 @@
-import { Component, OnDestroy, inject } from '@angular/core'
+import type { OnDestroy } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { finalize, Subject, tap } from 'rxjs'
 import { InventoryService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { finalize, Subject, take, tap } from 'rxjs'
 
 @Component({
-  selector: 'app-femp-export-modal',
+  selector: 'seed-femp-export-modal',
   templateUrl: './femp-export-modal.component.html',
   imports: [
     FormsModule,

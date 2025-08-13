@@ -3,12 +3,12 @@ import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
-import type { EmailTemplate} from '@seed/api'
+import { Subject, take, tap } from 'rxjs'
+import type { EmailTemplate } from '@seed/api'
 import { PostOfficeService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
-import { Subject, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-email-modal',

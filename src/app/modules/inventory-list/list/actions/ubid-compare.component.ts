@@ -84,7 +84,7 @@ export class UbidCompareComponent implements OnInit, OnDestroy {
         switchMap((value: string) => this._ubidService.validate(this.data.orgId, value)),
         tap((result) => {
           this.result = null
-          this.form.get(controlName)?.setErrors(result ? null : { invalid: true }) 
+          this.form.get(controlName)?.setErrors(result ? null : { invalid: true })
         }),
       )
       .subscribe()

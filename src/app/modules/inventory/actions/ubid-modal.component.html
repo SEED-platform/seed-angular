@@ -1,28 +1,20 @@
-<seed-modal-header
-  title="UBIDs"
-  titleIcon="fa-solid:building"
-  [close]="close.bind(this)"
->
-</seed-modal-header>
+<seed-modal-header [close]="close.bind(this)" title="UBIDs" titleIcon="fa-solid:building"> </seed-modal-header>
 
 <div>
-
   <ag-grid-angular
-  [columnDefs]="colDefs"
-  [rowData]="ubids"
-  [theme]="gridTheme$ | async"
-  [gridOptions]="gridOptions"
-  [style.height.px]="gridHeight"
-  (gridReady)="onGridReady($event)"
+    [columnDefs]="colDefs"
+    [rowData]="ubids"
+    [theme]="gridTheme$ | async"
+    [gridOptions]="gridOptions"
+    [style.height.px]="gridHeight"
+    (gridReady)="onGridReady($event)"
   >
   </ag-grid-angular>
 
   @if (inProgress) {
     <seed-progress-bar></seed-progress-bar>
-  }
-  
-  @else if (errMessages.length) {
-    <seed-alert type="error" showIcon="false" appearance="outline" class="my-4">
+  } @else if (errMessages.length) {
+    <seed-alert class="my-4" type="error" showIcon="false" appearance="outline">
       <ul class="list-disc">
         @for (msg of errMessages; track $index) {
           <li class="ml-8">{{ msg }}</li>
@@ -30,7 +22,6 @@
       </ul>
     </seed-alert>
   }
-
 </div>
 
 <div class="mt-4 flex justify-end gap-2">

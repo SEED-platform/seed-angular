@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef } from 'ag-grid-community'
+import { catchError, EMPTY, filter, Subject, switchMap, take, tap } from 'rxjs'
 import { UbidService } from '@seed/api'
 import { AlertComponent, ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
-import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef } from 'ag-grid-community'
 import type { InventoryType } from 'app/modules/inventory'
-import { catchError, EMPTY, filter, Subject, switchMap, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-ubid-decode-modal',

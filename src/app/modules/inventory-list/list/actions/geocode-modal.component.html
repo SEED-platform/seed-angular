@@ -2,9 +2,7 @@
 
 <!-- CONTENT -->
 <div *transloco="let t">
-
   @if (geocodeState === 'verify') {
-
     @if (!hasGeoColumns) {
       <seed-alert class="my-2" type="error" appearance="outline">
         <div class="flex flex-col gap-4">
@@ -14,40 +12,40 @@
       </seed-alert>
     }
 
-  @if (!hasApiKey) {
-    <seed-alert class="my-2" type="error" appearance="outline" >
-      <div class="flex flex-col gap-4">
-        <span>{{ t('NO_MAPQUEST_API_KEY_FOR_ORG') }}</span>
-        <span>{{ t('DIRECTIONS_FOR_UPDATING_MQ_API_KEY') }}</span>
-      </div>
-    </seed-alert>
-  }
+    @if (!hasApiKey) {
+      <seed-alert class="my-2" type="error" appearance="outline">
+        <div class="flex flex-col gap-4">
+          <span>{{ t('NO_MAPQUEST_API_KEY_FOR_ORG') }}</span>
+          <span>{{ t('DIRECTIONS_FOR_UPDATING_MQ_API_KEY') }}</span>
+        </div>
+      </seed-alert>
+    }
 
-  @if (!geocodingEnabled) {
-    <seed-alert class="my-2" type="error" appearance="outline" >
-      {{ t('Geocoding has been disabled for this organization.') }}
-    </seed-alert>
-  }
+    @if (!geocodingEnabled) {
+      <seed-alert class="my-2" type="error" appearance="outline">
+        {{ t('Geocoding has been disabled for this organization.') }}
+      </seed-alert>
+    }
 
-  @if (pSummary?.not_geocoded || tSummary?.not_geocoded) {
-  <seed-alert class="my-2" type="info" appearance="border" showIcon="false">
-    <span>{{ t('NOT_GEOCODED_PREVIOUSLY') }}</span>
-    @if (pSummary?.not_geocoded) {<li>{{ pSummary?.not_geocoded }} properties </li>}
-    @if (tSummary?.not_geocoded) {<li>{{ tSummary?.not_geocoded }} tax lots</li>}
-  </seed-alert>
+    @if (pSummary?.not_geocoded || tSummary?.not_geocoded) {
+      <seed-alert class="my-2" type="info" appearance="border" showIcon="false">
+        <span>{{ t('NOT_GEOCODED_PREVIOUSLY') }}</span>
+        @if (pSummary?.not_geocoded) {
+          <li>{{ pSummary?.not_geocoded }} properties</li>
+        }
+        @if (tSummary?.not_geocoded) {
+          <li>{{ tSummary?.not_geocoded }} tax lots</li>
+        }
+      </seed-alert>
+    }
   }
-  
-}
-
 
   <!-- @if (suggestVerify) {
     <div translate>{{ t('SUGGEST_TO_VERIFY') }}</div>
   } -->
 
-
-
   <!--  General messages -->
-  @if ((pMessages || tMessages)) {
+  @if (pMessages || tMessages) {
     <seed-alert class="my-2" [type]="typeMap[geocodeState]" appearance="border" showIcon="false">
       @if (geocodeState === 'verify') {
         <div class="flex flex-col gap-4">
@@ -56,11 +54,13 @@
         </div>
       }
       @if (geocodeState === 'result') {
-        <div>{{ t('POST_GEOCODING_COUNTS')}}</div>
+        <div>{{ t('POST_GEOCODING_COUNTS') }}</div>
       }
 
       <!-- PROPERTIES -->
-      @if (pMessages) {<div class="mt-4">Properties</div>}
+      @if (pMessages) {
+        <div class="mt-4">Properties</div>
+      }
       @if (pSummary?.high_confidence) {
         <li>{{ pSummary?.high_confidence }} {{ t('GEOCODED_WITH_HIGH_CONFIDENCE') }}</li>
       }
@@ -68,8 +68,11 @@
         <li>{{ pSummary?.low_confidence }} {{ t('GEOCODED_WITH_LOW_CONFIDENCE') }}</li>
       }
       @if (pSummary?.manual) {
-        <li>{{ pSummary?.manual }} {{ t('GEOCODED_MANUALLY') }} 
-          @if (geocodeState === 'verify') { - <b>{{ t('ITEMS_WILL_NOT_CHANGE') }}</b>}
+        <li>
+          {{ pSummary?.manual }} {{ t('GEOCODED_MANUALLY') }}
+          @if (geocodeState === 'verify') {
+            - <b>{{ t('ITEMS_WILL_NOT_CHANGE') }}</b>
+          }
         </li>
       }
       @if (pSummary?.missing_address_components) {
@@ -77,7 +80,9 @@
       }
 
       <!-- TAX LOTS -->
-      @if (tMessages) {<div class="mt-4">Tax Lots</div>}
+      @if (tMessages) {
+        <div class="mt-4">Tax Lots</div>
+      }
       @if (tSummary?.high_confidence) {
         <li>{{ tSummary?.high_confidence }} {{ t('GEOCODED_WITH_HIGH_CONFIDENCE') }}</li>
       }
@@ -85,8 +90,11 @@
         <li>{{ tSummary?.low_confidence }} {{ t('GEOCODED_WITH_LOW_CONFIDENCE') }}</li>
       }
       @if (tSummary?.manual) {
-        <li>{{ tSummary?.manual }} {{ t('GEOCODED_MANUALLY') }}
-          @if (geocodeState === 'verify') { - <b>{{ t('ITEMS_WILL_NOT_CHANGE') }}</b>}
+        <li>
+          {{ tSummary?.manual }} {{ t('GEOCODED_MANUALLY') }}
+          @if (geocodeState === 'verify') {
+            - <b>{{ t('ITEMS_WILL_NOT_CHANGE') }}</b>
+          }
         </li>
       }
       @if (tSummary?.missing_address_components) {
@@ -104,7 +112,6 @@
   @if (geocodeState === 'geocoding') {
     <seed-progress-bar title="Geocoding..."></seed-progress-bar>
   }
-
 </div>
 
 <div class="mt-4 flex justify-end gap-2">
