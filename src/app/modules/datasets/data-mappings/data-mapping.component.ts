@@ -223,6 +223,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
             this.mappingResultsResponse = response as MappingResultsResponse
             this.nextStep(2)
           }),
+          take(1),
         )
         .subscribe()
     }

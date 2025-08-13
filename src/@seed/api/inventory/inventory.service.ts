@@ -352,19 +352,9 @@ export class InventoryService {
     )
   }
 
-  startInventoryExport(orgId: number): Observable<ProgressResponse> {
+  startInventoryExport(orgId: number, data: InventoryExportData): Observable<ProgressResponse> {
     const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
-    return this._httpClient.get<ProgressResponse>(url).pipe(
-      take(1),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error starting export')
-      }),
-    )
-  }
-
-  exportInventory(orgId: number, type: InventoryType, data: InventoryExportData): Observable<Blob> {
-    const url = `/api/v3/tax_lot_properties/export/?inventory_type=${type}&organization_id=${orgId}`
-    return this._httpClient.post(url, data, { responseType: 'blob' }).pipe(
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
       take(1),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error starting export')

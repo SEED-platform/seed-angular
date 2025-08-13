@@ -3,8 +3,8 @@ import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
-import { catchError, combineLatest, EMPTY, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api'
+import { catchError, EMPTY, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { CacheService, InventoryService, ProgressResponse } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services'
@@ -18,6 +18,7 @@ import type { InventoryExportData, InventoryType } from '../inventory.types'
 })
 export class ExportModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
+  private _cacheService = inject(CacheService)
   private _dialogRef = inject(MatDialogRef<ExportModalComponent>)
   private _inventoryService = inject(InventoryService)
   private _snackBar = inject(SnackBarService)
@@ -36,41 +37,48 @@ export class ExportModalComponent implements OnDestroy {
   }
 
   form = new FormGroup({
-    name: new FormControl<string>(null, Validators.required),
-    include_notes: new FormControl(true),
     export_type: new FormControl<'csv' | 'xlsx' | 'geojson'>('csv', Validators.required),
-    include_label_header: new FormControl(false),
+    include_notes: new FormControl(false),
     include_meter_readings: new FormControl(false),
+    name: new FormControl<string>(null, Validators.required),
   })
 
   export() {
-    this._inventoryService.startInventoryExport(this.data.orgId)
+    const successFn = ({ unique_id }: ProgressResponse) => {
+      this._cacheService.getCacheEntry(this.data.orgId, unique_id).pipe(
+        tap((response: { data: string }) => {
+          const blob = this.getBlob(response.data)
+          this.downloadData(blob)
+          this.close()
+        }),
+        take(1),
+      ).subscribe()
+    }
+
+    this.initExport()
+    this._inventoryService.startInventoryExport(this.data.orgId, this.exportData)
       .pipe(
-        tap(({ progress_key }) => { this.initExport(progress_key) }),
-        switchMap(() => this.pollExport()),
-        tap((response) => { this.downloadData(response[0]) }),
+        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
+          progressKey: progress_key,
+          successFn,
+          failureFn: () => { this.close() },
+          progressBarObj: this.progressBarObj,
+        })),
         takeUntil(this._unsubscribeAll$),
         catchError(() => { return EMPTY }),
-        finalize(() => { this.close() }),
       )
       .subscribe()
   }
 
-  initExport(progress_key: string) {
+  initExport() {
     this.stepper.next()
     this.formatFilename()
-    this.formatExportData(this.filename, progress_key)
+    this.formatExportData(this.filename)
   }
 
-  pollExport() {
-    const { orgId, type } = this.data
-    return combineLatest([
-      this._inventoryService.exportInventory(orgId, type, this.exportData),
-      this._uploaderService.checkProgressLoop({
-        progressKey: this.exportData.progress_key,
-        progressBarObj: this.progressBarObj,
-      }),
-    ])
+  getBlob(data: string): Blob {
+    const exportType = this.form.value.export_type
+    return this._uploaderService.stringToBlob(data, exportType)
   }
 
   downloadData(data: Blob) {
@@ -91,7 +99,7 @@ export class ExportModalComponent implements OnDestroy {
     }
   }
 
-  formatExportData(filename: string, progress_key: string) {
+  formatExportData(filename: string) {
     this.exportData = {
       export_type: this.form.value.export_type,
       filename,
@@ -99,7 +107,6 @@ export class ExportModalComponent implements OnDestroy {
       include_meter_readings: this.form.value.include_meter_readings,
       include_notes: this.form.value.include_notes,
       profile_id: this.data.profileId,
-      progress_key,
     }
   }
 

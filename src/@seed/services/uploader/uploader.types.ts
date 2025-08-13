@@ -68,3 +68,5 @@ export type MeterPreviewResponse = {
   unlinkable_pm_ids: number[];
   validated_type_units: ValidatedTypeUnit[];
 }
+
+export type ExportDataType = 'csv' | 'xlsx' | 'geojson'

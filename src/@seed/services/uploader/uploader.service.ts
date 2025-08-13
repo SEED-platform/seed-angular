@@ -7,6 +7,7 @@ import type { ProgressResponse } from '@seed/api'
 import { ErrorService } from '../error'
 import type {
   CheckProgressLoopParams,
+  ExportDataType,
   GreenButtonMeterPreview,
   MeterPreviewResponse,
   ProgressBarObj,
@@ -174,6 +175,26 @@ export class UploaderService {
         return this._errorService.handleError(error, 'Error saving raw data')
       }),
     )
+  }
+
+  stringToBlob(data: string, exportType: ExportDataType) {
+    const base64ToBlob = (base64: string): Blob => {
+      const binary = atob(base64)
+      const bytes = new Uint8Array(binary.length)
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i)
+      }
+
+      return new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    }
+
+    const blobMap: Record<ExportDataType, () => Blob> = {
+      csv: () => new Blob([data], { type: 'text/csv' }),
+      xlsx: () => base64ToBlob(data),
+      geojson: () => new Blob([JSON.stringify(data, null, '\t')], { type: 'application/geo+json' }),
+    }
+
+    return blobMap[exportType]()
   }
 
   /*
