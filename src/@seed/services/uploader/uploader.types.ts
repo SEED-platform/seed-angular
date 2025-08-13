@@ -16,7 +16,7 @@ export type CheckProgressLoopParams = {
   progressKey: string;
   offset?: number;
   multiplier?: number;
-  successFn?: () => void;
+  successFn?: (response: ProgressResponse) => void;
   failureFn?: () => void;
   progressBarObj: ProgressBarObj;
   subProgress?: boolean;

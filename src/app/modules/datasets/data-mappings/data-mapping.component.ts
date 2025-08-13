@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column, ColumnMappingProfile, ColumnMappingProfileType, Cycle, ImportFile, MappingResultsResponse, MappingSuggestionsResponse, Organization, ProgressResponse } from '@seed/api'
-import { ColumnMappingProfileService, ColumnService, CycleService, DatasetService, MappingService, OrganizationService, UserService } from '@seed/api'
+import { CacheService, ColumnMappingProfileService, ColumnService, CycleService, DatasetService, MappingService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
@@ -40,6 +40,7 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   @ViewChild(MapDataComponent) mapDataComponent!: MapDataComponent
   @ViewChild(MatchMergeComponent) matchMergeComponent!: MatchMergeComponent
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _cacheService = inject(CacheService)
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
   private _columnService = inject(ColumnService)
   private _cycleService = inject(CycleService)
@@ -71,11 +72,12 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   matchingTaxLotColumns: string[] = []
   org: Organization
   orgId: number
+  progressBarObj = this._uploaderService.defaultProgressBarObj
+  progressTitle = 'Mapping Data...'
   propertyColumns: Column[]
   rawColumnNames: string[] = []
   taxlotColumns: Column[]
 
-  progressBarObj = this._uploaderService.defaultProgressBarObj
 
   ngOnInit(): void {
     // this._userService.currentOrganizationId$
@@ -181,7 +183,6 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       this._snackBar.alert('Error starting mapping')
     }
     const successFn = () => {
-      this.nextStep(2)
       this.getMappingResults()
     }
 
@@ -214,10 +215,25 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   }
 
   getMappingResults(): void {
-    this.nextStep(2)
+    this.progressTitle = 'Fetching Mapping Results...'
+    const successFn = ({ unique_id }: ProgressResponse) => {
+      this._cacheService.getCacheEntry(this.orgId, unique_id)
+        .pipe(
+          tap((response) => {
+            this.mappingResultsResponse = response as MappingResultsResponse
+            this.nextStep(2)
+          }),
+        )
+        .subscribe()
+    }
+
     this._mappingService.mappingResults(this.orgId, this.fileId)
       .pipe(
-        tap((mappingResultsResponse) => { this.mappingResultsResponse = mappingResultsResponse }),
+        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
+          progressKey: progress_key,
+          successFn,
+          progressBarObj: this.progressBarObj,
+        })),
       )
       .subscribe()
   }
