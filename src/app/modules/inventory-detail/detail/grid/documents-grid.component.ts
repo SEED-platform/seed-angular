@@ -72,7 +72,7 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
     return `
       <div class="flex gap-2 mt-2 align-center">
         <span class="material-icons cursor-pointer text-secondary" title="Download" data-action="download">cloud_download</span>
-        <span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="delete">clear</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }

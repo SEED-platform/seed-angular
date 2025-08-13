@@ -258,6 +258,17 @@
   // }
 }
 
+.border-button-toggle-group-vertical {
+    @apply w-fit gap-0 !important;
+    
+      .mat-button-toggle {
+        border: 1px solid rgb(170 170 170) !important;
+      }
+    
+      .mat-button-toggle-checked {
+        @apply dark:bg-primary dark:bg-opacity-50 !important;
+      }
+}
 
 .compact-form {
   label, span {

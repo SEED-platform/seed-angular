@@ -18,6 +18,7 @@ import type {
   InventoryType,
   Pagination,
   Profile,
+  State,
 } from 'app/modules/inventory'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 
@@ -71,6 +72,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   refreshInventory$ = new Subject<void>()
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
+  selectedStateIds: number[] = []
   taxlotProfiles: Profile[]
   userSettings: OrganizationUserSettings = {}
 
@@ -120,6 +122,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
         filter(Boolean),
         takeUntil(this._unsubscribeAll$),
         switchMap(() => this.refreshInventory()),
+      )
+      .subscribe()
+
+    this._organizationService.orgUserSettings$
+      .pipe(
+        tap((settings) => this.userSettings = settings),
       )
       .subscribe()
 
@@ -207,6 +215,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    * returns a null observable to track completion
    */
   loadInventory(): Observable<null> {
+    this.validateCycleId()
     if (!this.cycleId) return of(null)
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
@@ -238,12 +247,20 @@ export class InventoryComponent implements OnDestroy, OnInit {
     ) as Observable<null>
   }
 
+  validateCycleId() {
+    if (!this.cycleId) this.cycleId = null
+    const settingsCycleId = this.userSettings?.cycleId
+    if (!settingsCycleId) return
+    if (settingsCycleId !== this.cycleId) this.cycleId = settingsCycleId
+  }
+
   /*
    * on initial page load, set any filters and sorts from the user settings
    */
   setFilterSorts() {
     this.setFilters()
     this.setSorts()
+    this.setPins()
   }
 
   onGridReady(gridApi: GridApi) {
@@ -251,13 +268,25 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    this.selectedViewIds = this.type === 'taxlots'
-      ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
-      : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+    // this.selectedViewIds = this.type === 'taxlots'
+    //   ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
+    //   : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+
+    const selectedRows = this.gridApi.getSelectedRows() as State[]
+    if (this.type === 'taxlots') {
+      this.selectedViewIds = selectedRows.map((state) => state.taxlot_view_id)
+      this.selectedStateIds = selectedRows.map((state) => state.taxlot_state_id)
+    } else {
+      this.selectedViewIds = selectedRows.map((state) => state.property_view_id)
+      this.selectedStateIds = selectedRows.map((state) => state.property_state_id)
+    }
   }
 
   onSelectAll(selectedViewIds: number[]) {
     this.selectedViewIds = selectedViewIds
+    this.selectedStateIds = this.type === 'taxlots'
+      ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
+      : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
   }
 
   onProfileChange(id: number) {
@@ -306,6 +335,26 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.gridApi.onSortChanged()
   }
 
+  setPins() {
+    if (!this.userSettings.pins) return
+
+    const { left, right } = this.userSettings.pins[this.type] || {}
+
+    for (const col of left) {
+      const colDef = this.columnDefs.find((c) => c.field === col)
+      if (colDef) {
+        colDef.pinned = 'left'
+      }
+    }
+
+    for (const col of right) {
+      const colDef = this.columnDefs.find((c) => c.field === col)
+      if (colDef) {
+        colDef.pinned = 'right'
+      }
+    }
+  }
+
   get sorts() {
     return this.userSettings.sorts?.[this.type] ?? []
   }
@@ -318,6 +367,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
+    console.log(this.userSettings.pins.properties)
     this.refreshInventory$.next()
   }
 

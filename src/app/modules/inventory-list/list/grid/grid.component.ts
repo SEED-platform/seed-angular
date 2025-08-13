@@ -120,7 +120,7 @@ export class InventoryGridComponent implements OnChanges {
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'share'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'merge'),
       this.buildShortcutColumn('meters_exist_indicator', 'Meters', 78, 'bolt', 'meters'),
       this.buildShortcutColumn('notes_count', 'Notes', 71, 'mode_comment', 'notes'),
       this.buildShortcutColumn('groups_indicator', 'Groups', 79, 'G'),

@@ -194,5 +194,9 @@ export class UserService {
     userSettings.sorts ??= {}
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
+
+    userSettings.pins ??= {}
+    userSettings.pins.properties ??= { left: [], right: [] }
+    userSettings.pins.taxlots ??= { left: [], right: [] }
   }
 }
