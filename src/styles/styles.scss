@@ -283,3 +283,7 @@
 .mat-mdc-text-field-wrapper .mdc-notched-outline__notch {
   border-left: none !important;
 }
+
+.cdk-overlay-pane:has(.wide-select) {
+  width: 700px !important;
+}

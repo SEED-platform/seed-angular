@@ -16,7 +16,7 @@ import { MatMenuModule } from '@angular/material/menu'
 import { MatPaginatorModule } from '@angular/material/paginator'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import { MatSelectModule } from '@angular/material/select'
+import { MatSelectModule, MatSelectTrigger } from '@angular/material/select'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatSortModule } from '@angular/material/sort'
@@ -47,6 +47,7 @@ export const MaterialImports = [
   MatOptionModule,
   MatSelectModule,
   MatStepperModule,
+  MatSelectTrigger,
   MatSidenavModule,
   MatSlideToggleModule,
   MatSortModule,
