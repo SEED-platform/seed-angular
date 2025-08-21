@@ -1,32 +1,68 @@
 <seed-page 
   [config]="{ 
     title: 'Program Overview',
-    titleIcon: 'fa-solid:chart-simple',
+    titleIcon: 'fa-solid:chart-column',
     action: openProgramConfig,
     actionIcon: 'fa-solid:gears',
     actionText: 'Program Configuration',
   }"
 >
-  <div class="content m-5">
+  <div class="content mx-5 my-2">
 
-    <div>
-      <mat-form-field class="w-1/3">
-        <mat-label class="text-lg text-secondary">Programs</mat-label>
-        <mat-select [(value)]="selectedProgram">
-          @for (program of programs; track $index) {
-            <mat-option [value]="program">
-              {{ program.name }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+    <div class="flex justify-between gap-8 items-center">
+      <!-- Program Select -->
+      <div class="compact-form flex-1">
+        <mat-form-field class="w-full">
+          <mat-label class="text-secondary">Select Program</mat-label>
+          <mat-select [value]="selectedProgram" (selectionChange)="programChange($event.value)">
+            @for (program of programs; track $index) {
+              <mat-option [value]="program" class="compact-form">
+                {{ program.name }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Legend -->
+       <div>
+         <div class="flex">
+           @for (entry of colors | keyvalue; track $index) {
+             <div class="flex items-center p-2">
+               <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
+               <span class="text-sm">{{ entry.key | titlecase }}</span>
+             </div>
+           }
+         </div>
+       </div>
     </div>
 
     <mat-divider></mat-divider>
 
-    <div>
-      {{ selectedProgram | json}}
+    <!-- Chart -->
+    <div class="m-2">
+      @if (selectedProgram) {
+        <div class="flex">
+          <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
+          <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
+          <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+        </div>
+      }
+      <div class="graph mx-[5vw] h-[calc(100vh-400px)]">
+        <canvas #chart></canvas>
+      </div>
     </div>
-
   </div>
+
+  @if (loading) {
+    <div class="absolute w-full top-20">
+      <seed-progress-bar title="Loading Program..." [outline]="true"></seed-progress-bar>
+    </div>
+  }
+
+  @if (!selectedProgram) {
+    <div class="absolute w-full top-20">
+      <seed-not-found icon="fa-solid:triangle-exclamation" message="No Programs Found"></seed-not-found>
+    </div>
+  }
 </seed-page>

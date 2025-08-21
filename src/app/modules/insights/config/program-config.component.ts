@@ -13,7 +13,7 @@ import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Organization } from 'app/modules/organizations/organizations.types'
 import type { Observable } from 'rxjs'
-import { finalize, Subject, take } from 'rxjs'
+import { finalize, Subject, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-program-config',
@@ -32,7 +32,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<ProgramConfigComponent>)
   private _programService = inject(ProgramService)
   private _snackBar = inject(SnackBarService)
-  private _unsubscribeAll = new Subject<void>()
+  private _unsubscribeAll$ = new Subject<void>()
 
   metricTypes = [
     { key: 'Target Greater Than Actual', value: 'Target > Actual for Compliance' },
@@ -46,7 +46,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   selectedProgram: Program | null = null
 
   data = inject(MAT_DIALOG_DATA) as {
-    program: Program[];
+    programs: Program[];
     cycles: Cycle[];
     filterGroups: unknown[];
     selectedProgram: Program;
@@ -130,7 +130,10 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
 
     request$.pipe(
       take(1),
-      finalize(() => { this.close(true) }),
+      tap(({ compliance_metric }) => {
+        const programId = compliance_metric.id
+        this.close(programId)
+      }),
     ).subscribe()
   }
 
@@ -139,7 +142,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._unsubscribeAll.next()
-    this._unsubscribeAll.complete()
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

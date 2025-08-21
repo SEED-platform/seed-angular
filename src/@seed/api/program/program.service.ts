@@ -6,7 +6,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject, tap } from 'rxjs'
 import { UserService } from '../user'
-import type { Program, ProgramResponse } from './program.types'
+import type { Program, ProgramData, ProgramResponse, ProgramsResponse } from './program.types'
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
@@ -28,7 +28,7 @@ export class ProgramService {
 
   list(orgId: number) {
     const url = `/api/v3/compliance_metrics/?organization_id=${orgId}`
-    this._httpClient.get<ProgramResponse>(url).pipe(
+    this._httpClient.get<ProgramsResponse>(url).pipe(
       map(({ compliance_metrics }) => {
         this.programs$.next(compliance_metrics)
         return compliance_metrics
@@ -74,6 +74,16 @@ export class ProgramService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting Program')
+      }),
+    )
+  }
+
+  evaluate(orgId: number, programId: number): Observable<ProgramData> {
+    const url = `/api/v3/compliance_metrics/${programId}/evaluate/?organization_id=${orgId}`
+    return this._httpClient.get<{ data: ProgramData }>(url).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error evaluating Program')
       }),
     )
   }

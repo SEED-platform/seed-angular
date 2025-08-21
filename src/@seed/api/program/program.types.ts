@@ -13,7 +13,28 @@ export type Program = {
   x_axis_columns: number[];
 }
 
-export type ProgramResponse = {
+export type ProgramsResponse = {
   status: string;
   compliance_metrics: Program[];
+}
+
+export type ProgramResponse = {
+  status: string;
+  compliance_metric: Program;
+}
+
+export type ProgramData = {
+  cycles: { id: number; name: string }[];
+  graph_data: GraphData;
+  meta: { organization: number; compliance_metric: number };
+  metric: Program;
+  name: string;
+  properties_by_cycles: Record<number, Record<string, unknown>[]>;
+  // compliant -> n: No, u: Unknown, y: Yes
+  results_by_cycle: { n: number[]; u: number[]; y: number[] };
+}
+
+type GraphData = {
+  datasets: { data: number[]; label: string; backgroundColor?: string }[];
+  labels: string[];
 }

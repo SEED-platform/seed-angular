@@ -1,15 +1,11 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
-import { MatDialog } from '@angular/material/dialog'
-import { combineLatest, filter, switchMap, tap } from 'rxjs'
-import type { Column, Cycle, Organization, Program } from '@seed/api'
-import { ColumnService, CycleService, OrganizationService } from '@seed/api'
-import { ProgramService } from '@seed/api/program'
-import { PageComponent } from '@seed/components'
+import type { ElementRef, OnInit } from '@angular/core'
+import { Component, ViewChild } from '@angular/core'
+import type { TooltipItem } from 'chart.js'
+import { Chart } from 'chart.js'
+import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
-import { naturalSort } from '@seed/utils'
-import { ProgramConfigComponent } from '../config'
+import { ProgramWrapperDirective } from '../program-wrapper'
 
 @Component({
   selector: 'seed-program-overview',
@@ -18,66 +14,59 @@ import { ProgramConfigComponent } from '../config'
     CommonModule,
     MaterialImports,
     PageComponent,
+    ProgressBarComponent,
+    NotFoundComponent,
   ],
 })
-export class ProgramOverviewComponent implements OnInit {
-  private _columnService = inject(ColumnService)
-  private _cycleService = inject(CycleService)
-  private _programService = inject(ProgramService)
-  private _dialog = inject(MatDialog)
-  private _organizationService = inject(OrganizationService)
-
-  programs: Program[]
-  cycles: Cycle[]
-  selectedProgram: Program
-  org: Organization
-  orgId: number
-  propertyColumns: Column[]
-  filterGroups: unknown[]
+export class ProgramOverviewComponent extends ProgramWrapperDirective implements OnInit {
+  @ViewChild('chart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  chart: Chart
 
   ngOnInit(): void {
-    this.getDependencies()
+    super.ngOnInit()
   }
 
-  getDependencies() {
-    this._organizationService.currentOrganization$
-      .pipe(
-        tap((org) => { this.org = org }),
-        switchMap(() => combineLatest({
-          cycles: this._cycleService.cycles$,
-          programs: this._programService.programs$,
-          propertyColumns: this._columnService.propertyColumns$,
-        })),
-        tap(({ cycles, programs, propertyColumns }) => {
-          this.orgId = this.org.id
-          this.programs = programs.sort((a, b) => naturalSort(a.name, b.name))
-          this.cycles = cycles
-          this.propertyColumns = propertyColumns
-          this.selectedProgram = programs?.[0]
-        }),
-      )
-      .subscribe()
-  }
-
-  openProgramConfig = () => {
-    const dialogRef = this._dialog.open(ProgramConfigComponent, {
-      width: '50rem',
+  initChart() {
+    this.chart?.destroy()
+    this.chart = new Chart(this.canvas.nativeElement, {
+      type: 'bar',
       data: {
-        cycles: this.cycles,
-        filterGroups: this.filterGroups,
-        programs: this.programs,
-        selectedProgram: this.selectedProgram,
-        org: this.org,
-        propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
+        labels: [],
+        datasets: [],
+      },
+      options: {
+        plugins: {
+          title: { display: true, align: 'start' },
+          legend: { display: false },
+          tooltip: {
+            callbacks: { footer: (ctx) => { this.tooltipFooter(ctx) } },
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            beginAtZero: true,
+            stacked: true,
+            position: 'left',
+            display: true,
+            title: { text: 'Number of Buildings', display: true },
+          },
+        },
+        responsive: true,
+        maintainAspectRatio: false,
       },
     })
+  }
 
-    dialogRef
-      .afterClosed()
-      .pipe(
-        filter(Boolean),
-        tap((program: Program) => { this.selectedProgram = program }),
-      )
-      .subscribe()
+  tooltipFooter(tooltipItems: TooltipItem<'bar'>[]) {
+    const tooltipItem = tooltipItems[0]
+    if (!tooltipItem) return ''
+
+    const { dataIndex } = tooltipItem
+    const barValues = this.chart.data.datasets.map((ds) => ds.data[dataIndex]) as number[]
+    const barTotal = barValues.reduce((acc, cur) => acc + cur, 0)
+    return `${((tooltipItem.raw as number / barTotal) * 100).toPrecision(4)}%`
   }
 }
