@@ -1,7 +1,110 @@
-<seed-page 
-  [config]="{ 
+<seed-page [config]="{ 
     title: 'Property Insights',
-    titleIcon: 'fa-solid:chart-line'
+    titleIcon: 'fa-solid:chart-line',
+    action: openProgramConfig,
+    actionIcon: 'fa-solid:gears',
+    actionText: 'Program Configuration',
   }">
-  <div>Property Insights Content</div>
+    <div class="content mx-5 my-2">
+
+      <div class="flex justify-between gap-8 items-center">
+        <!-- Program Select -->
+        <div class="compact-form flex-1">
+          <mat-form-field class="w-full">
+            <mat-label class="text-secondary">Select Program</mat-label>
+            <mat-select [value]="selectedProgram" (selectionChange)="programChange($event.value)">
+              @for (program of programs; track $index) {
+              <mat-option class="compact-form" [value]="program" class="compact-form">
+                {{ program.name }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Legend -->
+        <div>
+          <div class="flex">
+            @for (entry of colors | keyvalue; track $index) {
+            <div class="flex items-center p-2">
+              <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
+              <span class="text-sm">{{ entry.key | titlecase }}</span>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+      
+      <div class="m-2 flex">
+        <!-- Config -->
+         <div class="flex flex-col">
+
+           <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
+             <mat-form-field>
+               <mat-label class="text-secondary">Cycle</mat-label>
+               <mat-select formControlName="cycleId"  panelClass="wide-select-sm">
+                 @for (cycle of programCycles; track $index) {
+                   <mat-option class="compact-form" [value]="cycle.id">{{ cycle.name }}</mat-option>
+                 }
+               </mat-select>
+             </mat-form-field>
+   
+             <mat-form-field>
+               <mat-label class="text-secondary">Metric Type</mat-label>
+               <mat-select formControlName="metricType" panelClass="wide-select-sm">
+                 @for (metricType of metricTypes; track $index) {
+                   <mat-option class="compact-form" [value]="metricType.key">{{ metricType.value }}</mat-option>
+                 }
+               </mat-select>
+             </mat-form-field>
+   
+             <mat-form-field>
+               <mat-label class="text-secondary">X-Axis</mat-label>
+               <mat-select formControlName="xAxisColumnId" panelClass="wide-select-sm">
+                 @for (column of programXAxisColumns; track $index) {
+                   <mat-option class="compact-form" [value]="column.id">{{ column.display_name }}</mat-option>
+                 }
+               </mat-select>
+             </mat-form-field>
+   
+             <mat-form-field>
+               <mat-label class="text-secondary">Access Level</mat-label>
+               <mat-select formControlName="accessLevel" panelClass="wide-select-sm">
+                 @for (level of accessLevels; track $index) {
+                   <mat-option class="compact-form" [value]="level">{{ level }}</mat-option>
+                 }
+               </mat-select>
+             </mat-form-field>
+   
+             <mat-form-field>
+               <mat-label class="text-secondary">Access Level Instance</mat-label>
+               <mat-select formControlName="accessLevelInstance" panelClass="wide-select-sm">
+                 @for (instance of accessLevelInstances; track $index) {
+                   <mat-option class="compact-form" [value]="instance">{{ instance }}</mat-option>
+                 }
+               </mat-select>
+             </mat-form-field>
+   
+           </form>
+
+           <div>
+            <div class="flex justify-between border p-1"><span class="text-secondary">Compliant:</span><span>{{ results.y }}</span></div>
+            <div class="flex justify-between border p-1"><span class="text-secondary">Non-Compliant:</span><span>{{ results.n }}</span></div>
+            <div class="flex justify-between border p-1"><span class="text-secondary">Unknown:</span><span>{{ results.u }}</span></div>
+           </div>
+
+
+         </div>
+        <!-- Chart -->
+         <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-350px)]">
+           <div class="graph">
+             <canvas #propertyInsightsChart></canvas>
+           </div>
+
+
+         </div>
+      </div>
+  </div>
 </seed-page>

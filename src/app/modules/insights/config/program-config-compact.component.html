@@ -45,7 +45,7 @@
         <mat-form-field class="flex-1">
           <mat-label>Cycles</mat-label>
           <mat-hint>Select cycles to be included in the compliance period</mat-hint>
-          <mat-select formControlName="cycles" multiple panelClass="wide-select">
+          <mat-select formControlName="cycles" multiple panelClass="wide-select-lg">
             @for (cycle of data.cycles; track $index) {
               <mat-option [value]="cycle.id">{{ cycle.name }}</mat-option>
             }
@@ -73,7 +73,7 @@
         <div class="text-lg text-secondary w-18">Energy</div>
         <mat-form-field class="flex-1">
           <mat-label>Actual Field</mat-label>
-          <mat-select formControlName="actual_energy_column" panelClass="wide-select">
+          <mat-select formControlName="actual_energy_column" panelClass="wide-select-lg">
             @for (column of metricColumns; track $index) {
               <mat-option class="compact-form" [value]="column.id">{{ column.display_name }}</mat-option>
             }

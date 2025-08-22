@@ -19,10 +19,11 @@ import { ProgramWrapperDirective } from '../program-wrapper'
   ],
 })
 export class ProgramOverviewComponent extends ProgramWrapperDirective implements OnInit {
-  @ViewChild('chart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  @ViewChild('programOverviewChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
   chart: Chart
 
   ngOnInit(): void {
+    // ProgramWrapperDirective init
     super.ngOnInit()
   }
 

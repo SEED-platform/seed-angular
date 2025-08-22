@@ -31,7 +31,7 @@ export type ProgramData = {
   name: string;
   properties_by_cycles: Record<number, Record<string, unknown>[]>;
   // compliant -> n: No, u: Unknown, y: Yes
-  results_by_cycle: { n: number[]; u: number[]; y: number[] };
+  results_by_cycles: { n: number[]; u: number[]; y: number[] };
 }
 
 type GraphData = {

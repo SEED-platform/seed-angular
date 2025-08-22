@@ -94,7 +94,7 @@
          
           <mat-form-field class="flex-1">
             <mat-label>Actual Field</mat-label>
-            <mat-select formControlName="actual_energy_column" panelClass="wide-select">
+            <mat-select formControlName="actual_energy_column" panelClass="wide-select-lg">
               <mat-option [value]="null"></mat-option>
               @for (column of metricColumns; track $index) {
               <mat-option class="compact-form" [value]="column.id">{{ column.display_name }}</mat-option>
@@ -176,9 +176,9 @@
         <div class="w-1/4">
           <mat-form-field class="w-full">
             <mat-label>X-Axis Field Options</mat-label>
-            <mat-select formControlName="x_axis_columns" multiple panelClass="wide-select">
+            <mat-select formControlName="x_axis_columns" multiple panelClass="wide-select-lg">
               <mat-select-trigger class="text-secondary">Columns</mat-select-trigger>
-              @for (column of xAxisColumns; track $index) {
+              @for (column of data.xAxisColumns; track $index) {
                 <mat-option class="compact-form" [value]="column.id">{{ column.display_name }}</mat-option>
               }
             </mat-select>

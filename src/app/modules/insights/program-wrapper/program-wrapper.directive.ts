@@ -19,9 +19,10 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   private _programService = inject(ProgramService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
-  private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
 
+  accessLevelInstances = ['temp instance1', 'temp instance2']
+  accessLevels = ['temp level1', 'temp level2']
   chart: Chart
   chartName: string
   colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
@@ -32,11 +33,15 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   org: Organization
   orgId: number
   programs: Program[]
+  programChange$ = new Subject<void>()
+  programCycles: Cycle[] = []
+  programXAxisColumns: Column[] = []
   propertyColumns: Column[]
   selectedProgram: Program
+  xAxisColumns: Column[]
+  xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
 
   ngOnInit(): void {
-    console.log('init')
     this.initChart()
     this.getDependencies()
     this.setScheme()
@@ -53,6 +58,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
         this.org = org
         this.cycles = cycles
         this.propertyColumns = propertyColumns
+        this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
 
         this.setProgram(programs, org)
       }),
@@ -82,9 +88,11 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
 
   programChange(program: Program) {
     this.selectedProgram = program
+    this.setProgramModels()
     if (!program) {
       this.initChart()
       this.loading = false
+      this.programChange$.next()
       return
     }
 
@@ -95,9 +103,16 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
           this.loading = false
           this.setChartName(program)
           this.loadDatasets()
+          this.programChange$.next()
         }),
         take(1),
       ).subscribe()
+  }
+
+  setProgramModels() {
+    const { cycles, x_axis_columns } = this.selectedProgram
+    this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
+    this.programXAxisColumns = this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id))
   }
 
   setChartName(program: Program) {
@@ -134,6 +149,13 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
     a.click()
   }
 
+  validColumn(column: Column, validTypes: string[]) {
+    const isAllowedType = validTypes.includes(column.data_type)
+    const notRelated = !column.related
+    const notDerived = !column.derived_column
+    return isAllowedType && notRelated && notDerived
+  }
+
   openProgramConfig = () => {
     const dialogRef = this._dialog.open(ProgramConfigComponent, {
       width: '50rem',
@@ -144,6 +166,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
         selectedProgram: this.selectedProgram,
         org: this.org,
         propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
+        xAxisColumns: this.xAxisColumns,
       },
     })
 

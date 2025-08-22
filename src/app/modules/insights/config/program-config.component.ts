@@ -40,8 +40,6 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   ]
   metricColumns: Column[]
   metricDataTypes = ['number', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
-  xAxisColumns: Column[]
-  xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
   maxHeight = window.innerHeight - 200
   selectedProgram: Program | null = null
 
@@ -52,6 +50,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
     selectedProgram: Program;
     org: Organization;
     propertyColumns: Column[];
+    xAxisColumns: Column[];
   }
 
   form = new FormGroup({
@@ -70,7 +69,6 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.metricColumns = this.data.propertyColumns.filter((c) => this.validColumn(c, this.metricDataTypes))
-    this.xAxisColumns = this.data.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
   }
 
   validColumn(column: Column, validTypes: string[]) {
@@ -108,7 +106,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   }
 
   getColumn(id: number) {
-    return this.xAxisColumns.find((column) => column.id === id).display_name
+    return this.data.xAxisColumns.find((column) => column.id === id).display_name
   }
 
   hasMetric() {

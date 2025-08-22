@@ -284,6 +284,12 @@
   border-left: none !important;
 }
 
-.cdk-overlay-pane:has(.wide-select) {
+.cdk-overlay-pane:has(.wide-select-lg) {
   width: 700px !important;
+}
+.cdk-overlay-pane:has(.wide-select-md) {
+  width: 500px !important;
+}
+.cdk-overlay-pane:has(.wide-select-sm) {
+  width: 400px !important;
 }
