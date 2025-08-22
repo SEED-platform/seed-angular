@@ -3,11 +3,12 @@ import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
-import { Subject, take, tap } from 'rxjs'
+import { finalize, Subject, take, tap } from 'rxjs'
 import type { EmailTemplate } from '@seed/api'
 import { PostOfficeService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
@@ -23,6 +24,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 export class EmailModalComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<EmailModalComponent>)
   private _postOfficeService = inject(PostOfficeService)
+  private _snackBar = inject(SnackBarService)
   private _unsubscribeAll$ = new Subject<void>()
 
   emailTemplates: EmailTemplate[] = []
@@ -37,7 +39,10 @@ export class EmailModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._postOfficeService.getEmailTemplates(this.data.orgId)
       .pipe(
-        tap((emailTemplates) => { this.emailTemplates = emailTemplates }),
+        tap((emailTemplates) => {
+          this.emailTemplates = emailTemplates
+          this.selectedTemplateId = emailTemplates[0]?.id
+        }),
         take(1),
       )
       .subscribe()
@@ -47,8 +52,10 @@ export class EmailModalComponent implements OnInit, OnDestroy {
   onSubmit() {
     this._postOfficeService.sendEmail(this.data.orgId, this.data.stateIds, this.selectedTemplateId, this.data.type)
       .pipe(
-        tap((response) => { console.log(response) }),
         take(1),
+        finalize(() => {
+          this.close()
+        }),
       )
       .subscribe()
   }
