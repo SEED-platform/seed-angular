@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable } from 'rxjs'
 import { ErrorService } from '@seed/services'
-import type { MappedData, MappingResultsResponse } from '../dataset'
+import type { MappedData } from '../dataset'
 import type { ProgressResponse, SubProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type { FirstFiveRowsResponse, MappingSuggestionsResponse, MatchingResultsResponse, RawColumnNamesResponse } from './mapping.types'
@@ -66,9 +66,9 @@ export class MappingService {
       )
   }
 
-  mappingResults(orgId: number, importFileId: number): Observable<MappingResultsResponse> {
+  mappingResults(orgId: number, importFileId: number): Observable<ProgressResponse> {
     const url = `/api/v3/import_files/${importFileId}/mapping_results/?organization_id=${orgId}`
-    return this._httpClient.post<MappingResultsResponse>(url, {})
+    return this._httpClient.post<ProgressResponse>(url, {})
       .pipe(
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching mapping results')

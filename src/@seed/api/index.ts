@@ -1,5 +1,6 @@
 export * from './analysis'
 export * from './audit-template'
+export * from './cache'
 export * from './column'
 export * from './column-mapping-profile'
 export * from './config'
