@@ -3,7 +3,8 @@ import { inject, Injectable } from '@angular/core'
 import { catchError, map, type Observable, ReplaySubject, Subject, takeUntil, tap } from 'rxjs'
 import { UserService } from '@seed/api'
 import { ErrorService } from '@seed/services'
-import type { CreateEmailTemplateResponse, EmailTemplate, ListEmailTemplatesResponse } from './postoffice.types'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { CreateEmailTemplateResponse, EmailTemplate, ListEmailTemplatesResponse, SendEmailResponse } from './postoffice.types'
 
 @Injectable({ providedIn: 'root' })
 export class PostOfficeService {
@@ -11,6 +12,7 @@ export class PostOfficeService {
   private _userService = inject(UserService)
   private _errorService = inject(ErrorService)
   private _emailTemplates = new ReplaySubject<EmailTemplate[]>()
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
   emailTemplates$ = this._emailTemplates.asObservable()
@@ -65,5 +67,28 @@ export class PostOfficeService {
         return this._errorService.handleError(error, 'could not delete template')
       }),
     )
+  }
+
+  sendEmail(orgId: number, stateIds: number[], template_id: number, inventory_type: string): Observable<SendEmailResponse> {
+    const url = `/api/v3/postoffice_email/?organization_id=${orgId}`
+    const data = {
+      from_email: 'blankl@example.com', // Dummy email. The backend will assign the appropriate email.
+      template_id,
+      inventory_id: stateIds,
+      inventory_type,
+    }
+    return this._httpClient.post<SendEmailResponse>(url, data)
+      .pipe(
+        tap(({ status }) => {
+          if (status === 'success') {
+            this._snackBar.success('Successfully sent email')
+          } else {
+            this._snackBar.alert('Error sending email')
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error sending email')
+        }),
+      )
   }
 }

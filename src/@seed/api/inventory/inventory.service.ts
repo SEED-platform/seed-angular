@@ -387,4 +387,33 @@ export class InventoryService {
       }),
     )
   }
+
+  propertiesMetersExist(orgId: number, propertyViewIds: number[]): Observable<boolean> {
+    const url = `/api/v3/properties/meters_exist/?organization_id=${orgId}`
+    return this._httpClient.post<boolean>(url, { property_view_ids: propertyViewIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error checking if meters exist for properties')
+      }),
+    )
+  }
+
+  evaluationExportToCts(orgId: number, viewIds: number[], filename: string): Observable<Blob> {
+    const url = `/api/v3/properties/evaluation_export_to_cts/?organization_id=${orgId}`
+    return this._httpClient.post(url, { filename, property_view_ids: viewIds }, { responseType: 'arraybuffer' }).pipe(
+      map((response) => new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting to CTS')
+      }),
+    )
+  }
+
+  facilityBpsExportToCts(orgId: number, viewIds: number[], filename: string): Observable<Blob> {
+    const url = `/api/v3/properties/facility_bps_export_to_cts/?organization_id=${orgId}`
+    return this._httpClient.post(url, { filename, property_view_ids: viewIds }, { responseType: 'arraybuffer' }).pipe(
+      map((response) => new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting to CTS')
+      }),
+    )
+  }
 }

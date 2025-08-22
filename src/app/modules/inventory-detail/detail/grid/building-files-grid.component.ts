@@ -39,10 +39,7 @@ export class BuildingFilesGridComponent implements OnInit {
   setColumnDefs() {
     this.columnDefs = [
       { field: 'file_type', headerName: 'File Type' },
-      {
-        field: 'filename',
-        headerName: 'File Name',
-      },
+      { field: 'filename', headerName: 'File Name' },
       { field: 'created', headerName: 'Created' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
@@ -71,7 +68,6 @@ export class BuildingFilesGridComponent implements OnInit {
   downloadDocument(data: unknown) {
     const { file, filename } = data as { file: string; filename: string }
 
-    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
     const a = document.createElement('a')
     const url = file
     a.href = url

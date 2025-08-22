@@ -15,15 +15,14 @@
   <seed-menu-item (action)="deselectAll()" label="Select None"></seed-menu-item>
   <mat-divider></mat-divider>
   <seed-menu-item [disabled]="!hasSelection" (action)="deleteStates()" label="Delete" icon="fa-solid:trash-can"></seed-menu-item>
+  <seed-menu-item [disabled]="!hasSelection" (action)="openExportModal()" label="Export" icon="fa-solid:download"></seed-menu-item>
   <seed-menu-item
-    class="text-secondary line-through"
-    [disabled]="!hasSelection"
-    (action)="tempAction()"
+    [disabled]="selectedViewIds.length < 2"
+    (action)="openMergeModal()"
     label="Merge"
-    icon="fa-solid:share-nodes"
+    icon="fa-solid:code-merge"
   ></seed-menu-item>
   <seed-menu-item (action)="openShowPopulatedColumnsModal()" label="Only Show Populated Columns" icon="fa-solid:filter"></seed-menu-item>
-  <seed-menu-item [disabled]="!hasSelection" (action)="openExportModal()" label="Export" icon="fa-solid:download"></seed-menu-item>
   <!-- Access Levels -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Access Levels</span>
@@ -42,12 +41,16 @@
     </div>
   }
   <!-- Audit Template -->
-  <mat-divider class="my-0"></mat-divider>
-  <span class="text-secondary text-sm">Audit Template</span>
-  <div>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Export"> </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Update"> </seed-menu-item>
-  </div>
+  @if (type === 'properties') {
+    <mat-divider class="my-0"></mat-divider>
+    <span class="text-secondary text-sm">Audit Template</span>
+    <div>
+      <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Export">
+      </seed-menu-item>
+      <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Update">
+      </seed-menu-item>
+    </div>
+  }
   <mat-divider class="my-0"></mat-divider>
 
   <!-- DATA QUALITY DATA -->
@@ -79,13 +82,10 @@
   <!-- MISC / OTHER -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Other</span>
-  <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Email"></seed-menu-item>
-  <seed-menu-item
-    class="text-secondary line-through"
-    [disabled]="!hasSelection"
-    (action)="tempAction()"
-    label="FEMP CTS Export"
-  ></seed-menu-item>
+  <seed-menu-item [disabled]="!hasSelection" (action)="openEmailModal()" label="Email"></seed-menu-item>
+  @if (type === 'properties') {
+    <seed-menu-item [disabled]="!hasSelection" (action)="openFempExportModal()" label="FEMP CTS Export"></seed-menu-item>
+  }
   <seed-menu-item [disabled]="!hasSelection" (action)="openGeocodeModal()" label="Geocode"></seed-menu-item>
   <seed-menu-item [disabled]="!hasSelection" (action)="openRefreshMetadataModal()" label="Refresh Updated Timestamp"></seed-menu-item>
   <!-- SalesForce -->
@@ -98,10 +98,8 @@
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">UBID</span>
   <div>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Add / Update">
-    </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Compare">
-    </seed-menu-item>
-    <seed-menu-item class="text-secondary line-through" [disabled]="!hasSelection" (action)="tempAction()" label="Decode"> </seed-menu-item>
+    <seed-menu-item [disabled]="selectedViewIds.length !== 1" (action)="openUbidModal()" label="Add / Update"> </seed-menu-item>
+    <seed-menu-item [disabled]="selectedViewIds.length !== 2" (action)="openUbidCompareModal()" label="Compare"> </seed-menu-item>
+    <seed-menu-item [disabled]="!hasSelection" (action)="openUbidDecodeModal()" label="Decode"></seed-menu-item>
   </div>
 </mat-menu>

@@ -13,7 +13,7 @@ export class GeocodeService {
   private _errorService = inject(ErrorService)
 
   geocode(orgId: number, viewIds: number[], type: InventoryType): Observable<unknown> {
-    const url = `/api/v3/geocode/geocode_by_ids/&organization_id=${orgId}`
+    const url = `/api/v3/geocode/geocode_by_ids/?organization_id=${orgId}`
     const data = {
       property_view_ids: type === 'taxlots' ? [] : viewIds,
       taxlot_view_ids: type === 'taxlots' ? viewIds : [],

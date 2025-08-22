@@ -9,9 +9,9 @@ import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import { DQCStartModalComponent } from 'app/modules/data-quality'
-import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent } from 'app/modules/inventory/actions'
+import { AliChangeModalComponent, AnalysisRunModalComponent, ExportModalComponent, GroupsModalComponent, LabelsModalComponent, UbidModalComponent } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { GeocodeModalComponent, RefreshMetadataModalComponent, UpdateDerivedDataComponent } from '../actions'
+import { EmailModalComponent, FempExportModalComponent, GeocodeModalComponent, MergeModalComponent, RefreshMetadataModalComponent, UbidCompareComponent, UbidDecodeComponent, UpdateDerivedDataComponent } from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
@@ -25,6 +25,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() orgId: number
   @Input() profile: Profile
   @Input() profiles: Profile[]
+  @Input() selectedStateIds: number[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<null>()
@@ -102,6 +103,22 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       .subscribe()
   }
 
+  openExportModal() {
+    const dialogRef = this._dialog.open(ExportModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openMergeModal() {
+    const dialogRef = this._dialog.open(MergeModalComponent, {
+      width: '50rem',
+      data: { ...this.baseData(), cycleId: this.cycleId, profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
   openShowPopulatedColumnsModal() {
     const dialogRef = this._dialog.open(ModalComponent, {
       width: '40rem',
@@ -118,14 +135,6 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       },
     })
 
-    this.afterClosed(dialogRef)
-  }
-
-  openExportModal() {
-    const dialogRef = this._dialog.open(ExportModalComponent, {
-      width: '40rem',
-      data: { ...this.baseData(), profileId: this.profile?.id || null },
-    })
     this.afterClosed(dialogRef)
   }
 
@@ -186,8 +195,52 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     this.afterClosed(dialogRef)
   }
 
+  openEmailModal() {
+    const dialogRef = this._dialog.open(EmailModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        stateIds: this.selectedStateIds,
+        type: this.type,
+      },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openFempExportModal() {
+    const dialogRef = this._dialog.open(FempExportModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
   openGeocodeModal() {
     const dialogRef = this._dialog.open(GeocodeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidModal() {
+    const dialogRef = this._dialog.open(UbidModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidCompareModal() {
+    const dialogRef = this._dialog.open(UbidCompareComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidDecodeModal() {
+    const dialogRef = this._dialog.open(UbidDecodeComponent, {
       width: '40rem',
       data: this.baseData(),
     })

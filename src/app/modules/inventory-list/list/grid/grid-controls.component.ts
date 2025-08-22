@@ -48,13 +48,10 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
   }
 
   resetGrid() {
-    this.resetColumns()
+    this.resetPins()
     this.resetFilters()
     this.resetSorts()
-  }
-
-  resetColumns() {
-    this.gridApi.autoSizeAllColumns()
+    this.updateOrgUser()
   }
 
   resetFilters() {
@@ -62,16 +59,18 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
     this.userSettings.filters = this.currentUser.settings.filters ?? {}
     this.userSettings.filters.properties = {}
     this.userSettings.filters.taxlots = {}
-    this.updateOrgUser()
   }
 
   resetSorts() {
-    this.gridApi.applyColumnState({ state: [], applyOrder: true })
-    this.gridApi.resetColumnState()
     this.userSettings.sorts = this.currentUser.settings?.sorts ?? {}
     this.userSettings.sorts.properties = []
     this.userSettings.sorts.taxlots = []
-    this.updateOrgUser()
+  }
+
+  resetPins() {
+    this.userSettings.pins = this.currentUser.settings?.pins ?? {}
+    this.userSettings.pins.properties = { left: [], right: [] }
+    this.userSettings.pins.taxlots = { left: [], right: [] }
   }
 
   updateOrgUser() {
@@ -80,9 +79,12 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
       .pipe(
         take(1),
         tap(() => {
+          this.gridApi.resetColumnState()
+          this.gridApi.applyColumnState({ defaultState: { pinned: null } })
           this.gridApi.refreshClientSideRowModel()
           this.gridApi.refreshCells({ force: true })
           this.gridApi.onSortChanged()
+          this.gridApi.autoSizeAllColumns()
         }),
       )
       .subscribe()

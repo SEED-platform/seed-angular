@@ -107,6 +107,7 @@ export type OrganizationUserSettings = {
   profile?: UserSettingsProfiles;
   crossCycles?: UserSettingsCrossCycles;
   labels?: UserLabelSettings;
+  pins?: UserPinSettings;
 }
 
 type UserSettingsFilters = {
@@ -127,6 +128,17 @@ type UserSettingsProfiles = {
 type UserSettingsCrossCycles = {
   properties?: number[];
   taxlots?: number[];
+}
+
+type UserPinSettings = {
+  properties?: {
+    left: string[];
+    right: string[];
+  };
+  taxlots?: {
+    left: string[];
+    right: string[];
+  };
 }
 
 type UserLabelSettings = { ids: number[]; operator: LabelOperator }

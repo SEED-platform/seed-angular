@@ -54,6 +54,7 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
     this.getScheme()
     this.setOverlay()
     this.updateSortState()
+    this.pinState = this.column.isPinned()
     this.column.addEventListener('sortChanged', () => {
       this.updateSortState()
     })
@@ -129,6 +130,27 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
   pinCol(direction: 'left' | 'right' | null): void {
     this.gridApi.setColumnsPinned([this.column], direction)
     this.detach()
+    this.updatePins(direction)
+  }
+
+  updatePins(direction: 'left' | 'right'): void {
+    const field = this.column.getColDef().field
+    const pins = this.userSettings.pins[this.type]
+    const left = new Set(pins.left)
+    const right = new Set(pins.right)
+
+    // Clear from both sides
+    left.delete(field)
+    right.delete(field)
+
+    if (direction === 'left') left.add(field)
+    if (direction === 'right') right.add(field)
+
+    // Assign back as arrays
+    pins.left = Array.from(left)
+    pins.right = Array.from(right)
+
+    this.updateOrgUserSettings()
   }
 
   hideCol() {

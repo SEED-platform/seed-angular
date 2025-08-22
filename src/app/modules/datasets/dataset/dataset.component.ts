@@ -156,6 +156,8 @@ export class DatasetComponent implements OnDestroy, OnInit {
 
   downloadDocument(file: string, filename: string) {
     const a = document.createElement('a')
+    // NOTE: downloads failing after a recent change. Requires further investigation
+    // const url = file.replace('/seed/', '/')
     const url = file
     a.href = url
     a.download = filename

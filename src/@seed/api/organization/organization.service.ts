@@ -28,6 +28,7 @@ import type {
   OrganizationsResponse,
   OrganizationUser,
   OrganizationUserResponse,
+  OrganizationUserSettings,
   OrganizationUsersResponse,
   StartSavingAccessLevelInstancesRequest,
   UpdateAccessLevelsRequest,
@@ -44,6 +45,7 @@ export class OrganizationService {
 
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
+  private _orgUserSettings = new ReplaySubject<OrganizationUserSettings>(1)
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
@@ -51,6 +53,7 @@ export class OrganizationService {
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
+  orgUserSettings$ = this._orgUserSettings.asObservable()
   organizationUsers$ = this._organizationUsers.asObservable()
   accessLevelTree$ = this._accessLevelTree.asObservable()
   accessLevelInstancesByDepth$ = this._accessLevelInstancesByDepth.asObservable()
@@ -113,6 +116,7 @@ export class OrganizationService {
     const data = { settings }
     const url = `/api/v4/organization_users/${orgUserId}/?organization_id=${orgId}`
     return this._httpClient.put<OrganizationUserResponse>(url, data).pipe(
+      tap(({ data }) => { this._orgUserSettings.next(data.settings) }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating organization user')
       }),

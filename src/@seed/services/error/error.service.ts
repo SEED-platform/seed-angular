@@ -25,11 +25,14 @@ export class ErrorService {
   getErrorData(error: HttpErrorResponse, defaultMessage: string) {
     // Handle different error response structures
     const err: unknown = error.error
+    const status = error.status ? `${error.status}: ` : ''
 
     const isStr = typeof err === 'string'
 
     // If the string is too long (likely html '<!DOCTYPE html>...'), return the default message
-    if (isStr && (err.length > 1000 || err.startsWith('<!DOCTYPE html>'))) return defaultMessage
+    if (isStr && (err.length > 1000 || err.startsWith('<!DOCTYPE html>'))) {
+      return `${status}${defaultMessage}`
+    }
     if (isStr) return err
 
     const isObj = typeof err === 'object' && err !== null
@@ -38,7 +41,7 @@ export class ErrorService {
       return e.message ?? e.error ?? e.errors ?? null
     }
 
-    return defaultMessage
+    return `${status}${defaultMessage}`
   }
 
   isObjOfArrayStrings(obj: unknown): obj is Record<string, string[]> {
