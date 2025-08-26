@@ -1,7 +1,7 @@
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Directive, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { Chart } from 'chart.js'
+import type { Chart } from 'chart.js'
 import { combineLatest, filter, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, Cycle, Organization, Program, ProgramData } from '@seed/api'
 import { ColumnService, CycleService, OrganizationService, UserService } from '@seed/api'
@@ -19,7 +19,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   private _programService = inject(ProgramService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
-  private _unsubscribeAll$ = new Subject<void>()
+  protected _unsubscribeAll$ = new Subject<void>()
 
   accessLevelInstances = ['temp instance1', 'temp instance2']
   accessLevels = ['temp level1', 'temp level2']
@@ -42,9 +42,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
 
   ngOnInit(): void {
-    this.initChart()
     this.getDependencies()
-    this.setScheme()
   }
 
   getDependencies() {
@@ -88,25 +86,30 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
 
   programChange(program: Program) {
     this.selectedProgram = program
-    this.setProgramModels()
     if (!program) {
-      this.initChart()
-      this.loading = false
-      this.programChange$.next()
+      this.clearChart()
       return
     }
+    this.setProgramModels()
 
     this._programService.evaluate(this.org.id, program.id)
       .pipe(
         tap((data) => {
           this.data = data
+          this.programChange$.next()
           this.loading = false
           this.setChartName(program)
-          this.loadDatasets()
-          this.programChange$.next()
         }),
         take(1),
       ).subscribe()
+  }
+
+  clearChart() {
+    this.programCycles = []
+    this.programXAxisColumns = []
+    this.loading = false
+    // this.programChange$.next() // necessary?
+    this.initChart()
   }
 
   setProgramModels() {
@@ -122,18 +125,6 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
     const cycleLast = cycles.reduce((prev, curr) => (prev.end > curr.end ? prev : curr))
     const cycleRange = cycleFirst === cycleLast ? cycleFirst.name : `${cycleFirst.name} - ${cycleLast.name}`
     this.chartName = `${program.name}: ${cycleRange}`
-  }
-
-  loadDatasets() {
-    if (!this.data.graph_data) return
-    const { labels, datasets } = this.data.graph_data
-    for (const ds of datasets) {
-      ds.backgroundColor = this.colors[ds.label]
-    }
-
-    this.chart.data.labels = labels
-    this.chart.data.datasets = datasets
-    this.chart.update()
   }
 
   refreshChart() {

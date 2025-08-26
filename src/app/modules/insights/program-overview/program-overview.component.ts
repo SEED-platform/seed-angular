@@ -24,7 +24,26 @@ export class ProgramOverviewComponent extends ProgramWrapperDirective implements
 
   ngOnInit(): void {
     // ProgramWrapperDirective init
+    this.initChart()
     super.ngOnInit()
+    this.setScheme()
+
+    this.programChange$.subscribe(() => {
+      this.loadDatasets()
+    })
+  }
+
+  loadDatasets() {
+    if (!this.data.graph_data) return
+    const { labels, datasets } = this.data.graph_data
+    for (const ds of datasets) {
+      ds.backgroundColor = this.colors[ds.label]
+    }
+
+    this.chart.data.labels = labels
+    this.chart.data.datasets = datasets
+    this.chart.update()
+    console.log(this.chart)
   }
 
   initChart() {
