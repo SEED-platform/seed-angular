@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnInit } from '@angular/core'
-import { Component, ViewChild } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import type { TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
@@ -9,6 +9,7 @@ import { takeUntil, tap } from 'rxjs'
 import type { Program, PropertyInsightDataset, PropertyInsightPoint, ResultsByCycles } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { ProgramWrapperDirective } from '../program-wrapper'
 
 @Component({
@@ -24,20 +25,21 @@ import { ProgramWrapperDirective } from '../program-wrapper'
 })
 export class PropertyInsightsComponent extends ProgramWrapperDirective implements OnInit {
   @ViewChild('propertyInsightsChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  private _snackBar = inject(SnackBarService)
 
   annotations: Record<string, AnnotationOptions>
   datasets: PropertyInsightDataset[] = []
   displayAnnotation = true
   metricTypes = [
-    { key: 'energy', value: 'Energy Metric' },
-    { key: 'emission', value: 'Emission Metric' },
+    { key: 0, value: 'Energy Metric' },
+    { key: 1, value: 'Emission Metric' },
   ]
   results = { y: 0, n: 0, u: 0 }
   xCategorical = false
 
   form = new FormGroup({
     cycleId: new FormControl<number>(null),
-    metricType: new FormControl<'energy' | 'emission'>('energy'),
+    metricType: new FormControl<0 | 1>(0),
     xAxisColumnId: new FormControl<number>(null),
     accessLevel: new FormControl<string>(null),
     accessLevelInstance: new FormControl<string>(null),
@@ -64,7 +66,7 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     const data: Record<string, unknown> = {
       cycleId: cycles[0],
       xAxisColumnId: x_axis_columns[0],
-      metricType: 'energy',
+      metricType: 0,
       accessLevel: this.accessLevels[0],
       accessLevelInstance: this.accessLevelInstances[0],
     }
@@ -90,14 +92,13 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
   validateProgram() {
     const { actual_emission_column, actual_energy_column } = this.selectedProgram
     const { metricType } = this.form.value
-    if (metricType === 'energy') {
+    if (metricType === 0) {
       return !!actual_energy_column
     }
     return !!actual_emission_column
   }
 
   setResults() {
-    console.log('data', !!this.data)
     const cycleId = this.form.value.cycleId
     const { y, n, u } = this.data.results_by_cycles[cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
@@ -212,10 +213,6 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     }
     this.chart.options.scales.x.type = this.xCategorical ? 'category' : 'linear'
     this.chart.options.plugins.annotation.annotations = this.annotations
-    this.chart.data.datasets = this.datasets
-    for (const ds of this.chart.data.datasets) {
-      ds.backgroundColor = this.colors[ds.label]
-    }
     this.chart.options.scales.x.ticks = {
       callback(value) {
         const label = this.getLabelForValue(value as number)
@@ -250,11 +247,17 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     const xAxisName = xAxisCol.display_name
     const energyCol = this.propertyColumns.find((col) => col.id === this.selectedProgram.actual_energy_column)
     const emissionCol = this.propertyColumns.find((col) => col.id === this.selectedProgram.actual_emission_column)
-    const yAxisName = this.form.value.metricType === 'emission'
-      ? emissionCol?.display_name
-      : energyCol?.display_name
+    const yAxisName = this.form.value.metricType === 0
+      ? energyCol?.display_name
+      : emissionCol?.display_name
 
     return [xAxisName, yAxisName]
+  }
+
+  setDatasetColor() {
+    for (const ds of this.chart.data.datasets) {
+      ds.backgroundColor = this.colors[ds.label]
+    }
   }
 
   /*
@@ -266,15 +269,24 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     this.displayAnnotation = true
 
     this.resetDatasets()
-    const annotation = this.blankAnnotation()
-    this.annotations = {}
+
+    const numProperties = Object.values(this.data.properties_by_cycles).reduce((acc, curr) => acc + curr.length, 0)
+    if (numProperties > 3000) {
+      this._snackBar.alert('Too many properties to chart. Update program and try again.')
+      this.initChart()
+      return
+    }
 
     this.formatDataPoints()
-    // const nonCompliant = this.datasets.find(ds => ds.label === 'non-compliant')
-    console.log(this.datasets)
+    this.formatNonCompliantPoints()
     this.chart.data.datasets = this.datasets
+    this.setDatasetColor()
+    this.chart.options.plugins.annotation.annotations = this.annotations
     this.chart.update()
-    console.log(this.chart)
+    console.log('config', this.form.value)
+    console.log('data', this.data)
+    console.log('datasets', this.datasets)
+    console.log('chart', this.chart)
   }
 
   formatDataPoints() {
@@ -291,9 +303,9 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
         this.xCategorical = true
       }
 
-      const actualCol = metricType === 'energy' ? metric.actual_energy_column : metric.actual_emission_column
-      const targetCol = metricType === 'energy' ? metric.target_energy_column : metric.target_emission_column
-      const hasTarget = metric.energy_bool || metric.emission_bool
+      const actualCol = metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
+      const targetCol = metricType === 0 ? metric.target_energy_column : metric.target_emission_column
+      const hasTarget = metricType === 0 ? !metric.energy_bool : !metric.emission_bool
 
       const y = this.getValue(prop, 'endsWith', `_${actualCol}`) as number
       if (hasTarget) {
@@ -314,7 +326,40 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     }
   }
 
-  getValue(property: Record<string, unknown>, fn: 'startsWith' | 'endsWith', key: string ) {
+  formatNonCompliantPoints() {
+    this.annotations = {}
+    const configs = this.form.value
+    const program = this.data.metric
+    const nonCompliant = this.datasets.find((ds) => ds.label === 'non-compliant')
+    const targetType = configs.metricType === 0 ? program.energy_metric_type : program.emission_metric_type
+
+    // RP - need to figure out
+    // rank
+    // if (this.form.value.xAxisColumnId === 'Ranked') {}
+    // ...
+
+    for (const item of nonCompliant.data) {
+      const annotation = this.blankAnnotation()
+
+      item.distance = null
+      // if (!(item.x && item.y && item.target)) return
+      const belowTarget = targetType === 1 && item?.target < item?.y
+      const aboveTarget = targetType === 0 && item?.target > item?.y
+      const addWhisker = belowTarget || aboveTarget
+
+      console.log('addWhisker', addWhisker)
+      if (!addWhisker) return
+
+      item.distance = Math.abs(item.target - item.y)
+      annotation.xMin = item.x
+      annotation.xMax = item.x
+      annotation.yMin = item.y
+      annotation.yMax = item.target
+      this.annotations[`prop${item.id}`] = annotation
+    }
+  }
+
+  getValue(property: Record<string, unknown>, fn: 'startsWith' | 'endsWith', key: string) {
     const entry = Object.entries(property).find(([k]) => k[fn](key))
     return entry?.[1]
   }
@@ -322,20 +367,20 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
   resetDatasets() {
     console.log('resetDatasets')
     this.datasets = [
-      { data: [], label: 'compliant', pointStyle: 'circle' },
+      { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7 },
       { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7 },
       { data: [], label: 'unknown', pointStyle: 'rect' },
     ]
   }
 
-  blankAnnotation() {
+  blankAnnotation(): AnnotationOptions {
     return {
       type: 'line',
       xMin: 0,
       xMax: 0,
       yMin: 0,
       yMax: 0,
-      backgroundColor: '#333',
+      borderColor: () => this.scheme === 'dark' ? '#ffffffff' : '#333333',
       borderWidth: 1,
       display: () => this.displayAnnotation,
       arrowHeads: {
@@ -346,5 +391,18 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
         },
       },
     }
+  }
+
+  toggleVisibility(idx: number, show: boolean) {
+    if (idx === 3) {
+      for (const key of Object.keys(this.annotations)) {
+        if (key.startsWith('prop')) {
+          this.annotations[key].display = show
+        }
+      }
+    } else {
+      this.chart.setDatasetVisibility(idx, show)
+    }
+    this.chart.update()
   }
 }

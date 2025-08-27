@@ -17,6 +17,23 @@ export type Program = {
   emission_bool?: boolean;
 }
 
+export type EvaluatedProgram = {
+  actual_emission_column: number;
+  actual_emission_column_name: string;
+  actual_energy_column: number;
+  actual_energy_column_name: string;
+  cycles: { id: number; name: string }[];
+  emission_bool: boolean;
+  emission_metric: boolean;
+  emission_metric_type: number;
+  energy_bool: boolean;
+  energy_metric: boolean;
+  energy_metric_type: number;
+  filter_group: number;
+  target_emission_column: number;
+  target_energy_column: number;
+}
+
 export type ProgramsResponse = {
   status: string;
   compliance_metrics: Program[];
@@ -31,7 +48,7 @@ export type ProgramData = {
   cycles: { id: number; name: string }[];
   graph_data: GraphData;
   meta: { organization: number; compliance_metric: number };
-  metric: Program;
+  metric: EvaluatedProgram;
   name: string;
   properties_by_cycles: Record<number, Record<string, unknown>[]>;
   results_by_cycles: ResultsByCycles;
@@ -53,4 +70,5 @@ export type PropertyInsightPoint = {
   x: number;
   y: number;
   target: number;
+  distance?: number;
 }

@@ -258,7 +258,6 @@
   // }
 }
 
-
 .compact-form {
   label, span {
     @apply text-sm !important;
@@ -287,9 +286,11 @@
 .cdk-overlay-pane:has(.wide-select-lg) {
   width: 700px !important;
 }
+
 .cdk-overlay-pane:has(.wide-select-md) {
   width: 500px !important;
 }
+
 .cdk-overlay-pane:has(.wide-select-sm) {
   width: 400px !important;
 }

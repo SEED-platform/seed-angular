@@ -38,6 +38,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   programXAxisColumns: Column[] = []
   propertyColumns: Column[]
   selectedProgram: Program
+  scheme: 'dark' | 'light' = 'light'
   xAxisColumns: Column[]
   xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
 
@@ -51,13 +52,14 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
       programs: this._programService.programs$,
+      scheme: this._configService.scheme$
     }).pipe(
-      tap(({ org, cycles, propertyColumns, programs }) => {
+      tap(({ org, cycles, propertyColumns, programs, scheme }) => {
         this.org = org
         this.cycles = cycles
         this.propertyColumns = propertyColumns
         this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
-
+        this.scheme = scheme
         this.setProgram(programs, org)
       }),
       takeUntil(this._unsubscribeAll$),

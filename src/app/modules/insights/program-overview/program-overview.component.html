@@ -44,8 +44,8 @@
       @if (selectedProgram) {
         <div class="flex">
           <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
-          <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
           <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+          <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
         </div>
       }
       <div class="graph mx-[5vw] h-[calc(100vh-400px)]">
