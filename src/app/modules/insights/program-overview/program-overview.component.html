@@ -26,7 +26,7 @@
 
       <!-- Legend -->
        <div>
-         <div class="flex">
+         <div class="flex border rounded-lg p-1">
            @for (entry of colors | keyvalue; track $index) {
              <div class="flex items-center p-2">
                <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
@@ -35,7 +35,12 @@
            }
          </div>
        </div>
-    </div>
+
+       <div>
+        <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
+        <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+       </div>
+      </div>
 
     <mat-divider></mat-divider>
 
@@ -43,8 +48,7 @@
     <div class="m-2">
       @if (selectedProgram) {
         <div class="flex">
-          <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
-          <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+
           <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
         </div>
       }

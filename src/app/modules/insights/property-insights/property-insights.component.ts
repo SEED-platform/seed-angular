@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import type { ElementRef, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import type { TooltipItem } from 'chart.js'
+import { Router } from '@angular/router'
+import type { ActiveElement, ChartEvent, PointElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 import { takeUntil, tap } from 'rxjs'
@@ -25,6 +26,7 @@ import { ProgramWrapperDirective } from '../program-wrapper'
 })
 export class PropertyInsightsComponent extends ProgramWrapperDirective implements OnInit {
   @ViewChild('propertyInsightsChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
 
   annotations: Record<string, AnnotationOptions>
@@ -116,7 +118,13 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
         datasets: [],
       },
       options: {
-        onClick: () => { console.log('setup click events') },
+        onClick: (_, elements: ActiveElement[], chart: Chart<'scatter'>) => {
+          if (!elements.length) return
+          const { datasetIndex, index } = elements[0]
+          const raw = chart.data.datasets[datasetIndex].data[index] as PropertyInsightPoint
+          const viewId = raw.id
+          return void this._router.navigate(['/properties', viewId])
+        },
         elements: {
           point: {
             radius: 5,

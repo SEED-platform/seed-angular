@@ -50,19 +50,17 @@
             </mat-button-toggle-group>
           </div>
         </div>
+        <div class="flex">
+          <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
+          <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+        </div>
       </div>
 
       <mat-divider></mat-divider>
       
-      <div class="m-2 flex">
+      <div class="m-2 flex justify-between">
         <!-- Config -->
          <div class="flex flex-col">
-          <div class="flex mb-5">
-            <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
-            <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
-          </div>
-          
-
            <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
              <mat-form-field>
                <mat-label class="text-secondary">Cycle</mat-label>
@@ -117,16 +115,13 @@
             <div class="flex justify-between border p-1"><span class="text-secondary">Unknown:</span><span>{{ results.u }}</span></div>
            </div>
 
-
          </div>
         <!-- Chart -->
-         <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-350px)]">
-           <div class="graph">
-             <canvas #propertyInsightsChart></canvas>
-           </div>
-
-
-         </div>
+        <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-360px)]">
+          <div class="graph h-full flex justify-center">
+            <canvas #propertyInsightsChart></canvas>
+          </div>
+        </div>
       </div>
   </div>
 </seed-page>
