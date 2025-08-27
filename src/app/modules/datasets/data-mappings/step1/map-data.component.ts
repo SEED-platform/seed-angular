@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowNode } from 'ag-grid-community'
+import type {CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowClassParams, RowNode } from 'ag-grid-community'
 import { Subject, switchMap, take } from 'rxjs'
 import type { Column, ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType, Cycle, DataMappingRow, ImportFile, MappingSuggestionsResponse } from '@seed/api'
 import { ColumnMappingProfileService } from '@seed/api'
@@ -16,7 +16,7 @@ import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import type { InventoryDisplayType } from 'app/modules/inventory'
 import { HelpComponent } from '../help.component'
-import { buildColumnDefs, gridOptions } from './column-defs'
+import { buildColumnDefs } from './column-defs'
 import { dataTypeMap, displayToDataTypeMap } from './constants'
 import { CreateProfileComponent } from './modal/create-profile.component'
 
@@ -56,11 +56,11 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   dataValid = false
   defaultInventoryType: InventoryDisplayType = 'Property'
   defaultRow: Record<string, unknown>
+  duplicateCounts: Record<string, number> = {}
   errorMessages: string[] = []
   fileId = this._router.snapshot.params.id as number
   gridApi: GridApi
   gridHeight = 0
-  gridOptions = gridOptions
   gridTheme$ = this._configService.gridTheme$
   mappedData: { mappings: DataMappingRow[] } = { mappings: [] }
   profile: ColumnMappingProfile
@@ -71,6 +71,12 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   taxlotColumns: Column[] = []
   taxlotColumnMap: Record<string, Column>
   taxlotColumnNames: string[]
+
+  gridOptions = {
+    singleClickEdit: true,
+    suppressMovableColumns: true,
+    getRowClass: (params: RowClassParams<DataMappingRow>) => params.data?.hasDuplicate ? 'bg-red-700/50' : '',
+  }
 
   progressBarObj: ProgressBarObj = {
     message: [],
@@ -327,12 +333,31 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
     // no duplicates
     toFields = toFields.filter((f) => f)
+    this.duplicateCounts = {}
     if (toFields.length !== new Set(toFields).size) {
-      this.dataValid = false
-      this.errorMessages.push('Duplicate headers found. Each SEED Header must be unique.')
+      this.setDuplicateCounts()
     }
+    this.markDuplicates()
 
     this.dataValid = this.errorMessages.length === 0
+    this.gridApi.redrawRows()
+  }
+
+  setDuplicateCounts() {
+    this.gridApi.forEachNode((node: RowNode<DataMappingRow>) => {
+      const v = node.data?.to_field_display_name
+      if (v) this.duplicateCounts[v] = (this.duplicateCounts[v] ?? 0) + 1
+    })
+    this.dataValid = false
+    this.errorMessages.push('Duplicate headers found. Each SEED Header must be unique.')
+  }
+
+  markDuplicates() {
+    // mark duplicate rows with 'hasDuplicate' for styling
+    this.gridApi.forEachNode((node: RowNode<DataMappingRow>) => {
+      const v = node.data?.to_field_display_name
+      node.data.hasDuplicate = v ? this.duplicateCounts[v] > 1 : false
+    })
   }
 
   ngOnDestroy(): void {

@@ -3,11 +3,6 @@ import { EditHeaderComponent } from '@seed/components'
 import { AutocompleteCellComponent } from '@seed/components/ag-grid/autocomplete.component'
 import { dataTypeOptions, unitMap } from './constants'
 
-export const gridOptions = {
-  singleClickEdit: true,
-  suppressMovableColumns: true,
-  // defaultColDef: { cellClass: (params: CellClassParams) => params.colDef.editable ? 'bg-primary bg-opacity-25' : '' },
-}
 
 // Special cases
 const canEdit = (to_data_type: string, field: string, isNewColumn: boolean): boolean => {
