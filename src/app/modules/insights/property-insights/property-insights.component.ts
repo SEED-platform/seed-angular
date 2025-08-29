@@ -143,7 +143,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   patchForm() {
-c    const cycleId = this.getStateCycle()
+    const cycleId = this.getStateCycle()
     const { x_axis_columns } = this.program
     const data: Record<string, unknown> = {
       cycleId,
