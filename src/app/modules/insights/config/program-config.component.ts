@@ -41,13 +41,13 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   metricColumns: Column[]
   metricDataTypes = ['number', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
   maxHeight = window.innerHeight - 200
-  selectedProgram: Program | null = null
+  program: Program | null = null
 
   data = inject(MAT_DIALOG_DATA) as {
     programs: Program[];
     cycles: Cycle[];
     filterGroups: unknown[];
-    selectedProgram: Program;
+    program: Program;
     org: Organization;
     propertyColumns: Column[];
     xAxisColumns: Column[];
@@ -79,17 +79,17 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   }
 
   selectProgram(program: Program) {
-    this.selectedProgram = program
+    this.program = program
     this.form.patchValue(program)
   }
 
   newProgram() {
-    this.selectedProgram = null
+    this.program = null
     this.form.reset()
   }
 
   removeProgram() {
-    this._programService.delete(this.data.org.id, this.selectedProgram.id)
+    this._programService.delete(this.data.org.id, this.program.id)
       .pipe(
         take(1),
         finalize(() => { this.close() }),
@@ -122,8 +122,8 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
     }
     const data = this.form.value as Program
 
-    const request$: Observable<ProgramResponse> = this.selectedProgram
-      ? this._programService.update(this.data.org.id, this.selectedProgram.id, data)
+    const request$: Observable<ProgramResponse> = this.program
+      ? this._programService.update(this.data.org.id, this.program.id, data)
       : this._programService.create(this.data.org.id, data)
 
     request$.pipe(

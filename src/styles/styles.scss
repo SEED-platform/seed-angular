@@ -294,3 +294,11 @@
 .cdk-overlay-pane:has(.wide-select-sm) {
   width: 400px !important;
 }
+
+.strike-through {
+  mat-button-toggle:not(.mat-button-toggle-checked) {
+    span {
+      @apply line-through;
+    }
+  }
+}

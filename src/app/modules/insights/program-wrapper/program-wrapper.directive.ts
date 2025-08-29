@@ -2,13 +2,15 @@ import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Directive, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import type { Chart } from 'chart.js'
-import { combineLatest, filter, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column, Cycle, Organization, Program, ProgramData } from '@seed/api'
-import { ColumnService, CycleService, OrganizationService, UserService } from '@seed/api'
+import { ColumnService, CycleService, OrganizationService } from '@seed/api'
 import { ProgramService } from '@seed/api/program'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ProgramConfigComponent } from '../config'
+import { ActivatedRoute, ParamMap, Router } from '@angular/router'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Directive()
 export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
@@ -19,6 +21,9 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
   private _programService = inject(ProgramService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
+  protected _snackBar = inject(SnackBarService)
+  protected _route = inject(ActivatedRoute)
+  protected _router = inject(Router)
   protected _unsubscribeAll$ = new Subject<void>()
 
   accessLevelInstances = ['temp instance1', 'temp instance2']
@@ -52,7 +57,7 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
       programs: this._programService.programs$,
-      scheme: this._configService.scheme$
+      scheme: this._configService.scheme$,
     }).pipe(
       tap(({ org, cycles, propertyColumns, programs, scheme }) => {
         this.org = org
@@ -60,10 +65,34 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
         this.propertyColumns = propertyColumns
         this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
         this.scheme = scheme
-        this.setProgram(programs, org)
+        this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
       }),
+      switchMap(() => this._route.paramMap),
+      tap((params: ParamMap) => { this.handleRoute(params) }),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()
+  }
+
+  /*
+  * assigns the program based on the route parameters
+  * assigns the first program if the route parameter is invalid
+  */
+  handleRoute(params: ParamMap) {
+    if (!this.programs.length) {
+      this.programChange(null)
+      return
+    }
+
+    const id = parseInt(params.get('id'))
+    const urlProgram = this.programs.find((p) => p.id === id && p.organization_id === this.org.id)
+    const program = urlProgram ?? this.programs?.[0]
+    if (id !== program?.id) {
+      console.log(this._route.url)
+      const path = this._router.url.split('/')[2]
+
+      void this._router.navigate([`/insights/${path}`, program.id])
+    }
+    this.programChange(program)
   }
 
   setScheme() {
@@ -75,19 +104,8 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
     })
   }
 
-  setProgram(programs: Program[], org: Organization) {
-    if (!programs.length) this.programChange(null)
-
-    // if org mismatch set selectedProgram to null
-    this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
-    const program = this.selectedProgram?.organization_id === org.id
-      ? this.selectedProgram
-      : this.programs?.[0]
-    this.programChange(program)
-  }
-
   programChange(program: Program) {
-    this.selectedProgram = program
+    this.selectedProgram = program?.organization_id === this.org.id ? program : null
     if (!program) {
       this.clearChart()
       return
@@ -110,7 +128,6 @@ export abstract class ProgramWrapperDirective implements OnDestroy, OnInit {
     this.programCycles = []
     this.programXAxisColumns = []
     this.loading = false
-    // this.programChange$.next() // necessary?
     this.initChart()
   }
 

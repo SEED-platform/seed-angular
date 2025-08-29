@@ -1,17 +1,21 @@
 import { CommonModule } from '@angular/common'
-import type { ElementRef, OnInit } from '@angular/core'
+import { Location } from '@angular/common'
+import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { Router } from '@angular/router'
-import type { ActiveElement, ChartEvent, PointElement, TooltipItem } from 'chart.js'
+import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
-import { takeUntil, tap } from 'rxjs'
-import type { Program, PropertyInsightDataset, PropertyInsightPoint, ResultsByCycles } from '@seed/api'
-import { PageComponent } from '@seed/components'
+import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { Column, ColumnService, Cycle, CycleService, Organization, OrganizationService, ProgramData, ProgramService, type Program, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
+import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { ActivatedRoute, ParamMap, Router } from '@angular/router'
+import { ConfigService } from '@seed/services'
+import { MatDialog } from '@angular/material/dialog'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { ProgramWrapperDirective } from '../program-wrapper'
+import { ProgramConfigComponent } from '../config'
+import { naturalSort } from '@seed/utils'
 
 @Component({
   selector: 'seed-property-insights',
@@ -21,23 +25,53 @@ import { ProgramWrapperDirective } from '../program-wrapper'
     FormsModule,
     PageComponent,
     MaterialImports,
+    NotFoundComponent,
+    ProgressBarComponent,
     ReactiveFormsModule,
   ],
 })
-export class PropertyInsightsComponent extends ProgramWrapperDirective implements OnInit {
+export class PropertyInsightsComponent implements OnDestroy, OnInit {
   @ViewChild('propertyInsightsChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  private _location = inject(Location)
+  private _columnService = inject(ColumnService)
+  private _configService = inject(ConfigService)
+  private _cycleService = inject(CycleService)
+  private _programService = inject(ProgramService)
+  private _dialog = inject(MatDialog)
+  private _organizationService = inject(OrganizationService)
+  private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
+  private _unsubscribeAll$ = new Subject<void>()
 
+  accessLevelInstances = ['temp instance1', 'temp instance2']
+  accessLevels = ['temp level1', 'temp level2']
   annotations: Record<string, AnnotationOptions>
+  chart: Chart
+  chartName: string
+  colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
+  cycles: Cycle[]
+  data: ProgramData
   datasets: PropertyInsightDataset[] = []
-  displayAnnotation = true
+  datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
+  filterGroups: unknown[] = []
+  loading = true
   metricTypes = [
     { key: 0, value: 'Energy Metric' },
     { key: 1, value: 'Emission Metric' },
   ]
+  org: Organization
+  programId: number
+  program: Program
+  programs: Program[]
+  propertyColumns: Column[]
+  programCycles: Cycle[] = []
+  programXAxisColumns: Column[] = []
   results = { y: 0, n: 0, u: 0 }
+  scheme: 'dark' | 'light' = 'light'
   xCategorical = false
+  xAxisColumns: Column[]
+  xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
 
   form = new FormGroup({
     cycleId: new FormControl<number>(null),
@@ -45,28 +79,74 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     xAxisColumnId: new FormControl<number>(null),
     accessLevel: new FormControl<string>(null),
     accessLevelInstance: new FormControl<string>(null),
-    program: new FormControl<Program>(this.selectedProgram),
-    datasetVisibility: new FormControl<boolean[]>([true, true, true]),
+    program: new FormControl<Program>(null),
     annotationVisibility: new FormControl<boolean>(true),
   })
 
-  ngOnInit(): void {
-    this.initChart()
-    // ProgramWrapperDirective init
-    super.ngOnInit()
-    this.watchChart()
-
-    this.programChange$.subscribe(() => {
-      if (!this.selectedProgram) return
-      this.patchForm()
-      this.setResults()
+  ngOnInit() {
+    this._route.paramMap.subscribe((params: ParamMap) => {
+      this.programId = parseInt(params.get('id'))
+      this.initProgram()
     })
   }
 
+  initProgram(): void {
+    this.getDependencies()
+    this.initChart()
+    this.watchChart()
+  }
+
+  getDependencies() {
+    combineLatest({
+      org: this._organizationService.currentOrganization$,
+      cycles: this._cycleService.cycles$,
+      propertyColumns: this._columnService.propertyColumns$,
+      programs: this._programService.programs$,
+      scheme: this._configService.scheme$,
+    }).pipe(
+      tap(({ org, cycles, propertyColumns, programs, scheme }) => {
+        this.org = org
+        this.cycles = cycles
+        this.propertyColumns = propertyColumns
+        this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
+        this.scheme = scheme
+        this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
+        this.program = programs.find((p) => p.id === this.programId)
+        if (!this.program) {
+          this.loading = false
+          this.programChange(this.programs[0])
+        }
+      }),
+      filter(() => this.program?.organization_id === this.org.id),
+      switchMap(() => this.evaluateProgram()),
+      tap(() => {
+        this.setProgramModels()
+        this.patchForm()
+      }),
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe()
+  }
+
+  programChange(program: Program) {
+    const segments = ['/insights/property-insights']
+    if (program?.id) segments.push(program.id.toString())
+    void this._router.navigate(segments)
+  }
+
+  evaluateProgram() {
+    return this._programService.evaluate(this.org.id, this.program.id).pipe(
+      tap((data) => {
+        this.data = data
+        this.loading = false
+      }),
+    )
+  }
+
   patchForm() {
-    const { cycles, x_axis_columns } = this.selectedProgram
+c    const cycleId = this.getStateCycle()
+    const { x_axis_columns } = this.program
     const data: Record<string, unknown> = {
-      cycleId: cycles[0],
+      cycleId,
       xAxisColumnId: x_axis_columns[0],
       metricType: 0,
       accessLevel: this.accessLevels[0],
@@ -75,15 +155,28 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     this.form.patchValue(data)
   }
 
+  getStateCycle() {
+    // use incoming state cycle, but clear state after initial load
+    const { cycles } = this.program
+    const state = this._location.getState() as { cycleId?: number; label?: string }
+    const stateCycleId = state.cycleId
+    const stateLabel = state.label
+    this.handleLabel(stateLabel)
+    history.replaceState({}, document.title)
+    return cycles.find((c) => c === stateCycleId) ?? cycles[0]
+  }
+
+  handleLabel(label: string) {
+    if (!label) this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
+    if (label) this.datasetVisibility = [label]
+    if (label === 'non-compliant') this.datasetVisibility.push('whisker')
+  }
+
   watchChart() {
     // update chart if anything changes
     this.form.valueChanges.pipe(
       tap(() => {
-        if (!this.validateProgram()) {
-          this.clearChart()
-          // this.initChart()
-          return
-        }
+        if (!this.validateProgram()) return
         this.setChartSettings()
         this.loadDatasets()
       }),
@@ -91,19 +184,36 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     ).subscribe()
   }
 
+  setProgramModels() {
+    const { cycles, x_axis_columns } = this.program
+    this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
+    this.programXAxisColumns = this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id))
+  }
+
   validateProgram() {
-    const { actual_emission_column, actual_energy_column } = this.selectedProgram
+    const { actual_emission_column, actual_energy_column } = this.program
     const { metricType } = this.form.value
-    if (metricType === 0) {
-      return !!actual_energy_column
+    if (!this.data) {
+      this.clearChart()
+      return false
     }
-    return !!actual_emission_column
+    const validEnergy = metricType === 0 && !!actual_energy_column
+    const validEmission = metricType === 1 && !!actual_emission_column
+    return validEnergy || validEmission
+  }
+
+  validColumn(column: Column, validTypes: string[]) {
+    const isAllowedType = validTypes.includes(column.data_type)
+    const notRelated = !column.related
+    const notDerived = !column.derived_column
+    return isAllowedType && notRelated && notDerived
   }
 
   setResults() {
     const cycleId = this.form.value.cycleId
     const { y, n, u } = this.data.results_by_cycles[cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
+    this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
   }
 
   /*
@@ -150,7 +260,6 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
                 }
 
                 // x and y axis names and values
-                console.log('callback')
                 const [xAxisName, yAxisName] = this.getXYAxisName()
                 text.push(`${xAxisName}: ${context.parsed.x}`)
                 text.push(`${yAxisName}: ${context.parsed.y}`)
@@ -204,12 +313,20 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     this.setScheme()
   }
 
+  setScheme() {
+    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+      const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
+      this.chart.options.scales.x.grid = { color }
+      this.chart.options.scales.y.grid = { color }
+      this.chart.update()
+    })
+  }
+
   /*
   * Step 2, set chart settings (axes name, background, labels...)
   */
   setChartSettings() {
-    console.log('update chart')
-    if (!this.selectedProgram) return
+    if (!this.program) return
     const [xAxisName, yAxisName] = this.getXYAxisName()
     const xScale = this.chart.options.scales.x
     if (xScale?.type === 'linear' || xScale?.type === 'category') {
@@ -240,21 +357,15 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     //   }
     // }
 
-    for (const [idx, isVisible] of this.form.value.datasetVisibility.entries()) {
-      this.chart.setDatasetVisibility(idx, isVisible)
-    }
-    // this.displayAnnotation = savedConfig?.annotationVisibility ?? true
-    this.displayAnnotation = true
-
     this.chart.update()
   }
 
   getXYAxisName(): string[] {
-    if (!this.selectedProgram) return [null, null]
+    if (!this.program) return [null, null]
     const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.form.value.xAxisColumnId)
     const xAxisName = xAxisCol.display_name
-    const energyCol = this.propertyColumns.find((col) => col.id === this.selectedProgram.actual_energy_column)
-    const emissionCol = this.propertyColumns.find((col) => col.id === this.selectedProgram.actual_emission_column)
+    const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
+    const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
     const yAxisName = this.form.value.metricType === 0
       ? energyCol?.display_name
       : emissionCol?.display_name
@@ -272,11 +383,9 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
   * Step 3: Loads datasets into the chart.
   */
   loadDatasets() {
-    if (!this.selectedProgram) return
-    this.xCategorical = false
-    this.displayAnnotation = true
-
+    if (!this.program) return
     this.resetDatasets()
+    this.xCategorical = false
 
     const numProperties = Object.values(this.data.properties_by_cycles).reduce((acc, curr) => acc + curr.length, 0)
     if (numProperties > 3000) {
@@ -291,14 +400,15 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
     this.setDatasetColor()
     this.chart.options.plugins.annotation.annotations = this.annotations
     this.chart.update()
-    console.log('config', this.form.value)
-    console.log('data', this.data)
-    console.log('datasets', this.datasets)
-    console.log('chart', this.chart)
+    console.log('ALL DATA', {
+      form: this.form.value,
+      data: this.data,
+      datasets: this.datasets,
+      chart: this.chart,
+    })
   }
 
   formatDataPoints() {
-    console.log('formatDataPoints')
     const { metric, results_by_cycles } = this.data
     const { cycleId, metricType, xAxisColumnId } = this.form.value
     for (const prop of this.data.properties_by_cycles[this.form.value.cycleId]) {
@@ -355,7 +465,6 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
       const aboveTarget = targetType === 0 && item?.target > item?.y
       const addWhisker = belowTarget || aboveTarget
 
-      console.log('addWhisker', addWhisker)
       if (!addWhisker) return
 
       item.distance = Math.abs(item.target - item.y)
@@ -373,11 +482,11 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
   }
 
   resetDatasets() {
-    console.log('resetDatasets')
+    const isHidden = (label: string) => !this.datasetVisibility.includes(label)
     this.datasets = [
-      { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7 },
-      { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7 },
-      { data: [], label: 'unknown', pointStyle: 'rect' },
+      { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7, hidden: isHidden('compliant') },
+      { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7, hidden: isHidden('non-compliant') },
+      { data: [], label: 'unknown', pointStyle: 'rect', hidden: isHidden('unknown') },
     ]
   }
 
@@ -390,7 +499,7 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
       yMax: 0,
       borderColor: () => this.scheme === 'dark' ? '#ffffffff' : '#333333',
       borderWidth: 1,
-      display: () => this.displayAnnotation,
+      display: this.datasetVisibility.includes('whisker'),
       arrowHeads: {
         end: {
           display: true,
@@ -403,14 +512,66 @@ export class PropertyInsightsComponent extends ProgramWrapperDirective implement
 
   toggleVisibility(idx: number, show: boolean) {
     if (idx === 3) {
-      for (const key of Object.keys(this.annotations)) {
-        if (key.startsWith('prop')) {
-          this.annotations[key].display = show
-        }
-      }
+      this.toggleWhiskers(show)
     } else {
       this.chart.setDatasetVisibility(idx, show)
     }
     this.chart.update()
+  }
+
+  toggleWhiskers(show: boolean) {
+    for (const key of Object.keys(this.annotations)) {
+      if (key.startsWith('prop')) {
+        this.annotations[key].display = show
+      }
+    }
+  }
+
+  downloadChart() {
+    const a = document.createElement('a')
+    a.href = this.chart.toBase64Image()
+    a.download = `Program-${this.chartName}.png`
+    a.click()
+  }
+
+  refreshChart() {
+    if (!this.program) return
+    this.initChart()
+    this.programChange(this.program)
+  }
+
+  clearChart() {
+    this.programCycles = []
+    this.programXAxisColumns = []
+    this.loading = false
+    this.initChart()
+  }
+
+  openProgramConfig = () => {
+    const dialogRef = this._dialog.open(ProgramConfigComponent, {
+      width: '50rem',
+      data: {
+        filterGroups: this.filterGroups,
+        cycles: this.cycles,
+        programs: this.programs,
+        program: this.program,
+        org: this.org,
+        propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
+        xAxisColumns: this.xAxisColumns,
+      },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap((programId: number) => { this.program = this.programs.find((p) => p.id == programId) }),
+      )
+      .subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

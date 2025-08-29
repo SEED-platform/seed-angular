@@ -14,7 +14,7 @@
       <div class="compact-form flex-1">
         <mat-form-field class="w-full">
           <mat-label class="text-secondary">Select Program</mat-label>
-          <mat-select [value]="selectedProgram" (selectionChange)="programChange($event.value)">
+          <mat-select [value]="program" (selectionChange)="programChange($event.value)">
             @for (program of programs; track $index) {
               <mat-option [value]="program" class="compact-form">
                 {{ program.name }}
@@ -46,7 +46,7 @@
 
     <!-- Chart -->
     <div class="m-2">
-      @if (selectedProgram) {
+      @if (program) {
         <div class="flex">
 
           <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
@@ -64,7 +64,7 @@
     </div>
   }
 
-  @if (!selectedProgram) {
+  @if (!program) {
     <div class="absolute w-full top-20">
       <seed-not-found icon="fa-solid:triangle-exclamation" message="No Programs Found"></seed-not-found>
     </div>

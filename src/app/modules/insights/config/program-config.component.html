@@ -12,8 +12,8 @@
           }
         </mat-select>
       </mat-form-field>
-      @if (selectedProgram) {
-        <button class="px-5 text-secondary" mat-stroked-button (click)="removeProgram()" [disabled]="!selectedProgram" title="Delete Program">
+      @if (program) {
+        <button class="px-5 text-secondary" mat-stroked-button (click)="removeProgram()" [disabled]="!program" title="Delete Program">
           <mat-icon class="scale-50" svgIcon="fa-solid:xmark"></mat-icon>
           Delete
         </button>

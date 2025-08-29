@@ -12,7 +12,7 @@
         <div class="compact-form flex-1">
           <mat-form-field class="w-full">
             <mat-label class="text-secondary">Select Program</mat-label>
-            <mat-select [value]="selectedProgram" (selectionChange)="programChange($event.value)">
+            <mat-select [value]="program" (selectionChange)="programChange($event.value)">
               @for (program of programs; track $index) {
               <mat-option class="compact-form" [value]="program" class="compact-form">
                 {{ program.name }}
@@ -23,44 +23,45 @@
         </div>
 
         <!-- Legend -->
-        <div>
-          <div class="flex flex-col">
-            <!-- <span class="text-sm text-secondary mx-auto">Legend</span> -->
-            <!-- <span class="text-sm text-secondary mx-auto">(Click to toggle visibility)</span> -->
+        @if (program) {
+          <div>
+            <div class="flex flex-col">
+              <mat-button-toggle-group
+              class="border-button-toggle-group compact-button-toggle-group strike-through"
+              multiple
+              hideMultipleSelectionIndicator="false"
+              [value]="datasetVisibility"
+              [disabled]="!program"
 
-            <mat-button-toggle-group
-            class="border-button-toggle-group compact-button-toggle-group"
-            multiple
-            hideMultipleSelectionIndicator="false"
-            [value]="['compliant', 'non-compliant', 'unknown', 'whisker']"
-
-            >
-            @for (entry of colors | keyvalue; track $index; let i = $index) {
-              <mat-button-toggle [value]="entry.key" (change)="toggleVisibility(i, $event.source.checked)">
-                <div class="flex items-center">
-                  <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
-                  <span class="text-sm">{{ entry.key | titlecase }}</span>
-                </div>
-              </mat-button-toggle>
-              }
-              <mat-button-toggle value="whisker" (change)="toggleVisibility(3, $event.source.checked)">
-                <mat-icon class="scale-50" svgIcon="fa-solid:t"></mat-icon>
-                <span class="text-sm">Distance from Target</span>
-              </mat-button-toggle>
-            </mat-button-toggle-group>
+              >
+              @for (entry of colors | keyvalue; track $index; let i = $index) {
+                <mat-button-toggle [value]="entry.key" (change)="toggleVisibility(i, $event.source.checked)">
+                  <div class="flex items-center">
+                    <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
+                    <span class="text-sm">{{ entry.key | titlecase }}</span>
+                  </div>
+                </mat-button-toggle>
+                }
+                <mat-button-toggle value="whisker" (change)="toggleVisibility(3, $event.source.checked)">
+                  <mat-icon class="scale-50" svgIcon="fa-solid:t"></mat-icon>
+                  <span class="text-sm">Distance from Target</span>
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
           </div>
-        </div>
-        <div class="flex">
-          <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
-          <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
-        </div>
+          <div class="flex">
+            <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
+            <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
+          </div>
+        }
       </div>
 
       <mat-divider></mat-divider>
       
       <div class="m-2 flex justify-between">
         <!-- Config -->
-         <div class="flex flex-col">
+          @if (program) {
+          <div class="flex flex-col">
            <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
              <mat-form-field>
                <mat-label class="text-secondary">Cycle</mat-label>
@@ -110,12 +111,14 @@
            </form>
 
            <div>
+            <div class="text-secondary">Stats</div>
             <div class="flex justify-between border p-1"><span class="text-secondary">Compliant:</span><span>{{ results.y }}</span></div>
             <div class="flex justify-between border p-1"><span class="text-secondary">Non-Compliant:</span><span>{{ results.n }}</span></div>
             <div class="flex justify-between border p-1"><span class="text-secondary">Unknown:</span><span>{{ results.u }}</span></div>
            </div>
 
          </div>
+        }
         <!-- Chart -->
         <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-360px)]">
           <div class="graph h-full flex justify-center">
@@ -123,5 +126,17 @@
           </div>
         </div>
       </div>
+
+      @if (loading) {
+      <div class="absolute w-full top-20">
+        <seed-progress-bar title="Loading Program..." [outline]="true"></seed-progress-bar>
+      </div>
+      }
+      
+      @if (!program) {
+      <div class="absolute w-full top-20">
+        <seed-not-found icon="fa-solid:triangle-exclamation" message="No Programs Found"></seed-not-found>
+      </div>
+      }
   </div>
 </seed-page>
