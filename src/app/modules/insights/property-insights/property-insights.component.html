@@ -93,7 +93,7 @@
              <mat-form-field>
                <mat-label class="text-secondary">Access Level</mat-label>
                <mat-select formControlName="accessLevel" panelClass="wide-select-sm">
-                 @for (level of accessLevels; track $index) {
+                 @for (level of accessLevelNames; track $index) {
                    <mat-option class="compact-form" [value]="level">{{ level }}</mat-option>
                  }
                </mat-select>
@@ -101,9 +101,9 @@
    
              <mat-form-field>
                <mat-label class="text-secondary">Access Level Instance</mat-label>
-               <mat-select formControlName="accessLevelInstance" panelClass="wide-select-sm">
+               <mat-select formControlName="accessLevelInstanceId" panelClass="wide-select-sm">
                  @for (instance of accessLevelInstances; track $index) {
-                   <mat-option class="compact-form" [value]="instance">{{ instance }}</mat-option>
+                   <mat-option class="compact-form" [value]="instance.id">{{ instance.name }}</mat-option>
                  }
                </mat-select>
              </mat-form-field>

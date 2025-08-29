@@ -78,8 +78,10 @@ export class ProgramService {
     )
   }
 
-  evaluate(orgId: number, programId: number): Observable<ProgramData> {
-    const url = `/api/v3/compliance_metrics/${programId}/evaluate/?organization_id=${orgId}`
+  evaluate(orgId: number, programId: number, aliId: number = null): Observable<ProgramData> {
+    let url = `/api/v3/compliance_metrics/${programId}/evaluate/?organization_id=${orgId}`
+    if (aliId) url += `&access_level_instance_id=${aliId}`
+
     return this._httpClient.get<{ data: ProgramData }>(url).pipe(
       map(({ data }) => data),
       catchError((error: HttpErrorResponse) => {

@@ -6,8 +6,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
-import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { Column, ColumnService, Cycle, CycleService, Organization, OrganizationService, ProgramData, ProgramService, type Program, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
+import { combineLatest, EMPTY, filter, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
+import { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, ColumnService, Cycle, CycleService, Organization, OrganizationService, ProgramData, ProgramService, type Program, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ActivatedRoute, ParamMap, Router } from '@angular/router'
@@ -44,8 +44,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   private _snackBar = inject(SnackBarService)
   private _unsubscribeAll$ = new Subject<void>()
 
-  accessLevelInstances = ['temp instance1', 'temp instance2']
-  accessLevels = ['temp level1', 'temp level2']
+  accessLevelNames: AccessLevelInstancesByDepth['accessLevelNames'] = []
+  accessLevelInstancesByDepth: AccessLevelsByDepth = {}
+  accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
   annotations: Record<string, AnnotationOptions>
   chart: Chart
   chartName: string
@@ -77,8 +78,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     cycleId: new FormControl<number>(null),
     metricType: new FormControl<0 | 1>(0),
     xAxisColumnId: new FormControl<number>(null),
-    accessLevel: new FormControl<string>(null),
-    accessLevelInstance: new FormControl<string>(null),
+    accessLevel: new FormControl<string | null>(null),
+    accessLevelInstanceId: new FormControl<number | null>(null),
     program: new FormControl<Program>(null),
     annotationVisibility: new FormControl<boolean>(true),
   })
@@ -86,45 +87,111 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this._route.paramMap.subscribe((params: ParamMap) => {
       this.programId = parseInt(params.get('id'))
+      this.initChart()
       this.initProgram()
     })
   }
 
   initProgram(): void {
     this.getDependencies()
-    this.initChart()
-    this.watchChart()
+      .pipe(
+        tap((dependencies) => { this.setDependencies(dependencies) }),
+        switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
+        tap(() => {
+          this.setForm()
+          this.initChart()
+          this.setChart()
+        }),
+      )
+      .subscribe()
+
+    this.getAliTree()
   }
 
   getDependencies() {
-    combineLatest({
+    // SHOULD THIS BE A ZIP?
+    return combineLatest({
       org: this._organizationService.currentOrganization$,
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
       programs: this._programService.programs$,
       scheme: this._configService.scheme$,
+    })
+  }
+
+  setDependencies(
+    { org, cycles, propertyColumns, programs, scheme }:
+    { org: Organization; cycles: Cycle[]; propertyColumns: Column[]; programs: Program[]; scheme: 'dark' | 'light' }
+  ) {
+    this.org = org
+    this.cycles = cycles
+    this.propertyColumns = propertyColumns
+    this.scheme = scheme
+    this.xAxisColumns = this.propertyColumns.filter((c) => this.isValidColumn(c, this.xAxisDataTypes))
+    this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
+    this.program = programs.find((p) => p.id === this.programId) ?? this.programs[0]
+  }
+
+  setForm() {
+    this.setFormOptions()
+    const cycleId = this.getStateCycle()
+    const data: Record<string, unknown> = {
+      cycleId,
+      xAxisColumnId: this.program.x_axis_columns[0],
+      metricType: 0,
+      accessLevel: this.accessLevelNames.at(-1),
+      accessLevelInstance: this.accessLevelInstances[0],
+    }
+    this.form.patchValue(data)
+    this.watchForm()
+  }
+
+  watchForm() {
+    combineLatest({
+      cycleId: this.form.get('cycleId')?.valueChanges,
+      xAxisColumnId: this.form.get('xAxisColumnId')?.valueChanges,
+      metricType: this.form.get('metricType')?.valueChanges,
     }).pipe(
-      tap(({ org, cycles, propertyColumns, programs, scheme }) => {
-        this.org = org
-        this.cycles = cycles
-        this.propertyColumns = propertyColumns
-        this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
-        this.scheme = scheme
-        this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
-        this.program = programs.find((p) => p.id === this.programId)
-        if (!this.program) {
-          this.loading = false
-          this.programChange(this.programs[0])
-        }
-      }),
-      filter(() => this.program?.organization_id === this.org.id),
-      switchMap(() => this.evaluateProgram()),
-      tap(() => {
-        this.setProgramModels()
-        this.patchForm()
-      }),
+      tap(() => { this.setChart() }),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()
+
+    this.form.get('accessLevel')?.valueChanges.pipe(
+      tap((accessLevel) => { this.getPossibleAccessLevelInstances(accessLevel) }),
+    ).subscribe()
+
+    this.form.get('accessLevelInstanceId')?.valueChanges.pipe(
+      filter(Boolean),
+      switchMap((aliId) => this.evaluateProgram(aliId)),
+      tap(() => { this.setChart() }),
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe()
+  }
+
+  setChart() {
+    this.setChartSettings()
+    this.loadDatasets()
+  }
+
+  getAliTree() {
+    zip(
+      this._organizationService.accessLevelTree$,
+      this._organizationService.accessLevelInstancesByDepth$,
+    ).pipe(
+      tap(([accessLevelTree, accessLevelsByDepth]) => {
+        this.accessLevelNames = accessLevelTree.accessLevelNames
+        this.accessLevelInstancesByDepth = accessLevelsByDepth
+        this.getPossibleAccessLevelInstances(this.accessLevelNames?.at(-1))
+
+        // suggest access level instance if null
+        this.form.get('accessLevelInstanceId')?.setValue(this.accessLevelInstances[0]?.id)
+      }),
+    ).subscribe()
+  }
+
+  getPossibleAccessLevelInstances(accessLevelName: string): void {
+    const depth = this.accessLevelNames.findIndex((name) => name === accessLevelName)
+    this.accessLevelInstances = this.accessLevelInstancesByDepth[depth]
   }
 
   programChange(program: Program) {
@@ -133,26 +200,20 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     void this._router.navigate(segments)
   }
 
-  evaluateProgram() {
-    return this._programService.evaluate(this.org.id, this.program.id).pipe(
+  evaluateProgram(aliId: number = null) {
+    if (this.program?.organization_id !== this.org.id) {
+      this.loading = false
+      this.clearChart()
+      return EMPTY
+    }
+
+    return this._programService.evaluate(this.org.id, this.program.id, aliId).pipe(
       tap((data) => {
         this.data = data
         this.loading = false
       }),
+      take(1),
     )
-  }
-
-  patchForm() {
-    const cycleId = this.getStateCycle()
-    const { x_axis_columns } = this.program
-    const data: Record<string, unknown> = {
-      cycleId,
-      xAxisColumnId: x_axis_columns[0],
-      metricType: 0,
-      accessLevel: this.accessLevels[0],
-      accessLevelInstance: this.accessLevelInstances[0],
-    }
-    this.form.patchValue(data)
   }
 
   getStateCycle() {
@@ -172,19 +233,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     if (label === 'non-compliant') this.datasetVisibility.push('whisker')
   }
 
-  watchChart() {
-    // update chart if anything changes
-    this.form.valueChanges.pipe(
-      tap(() => {
-        if (!this.validateProgram()) return
-        this.setChartSettings()
-        this.loadDatasets()
-      }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
-  }
-
-  setProgramModels() {
+  setFormOptions() {
     const { cycles, x_axis_columns } = this.program
     this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
     this.programXAxisColumns = this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id))
@@ -202,7 +251,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     return validEnergy || validEmission
   }
 
-  validColumn(column: Column, validTypes: string[]) {
+  isValidColumn(column: Column, validTypes: string[]) {
     const isAllowedType = validTypes.includes(column.data_type)
     const notRelated = !column.related
     const notDerived = !column.derived_column
@@ -400,12 +449,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.setDatasetColor()
     this.chart.options.plugins.annotation.annotations = this.annotations
     this.chart.update()
-    console.log('ALL DATA', {
-      form: this.form.value,
-      data: this.data,
-      datasets: this.datasets,
-      chart: this.chart,
-    })
+    // console.log('ALL DATA', {
+    //   form: this.form.value,
+    //   data: this.data,
+    //   datasets: this.datasets,
+    //   chart: this.chart,
+    // })
   }
 
   formatDataPoints() {
