@@ -12,10 +12,10 @@
         <div class="compact-form flex-1">
           <mat-form-field class="w-full">
             <mat-label class="text-secondary">Select Program</mat-label>
-            <mat-select [value]="program" (selectionChange)="programChange($event.value)">
-              @for (program of programs; track $index) {
-              <mat-option class="compact-form" [value]="program" class="compact-form">
-                {{ program.name }}
+            <mat-select [value]="program" (selectionChange)="programChange($event.value)" [compareWith]="compareProgram">
+              @for (p of programs; track $index) {
+              <mat-option class="compact-form" [value]="p">
+                {{ p.name }}
               </mat-option>
               }
             </mat-select>
@@ -75,7 +75,7 @@
              <mat-form-field>
                <mat-label class="text-secondary">Metric Type</mat-label>
                <mat-select formControlName="metricType" panelClass="wide-select-sm">
-                 @for (metricType of metricTypes; track $index) {
+                 @for (metricType of programMetricTypes; track $index) {
                    <mat-option class="compact-form" [value]="metricType.key">{{ metricType.value }}</mat-option>
                  }
                </mat-select>
@@ -121,7 +121,7 @@
         }
         <!-- Chart -->
         <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-360px)]">
-          <div class="graph h-full flex justify-center">
+          <div class="graph w-[90%] mx-auto flex justify-center">
             <canvas #propertyInsightsChart></canvas>
           </div>
         </div>

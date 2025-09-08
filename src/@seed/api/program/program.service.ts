@@ -4,14 +4,15 @@ import { inject, Injectable } from '@angular/core'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Observable } from 'rxjs'
-import { catchError, map, ReplaySubject, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, ReplaySubject, tap } from 'rxjs'
 import { UserService } from '../user'
 import type { Program, ProgramData, ProgramResponse, ProgramsResponse } from './program.types'
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
   private _httpClient = inject(HttpClient)
-  private _programs = new ReplaySubject<Program[]>(1)
+  private _programs = new BehaviorSubject<Program[]>([])
+  // private _programs = new ReplaySubject<Program[]>(1)
   private _errorService = inject(ErrorService)
   private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)

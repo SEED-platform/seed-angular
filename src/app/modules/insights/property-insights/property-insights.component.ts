@@ -6,7 +6,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
-import { combineLatest, EMPTY, filter, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
+import { combineLatest, EMPTY, filter, merge, shareReplay, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
 import { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, ColumnService, Cycle, CycleService, Organization, OrganizationService, ProgramData, ProgramService, type Program, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -67,6 +67,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   programs: Program[]
   propertyColumns: Column[]
   programCycles: Cycle[] = []
+  programMetricTypes: { key: number; value: string }[] = []
   programXAxisColumns: Column[] = []
   results = { y: 0, n: 0, u: 0 }
   scheme: 'dark' | 'light' = 'light'
@@ -121,8 +122,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   setDependencies(
     { org, cycles, propertyColumns, programs, scheme }:
-    { org: Organization; cycles: Cycle[]; propertyColumns: Column[]; programs: Program[]; scheme: 'dark' | 'light' }
+    { org: Organization; cycles: Cycle[]; propertyColumns: Column[]; programs: Program[]; scheme: 'dark' | 'light' },
   ) {
+    console.log('set dependencies')
     this.org = org
     this.cycles = cycles
     this.propertyColumns = propertyColumns
@@ -147,11 +149,11 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   watchForm() {
-    combineLatest({
-      cycleId: this.form.get('cycleId')?.valueChanges,
-      xAxisColumnId: this.form.get('xAxisColumnId')?.valueChanges,
-      metricType: this.form.get('metricType')?.valueChanges,
-    }).pipe(
+    merge(
+      this.form.get('cycleId')?.valueChanges,
+      this.form.get('xAxisColumnId')?.valueChanges,
+      this.form.get('metricType')?.valueChanges,
+    ).pipe(
       tap(() => { this.setChart() }),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()
@@ -171,6 +173,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   setChart() {
     this.setChartSettings()
     this.loadDatasets()
+    this.chart.resetZoom()
   }
 
   getAliTree() {
@@ -199,6 +202,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     if (program?.id) segments.push(program.id.toString())
     void this._router.navigate(segments)
   }
+
+  compareProgram = (a: Program, b: Program) => a && b && a.id === b.id
 
   evaluateProgram(aliId: number = null) {
     if (this.program?.organization_id !== this.org.id) {
@@ -234,7 +239,10 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setFormOptions() {
-    const { cycles, x_axis_columns } = this.program
+    const { cycles, x_axis_columns, actual_emission_column, actual_energy_column } = this.program
+
+    if (actual_emission_column) this.programMetricTypes.push({ key: 1, value: 'Emission Metric' })
+    if (actual_energy_column) this.programMetricTypes.push({ key: 0, value: 'Energy Metric' })
     this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
     this.programXAxisColumns = this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id))
   }
@@ -410,8 +418,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   getXYAxisName(): string[] {
-    if (!this.program) return [null, null]
     const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.form.value.xAxisColumnId)
+    if (!xAxisCol || !this.program) return [null, null]
+
     const xAxisName = xAxisCol.display_name
     const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
     const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
@@ -460,7 +469,10 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   formatDataPoints() {
     const { metric, results_by_cycles } = this.data
     const { cycleId, metricType, xAxisColumnId } = this.form.value
-    for (const prop of this.data.properties_by_cycles[this.form.value.cycleId]) {
+
+    const properties = this.data.properties_by_cycles[cycleId] ?? []
+
+    for (const prop of properties) {
       const id = prop.id as number
       const name = this.getValue(prop, 'startsWith', this.org.property_display_field) as string
       const x = this.getValue(prop, 'endsWith', `_${xAxisColumnId}`) as number
@@ -614,10 +626,20 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         filter(Boolean),
-        tap((programId: number) => { this.program = this.programs.find((p) => p.id == programId) }),
+        tap((programId: number) => {
+          // this.resetSubscriptions()
+          this.program = this.programs.find((p) => p.id == programId)
+          this.programChange(this.program)
+        }),
       )
       .subscribe()
   }
+
+  // resetSubscriptions() {
+  //   this._unsubscribeAll$.next()
+  //   this._unsubscribeAll$.complete()
+  //   console.log('resetSubscriptions called, all subscriptions unsubscribed')
+  // }
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
