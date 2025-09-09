@@ -3,19 +3,22 @@ import { Location } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MatDialog } from '@angular/material/dialog'
+import type { ParamMap} from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
-import { combineLatest, EMPTY, filter, merge, shareReplay, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
-import { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, ColumnService, Cycle, CycleService, Organization, OrganizationService, ProgramData, ProgramService, type Program, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
+import { combineLatest, debounceTime, EMPTY, filter, map, merge, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, Cycle, Organization, ProgramData } from '@seed/api'
+import { ColumnService, CycleService, OrganizationService, type Program, ProgramService, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
-import { ActivatedRoute, ParamMap, Router } from '@angular/router'
 import { ConfigService } from '@seed/services'
-import { MatDialog } from '@angular/material/dialog'
+import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { ProgramConfigComponent } from '../config'
-import { naturalSort } from '@seed/utils'
+import { returnOrUpdate } from 'ol/extent'
 
 @Component({
   selector: 'seed-property-insights',
@@ -86,9 +89,11 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   })
 
   ngOnInit() {
+    this.watchForm()
     this._route.paramMap.subscribe((params: ParamMap) => {
       this.programId = parseInt(params.get('id'))
       this.initChart()
+      this.setScheme()
       this.initProgram()
     })
   }
@@ -96,13 +101,11 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   initProgram(): void {
     this.getDependencies()
       .pipe(
-        tap((dependencies) => { this.setDependencies(dependencies) }),
-        switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
-        tap(() => {
-          this.setForm()
-          this.initChart()
-          this.setChart()
+        tap((dependencies) => {
+          this.getPrograms()
+          this.setDependencies(dependencies)
         }),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
 
@@ -110,28 +113,35 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   getDependencies() {
-    // SHOULD THIS BE A ZIP?
     return combineLatest({
       org: this._organizationService.currentOrganization$,
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
-      programs: this._programService.programs$,
-      scheme: this._configService.scheme$,
     })
   }
 
   setDependencies(
-    { org, cycles, propertyColumns, programs, scheme }:
-    { org: Organization; cycles: Cycle[]; propertyColumns: Column[]; programs: Program[]; scheme: 'dark' | 'light' },
+    { org, cycles, propertyColumns }:
+    { org: Organization; cycles: Cycle[]; propertyColumns: Column[] },
   ) {
-    console.log('set dependencies')
     this.org = org
     this.cycles = cycles
     this.propertyColumns = propertyColumns
-    this.scheme = scheme
     this.xAxisColumns = this.propertyColumns.filter((c) => this.isValidColumn(c, this.xAxisDataTypes))
-    this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
-    this.program = programs.find((p) => p.id === this.programId) ?? this.programs[0]
+  }
+
+  getPrograms() {
+    this._programService.programs$.pipe(
+      filter(() => !!this.org),
+      tap((programs) => {
+        this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
+        this.program = programs.find((p) => p.id === this.programId) ?? this.programs[0]
+      }),
+      filter(() => !!this.program),
+      switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
+      take(1),
+      tap(() => { this.setForm() }),
+    ).subscribe()
   }
 
   setForm() {
@@ -145,34 +155,34 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       accessLevelInstance: this.accessLevelInstances[0],
     }
     this.form.patchValue(data)
-    this.watchForm()
   }
 
   watchForm() {
+    // Developer Note: use map to track which value changes
     merge(
-      this.form.get('cycleId')?.valueChanges,
-      this.form.get('xAxisColumnId')?.valueChanges,
-      this.form.get('metricType')?.valueChanges,
+      this.form.get('cycleId')?.valueChanges.pipe(map((value) => ({ field: 'cycleId', value }))),
+      this.form.get('xAxisColumnId')?.valueChanges.pipe(map((value) => ({ field: 'xAxisColumnId', value }))),
+      this.form.get('metricType')?.valueChanges.pipe(map((value) => ({ field: 'metricType', value }))),
+      this.form.get('accessLevelInstanceId')?.valueChanges.pipe(map((value) => ({ field: 'accessLevelInstanceId', value }))),
     ).pipe(
-      tap(() => { this.setChart() }),
+      tap(() => { this.loading = true }),
+      debounceTime(500),
+      tap(() => {
+        this.setChart()
+        this.loading = false
+      }),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()
 
     this.form.get('accessLevel')?.valueChanges.pipe(
       tap((accessLevel) => { this.getPossibleAccessLevelInstances(accessLevel) }),
     ).subscribe()
-
-    this.form.get('accessLevelInstanceId')?.valueChanges.pipe(
-      filter(Boolean),
-      switchMap((aliId) => this.evaluateProgram(aliId)),
-      tap(() => { this.setChart() }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
   }
 
   setChart() {
     this.setChartSettings()
     this.loadDatasets()
+    this.chart.update()
     this.chart.resetZoom()
   }
 
@@ -203,7 +213,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     void this._router.navigate(segments)
   }
 
-  compareProgram = (a: Program, b: Program) => a && b && a.id === b.id
+  compareSelection = (a: { id: number }, b: { id: number }) => a && b && a.id === b.id
 
   evaluateProgram(aliId: number = null) {
     if (this.program?.organization_id !== this.org.id) {
@@ -367,11 +377,10 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         },
       },
     })
-    this.setScheme()
   }
-
   setScheme() {
     this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+      this.scheme = scheme
       const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
       this.chart.options.scales.x.grid = { color }
       this.chart.options.scales.y.grid = { color }
@@ -413,8 +422,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     //     labels = ...
     //   }
     // }
-
-    this.chart.update()
   }
 
   getXYAxisName(): string[] {
@@ -441,14 +448,14 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   * Step 3: Loads datasets into the chart.
   */
   loadDatasets() {
-    if (!this.program) return
+    if (!this.program || !this.data) return
+
     this.resetDatasets()
     this.xCategorical = false
 
     const numProperties = Object.values(this.data.properties_by_cycles).reduce((acc, curr) => acc + curr.length, 0)
     if (numProperties > 3000) {
       this._snackBar.alert('Too many properties to chart. Update program and try again.')
-      this.initChart()
       return
     }
 
@@ -457,7 +464,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.chart.data.datasets = this.datasets
     this.setDatasetColor()
     this.chart.options.plugins.annotation.annotations = this.annotations
-    this.chart.update()
+
     // console.log('ALL DATA', {
     //   form: this.form.value,
     //   data: this.data,
@@ -627,19 +634,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       .pipe(
         filter(Boolean),
         tap((programId: number) => {
-          // this.resetSubscriptions()
           this.program = this.programs.find((p) => p.id == programId)
           this.programChange(this.program)
         }),
       )
       .subscribe()
   }
-
-  // resetSubscriptions() {
-  //   this._unsubscribeAll$.next()
-  //   this._unsubscribeAll$.complete()
-  //   console.log('resetSubscriptions called, all subscriptions unsubscribed')
-  // }
 
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()

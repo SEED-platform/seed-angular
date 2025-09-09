@@ -12,7 +12,7 @@
         <div class="compact-form flex-1">
           <mat-form-field class="w-full">
             <mat-label class="text-secondary">Select Program</mat-label>
-            <mat-select [value]="program" (selectionChange)="programChange($event.value)" [compareWith]="compareProgram">
+            <mat-select [value]="program" (selectionChange)="programChange($event.value)" [compareWith]="compareSelection">
               @for (p of programs; track $index) {
               <mat-option class="compact-form" [value]="p">
                 {{ p.name }}
@@ -57,7 +57,7 @@
       </div>
 
       <mat-divider></mat-divider>
-      
+
       <div class="m-2 flex justify-between">
         <!-- Config -->
           @if (program) {
@@ -65,7 +65,7 @@
            <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
              <mat-form-field>
                <mat-label class="text-secondary">Cycle</mat-label>
-               <mat-select formControlName="cycleId"  panelClass="wide-select-sm">
+               <mat-select formControlName="cycleId"  panelClass="wide-select-sm" [compareWith]="compareSelection">
                  @for (cycle of programCycles; track $index) {
                    <mat-option class="compact-form" [value]="cycle.id">{{ cycle.name }}</mat-option>
                  }
