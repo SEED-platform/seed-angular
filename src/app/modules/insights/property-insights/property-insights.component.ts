@@ -102,8 +102,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.getDependencies()
       .pipe(
         tap((dependencies) => {
-          this.getPrograms()
           this.setDependencies(dependencies)
+          this.getPrograms()
         }),
         takeUntil(this._unsubscribeAll$),
       )
@@ -135,7 +135,10 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       filter(() => !!this.org),
       tap((programs) => {
         this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
-        this.program = programs.find((p) => p.id === this.programId) ?? this.programs[0]
+        this.program = programs.find((p) => p.id === this.programId)
+        if (!this.program) {
+          this.programChange(this.programs[0])
+        }
       }),
       filter(() => !!this.program),
       switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
@@ -145,6 +148,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setForm() {
+    if (!this.program) return
+
     this.setFormOptions()
     const cycleId = this.getStateCycle()
     const data: Record<string, unknown> = {
@@ -169,6 +174,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       debounceTime(500),
       tap(() => {
         this.setChart()
+        this.setResults()
         this.loading = false
       }),
       takeUntil(this._unsubscribeAll$),
@@ -250,7 +256,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   setFormOptions() {
     const { cycles, x_axis_columns, actual_emission_column, actual_energy_column } = this.program
-
+    this.programMetricTypes = []
     if (actual_emission_column) this.programMetricTypes.push({ key: 1, value: 'Emission Metric' })
     if (actual_energy_column) this.programMetricTypes.push({ key: 0, value: 'Energy Metric' })
     this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
@@ -277,6 +283,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setResults() {
+    if (!this.data) return
+
     const cycleId = this.form.value.cycleId
     const { y, n, u } = this.data.results_by_cycles[cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
