@@ -5,8 +5,8 @@
   <div class="flex flex-col">
     <div class="flex justify-between gap-10 items-center compact-form">
       <mat-form-field class="flex-1">
-        <mat-label class="text-secondary">Select Program</mat-label>
-        <mat-select (selectionChange)="selectProgram($event.value)">
+        <mat-label class="text-secondary">Select a program to edit or create new</mat-label>
+        <mat-select [value]="program" (selectionChange)="selectProgram($event.value)">
           @for (program of data.programs; track $index) {
           <mat-option [value]="program">{{ program.name }}</mat-option>
           }
@@ -18,12 +18,12 @@
           Delete
         </button>
 
+        <div class="vertical-divider h-10"></div>
+        <button class="px-5" mat-stroked-button (click)="newProgram()">
+          <mat-icon class="scale-50" svgIcon="fa-solid:plus"></mat-icon>
+          Create Program
+        </button>
       }
-      <div class="vertical-divider h-10"></div>
-      <button class="px-5" mat-stroked-button (click)="newProgram()">
-        <mat-icon class="scale-50" svgIcon="fa-solid:plus"></mat-icon>
-        Create Program
-      </button>
     </div>
 
     <mat-divider></mat-divider>

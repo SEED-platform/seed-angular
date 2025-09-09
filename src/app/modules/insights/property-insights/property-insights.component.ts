@@ -4,9 +4,9 @@ import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
-import type { ParamMap} from '@angular/router'
+import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
-import type { ActiveElement, TooltipItem } from 'chart.js'
+import type { ActiveElement, ScatterDataPoint, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 import { combineLatest, debounceTime, EMPTY, filter, map, merge, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
@@ -18,7 +18,6 @@ import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { ProgramConfigComponent } from '../config'
-import { returnOrUpdate } from 'ol/extent'
 
 @Component({
   selector: 'seed-property-insights',
@@ -101,6 +100,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   initProgram(): void {
     this.getDependencies()
       .pipe(
+        debounceTime(300),
         tap((dependencies) => {
           this.setDependencies(dependencies)
           this.getPrograms()
@@ -134,6 +134,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this._programService.programs$.pipe(
       filter(() => !!this.org),
       tap((programs) => {
+        console.log('get programs')
         this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
         this.program = programs.find((p) => p.id === this.programId)
         if (!this.program) {
@@ -142,7 +143,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       }),
       filter(() => !!this.program),
       switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
-      take(1),
       tap(() => { this.setForm() }),
     ).subscribe()
   }
@@ -214,6 +214,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   programChange(program: Program) {
+    console.log('program change')
     const segments = ['/insights/property-insights']
     if (program?.id) segments.push(program.id.toString())
     void this._router.navigate(segments)
@@ -470,6 +471,11 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.formatDataPoints()
     this.formatNonCompliantPoints()
     this.chart.data.datasets = this.datasets
+    const flatData = this.chart.data.datasets?.flatMap((ds) => ds.data as ScatterDataPoint[])
+    const yMax = Math.max(...flatData.map((p) => p.y))
+    const xMax = Math.max(...flatData.map((p) => p.x))
+    this.chart.options.scales.y.suggestedMax = yMax * 1.1
+    this.chart.options.scales.x.suggestedMax = xMax * 1.1
     this.setDatasetColor()
     this.chart.options.plugins.annotation.annotations = this.annotations
 
@@ -613,7 +619,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   refreshChart() {
     if (!this.program) return
     this.initChart()
-    this.programChange(this.program)
+    this.setChart()
+    this.setScheme()
   }
 
   clearChart() {
