@@ -19,6 +19,7 @@ import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { LabelsModalComponent } from 'app/modules/inventory/actions'
 import { ProgramConfigComponent } from '../config'
 
 @Component({
@@ -648,6 +649,27 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.initChart()
   }
 
+  onRowClicked({ data }: RowClickedEvent<{ id: number }>) {
+    if (data.id) {
+      void this._router.navigate(['/properties', data.id])
+    }
+  }
+
+  openLabelModal = () => {
+    const visibleData = this.chart.data.datasets.filter((_, i) => this.chart.isDatasetVisible(i)).map((ds) => ds.data)
+    if (!visibleData.length) return
+
+    const ids = visibleData.flatMap((d: PropertyInsightPoint[]) => d).map((d) => d.id)
+    this._dialog.open(LabelsModalComponent, {
+      width: '50rem',
+      data: {
+        orgId: this.org.id,
+        type: 'properties',
+        viewIds: ids,
+      },
+    })
+  }
+
   openProgramConfig = () => {
     const dialogRef = this._dialog.open(ProgramConfigComponent, {
       width: '50rem',
@@ -672,12 +694,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         }),
       )
       .subscribe()
-  }
-
-  onRowClicked({ data }: RowClickedEvent<{ id: number }>) {
-    if (data.id) {
-      void this._router.navigate(['/properties', data.id])
-    }
   }
 
   ngOnDestroy(): void {

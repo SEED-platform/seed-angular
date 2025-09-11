@@ -59,7 +59,7 @@
       <mat-divider></mat-divider>
 
       <div class="m-2 flex justify-between">
-        <!-- Config -->
+        <!-- Config Form -->
           @if (program) {
           <div class="flex flex-col">
            <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
@@ -110,6 +110,8 @@
    
            </form>
 
+           <button (click)="openLabelModal()" mat-stroked-button class="my-2 flex gap-2"><mat-icon svgIcon="fa-solid:tags"></mat-icon>Update Labels</button>
+
          </div>
         }
         <!-- Chart -->
@@ -121,7 +123,7 @@
 
       </div>
 
-         
+      <!-- Data Table -->
       <div>
         <mat-divider></mat-divider>
             <div class="flex justify-between items-end">
