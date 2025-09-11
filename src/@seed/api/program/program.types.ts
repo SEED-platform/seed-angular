@@ -72,3 +72,8 @@ export type PropertyInsightPoint = {
   target: number;
   distance?: number;
 }
+
+export type SimpleCartesianScale = {
+  type: 'linear' | 'category';
+  title: { display: boolean; text: string };
+}

@@ -8,11 +8,11 @@ import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, RowClickedEvent } from 'ag-grid-community'
-import type { ActiveElement, ScatterDataPoint, TooltipItem } from 'chart.js'
+import type { ActiveElement, CartesianScaleOptions, ScaleOptionsByType, ScatterDataPoint, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 import { combineLatest, debounceTime, EMPTY, filter, map, merge, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
-import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, Cycle, Organization, ProgramData } from '@seed/api'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, Cycle, Organization, ProgramData, SimpleCartesianScale } from '@seed/api'
 import { ColumnService, CycleService, OrganizationService, type Program, ProgramService, type PropertyInsightDataset, type PropertyInsightPoint, type ResultsByCycles } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -78,6 +78,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   programCycles: Cycle[] = []
   programMetricTypes: { key: number; value: string }[] = []
   programXAxisColumns: Column[] = []
+  rankedCol = { display_name: 'Ranked Distance to Compliance', id: 0 } as Column
   results = { y: 0, n: 0, u: 0 }
   rowData: Record<string, PropertyInsightPoint[]> = {}
   scheme: 'dark' | 'light' = 'light'
@@ -142,7 +143,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this._programService.programs$.pipe(
       filter(() => !!this.org),
       tap((programs) => {
-        console.log('get programs')
         this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
         this.program = programs.find((p) => p.id === this.programId)
         if (!this.program) {
@@ -160,14 +160,18 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     this.setFormOptions()
     const cycleId = this.getStateCycle()
+    const metricType = this.program.actual_energy_column ? 0 : 1
     const data: Record<string, unknown> = {
       cycleId,
       xAxisColumnId: this.program.x_axis_columns[0],
-      metricType: 0,
+      metricType,
       accessLevel: this.accessLevelNames.at(-1),
       accessLevelInstance: this.accessLevelInstances[0],
     }
-    this.form.patchValue(data)
+    // wait for DOM to update before patching to avoid blank selections
+    setTimeout(() => {
+      this.form.patchValue(data)
+    })
   }
 
   watchForm() {
@@ -179,11 +183,13 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       this.form.get('accessLevelInstanceId')?.valueChanges.pipe(map((value) => ({ field: 'accessLevelInstanceId', value }))),
     ).pipe(
       tap(() => { this.loading = true }),
-      debounceTime(500),
+      debounceTime(300),
       tap(() => {
         this.setChart()
-        this.setResults()
-        this.loading = false
+        if (this.form.value.cycleId) {
+          this.setResults()
+          this.loading = false
+        }
       }),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()
@@ -194,9 +200,11 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setChart() {
+    this.clearLabels()
     this.setChartSettings()
     this.loadDatasets()
     this.chart.update()
+    this.sortLabels()
     this.chart.resetZoom()
   }
 
@@ -222,6 +230,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   programChange(program: Program) {
+    this.form.reset()
     const segments = ['/insights/property-insights']
     if (program?.id) segments.push(program.id.toString())
     void this._router.navigate(segments)
@@ -239,14 +248,13 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     return this._programService.evaluate(this.org.id, this.program.id, aliId).pipe(
       tap((data) => {
         this.data = data
-        this.loading = false
       }),
       take(1),
     )
   }
 
   getStateCycle() {
-    // use incoming state cycle, but clear state after initial load
+    // use incoming state cycle if coming from program overview, but clear state after initial load
     const { cycles } = this.program
     const state = this._location.getState() as { cycleId?: number; label?: string }
     const stateCycleId = state.cycleId
@@ -268,7 +276,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     if (actual_emission_column) this.programMetricTypes.push({ key: 1, value: 'Emission Metric' })
     if (actual_energy_column) this.programMetricTypes.push({ key: 0, value: 'Energy Metric' })
     this.programCycles = this.cycles.filter((c) => cycles.includes(c.id))
-    this.programXAxisColumns = this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id))
+    this.programXAxisColumns = [...this.xAxisColumns.filter((c) => x_axis_columns.includes(c.id)), this.rankedCol]
   }
 
   validateProgram() {
@@ -311,9 +319,315 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     }, { compliant: [], 'non-compliant': [], unknown: [] })
   }
 
+  setScheme() {
+    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+      this.scheme = scheme
+      const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
+      this.chart.options.scales.x.grid = { color }
+      this.chart.options.scales.y.grid = { color }
+      this.chart.update()
+    })
+  }
+
   /*
-  * Step 1: Builds an empty chart
+  * Step 2, set chart settings (axes name, background, labels...)
   */
+  setChartSettings() {
+    if (!this.program) return
+    const [xAxisName, yAxisName] = this.getXYAxisName()
+    const xScale = this.chart.options.scales.x as SimpleCartesianScale
+    xScale.type = this.xCategorical ? 'category' : 'linear'
+    xScale.title = { display: true, text: xAxisName }
+
+    const yScale = this.chart.options.scales.y as SimpleCartesianScale
+    yScale.title = { display: true, text: yAxisName }
+    this.chart.options.plugins.annotation.annotations = this.annotations
+    this.chart.options.scales.x.ticks = {
+      callback(value) {
+        const label = this.getLabelForValue(value as number)
+        if (xAxisName?.toLowerCase().includes('year')) {
+          return label.replace(',', '')
+        }
+        return label
+      },
+    }
+    // labels for categorical
+    // RP - ADDRESS LABELS
+    // this.chart.data.labels = []
+    // if (this.xCategorical) {
+    //   let labels = []
+    //   for (const ds of this.datasets) {
+    //     labels = ...
+    //   }
+    // }
+  }
+
+  getXYAxisName(): string[] {
+    const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.form.value.xAxisColumnId)
+    if (!xAxisCol || !this.program) return [null, null]
+
+    const xAxisName = xAxisCol.display_name
+    this.xCategorical = ['string', 'boolean'].includes(xAxisCol.data_type)
+    const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
+    const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
+    const yAxisName = this.form.value.metricType === 0
+      ? energyCol?.display_name
+      : emissionCol?.display_name
+
+    return [xAxisName, yAxisName]
+  }
+
+  setDatasetColor() {
+    for (const ds of this.chart.data.datasets) {
+      ds.backgroundColor = this.colors[ds.label]
+    }
+  }
+
+  /*
+  * Step 3: Loads datasets into the chart.
+  */
+  loadDatasets() {
+    if (!this.program || !this.data) return
+
+    this.resetDatasets()
+
+    const numProperties = Object.values(this.data.properties_by_cycles).reduce((acc, curr) => acc + curr.length, 0)
+    if (numProperties > 3000) {
+      this._snackBar.alert('Too many properties to chart. Update program and try again.')
+      return
+    }
+
+    this.formatDataPoints()
+    this.formatNonCompliantPoints()
+    this.chart.data.datasets = this.datasets
+    const flatData = this.chart.data.datasets?.flatMap((ds) => ds.data as ScatterDataPoint[])
+    const yMax = Math.max(...flatData.map((p) => p.y))
+    const xMax = Math.max(...flatData.map((p) => p.x))
+    this.chart.options.scales.y.suggestedMax = yMax * 1.1
+    this.chart.options.scales.x.suggestedMax = xMax * 1.1
+    this.setDatasetColor()
+    this.chart.options.plugins.annotation.annotations = this.annotations
+
+    // console.log('ALL DATA', {
+    //   form: this.form.value,
+    //   data: this.data,
+    //   datasets: this.datasets,
+    //   chart: this.chart,
+    // })
+  }
+
+  formatDataPoints() {
+    const { metric, results_by_cycles } = this.data
+    const { cycleId, metricType, xAxisColumnId } = this.form.value
+
+    const properties = this.data.properties_by_cycles[cycleId] ?? []
+    const cycleResult = results_by_cycles[cycleId] as ResultsByCycles
+
+    for (const prop of properties) {
+      const id = prop.id as number
+      const nonCompliant = cycleResult.n.includes(id)
+      const name = this.getValue(prop, 'startsWith', this.org.property_display_field) as string
+      const x = this.getValue(prop, 'endsWith', `_${xAxisColumnId}`) as number
+      let target: number
+      let distance: number = null
+
+      const actualCol = metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
+      const targetCol = metricType === 0 ? metric.target_energy_column : metric.target_emission_column
+      const hasTarget = metricType === 0 ? !metric.energy_bool : !metric.emission_bool
+
+      const y = this.getValue(prop, 'endsWith', `_${actualCol}`) as number
+      if (hasTarget) {
+        target = this.getValue(prop, 'endsWith', `_${targetCol}`) as number
+        distance = nonCompliant ? Math.abs(target - y) : null
+      }
+
+      const item: PropertyInsightPoint = { id, name, x, y, target, distance }
+
+      // place in appropriate dataset
+      if (cycleResult.y.includes(id)) {
+        this.datasets[0].data.push(item)
+      } else if (nonCompliant) {
+        this.datasets[1].data.push(item)
+      } else {
+        this.datasets[2].data.push(item)
+      }
+    }
+  }
+
+  formatNonCompliantPoints() {
+    this.annotations = {}
+    const configs = this.form.value
+    const program = this.data.metric
+    const nonCompliant = this.datasets.find((ds) => ds.label === 'non-compliant')
+    const targetType = configs.metricType === 0 ? program.energy_metric_type : program.emission_metric_type
+
+    // Ranked distance from target (col id = 0)
+    if (this.form.value.xAxisColumnId === 0) {
+      nonCompliant.data.sort((a, b) => (b.distance) - (a.distance))
+      for (const [i, item] of nonCompliant.data.entries()) {
+        item.x = i + 1
+      }
+    }
+
+    for (const item of nonCompliant.data) {
+      const annotation = this.blankAnnotation()
+
+      item.distance = null
+      // if (!(item.x && item.y && item.target)) return
+      const belowTarget = targetType === 1 && item?.target < item?.y
+      const aboveTarget = targetType === 0 && item?.target > item?.y
+      const addWhisker = belowTarget || aboveTarget
+
+      if (!addWhisker) return
+
+      item.distance = Math.abs(item.target - item.y)
+      annotation.xMin = item.x
+      annotation.xMax = item.x
+      annotation.yMin = item.y
+      annotation.yMax = item.target
+      this.annotations[`prop${item.id}`] = annotation
+    }
+  }
+
+  getValue(property: Record<string, unknown>, fn: 'startsWith' | 'endsWith', key: string) {
+    const entry = Object.entries(property).find(([k]) => k[fn](key))
+    return entry?.[1]
+  }
+
+  resetDatasets() {
+    const isHidden = (label: string) => !this.datasetVisibility.includes(label)
+    this.datasets = [
+      { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7, hidden: isHidden('compliant') },
+      { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7, hidden: isHidden('non-compliant') },
+      { data: [], label: 'unknown', pointStyle: 'rect', hidden: isHidden('unknown') },
+    ]
+  }
+
+  blankAnnotation(): AnnotationOptions {
+    return {
+      type: 'line',
+      xMin: 0,
+      xMax: 0,
+      yMin: 0,
+      yMax: 0,
+      borderColor: () => this.scheme === 'dark' ? '#ffffffff' : '#333333',
+      borderWidth: 1,
+      display: this.datasetVisibility.includes('whisker'),
+      arrowHeads: {
+        end: {
+          display: true,
+          width: 9,
+          length: 0,
+        },
+      },
+    }
+  }
+
+  toggleVisibility(idx: number, show: boolean) {
+    if (idx === 3) {
+      this.toggleWhiskers(show)
+    } else {
+      this.chart.setDatasetVisibility(idx, show)
+    }
+    this.chart.update()
+  }
+
+  toggleWhiskers(show: boolean) {
+    for (const key of Object.keys(this.annotations)) {
+      if (key.startsWith('prop')) {
+        this.annotations[key].display = show
+      }
+    }
+  }
+
+  downloadChart() {
+    const a = document.createElement('a')
+    a.href = this.chart.toBase64Image()
+    a.download = `Program-${this.chartName}.png`
+    a.click()
+  }
+
+  refreshChart() {
+    if (!this.program) return
+    this.initChart()
+    this.setChart()
+    this.setScheme()
+  }
+
+  clearChart() {
+    this.programCycles = []
+    this.programXAxisColumns = [this.rankedCol]
+    this.loading = false
+    this.initChart()
+  }
+
+  clearLabels() {
+    this.chart.data.labels = []
+    this.chart.update()
+  }
+
+  sortLabels() {
+    const labels = this.chart.data.labels ?? []
+    const isNumeric = labels.every((l) => !isNaN(Number(l)))
+    if (isNumeric) {
+      labels.sort((a, b) => Number(a) - Number(b))
+    } else {
+      labels.sort((a, b) => naturalSort(a as string, b as string))
+    }
+  }
+
+  onRowClicked({ data }: RowClickedEvent<{ id: number }>) {
+    if (data.id) {
+      void this._router.navigate(['/properties', data.id])
+    }
+  }
+
+  openLabelModal = () => {
+    const visibleData = this.chart.data.datasets.filter((_, i) => this.chart.isDatasetVisible(i)).map((ds) => ds.data)
+    if (!visibleData.length) return
+
+    const ids = visibleData.flatMap((d: PropertyInsightPoint[]) => d).map((d) => d.id)
+    this._dialog.open(LabelsModalComponent, {
+      width: '50rem',
+      data: {
+        orgId: this.org.id,
+        type: 'properties',
+        viewIds: ids,
+      },
+    })
+  }
+
+  openProgramConfig = () => {
+    const dialogRef = this._dialog.open(ProgramConfigComponent, {
+      width: '50rem',
+      data: {
+        filterGroups: this.filterGroups,
+        cycles: this.cycles,
+        programs: this.programs,
+        program: this.program,
+        org: this.org,
+        propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
+        xAxisColumns: this.xAxisColumns,
+      },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap((programId: number) => {
+          this.program = this.programs.find((p) => p.id == programId)
+          this.programChange(this.program)
+        }),
+      )
+      .subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+
   initChart() {
     this.chart?.destroy()
     this.chart = new Chart(this.canvas.nativeElement, {
@@ -405,299 +719,5 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         },
       },
     })
-  }
-  setScheme() {
-    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
-      this.scheme = scheme
-      const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
-      this.chart.options.scales.x.grid = { color }
-      this.chart.options.scales.y.grid = { color }
-      this.chart.update()
-    })
-  }
-
-  /*
-  * Step 2, set chart settings (axes name, background, labels...)
-  */
-  setChartSettings() {
-    if (!this.program) return
-    const [xAxisName, yAxisName] = this.getXYAxisName()
-    const xScale = this.chart.options.scales.x
-    if (xScale?.type === 'linear' || xScale?.type === 'category') {
-      xScale.title = { display: true, text: xAxisName }
-    }
-    const yScale = this.chart.options.scales.y
-    if (yScale?.type === 'linear' || yScale?.type === 'category') {
-      yScale.title = { display: true, text: yAxisName }
-    }
-    this.chart.options.scales.x.type = this.xCategorical ? 'category' : 'linear'
-    this.chart.options.plugins.annotation.annotations = this.annotations
-    this.chart.options.scales.x.ticks = {
-      callback(value) {
-        const label = this.getLabelForValue(value as number)
-        if (xAxisName?.toLowerCase().includes('year')) {
-          return label.replace(',', '')
-        }
-        return label
-      },
-    }
-    // labels for categorical
-    // RP - ADDRESS LABELS
-    // this.chart.data.labels = []
-    // if (this.xCategorical) {
-    //   let labels = []
-    //   for (const ds of this.datasets) {
-    //     labels = ...
-    //   }
-    // }
-  }
-
-  getXYAxisName(): string[] {
-    const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.form.value.xAxisColumnId)
-    if (!xAxisCol || !this.program) return [null, null]
-
-    const xAxisName = xAxisCol.display_name
-    this.xCategorical = ['string', 'boolean'].includes(xAxisCol.data_type)
-    const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
-    const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
-    const yAxisName = this.form.value.metricType === 0
-      ? energyCol?.display_name
-      : emissionCol?.display_name
-
-    return [xAxisName, yAxisName]
-  }
-
-  setDatasetColor() {
-    for (const ds of this.chart.data.datasets) {
-      ds.backgroundColor = this.colors[ds.label]
-    }
-  }
-
-  /*
-  * Step 3: Loads datasets into the chart.
-  */
-  loadDatasets() {
-    if (!this.program || !this.data) return
-
-    this.resetDatasets()
-    this.xCategorical = false
-
-    const numProperties = Object.values(this.data.properties_by_cycles).reduce((acc, curr) => acc + curr.length, 0)
-    if (numProperties > 3000) {
-      this._snackBar.alert('Too many properties to chart. Update program and try again.')
-      return
-    }
-
-    this.formatDataPoints()
-    this.formatNonCompliantPoints()
-    this.chart.data.datasets = this.datasets
-    const flatData = this.chart.data.datasets?.flatMap((ds) => ds.data as ScatterDataPoint[])
-    const yMax = Math.max(...flatData.map((p) => p.y))
-    const xMax = Math.max(...flatData.map((p) => p.x))
-    this.chart.options.scales.y.suggestedMax = yMax * 1.1
-    this.chart.options.scales.x.suggestedMax = xMax * 1.1
-    this.setDatasetColor()
-    this.chart.options.plugins.annotation.annotations = this.annotations
-
-    // console.log('ALL DATA', {
-    //   form: this.form.value,
-    //   data: this.data,
-    //   datasets: this.datasets,
-    //   chart: this.chart,
-    // })
-  }
-
-  formatDataPoints() {
-    const { metric, results_by_cycles } = this.data
-    const { cycleId, metricType, xAxisColumnId } = this.form.value
-
-    const properties = this.data.properties_by_cycles[cycleId] ?? []
-    const cycleResult = results_by_cycles[cycleId] as ResultsByCycles
-
-    for (const prop of properties) {
-      const id = prop.id as number
-      const nonCompliant = cycleResult.n.includes(id)
-      const name = this.getValue(prop, 'startsWith', this.org.property_display_field) as string
-      const x = this.getValue(prop, 'endsWith', `_${xAxisColumnId}`) as number
-      let target: number
-      let distance: number = null
-
-      const actualCol = metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
-      const targetCol = metricType === 0 ? metric.target_energy_column : metric.target_emission_column
-      const hasTarget = metricType === 0 ? !metric.energy_bool : !metric.emission_bool
-
-      const y = this.getValue(prop, 'endsWith', `_${actualCol}`) as number
-      if (hasTarget) {
-        target = this.getValue(prop, 'endsWith', `_${targetCol}`) as number
-        distance = nonCompliant ? Math.abs(target - y) : null
-      }
-
-      const item: PropertyInsightPoint = { id, name, x, y, target, distance }
-
-      // place in appropriate dataset
-      if (cycleResult.y.includes(id)) {
-        this.datasets[0].data.push(item)
-      } else if (nonCompliant) {
-        this.datasets[1].data.push(item)
-      } else {
-        this.datasets[2].data.push(item)
-      }
-    }
-  }
-
-  formatNonCompliantPoints() {
-    this.annotations = {}
-    const configs = this.form.value
-    const program = this.data.metric
-    const nonCompliant = this.datasets.find((ds) => ds.label === 'non-compliant')
-    const targetType = configs.metricType === 0 ? program.energy_metric_type : program.emission_metric_type
-
-    // RP - need to figure out
-    // rank
-    // if (this.form.value.xAxisColumnId === 'Ranked') {}
-    // ...
-
-    for (const item of nonCompliant.data) {
-      const annotation = this.blankAnnotation()
-
-      item.distance = null
-      // if (!(item.x && item.y && item.target)) return
-      const belowTarget = targetType === 1 && item?.target < item?.y
-      const aboveTarget = targetType === 0 && item?.target > item?.y
-      const addWhisker = belowTarget || aboveTarget
-
-      if (!addWhisker) return
-
-      item.distance = Math.abs(item.target - item.y)
-      annotation.xMin = item.x
-      annotation.xMax = item.x
-      annotation.yMin = item.y
-      annotation.yMax = item.target
-      this.annotations[`prop${item.id}`] = annotation
-    }
-  }
-
-  getValue(property: Record<string, unknown>, fn: 'startsWith' | 'endsWith', key: string) {
-    const entry = Object.entries(property).find(([k]) => k[fn](key))
-    return entry?.[1]
-  }
-
-  resetDatasets() {
-    const isHidden = (label: string) => !this.datasetVisibility.includes(label)
-    this.datasets = [
-      { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7, hidden: isHidden('compliant') },
-      { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7, hidden: isHidden('non-compliant') },
-      { data: [], label: 'unknown', pointStyle: 'rect', hidden: isHidden('unknown') },
-    ]
-  }
-
-  blankAnnotation(): AnnotationOptions {
-    return {
-      type: 'line',
-      xMin: 0,
-      xMax: 0,
-      yMin: 0,
-      yMax: 0,
-      borderColor: () => this.scheme === 'dark' ? '#ffffffff' : '#333333',
-      borderWidth: 1,
-      display: this.datasetVisibility.includes('whisker'),
-      arrowHeads: {
-        end: {
-          display: true,
-          width: 9,
-          length: 0,
-        },
-      },
-    }
-  }
-
-  toggleVisibility(idx: number, show: boolean) {
-    if (idx === 3) {
-      this.toggleWhiskers(show)
-    } else {
-      this.chart.setDatasetVisibility(idx, show)
-    }
-    this.chart.update()
-  }
-
-  toggleWhiskers(show: boolean) {
-    for (const key of Object.keys(this.annotations)) {
-      if (key.startsWith('prop')) {
-        this.annotations[key].display = show
-      }
-    }
-  }
-
-  downloadChart() {
-    const a = document.createElement('a')
-    a.href = this.chart.toBase64Image()
-    a.download = `Program-${this.chartName}.png`
-    a.click()
-  }
-
-  refreshChart() {
-    if (!this.program) return
-    this.initChart()
-    this.setChart()
-    this.setScheme()
-  }
-
-  clearChart() {
-    this.programCycles = []
-    this.programXAxisColumns = []
-    this.loading = false
-    this.initChart()
-  }
-
-  onRowClicked({ data }: RowClickedEvent<{ id: number }>) {
-    if (data.id) {
-      void this._router.navigate(['/properties', data.id])
-    }
-  }
-
-  openLabelModal = () => {
-    const visibleData = this.chart.data.datasets.filter((_, i) => this.chart.isDatasetVisible(i)).map((ds) => ds.data)
-    if (!visibleData.length) return
-
-    const ids = visibleData.flatMap((d: PropertyInsightPoint[]) => d).map((d) => d.id)
-    this._dialog.open(LabelsModalComponent, {
-      width: '50rem',
-      data: {
-        orgId: this.org.id,
-        type: 'properties',
-        viewIds: ids,
-      },
-    })
-  }
-
-  openProgramConfig = () => {
-    const dialogRef = this._dialog.open(ProgramConfigComponent, {
-      width: '50rem',
-      data: {
-        filterGroups: this.filterGroups,
-        cycles: this.cycles,
-        programs: this.programs,
-        program: this.program,
-        org: this.org,
-        propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
-        xAxisColumns: this.xAxisColumns,
-      },
-    })
-
-    dialogRef
-      .afterClosed()
-      .pipe(
-        filter(Boolean),
-        tap((programId: number) => {
-          this.program = this.programs.find((p) => p.id == programId)
-          this.programChange(this.program)
-        }),
-      )
-      .subscribe()
-  }
-
-  ngOnDestroy(): void {
-    this._unsubscribeAll$.next()
-    this._unsubscribeAll$.complete()
   }
 }

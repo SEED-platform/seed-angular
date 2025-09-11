@@ -65,7 +65,7 @@
            <form [formGroup]="form" class="flex flex-col compact-form fit-content w-[180px]">
              <mat-form-field>
                <mat-label class="text-secondary">Cycle</mat-label>
-               <mat-select formControlName="cycleId"  panelClass="wide-select-sm" [compareWith]="compareSelection">
+               <mat-select formControlName="cycleId"  panelClass="wide-select-sm">
                  @for (cycle of programCycles; track $index) {
                    <mat-option class="compact-form" [value]="cycle.id">{{ cycle.name }}</mat-option>
                  }
