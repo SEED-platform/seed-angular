@@ -302,3 +302,12 @@
     }
   }
 }
+
+.accordion-sub-tables {
+  .mat-expansion-panel {
+      @apply border m-0 !rounded-none;
+  }
+  .mat-expansion-panel-body {
+    @apply p-0;
+  }
+}

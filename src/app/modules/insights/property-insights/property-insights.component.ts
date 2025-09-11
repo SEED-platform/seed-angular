@@ -6,6 +6,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { MatDialog } from '@angular/material/dialog'
 import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
+import { AgGridAngular } from 'ag-grid-angular'
+import type { ColDef, RowClickedEvent } from 'ag-grid-community'
 import type { ActiveElement, ScatterDataPoint, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
@@ -23,6 +25,7 @@ import { ProgramConfigComponent } from '../config'
   selector: 'seed-property-insights',
   templateUrl: './property-insights.component.html',
   imports: [
+    AgGridAngular,
     CommonModule,
     FormsModule,
     PageComponent,
@@ -52,12 +55,15 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   annotations: Record<string, AnnotationOptions>
   chart: Chart
   chartName: string
+  colDefs: ColDef[] = []
   colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
   cycles: Cycle[]
   data: ProgramData
   datasets: PropertyInsightDataset[] = []
   datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
   filterGroups: unknown[] = []
+  gridOptions = { rowClass: 'cursor-pointer' }
+  gridTheme$ = this._configService.gridTheme$
   loading = true
   metricTypes = [
     { key: 0, value: 'Energy Metric' },
@@ -72,6 +78,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   programMetricTypes: { key: number; value: string }[] = []
   programXAxisColumns: Column[] = []
   results = { y: 0, n: 0, u: 0 }
+  rowData: Record<string, PropertyInsightPoint[]> = {}
   scheme: 'dark' | 'light' = 'light'
   xCategorical = false
   xAxisColumns: Column[]
@@ -214,7 +221,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   programChange(program: Program) {
-    console.log('program change')
     const segments = ['/insights/property-insights']
     if (program?.id) segments.push(program.id.toString())
     void this._router.navigate(segments)
@@ -290,6 +296,18 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     const { y, n, u } = this.data.results_by_cycles[cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
     this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
+
+    const { scales } = this.chart.options as { scales: { x: { title: { text: string } }; y: { title: { text: string } } } }
+    this.colDefs = [
+      { field: 'x', headerName: `X: ${scales.x.title.text}`, flex: 1 },
+      { field: 'y', headerName: `Y: ${scales.y.title.text}`, flex: 1 },
+      { field: 'distance', headerName: 'Distance to Target', flex: 1 },
+    ]
+
+    this.rowData = this.chart.data.datasets.reduce((acc, { label, data }) => {
+      acc[label] = data
+      return acc
+    }, { compliant: [], 'non-compliant': [], unknown: [] })
   }
 
   /*
@@ -438,6 +456,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     if (!xAxisCol || !this.program) return [null, null]
 
     const xAxisName = xAxisCol.display_name
+    this.xCategorical = ['string', 'boolean'].includes(xAxisCol.data_type)
     const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
     const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
     const yAxisName = this.form.value.metricType === 0
@@ -492,16 +511,15 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     const { cycleId, metricType, xAxisColumnId } = this.form.value
 
     const properties = this.data.properties_by_cycles[cycleId] ?? []
+    const cycleResult = results_by_cycles[cycleId] as ResultsByCycles
 
     for (const prop of properties) {
       const id = prop.id as number
+      const nonCompliant = cycleResult.n.includes(id)
       const name = this.getValue(prop, 'startsWith', this.org.property_display_field) as string
       const x = this.getValue(prop, 'endsWith', `_${xAxisColumnId}`) as number
       let target: number
-
-      if (this.xCategorical && Number.isNaN(Number(x))) {
-        this.xCategorical = true
-      }
+      let distance: number = null
 
       const actualCol = metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
       const targetCol = metricType === 0 ? metric.target_energy_column : metric.target_emission_column
@@ -510,15 +528,15 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       const y = this.getValue(prop, 'endsWith', `_${actualCol}`) as number
       if (hasTarget) {
         target = this.getValue(prop, 'endsWith', `_${targetCol}`) as number
+        distance = nonCompliant ? Math.abs(target - y) : null
       }
 
-      const item: PropertyInsightPoint = { id, name, x, y, target }
+      const item: PropertyInsightPoint = { id, name, x, y, target, distance }
 
       // place in appropriate dataset
-      const cycleResult = results_by_cycles[cycleId] as ResultsByCycles
       if (cycleResult.y.includes(id)) {
         this.datasets[0].data.push(item)
-      } else if (cycleResult.n.includes(id)) {
+      } else if (nonCompliant) {
         this.datasets[1].data.push(item)
       } else {
         this.datasets[2].data.push(item)
@@ -654,6 +672,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         }),
       )
       .subscribe()
+  }
+
+  onRowClicked({ data }: RowClickedEvent<{ id: number }>) {
+    if (data.id) {
+      void this._router.navigate(['/properties', data.id])
+    }
   }
 
   ngOnDestroy(): void {

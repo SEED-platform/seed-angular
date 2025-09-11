@@ -110,21 +110,78 @@
    
            </form>
 
-           <div>
-            <div class="text-secondary">Stats</div>
-            <div class="flex justify-between border p-1"><span class="text-secondary">Compliant:</span><span>{{ results.y }}</span></div>
-            <div class="flex justify-between border p-1"><span class="text-secondary">Non-Compliant:</span><span>{{ results.n }}</span></div>
-            <div class="flex justify-between border p-1"><span class="text-secondary">Unknown:</span><span>{{ results.u }}</span></div>
-           </div>
-
          </div>
         }
         <!-- Chart -->
-        <div class="flex flex-col gap-2 flex-1 mx-5 h-[calc(100vh-360px)]">
+        <div class="flex flex-col gap-2 flex-1 mx-5 w-full">
           <div class="graph w-[90%] mx-auto flex justify-center">
             <canvas #propertyInsightsChart></canvas>
           </div>
         </div>
+
+      </div>
+
+         
+      <div>
+        <mat-divider></mat-divider>
+            <div class="flex justify-between items-end">
+              <div class="m-4 flex items-center text-lg font-medium">
+                <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+                <span class="ml-4">Data Table</span>
+              </div>
+              <span class="text-secondary text-sm mx-2 italic">Click to expand</span>
+            </div>
+
+        <mat-accordion multi class="accordion-sub-tables">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Compliant:</mat-panel-title>
+              <mat-panel-description>{{ results.y }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData.compliant"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Non-Compliant:</mat-panel-title>
+              <mat-panel-description>{{ results.n }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData['non-compliant']"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Unknown:</mat-panel-title>
+              <mat-panel-description>{{ results.u }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData.unknown"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
 
       @if (loading) {
