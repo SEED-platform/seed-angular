@@ -1,5 +1,5 @@
-<seed-page 
-  [config]="{ 
+<seed-page
+  [config]="{
     title: 'Program Overview',
     titleIcon: 'fa-solid:chart-column',
     action: openProgramConfig,
@@ -8,15 +8,14 @@
   }"
 >
   <div class="content mx-5 my-2">
-
-    <div class="flex justify-between gap-8 items-center">
+    <div class="flex items-center justify-between gap-8">
       <!-- Program Select -->
       <div class="compact-form flex-1">
         <mat-form-field class="w-full">
           <mat-label class="text-secondary">Select Program</mat-label>
           <mat-select [value]="program" (selectionChange)="programChange($event.value)">
             @for (program of programs; track $index) {
-              <mat-option [value]="program" class="compact-form">
+              <mat-option class="compact-form" [value]="program">
                 {{ program.name }}
               </mat-option>
             }
@@ -25,22 +24,32 @@
       </div>
 
       <!-- Legend -->
-       <div>
-         <div class="flex border rounded-lg p-1">
-           @for (entry of colors | keyvalue; track $index) {
-             <div class="flex items-center p-2">
-               <div class="w-4 h-4 mr-2" [style.backgroundColor]="entry.value"></div>
-               <span class="text-sm">{{ entry.key | titlecase }}</span>
-             </div>
-           }
-         </div>
-       </div>
-
-       <div>
-        <mat-icon class="scale-75 cursor-pointer" (click)="refreshChart()" svgIcon="fa-solid:arrows-rotate" title="Refresh Chart"></mat-icon>
-        <mat-icon class="scale-75 cursor-pointer" (click)="downloadChart()" svgIcon="fa-solid:cloud-arrow-down" title="Download Chart"></mat-icon>
-       </div>
+      <div>
+        <div class="flex rounded-lg border p-1">
+          @for (entry of colors | keyvalue; track $index) {
+            <div class="flex items-center p-2">
+              <div class="mr-2 h-4 w-4" [style.backgroundColor]="entry.value"></div>
+              <span class="text-sm">{{ entry.key | titlecase }}</span>
+            </div>
+          }
+        </div>
       </div>
+
+      <div>
+        <mat-icon
+          class="scale-75 cursor-pointer"
+          (click)="refreshChart()"
+          svgIcon="fa-solid:arrows-rotate"
+          title="Refresh Chart"
+        ></mat-icon>
+        <mat-icon
+          class="scale-75 cursor-pointer"
+          (click)="downloadChart()"
+          svgIcon="fa-solid:cloud-arrow-down"
+          title="Download Chart"
+        ></mat-icon>
+      </div>
+    </div>
 
     <mat-divider></mat-divider>
 
@@ -48,8 +57,9 @@
     <div class="m-2">
       @if (program) {
         <div class="flex">
-
-          <div class="text-lg font-bold flex justify-center items-center gap-2 flex-1"><mat-icon  svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}</div>
+          <div class="flex flex-1 items-center justify-center gap-2 text-lg font-bold">
+            <mat-icon svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}
+          </div>
         </div>
       }
       <div class="graph mx-[5vw] h-[calc(100vh-400px)]">
@@ -59,13 +69,13 @@
   </div>
 
   @if (loading) {
-    <div class="absolute w-full top-20">
-      <seed-progress-bar title="Loading Program..." [outline]="true"></seed-progress-bar>
+    <div class="absolute top-20 w-full">
+      <seed-progress-bar [outline]="true" title="Loading Program..."></seed-progress-bar>
     </div>
   }
 
   @if (!program) {
-    <div class="absolute w-full top-20">
+    <div class="absolute top-20 w-full">
       <seed-not-found icon="fa-solid:triangle-exclamation" message="No Programs Found"></seed-not-found>
     </div>
   }

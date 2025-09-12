@@ -87,7 +87,7 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
           this.programChange(this.programs[0])
         }
       }),
-      filter(() => this.program?.organization_id === this.org.id ),
+      filter(() => this.program?.organization_id === this.org.id),
       switchMap(() => this.evaluateProgram()),
       takeUntil(this._unsubscribeAll$),
     ).subscribe()

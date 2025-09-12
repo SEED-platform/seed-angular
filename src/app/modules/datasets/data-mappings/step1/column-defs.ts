@@ -3,7 +3,6 @@ import { EditHeaderComponent } from '@seed/components'
 import { AutocompleteCellComponent } from '@seed/components/ag-grid/autocomplete.component'
 import { dataTypeOptions, unitMap } from './constants'
 
-
 // Special cases
 const canEdit = (to_data_type: string, field: string, isNewColumn: boolean): boolean => {
   const editMap: Record<string, boolean> = {

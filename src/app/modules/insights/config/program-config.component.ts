@@ -4,6 +4,8 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
+import type { Observable } from 'rxjs'
+import { finalize, Subject, take, tap } from 'rxjs'
 import type { Program, ProgramResponse } from '@seed/api'
 import { ProgramService } from '@seed/api'
 import type { Column } from '@seed/api/column/column.types'
@@ -12,8 +14,6 @@ import { AlertComponent, ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Organization } from 'app/modules/organizations/organizations.types'
-import type { Observable } from 'rxjs'
-import { finalize, Subject, take, tap } from 'rxjs'
 
 @Component({
   selector: 'seed-program-config',
