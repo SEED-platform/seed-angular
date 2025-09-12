@@ -286,16 +286,16 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     const { cycles } = this.program
     const state = this._location.getState() as { cycleId?: number; label?: string }
     const stateCycleId = state.cycleId
-    const stateLabel = state.label
-    this.handleLabel(stateLabel)
+    const dataset = state.label
+    this.handleLegendVisibility(dataset)
     history.replaceState({}, document.title)
     return cycles.find((c) => c === stateCycleId) ?? cycles[0]
   }
 
-  handleLabel(label: string) {
-    if (!label) this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
-    if (label) this.datasetVisibility = [label]
-    if (label === 'non-compliant') this.datasetVisibility.push('whisker')
+  handleLegendVisibility(dataset: string) {
+    if (!dataset) this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
+    if (dataset) this.datasetVisibility = [dataset]
+    if (dataset === 'non-compliant') this.datasetVisibility.push('whisker')
   }
 
   setFormOptions() {
@@ -330,7 +330,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     const { y, n, u } = this.data.results_by_cycles[this.cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
-    this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
 
     const { scales } = this.chart.options as { scales: { x: { title: { text: string } }; y: { title: { text: string } } } }
     this.colDefs = [
