@@ -95,6 +95,22 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     annotationVisibility: new FormControl<boolean>(true),
   })
 
+  get cycleId() {
+    return this.form.value.cycleId
+  }
+
+  get metricType() {
+    return this.form.value.metricType
+  }
+
+  get xAxisColumnId() {
+    return this.form.value.xAxisColumnId
+  }
+
+  get accessLevelInstanceId() {
+    return this.form.value.accessLevelInstanceId
+  }
+
   ngOnInit() {
     this.watchForm()
     this._route.paramMap.subscribe((params: ParamMap) => {
@@ -148,9 +164,10 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
           this.programChange(this.programs[0])
         }
       }),
-      filter(() => !!this.program),
-      switchMap(() => this.evaluateProgram(this.form.value.accessLevelInstanceId)),
+      filter(() => !!(this.program)),
+      switchMap(() => this.evaluateProgram(this.accessLevelInstanceId)),
       tap(() => { this.setForm() }),
+      takeUntil(this._unsubscribeAll$),
     ).subscribe()
   }
 
@@ -182,13 +199,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       this.form.get('cycleId')?.valueChanges.pipe(map((value) => ({ field: 'cycleId', value }))),
       this.form.get('xAxisColumnId')?.valueChanges.pipe(map((value) => ({ field: 'xAxisColumnId', value }))),
       this.form.get('metricType')?.valueChanges.pipe(map((value) => ({ field: 'metricType', value }))),
-      this.form.get('accessLevelInstanceId')?.valueChanges.pipe(map((value) => ({ field: 'accessLevelInstanceId', value }))),
     ).pipe(
       tap(() => { this.loading = true }),
       debounceTime(300),
       tap(() => {
         this.setChart()
-        if (this.form.value.cycleId) {
+        if (this.cycleId) {
           this.setResults()
           this.loading = false
         }
@@ -198,6 +214,14 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     this.form.get('accessLevel')?.valueChanges.pipe(
       tap((accessLevel) => { this.getPossibleAccessLevelInstances(accessLevel) }),
+      takeUntil(this._unsubscribeAll$),
+    ).subscribe()
+
+    this.form.get('accessLevelInstanceId')?.valueChanges.pipe(
+      filter((id) => !!(id && this.org && this.cycleId)),
+      switchMap((id) => this.evaluateProgram(id)),
+      tap(() => { this.setChart() }),
+      takeUntil(this._unsubscribeAll$),
     ).subscribe()
   }
 
@@ -223,6 +247,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         // suggest access level instance if null
         this.form.get('accessLevelInstanceId')?.setValue(this.accessLevelInstances[0]?.id)
       }),
+      takeUntil(this._unsubscribeAll$),
     ).subscribe()
   }
 
@@ -250,6 +275,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     return this._programService.evaluate(this.org.id, this.program.id, aliId).pipe(
       tap((data) => {
         this.data = data
+        console.log('evaluate program', this.cycleId)
+        this.setResults()
       }),
       take(1),
     )
@@ -283,13 +310,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   validateProgram() {
     const { actual_emission_column, actual_energy_column } = this.program
-    const { metricType } = this.form.value
     if (!this.data) {
       this.clearChart()
       return false
     }
-    const validEnergy = metricType === 0 && !!actual_energy_column
-    const validEmission = metricType === 1 && !!actual_emission_column
+    const validEnergy = this.metricType === 0 && !!actual_energy_column
+    const validEmission = this.metricType === 1 && !!actual_emission_column
     return validEnergy || validEmission
   }
 
@@ -301,10 +327,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setResults() {
-    if (!this.data) return
+    if (!this.data || !this.cycleId) return
 
-    const cycleId = this.form.value.cycleId
-    const { y, n, u } = this.data.results_by_cycles[cycleId] as { y: number[]; n: number[]; u: number[] }
+    const { y, n, u } = this.data.results_by_cycles[this.cycleId] as { y: number[]; n: number[]; u: number[] }
     this.results = { y: y.length, n: n.length, u: u.length }
     this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
 
@@ -356,14 +381,14 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   getXYAxisName(): string[] {
-    const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.form.value.xAxisColumnId)
+    const xAxisCol = this.programXAxisColumns.find((col) => col.id === this.xAxisColumnId)
     if (!xAxisCol || !this.program) return [null, null]
 
     const xAxisName = xAxisCol.display_name
     this.xCategorical = ['string', 'boolean'].includes(xAxisCol.data_type)
     const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
     const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
-    const yAxisName = this.form.value.metricType === 0
+    const yAxisName = this.metricType === 0
       ? energyCol?.display_name
       : emissionCol?.display_name
 
@@ -411,22 +436,21 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   formatDataPoints() {
     const { metric, results_by_cycles } = this.data
-    const { cycleId, metricType, xAxisColumnId } = this.form.value
 
-    const properties = this.data.properties_by_cycles[cycleId] ?? []
-    const cycleResult = results_by_cycles[cycleId] as ResultsByCycles
+    const properties = this.data.properties_by_cycles[this.cycleId] ?? []
+    const cycleResult = results_by_cycles[this.cycleId] as ResultsByCycles
 
     for (const prop of properties) {
       const id = prop.id as number
       const nonCompliant = cycleResult.n.includes(id)
       const name = this.getValue(prop, 'startsWith', this.org.property_display_field) as string
-      const x = this.getValue(prop, 'endsWith', `_${xAxisColumnId}`) as number
+      const x = this.getValue(prop, 'endsWith', `_${this.xAxisColumnId}`) as number
       let target: number
       let distance: number = null
 
-      const actualCol = metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
-      const targetCol = metricType === 0 ? metric.target_energy_column : metric.target_emission_column
-      const hasTarget = metricType === 0 ? !metric.energy_bool : !metric.emission_bool
+      const actualCol = this.metricType === 0 ? metric.actual_energy_column : metric.actual_emission_column
+      const targetCol = this.metricType === 0 ? metric.target_energy_column : metric.target_emission_column
+      const hasTarget = this.metricType === 0 ? !metric.energy_bool : !metric.emission_bool
 
       const y = this.getValue(prop, 'endsWith', `_${actualCol}`) as number
       if (hasTarget) {
@@ -449,13 +473,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   formatNonCompliantPoints() {
     this.annotations = {}
-    const configs = this.form.value
     const program = this.data.metric
     const nonCompliant = this.datasets.find((ds) => ds.label === 'non-compliant')
-    const targetType = configs.metricType === 0 ? program.energy_metric_type : program.emission_metric_type
+    const targetType = this.metricType === 0 ? program.energy_metric_type : program.emission_metric_type
 
     // Ranked distance from target (col id = 0)
-    if (this.form.value.xAxisColumnId === 0) {
+    if (this.xAxisColumnId === 0) {
       nonCompliant.data.sort((a, b) => (b.distance) - (a.distance))
       for (const [i, item] of nonCompliant.data.entries()) {
         item.x = i + 1
@@ -612,6 +635,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
           this.program = this.programs.find((p) => p.id == programId)
           this.programChange(this.program)
         }),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }
