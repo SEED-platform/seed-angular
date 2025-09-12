@@ -55,7 +55,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
   annotations: Record<string, AnnotationOptions>
   chart: Chart
-  chartName: string
   colDefs: ColDef[] = []
   colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
   cycles: Cycle[]
@@ -157,6 +156,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   setForm() {
     if (!this.program) return
+    if (!this.accessLevelInstances) {
+      this.getPossibleAccessLevelInstances(this.accessLevelNames?.at(-1))
+    }
 
     this.setFormOptions()
     const cycleId = this.getStateCycle()
@@ -166,7 +168,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       xAxisColumnId: this.program.x_axis_columns[0],
       metricType,
       accessLevel: this.accessLevelNames.at(-1),
-      accessLevelInstance: this.accessLevelInstances[0],
+      accessLevelInstanceId: this.accessLevelInstances[0]?.id ?? null,
     }
     // wait for DOM to update before patching to avoid blank selections
     setTimeout(() => {
@@ -351,15 +353,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         return label
       },
     }
-    // labels for categorical
-    // RP - ADDRESS LABELS
-    // this.chart.data.labels = []
-    // if (this.xCategorical) {
-    //   let labels = []
-    //   for (const ds of this.datasets) {
-    //     labels = ...
-    //   }
-    // }
   }
 
   getXYAxisName(): string[] {
@@ -543,7 +536,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   downloadChart() {
     const a = document.createElement('a')
     a.href = this.chart.toBase64Image()
-    a.download = `Program-${this.chartName}.png`
+    a.download = `Program-${this.program.name}.png`
     a.click()
   }
 
