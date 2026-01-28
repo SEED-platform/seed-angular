@@ -1,3 +1,67 @@
-<seed-page [config]="{ title: 'Portfolio Summary', titleIcon: 'fa-solid:square-poll-horizontal' }">
-  <div>Portfolio Summary Content</div>
+<seed-page
+  class="flex flex-auto flex-col"
+  *transloco="let t"
+  [config]="{
+    title: 'Portfolio Summary',
+    titleIcon: 'fa-solid:square-poll-horizontal',
+  }"
+>
+  <!-- Configure Goals -->
+  <div class="mb-8 flex h-12 items-center">
+    <button class="mx-6 w-40" (click)="openConfigureGoals()" mat-flat-button color="primary">
+      <span class="ml-2">{{ t('Configure Goals') }}</span>
+    </button>
+  </div>
+
+  <!-- Goal Selector -->
+  <div>
+    <mat-label class="text-secondary mr-4 text-sm">Goal:</mat-label>
+    <mat-select
+      class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+      [value]="currentGoal?.id"
+      (selectionChange)="selectGoal($event)"
+      placeholder="(select a goal)"
+    >
+      @for (goal of goals; track goal.id) {
+        <mat-option [value]="goal.id">{{ goal.name }}</mat-option>
+      }
+    </mat-select>
+  </div>
+
+  @if (currentGoal) {
+    <!-- CycleGoal Summary  -->
+    <div class="m-4 w-1/2 rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
+      <div class="text-secondary text-xl font-medium">Type: {{ currentGoal.type }}</div>
+      <div class="text-secondary text-xl font-medium">Baseline Cycle: {{ currentGoal.baseline_cycle_name }}</div>
+      <div class="text-secondary text-xl font-medium">{{ currentGoal.level_name }}: {{ currentGoal.access_level_instance_name }}</div>
+      <div class="text-secondary text-xl font-medium">Portfolio Target: {{ currentGoal.target_percentage }}</div>
+      <div class="text-secondary text-xl font-medium">Commitment Sq. Ft: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
+      <div class="text-secondary text-xl font-medium">Area Column: {{ currentGoal.area_column_name }}</div>
+      <div class="text-secondary text-xl font-medium">Primary EUI: {{ currentGoal.eui_column1_name }}</div>
+    </div>
+
+    <!-- CycleGoal Selector and Add Cycle Button -->
+    <mat-button-toggle-group (change)="selectCycleGoal($event)" name="fontStyle" aria-label="Font Style" color="primary">
+      @for (cycle_goal of currentGoal.cycle_goals; track cycle_goal.id) {
+        <mat-button-toggle [value]="cycle_goal.id">{{ cycle_goal.current_cycle.name }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+    <button class="mx-6 w-40" (click)="openAddCycle()" mat-flat-button color="primary">
+      <mat-icon class="fill-gray-700 icon-size-4 dark:fill-gray-200" svgIcon="fa-solid:plus"></mat-icon>
+      <span class="ml-2">{{ t('Add Cycle') }}</span>
+    </button>
+
+    @if (currentCycleGoal) {
+      <!-- CycleGoal Summary -->
+      <div class="h-full-page m-5 flex flex-col">
+        <ag-grid-angular
+          class="filter-border"
+          [theme]="gridTheme$ | async"
+          [rowData]="rowData"
+          [columnDefs]="columnDefs"
+          [style.height.px]="100"
+        />
+      </div>
+    }
+  }
 </seed-page>
