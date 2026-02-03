@@ -65,3 +65,17 @@ export type PortfolioSummary = {
   sqft_change: number;
   eui_change: number;
 }
+
+export type WeightedEUI = {
+  'Cycle Name': string;
+  'Baseline?': string;
+  EUI: string;
+  Goal: number;
+  'Annual % Imp': number;
+  'Cumulative % Imp': number;
+}
+
+export type weightedEUIsResponse = {
+  status: string;
+  results: WeightedEUI[];
+}

@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, take, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { Goal, GoalsResponse, PortfolioSummary } from './goal.types'
+import type { Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
 
 @Injectable({ providedIn: 'root' })
 export class GoalService {
@@ -47,26 +47,18 @@ export class GoalService {
       .subscribe()
   }
 
-  portfolioSummary(goalId: number, cycleGoalId: number, orgId: number) {
-    const url = `/api/v3/goals/${goalId}/cycles/${cycleGoalId}/?organization_id=${orgId}`
-    this._httpClient
-      .get<PortfolioSummary>(url)
-      .pipe(
-        take(1),
-        map((portfolioSummary) => portfolioSummary),
-        tap((portfolioSummary) => {
-          this._portfolioSummary.next(portfolioSummary)
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching goals')
-        }),
-      )
-      .subscribe()
-  }
-
   getPortfolioSummary(goalId: number, cycleGoalId: number, orgId: number): Observable<PortfolioSummary> {
     const url = `/api/v3/goals/${goalId}/cycles/${cycleGoalId}/portfolio_summary?organization_id=${orgId}`
     return this._httpClient.get<PortfolioSummary>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
+      }),
+    )
+  }
+
+  getWeightedEUIs(goalId: number, orgId: number): Observable<weightedEUIsResponse> {
+    const url = `/api/v3/goals/${goalId}/get_weighted_euis/?organization_id=${orgId}`
+    return this._httpClient.get<weightedEUIsResponse>(url).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
       }),

@@ -29,15 +29,54 @@
   </div>
 
   @if (currentGoal) {
-    <!-- CycleGoal Summary  -->
-    <div class="m-4 w-1/2 rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
-      <div class="text-secondary text-xl font-medium">Type: {{ currentGoal.type }}</div>
-      <div class="text-secondary text-xl font-medium">Baseline Cycle: {{ currentGoal.baseline_cycle_name }}</div>
-      <div class="text-secondary text-xl font-medium">{{ currentGoal.level_name }}: {{ currentGoal.access_level_instance_name }}</div>
-      <div class="text-secondary text-xl font-medium">Portfolio Target: {{ currentGoal.target_percentage }}</div>
-      <div class="text-secondary text-xl font-medium">Commitment Sq. Ft: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
-      <div class="text-secondary text-xl font-medium">Area Column: {{ currentGoal.area_column_name }}</div>
-      <div class="text-secondary text-xl font-medium">Primary EUI: {{ currentGoal.eui_column1_name }}</div>
+    <div class="flex flex-row">
+      <!-- CycleGoal Summary  -->
+      <div class="m-4 w-1/2 rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
+        <div class="text-secondary text-xl font-medium">Type: {{ currentGoal.type }}</div>
+        <div class="text-secondary text-xl font-medium">Baseline Cycle: {{ currentGoal.baseline_cycle_name }}</div>
+        <div class="text-secondary text-xl font-medium">{{ currentGoal.level_name }}: {{ currentGoal.access_level_instance_name }}</div>
+        <div class="text-secondary text-xl font-medium">Portfolio Target: {{ currentGoal.target_percentage }}</div>
+        <div class="text-secondary text-xl font-medium">Commitment Sq. Ft: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
+        <div class="text-secondary text-xl font-medium">Area Column: {{ currentGoal.area_column_name }}</div>
+        <div class="text-secondary text-xl font-medium">Primary EUI: {{ currentGoal.eui_column1_name }}</div>
+      </div>
+
+      @if (currentGoal && portfolioSummary) {
+        <table class="m-4 rounded-xl border bg-white p-4 p-80 dark:bg-gray-800">
+          <tr>
+            <th></th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>Commitment (Sq. Ft)</td>
+            <td>{{ this.currentGoal.commitment_sqft }}</td>
+          </tr>
+          <tr>
+            <td>Shared (Sq. Ft)</td>
+            <td>{{ this.portfolioSummary.shared_sqft }}</td>
+          </tr>
+          <tr>
+            <td>Passing Checks (Sq. Ft)</td>
+            <td>{{ this.portfolioSummary.current_total_sqft }}</td>
+          </tr>
+          <tr>
+            <td>Passing Checks (% of committed)</td>
+            <td>{{ this.portfolioSummary.passing_committed }}</td>
+          </tr>
+          <tr>
+            <td>Passing Checks (% of shared)</td>
+            <td>{{ this.portfolioSummary.passing_shared }}</td>
+          </tr>
+          <tr>
+            <td>Total Passing Checks</td>
+            <td>{{ this.portfolioSummary.total_passing }}</td>
+          </tr>
+          <tr>
+            <td>Total New or Acquired</td>
+            <td>{{ this.portfolioSummary.total_new_or_acquired }}</td>
+          </tr>
+        </table>
+      }
     </div>
 
     <!-- CycleGoal Selector and Add Cycle Button -->
@@ -52,16 +91,55 @@
     </button>
 
     @if (currentCycleGoal) {
+      <mat-accordion class="mt-8 max-w-4xl">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Portfolio Summary </mat-panel-title>
+          </mat-expansion-panel-header>
+          <span class="mb-4 flex items-baseline text-lg font-medium"
+            >Unexpected Portfolio Summary Calculations?
+            <button class="mx-6 w-80" (click)="runDataQualityChecks()" mat-flat-button color="primary">
+              <span class="ml-2">{{ t('Run Data Quality Checks') }}</span>
+            </button>
+          </span>
+          <span>{{
+            t(
+              'Portfolio Summary calculations only include properties that have \"Passed Checks\" and are not "New Build or Acquired" (see far right columns below).'
+            )
+          }}</span>
+          <span>{{ t('Run Data Quality Check, available in the Actions dropdown, to auto-populate the "Passed Checks" column.') }}</span>
+          <div class="pt-2">
+            <span>{{ t('Data Quality Checks can be configured in ') }}</span>
+            <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/organizations/data-quality/properties']">{{
+              t('Data Quality Settings.')
+            }}</a>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
       <!-- CycleGoal Summary -->
-      <div class="h-full-page m-5 flex flex-col">
+      <div class="h-1/4-page m-5 flex flex-col">
         <ag-grid-angular
           class="filter-border"
           [theme]="gridTheme$ | async"
-          [rowData]="rowData"
-          [columnDefs]="columnDefs"
+          [rowData]="cycleGoalSummaryData"
+          [columnDefs]="cycleGoalSummaryColumnDefs"
           [style.height.px]="100"
         />
       </div>
     }
+    <div class="w-1/2">
+      <canvas id="canvas" #canvas>{{ chart }}</canvas>
+    </div>
+
+    <div class="h-1/2-page m-5 flex flex-col">
+      <ag-grid-angular
+        class="filter-border"
+        [theme]="gridTheme$ | async"
+        [rowData]="goalSummaryData"
+        [columnDefs]="goalSummaryColumnDefs"
+        [domLayout]="'autoHeight'"
+      />
+    </div>
   }
 </seed-page>
