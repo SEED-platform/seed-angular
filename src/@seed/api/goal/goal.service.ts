@@ -64,4 +64,13 @@ export class GoalService {
       }),
     )
   }
+
+  editGoal(goalId: number, editedGoal, orgId: number): Observable<Goal> {
+    const url = `/api/v3/goals/${goalId}/?organization_id=${orgId}`
+    return this._httpClient.put<Goal>(url, editedGoal).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
+      }),
+    )
+  }
 }

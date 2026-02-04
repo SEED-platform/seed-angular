@@ -30,7 +30,7 @@ export type Goal = {
   partner_note: string;
   partner_note_approval: boolean;
   partner_note_approval_time?: string;
-  partner_note_approval_user?: string;
+  partner_note_approval_user?: number;
   salesforce_goal_id?: string;
   salesforce_goal_name?: string;
   salesforce_partner_id?: string;

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import type { FormControl, FormGroup } from '@angular/forms'
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import type { MatButtonToggleChange } from '@angular/material/button-toggle'
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatCheckboxModule } from '@angular/material/checkbox'
 import { MatDialog } from '@angular/material/dialog'
 import { MatExpansionModule } from '@angular/material/expansion'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -23,6 +23,8 @@ import type { CycleGoal, Goal, PortfolioSummary, WeightedEUI } from '@seed/api/g
 import { GoalService } from '@seed/api/goal'
 import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import type { CurrentUser } from '@seed/api/user'
+import { UserService } from '@seed/api/user'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
@@ -51,6 +53,7 @@ Chart.register(annotationPlugin)
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,
+    MatCheckboxModule,
   ],
 })
 export class PortfolioSummaryComponent implements OnInit {
@@ -60,7 +63,7 @@ export class PortfolioSummaryComponent implements OnInit {
   private _organizationService = inject(OrganizationService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   @ViewChild('canvas') canvas!: ElementRef<HTMLCanvasElement>
-  private _formBuilder = inject(FormBuilder)
+  private _userService = inject(UserService)
 
   goals: Goal[]
   currentGoal: Goal
@@ -68,6 +71,10 @@ export class PortfolioSummaryComponent implements OnInit {
   portfolioSummary: PortfolioSummary
   organization: Organization
   chart: Chart<'bar', string[], string>
+  currentUser: CurrentUser
+  partnerNoteForm = new FormGroup({
+    text: new FormControl<string | null>({ value: '', disabled: true }),
+  })
 
   gridTheme$ = this._configService.gridTheme$
   defaultColDef = { suppressMovable: true }
@@ -101,6 +108,9 @@ export class PortfolioSummaryComponent implements OnInit {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
     })
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
+      this.currentUser = currentUser
+    })
   }
 
   // Dialog openers
@@ -120,14 +130,60 @@ export class PortfolioSummaryComponent implements OnInit {
     })
   }
 
+  // button pushes
   runDataQualityChecks(): void {
     console.log('runDataQualityChecks')
+  }
+
+  setEditingPartnerNote(isEditing: boolean): void {
+    if (isEditing) {
+      this.partnerNoteForm.enable()
+    } else {
+      this.partnerNoteForm.disable()
+    }
+  }
+
+  savePartnerNote(): void {
+    this.currentGoal.partner_note = this.partnerNoteForm.value.text
+    this._goalService
+      .editGoal(
+        this.currentGoal.id,
+        {
+          partner_note: this.currentGoal.partner_note,
+        },
+        this.organization.id,
+      )
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(() => {
+        this.setEditingPartnerNote(false)
+      })
+  }
+
+  changePartnerNoteApproval(isApproved: boolean): void {
+    this.currentGoal.partner_note_approval = isApproved
+    this.currentGoal.partner_note_approval_time = isApproved ? new Date().toJSON() : null
+    this.currentGoal.partner_note_approval_user = isApproved ? this.currentUser.id : null
+    this._goalService
+      .editGoal(
+        this.currentGoal.id,
+        {
+          partner_note_approval: this.currentGoal.partner_note_approval,
+          partner_note_approval_time: this.currentGoal.partner_note_approval_time,
+          partner_note_approval_user: this.currentGoal.partner_note_approval_user,
+        },
+        this.organization.id,
+      )
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((editedGoal) => {
+        this.currentGoal = editedGoal
+      })
   }
 
   // Selectors
   selectGoal(event: MatSelectChange) {
     const goalId: number = event.value as number
     this.currentGoal = this.goals.find((g) => g.id === goalId)
+    this.partnerNoteForm.setValue({ text: this.currentGoal.partner_note })
 
     this._goalService
       .getWeightedEUIs(this.currentGoal.id, this.organization.id)
@@ -151,8 +207,8 @@ export class PortfolioSummaryComponent implements OnInit {
       })
   }
 
+  // chart
   createChart(weightedEUIs: WeightedEUI[]) {
-    // chart
     this.chart?.destroy()
     const ctx = this.canvas.nativeElement.getContext('2d')
     this.chart = new Chart(ctx, {

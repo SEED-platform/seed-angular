@@ -30,7 +30,7 @@
 
   @if (currentGoal) {
     <div class="flex flex-row">
-      <!-- CycleGoal Summary  -->
+      <!-- Goal Summary  -->
       <div class="m-4 w-1/2 rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
         <div class="text-secondary text-xl font-medium">Type: {{ currentGoal.type }}</div>
         <div class="text-secondary text-xl font-medium">Baseline Cycle: {{ currentGoal.baseline_cycle_name }}</div>
@@ -41,6 +41,7 @@
         <div class="text-secondary text-xl font-medium">Primary EUI: {{ currentGoal.eui_column1_name }}</div>
       </div>
 
+      <!-- CycleGoal Side Summary -->
       @if (currentGoal && portfolioSummary) {
         <table class="m-4 rounded-xl border bg-white p-4 p-80 dark:bg-gray-800">
           <tr>
@@ -49,31 +50,31 @@
           </tr>
           <tr>
             <td>Commitment (Sq. Ft)</td>
-            <td>{{ this.currentGoal.commitment_sqft }}</td>
+            <td>{{ currentGoal.commitment_sqft }}</td>
           </tr>
           <tr>
             <td>Shared (Sq. Ft)</td>
-            <td>{{ this.portfolioSummary.shared_sqft }}</td>
+            <td>{{ portfolioSummary.shared_sqft }}</td>
           </tr>
           <tr>
             <td>Passing Checks (Sq. Ft)</td>
-            <td>{{ this.portfolioSummary.current_total_sqft }}</td>
+            <td>{{ portfolioSummary.current_total_sqft }}</td>
           </tr>
           <tr>
             <td>Passing Checks (% of committed)</td>
-            <td>{{ this.portfolioSummary.passing_committed }}</td>
+            <td>{{ portfolioSummary.passing_committed }}</td>
           </tr>
           <tr>
             <td>Passing Checks (% of shared)</td>
-            <td>{{ this.portfolioSummary.passing_shared }}</td>
+            <td>{{ portfolioSummary.passing_shared }}</td>
           </tr>
           <tr>
             <td>Total Passing Checks</td>
-            <td>{{ this.portfolioSummary.total_passing }}</td>
+            <td>{{ portfolioSummary.total_passing }}</td>
           </tr>
           <tr>
             <td>Total New or Acquired</td>
-            <td>{{ this.portfolioSummary.total_new_or_acquired }}</td>
+            <td>{{ portfolioSummary.total_new_or_acquired }}</td>
           </tr>
         </table>
       }
@@ -90,6 +91,7 @@
       <span class="ml-2">{{ t('Add Cycle') }}</span>
     </button>
 
+    <!-- Data Quality Checks Accordion -->
     @if (currentCycleGoal) {
       <mat-accordion class="mt-8 max-w-4xl">
         <mat-expansion-panel>
@@ -128,10 +130,40 @@
         />
       </div>
     }
+
+    <!-- Partner Feedback -->
+    <div>
+      <form class="flex flex-col gap-4" [formGroup]="partnerNoteForm">
+        <mat-form-field>
+          <mat-label>Note</mat-label>
+          <textarea matInput formControlName="text" placeholder="Note content..." rows="4"></textarea>
+        </mat-form-field>
+      </form>
+      @if (partnerNoteForm.disabled) {
+        <button class="mx-6 w-80" (click)="setEditingPartnerNote(true)" mat-flat-button color="primary">
+          <span class="ml-2">{{ t('Edit') }}</span>
+        </button>
+      } @else {
+        <button class="mx-6 w-80" (click)="savePartnerNote()" mat-flat-button color="primary">
+          <span class="ml-2">{{ t('Save') }}</span>
+        </button>
+      }
+    </div>
+    <div class="w-full">
+      <mat-checkbox [checked]="currentGoal.partner_note_approval" (change)="changePartnerNoteApproval($event.checked)" color="primary">
+        <span class="text-lg">Partner Approval</span>
+      </mat-checkbox>
+      @if (currentGoal.partner_note_approval) {
+        <div class="text-secondary text-sm">
+          Approved at {{ currentGoal.partner_note_approval_time }} by {{ currentGoal.partner_note_approval_user }}
+        </div>
+      }
+    </div>
+
+    <!-- Chart -->
     <div class="w-1/2">
       <canvas id="canvas" #canvas>{{ chart }}</canvas>
     </div>
-
     <div class="h-1/2-page m-5 flex flex-col">
       <ag-grid-angular
         class="filter-border"
