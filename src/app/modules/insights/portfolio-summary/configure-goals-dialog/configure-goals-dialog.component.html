@@ -1,6 +1,147 @@
-<div class="relative flex h-full w-full flex-col" *transloco="let t">
-  <div>Configure Goals</div>
-  <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
+<div *transloco="let t">
+  <!-- Title -->
+  <div class="flex" mat-dialog-title>
+    <div class="text-2xl font-medium">Configure Goals</div>
+  </div>
+
+  <div class="flex flex-row gap-10">
+    <!-- Goal Selector -->
+    <div class="rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
+      <div>{{ t('GOALS') }}</div>
+      <mat-button-toggle-group
+        class="flex flex-col"
+        [value]="currentGoal?.id"
+        (change)="selectGoal($event.value)"
+        name="fontStyle"
+        aria-label="Font Style"
+        color="primary"
+      >
+        @for (goal of goals; track goal.id) {
+          <mat-button-toggle [value]="goal.id">{{ goal.name }}</mat-button-toggle>
+        }
+        <mat-button-toggle [value]="null">{{ t('+ New Goal') }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <form class="flex w-full flex-col gap-4" [formGroup]="goalForm">
+      <!-- Goal -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('GOAL') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>{{ t('Name') }}</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Connection</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="standard">{{ t('standard') }}</mat-option>
+          <mat-option value="transaction">{{ t('transaction') }}</mat-option>
+        </mat-select>
+        <mat-hint>{{
+          t(
+            'Select a Goal Type. A Standard goal will calculate a standard EUI per sqft. A Transaction goal will also calculate an EUI per transaction.'
+          )
+        }}</mat-hint>
+      </mat-form-field>
+
+      <!-- CYCLE -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('CYCLE SELECTION') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>Baseline Cycle</mat-label>
+        <mat-select formControlName="baselineCycle">
+          @for (cycle of cycles; track cycle.id) {
+            <mat-option [value]="cycle.id">{{ cycle.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ t('Select a cycle to use as the baseline for comparison.') }}</mat-hint>
+      </mat-form-field>
+
+      <!-- Access Level Instance -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('ACCESS LEVEL INSTANCE') }}</div>
+      <mat-form-field>
+        <mat-label>Access Level</mat-label>
+        <mat-select (selectionChange)="onAccessLevelChange($event.value)" formControlName="accessLevel">
+          @for (level of accessLevelNames; track level) {
+            <mat-option [value]="level">{{ level }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Access Level Instance</mat-label>
+        <mat-select formControlName="accessLevelInstanceId">
+          @for (ali of accessLevelInstances; track ali.id) {
+            <mat-option [value]="ali.id">{{ ali.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Area Target Column -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('AREA TARGET COLUMN') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>Area Column</mat-label>
+        <mat-select formControlName="areaColumn">
+          @for (column of areaColumns; track column.id) {
+            <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ t('Not seeing your column? Update the column\'s data type to "Area" in Column Settings') }}</mat-hint>
+      </mat-form-field>
+
+      <!-- EUI TARGET COLUMNS -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('EUI TARGET COLUMNS') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>Primary Column</mat-label>
+        <mat-select formControlName="euiColumn1">
+          @for (column of euiColumns; track column.id) {
+            <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
+          }
+        </mat-select>
+        <mat-hint>{{ t('Not seeing your column? Update the column\'s data type to "Area" in Column Settings') }}</mat-hint>
+      </mat-form-field>
+      @if (goalForm.value.euiColumn1) {
+        <mat-form-field appearance="fill">
+          <mat-label>Secondary Column</mat-label>
+          <mat-select formControlName="euiColumn2">
+            <mat-option value="">--</mat-option>
+            @for (column of euiColumns; track column.id) {
+              <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      @if (goalForm.value.euiColumn2) {
+        <mat-form-field appearance="fill">
+          <mat-label>Secondary Column</mat-label>
+          <mat-select formControlName="euiColumn3">
+            <mat-option value="">--</mat-option>
+            @for (column of euiColumns; track column.id) {
+              <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- PORTFOLIO TARGET -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('PORTFOLIO TARGET') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>{{ t('Percentage (%)') }}</mat-label>
+        <input matInput type="number" formControlName="targetPercentage" min="0" max="100" />
+        <mat-hint>{{ t('Target to quantify Portfolio EUI improvement. Must be between 0 and 100.') }}</mat-hint>
+      </mat-form-field>
+
+      <!-- COMMITMENT -->
+      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('COMMITMENT') }}</div>
+      <mat-form-field appearance="fill">
+        <mat-label>{{ t('Commitment (Sq Ft)') }}</mat-label>
+        <input matInput type="number" formControlName="commitmentSqft" min="0" />
+        <mat-hint>{{ t('Committed Area') }}</mat-hint>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div>
+    <button class="w-24" (click)="save()" mat-stroked-button>{{ t('Save') }}</button>
     <button class="w-24" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
   </div>
 </div>

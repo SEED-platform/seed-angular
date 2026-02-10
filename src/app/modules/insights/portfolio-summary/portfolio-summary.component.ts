@@ -118,7 +118,7 @@ export class PortfolioSummaryComponent implements OnInit {
     this._matDialog.open(AddCycleDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      data: {} satisfies ConfigureGoalsData,
+      data: {} satisfies AddCycleData,
     })
   }
 
@@ -126,7 +126,9 @@ export class PortfolioSummaryComponent implements OnInit {
     this._matDialog.open(ConfigureGoalsDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      data: {} satisfies AddCycleData,
+      width: '50rem',
+      height: '50rem',
+      data: { goals: this.goals } satisfies ConfigureGoalsData,
     })
   }
 

@@ -18,9 +18,9 @@ export type Goal = {
   commitment_sqft: number;
   eui_column1: number;
   eui_column1_name: string;
-  eui_column2?: string;
+  eui_column2?: number;
   eui_column2_name?: string;
-  eui_column3?: string;
+  eui_column3?: number;
   eui_column3_name?: string;
   id: number;
   level_name: string;
@@ -37,7 +37,7 @@ export type Goal = {
   salesforce_partner_name?: string;
   target_percentage: number;
   transactions_column?: string;
-  type: string;
+  type: 'standard' | 'transaction';
   access_level_instance_name: string;
   cycle_goals: CycleGoal[];
 }
