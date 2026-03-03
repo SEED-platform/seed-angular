@@ -34,6 +34,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [
+              "hammerjs",
               "swagger-ui-dist/swagger-ui-es-bundle"
             ],
             "assets": [
@@ -63,7 +64,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "3mb",
+                  "maximumWarning": "4mb",
                   "maximumError": "5mb"
                 },
                 {

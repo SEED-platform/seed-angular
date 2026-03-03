@@ -14,7 +14,6 @@ import type {
   IRowNode,
   ValueFormatterParams,
 } from 'ag-grid-community'
-import { saveAs } from 'file-saver'
 import { combineLatest, filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
 import { ColumnMappingProfileService, MappableColumnService } from '@seed/api'
@@ -460,7 +459,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .export(this.orgId, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
-        saveAs(blob, filename) // eslint-disable-line @typescript-eslint/no-unsafe-call
+        this._downloadBlob(blob, filename)
       })
   }
 
@@ -513,5 +512,14 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       is_omitted: rowNode.data.is_omitted,
       from_field_value: rowNode.data.from_field_value,
     } as ColumnMapping
+  }
+
+  private _downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
   }
 }
