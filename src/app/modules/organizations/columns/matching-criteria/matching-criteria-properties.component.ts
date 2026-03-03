@@ -12,15 +12,7 @@ import { MatchingCriteriaComponent } from './matching-criteria.component'
   selector: 'seed-organizations-column-matching-criteria',
   templateUrl: './matching-criteria.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    CriteriaListComponent,
-    FormsModule,
-    MaterialImports,
-    SharedImports,
-    ReactiveFormsModule,
-  ],
+  imports: [AgGridAngular, CommonModule, CriteriaListComponent, FormsModule, MaterialImports, SharedImports, ReactiveFormsModule],
 })
 export class MatchingCriteriaPropertiesComponent extends MatchingCriteriaComponent implements OnInit {
   ngOnInit(): void {

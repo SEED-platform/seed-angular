@@ -18,12 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-detail-sensor-readings-upload',
   templateUrl: './sensor-readings-upload.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    ProgressBarComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, ProgressBarComponent],
 })
 export class SensorReadingsUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper

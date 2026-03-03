@@ -49,15 +49,17 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
       this._geocodeService.geocodingEnabled(this.data.orgId),
       this._geocodeService.geocodingColumns(this.data.orgId),
       this._geocodeService.confidenceSummary(this.data.orgId, this.data.viewIds, this.data.type),
-    ]).pipe(
-      tap(([hasApiKey, geocodingEnabled, geoColumns, confidenceSummary]) => {
-        this.hasApiKey = hasApiKey
-        this.geocodingEnabled = geocodingEnabled
-        this.processGeoColumns(geoColumns)
-        this.processConfidenceSummary(confidenceSummary)
-        this.suggestVerify = hasApiKey && this.hasGeoColumns && this.geocodeState === 'verify'
-      }),
-    ).subscribe()
+    ])
+      .pipe(
+        tap(([hasApiKey, geocodingEnabled, geoColumns, confidenceSummary]) => {
+          this.hasApiKey = hasApiKey
+          this.geocodingEnabled = geocodingEnabled
+          this.processGeoColumns(geoColumns)
+          this.processConfidenceSummary(confidenceSummary)
+          this.suggestVerify = hasApiKey && this.hasGeoColumns && this.geocodeState === 'verify'
+        }),
+      )
+      .subscribe()
   }
 
   processGeoColumns({ PropertyState, TaxLotState }: GeocodingColumns) {

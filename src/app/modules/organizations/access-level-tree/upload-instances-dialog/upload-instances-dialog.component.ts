@@ -15,12 +15,7 @@ import type { UploadInstancesData } from '../access-level-tree.types'
   templateUrl: './upload-instances-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
   styleUrl: './upload-instances-dialog.component.scss',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MaterialImports,
-    TranslocoDirective,
-  ],
+  imports: [AlertComponent, CommonModule, MaterialImports, TranslocoDirective],
 })
 export class UploadInstancesDialogComponent implements OnDestroy {
   private _data = inject(MAT_DIALOG_DATA) as UploadInstancesData

@@ -12,11 +12,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-edit-state',
   templateUrl: './edit-state.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MaterialImports, ReactiveFormsModule],
 })
 export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)

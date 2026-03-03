@@ -41,13 +41,16 @@ export class UpdateDerivedDataComponent implements OnInit, OnDestroy {
     }
 
     this.stepper.next()
-    this._inventoryService.updateDerivedData(this.data.orgId, this.propertyViewIds, this.taxlotViewIds)
+    this._inventoryService
+      .updateDerivedData(this.data.orgId, this.propertyViewIds, this.taxlotViewIds)
       .pipe(
-        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          successFn,
-          progressBarObj: this.progressBarObj,
-        })),
+        switchMap(({ progress_key }) =>
+          this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            successFn,
+            progressBarObj: this.progressBarObj,
+          }),
+        ),
       )
       .subscribe()
   }

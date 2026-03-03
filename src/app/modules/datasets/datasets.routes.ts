@@ -30,7 +30,9 @@ export default [
         return userService.currentOrganizationId$.pipe(
           // TODO retrieve a single dataset instead
           take(1),
-          tap((orgId) => { datasetService.list(orgId) }),
+          tap((orgId) => {
+            datasetService.list(orgId)
+          }),
           switchMap(() => datasetService.datasets$),
         )
       },

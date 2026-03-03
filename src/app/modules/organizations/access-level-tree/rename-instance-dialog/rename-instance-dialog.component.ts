@@ -13,13 +13,7 @@ import type { RenameInstanceData } from '..'
   selector: 'seed-rename-instance-dialog',
   templateUrl: './rename-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    A11yModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [A11yModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class RenameInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as RenameInstanceData

@@ -127,8 +127,8 @@ export const buildColumnDefs = (
       },
     },
     /* UNITS: Only editable for Area, EUI, GHG, GHGI, Water use, WUI
-    * Dropdowns are populated based on a unit type map
-    */
+     * Dropdowns are populated based on a unit type map
+     */
     {
       field: 'from_units',
       headerName: 'Units',

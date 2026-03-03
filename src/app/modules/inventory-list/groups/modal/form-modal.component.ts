@@ -12,12 +12,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-inventory-list-groups-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

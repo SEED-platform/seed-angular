@@ -19,14 +19,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-detail-green-button-upload-modal',
   templateUrl: './green-button-upload-modal.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ProgressBarComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ProgressBarComponent, ReactiveFormsModule],
 })
 export class GreenButtonUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper

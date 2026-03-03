@@ -46,27 +46,37 @@ export class ExportModalComponent implements OnDestroy {
 
   export() {
     const successFn = ({ unique_id }: ProgressResponse) => {
-      this._cacheService.getCacheEntry(this.data.orgId, unique_id).pipe(
-        tap((response: { data: string }) => {
-          const blob = this.getBlob(response.data)
-          this.downloadData(blob)
-          this.close()
-        }),
-        take(1),
-      ).subscribe()
+      this._cacheService
+        .getCacheEntry(this.data.orgId, unique_id)
+        .pipe(
+          tap((response: { data: string }) => {
+            const blob = this.getBlob(response.data)
+            this.downloadData(blob)
+            this.close()
+          }),
+          take(1),
+        )
+        .subscribe()
     }
 
     this.initExport()
-    this._inventoryService.startInventoryExport(this.data.orgId, this.exportData)
+    this._inventoryService
+      .startInventoryExport(this.data.orgId, this.exportData)
       .pipe(
-        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          successFn,
-          failureFn: () => { this.close() },
-          progressBarObj: this.progressBarObj,
-        })),
+        switchMap(({ progress_key }) =>
+          this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            successFn,
+            failureFn: () => {
+              this.close()
+            },
+            progressBarObj: this.progressBarObj,
+          }),
+        ),
         takeUntil(this._unsubscribeAll$),
-        catchError(() => { return EMPTY }),
+        catchError(() => {
+          return EMPTY
+        }),
       )
       .subscribe()
   }

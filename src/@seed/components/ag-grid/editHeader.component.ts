@@ -5,7 +5,7 @@ import { Component } from '@angular/core'
   template: `
     <div class="flex items-center gap-2">
       <span>{{ name }}</span>
-      <span class="material-icons text-secondary scale-75 my-auto">edit</span>
+      <span class="material-icons text-secondary my-auto scale-75">edit</span>
     </div>
   `,
 })

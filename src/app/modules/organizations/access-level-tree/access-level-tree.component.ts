@@ -26,13 +26,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
 @Component({
   selector: 'seed-organizations-access-level-tree',
   templateUrl: './access-level-tree.component.html',
-  imports: [
-    CommonModule,
-    ImageOverlayDirective,
-    MaterialImports,
-    PageComponent,
-    SharedImports,
-  ],
+  imports: [CommonModule, ImageOverlayDirective, MaterialImports, PageComponent, SharedImports],
   encapsulation: ViewEncapsulation.None,
 })
 export class AccessLevelTreeComponent implements OnInit, OnDestroy {

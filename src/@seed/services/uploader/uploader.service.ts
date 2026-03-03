@@ -72,25 +72,21 @@ export class UploaderService {
   }
 
   /*
-  * Check the progress of Main Progress and its Sub Progress
-  * Main progress will run until it completes
-  * Sub Progresses can complete several times and will run continuously until Main Progress is completed
-  * the stop$ stream is used to end the Sub Progress stream
-  */
+   * Check the progress of Main Progress and its Sub Progress
+   * Main progress will run until it completes
+   * Sub Progresses can complete several times and will run continuously until Main Progress is completed
+   * the stop$ stream is used to end the Sub Progress stream
+   */
   checkProgressLoopMainSub(mainParams: CheckProgressLoopParams, subParams: CheckProgressLoopParams) {
     const stop$ = new Subject<void>()
-    const main$ = this.checkProgressLoop(mainParams)
-      .pipe(
-        finalize(() => {
-          stop$.next()
-          stop$.complete()
-        }),
-      )
+    const main$ = this.checkProgressLoop(mainParams).pipe(
+      finalize(() => {
+        stop$.next()
+        stop$.complete()
+      }),
+    )
 
-    const sub$ = this.checkProgressLoop({ ...subParams, subProgress: true })
-      .pipe(
-        takeUntil(stop$),
-      )
+    const sub$ = this.checkProgressLoop({ ...subParams, subProgress: true }).pipe(takeUntil(stop$))
 
     return combineLatest([main$, sub$])
   }

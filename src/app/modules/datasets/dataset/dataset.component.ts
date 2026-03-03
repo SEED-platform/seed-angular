@@ -16,11 +16,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-dataset',
   templateUrl: './dataset.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, PageComponent],
 })
 export class DatasetComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
@@ -43,11 +39,15 @@ export class DatasetComponent implements OnDestroy, OnInit {
   orgId: number
 
   ngOnInit(): void {
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => { this.orgId = orgId }),
-      switchMap(() => this.getCycles()),
-      switchMap(() => this.getDataset()),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+        }),
+        switchMap(() => this.getCycles()),
+        switchMap(() => this.getDataset()),
+      )
+      .subscribe()
   }
 
   getCycles() {
@@ -80,7 +80,11 @@ export class DatasetComponent implements OnDestroy, OnInit {
     this.columnDefs = [
       { field: 'id', hide: true },
       { field: 'uploaded_filename', headerName: 'File Name' },
-      { field: 'created', headerName: 'Date Imported', valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString() },
+      {
+        field: 'created',
+        headerName: 'Date Imported',
+        valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString(),
+      },
       { field: 'source_type', headerName: 'Source Type' },
       { field: 'num_rows', headerName: 'Record Count' },
       { field: 'cycle_name', headerName: 'Cycle' },
@@ -147,11 +151,14 @@ export class DatasetComponent implements OnDestroy, OnInit {
       data: { model: 'Import File', instance: importFile.uploaded_filename },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._datasetService.deleteFile(this.orgId, importFile.id)),
-      switchMap(() => this.getDataset()),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._datasetService.deleteFile(this.orgId, importFile.id)),
+        switchMap(() => this.getDataset()),
+      )
+      .subscribe()
   }
 
   downloadDocument(file: string, filename: string) {

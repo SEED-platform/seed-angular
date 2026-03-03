@@ -27,11 +27,7 @@ export const MY_DATE_FORMATS = {
   selector: 'seed-cycles-form-modal',
   templateUrl: './form-modal.component.html',
   providers: [DatePipe, { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }],
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)

@@ -17,13 +17,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-up.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
 })
 export class AuthSignUpComponent implements OnInit {
   private _authService = inject(AuthService)

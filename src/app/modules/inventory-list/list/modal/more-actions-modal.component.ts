@@ -12,11 +12,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-more-actions-modal',
   templateUrl: './more-actions-modal.component.html',
-  imports: [
-    MaterialImports,
-    ProgressBarComponent,
-    DQCResultsModalComponent,
-  ],
+  imports: [MaterialImports, ProgressBarComponent, DQCResultsModalComponent],
 })
 export class MoreActionsModalComponent implements OnDestroy {
   private _dataQualityService = inject(DataQualityService)
@@ -36,7 +32,13 @@ export class MoreActionsModalComponent implements OnDestroy {
     { name: 'Audit Template: Export', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Audit Template: Update', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Change Access Level', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name: 'Data Quality Check', action: () => { this.dataQualityCheck() }, disabled: !this.data.viewIds.length },
+    {
+      name: 'Data Quality Check',
+      action: () => {
+        this.dataQualityCheck()
+      },
+      disabled: !this.data.viewIds.length,
+    },
     { name: 'Delete', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Derived Data: Update', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Email', action: this.tempAction, disabled: !this.data.viewIds.length },
@@ -63,7 +65,8 @@ export class MoreActionsModalComponent implements OnDestroy {
     const [propertyViewIds, taxlotViewIds] = this.data.type === 'properties' ? [this.data.viewIds, []] : [[], this.data.viewIds]
     this.progressBarObj.statusMessage = 'Running Data Quality Check...'
     this.showProgress = true
-    this._dataQualityService.startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, null)
+    this._dataQualityService
+      .startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, null)
       .pipe(
         take(1),
         switchMap(({ progress_key }) => {
@@ -72,8 +75,12 @@ export class MoreActionsModalComponent implements OnDestroy {
             progressBarObj: this.progressBarObj,
           })
         }),
-        tap(({ unique_id }) => { this.openDataQualityResultsModal(unique_id) }),
-        finalize(() => { this.showProgress = false }),
+        tap(({ unique_id }) => {
+          this.openDataQualityResultsModal(unique_id)
+        }),
+        finalize(() => {
+          this.showProgress = false
+        }),
       )
       .subscribe()
   }
