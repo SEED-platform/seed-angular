@@ -134,7 +134,7 @@
       overflow: visible !important
     }
   }
-  
+
   .ng-star-inserted {
     width: 100%;
   }
@@ -152,7 +152,7 @@
   }
 }
 
-.seed-chip 
+.seed-chip
 .mat-mdc-chip-action-label {
   @apply inline !text-gray-700 dark:!text-secondary !text-xs;
 }
@@ -178,7 +178,7 @@
   .nw-editor {
     background-color: theme('colors.gray.800');
   }
-  
+
   .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked {
     background: white !important;
   }
@@ -198,7 +198,7 @@
     border-radius: 4px;
     margin: 7px 0;
   }
-  
+
   .dark & {
     .ag-floating-filter-input {
       outline: 1px solid #484848;
@@ -210,7 +210,7 @@
   .mat-step-header {
     background: transparent !important;
   }
-  
+
   .mat-step-header:hover {
     background-color: transparent !important;
     border-radius: 25px !important;
@@ -259,15 +259,15 @@
 }
 
 .border-button-toggle-group-vertical {
-    @apply w-fit gap-0 !important;
-    
-      .mat-button-toggle {
-        border: 1px solid rgb(170 170 170) !important;
-      }
-    
-      .mat-button-toggle-checked {
-        @apply dark:bg-primary dark:bg-opacity-50 !important;
-      }
+  @apply w-fit gap-0 !important;
+
+  .mat-button-toggle {
+    border: 1px solid rgb(170 170 170) !important;
+  }
+
+  .mat-button-toggle-checked {
+    @apply dark:bg-primary dark:bg-opacity-50 !important;
+  }
 }
 
 .compact-form {
@@ -293,4 +293,34 @@
 
 .mat-mdc-text-field-wrapper .mdc-notched-outline__notch {
   border-left: none !important;
+}
+
+.cdk-overlay-pane:has(.wide-select-lg) {
+  width: 700px !important;
+}
+
+.cdk-overlay-pane:has(.wide-select-md) {
+  width: 500px !important;
+}
+
+.cdk-overlay-pane:has(.wide-select-sm) {
+  width: 400px !important;
+}
+
+.strike-through {
+  mat-button-toggle:not(.mat-button-toggle-checked) {
+    span {
+      @apply line-through;
+    }
+  }
+}
+
+.accordion-sub-tables {
+  .mat-expansion-panel {
+      @apply border m-0 !rounded-none;
+  }
+
+  .mat-expansion-panel-body {
+    @apply p-0;
+  }
 }

@@ -67,6 +67,7 @@ export type DataMappingRow = {
   omit?: boolean; // optional, used for omitting columns
   isExtraData?: boolean; // used internally, not part of the API
   isNewColumn?: boolean; // used internally, not part of the API
+  hasDuplicate?: boolean; // used internally, not part of the API
 }
 
 export type MappedData = {

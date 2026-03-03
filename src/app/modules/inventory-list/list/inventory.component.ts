@@ -212,7 +212,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
    */
   loadInventory(): Observable<null> {
     this.validateCycleId()
-    if (!this.cycleId) return of(null)
+    // org change can lead to a mismatch
+    if (!this.cycleId || this.orgId !== this.cycle.organization) {
+      return of(null)
+    }
+
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
     const params = new URLSearchParams({
       cycle: this.cycleId.toString(),
