@@ -11,7 +11,6 @@ import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { InventoryGroup } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
-import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -19,7 +18,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
-  imports: [AgGridAngular, CommonModule, FormModalComponent, MaterialImports, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, NotFoundComponent, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)

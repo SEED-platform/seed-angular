@@ -2,20 +2,18 @@ import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Analysis, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { MaterialImports } from '@seed/materials'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
-  imports: [AnalysesGridComponent, AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent, SharedImports],
+  imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent, SharedImports],
 })
 export class AnalysesComponent implements OnInit {
   private _analysisService = inject(AnalysisService)

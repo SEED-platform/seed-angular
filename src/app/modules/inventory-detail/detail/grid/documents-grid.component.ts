@@ -15,7 +15,7 @@ import { DocumentUploadModalComponent } from '../modal/document-upload.component
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
   templateUrl: './documents-grid.component.html',
-  imports: [AgGridAngular, CommonModule, DocumentUploadModalComponent, MaterialImports],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization
@@ -72,7 +72,7 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
     return `
       <div class="flex gap-2 mt-2 align-center">
         <span class="material-icons cursor-pointer text-secondary" title="Download" data-action="download">cloud_download</span>
-        <span class="material-icons cursor-pointer text-secondary" title="Edit" data-action="delete">clear</span>
+        <span class="material-icons cursor-pointer text-secondary" title="Delete" data-action="delete">clear</span>
       </div>
     `
   }

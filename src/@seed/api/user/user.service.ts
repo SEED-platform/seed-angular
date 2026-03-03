@@ -195,6 +195,10 @@ export class UserService {
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
 
+    userSettings.pins ??= {}
+    userSettings.pins.properties ??= { left: [], right: [] }
+    userSettings.pins.taxlots ??= { left: [], right: [] }
+
     userSettings.insights ??= {}
     userSettings.insights.propertyInsights ??= {}
     userSettings.insights.propertyInsights.datasetVisibility ??= ['compliant', 'non-compliant', 'unknown', 'whisker']

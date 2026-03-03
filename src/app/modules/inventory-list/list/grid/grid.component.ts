@@ -7,14 +7,14 @@ import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridR
 import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory/inventory.types'
+import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 
 @Component({
   selector: 'seed-inventory-grid',
   templateUrl: './grid.component.html',
-  imports: [AgGridAngular, CellHeaderMenuComponent, CommonModule, InventoryGridControlsComponent],
+  imports: [AgGridAngular, CommonModule, InventoryGridControlsComponent],
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]
@@ -115,7 +115,7 @@ export class InventoryGridComponent implements OnChanges {
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'share'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'merge'),
       this.buildShortcutColumn('meters_exist_indicator', 'Meters', 78, 'bolt', 'meters'),
       this.buildShortcutColumn('notes_count', 'Notes', 71, 'mode_comment', 'notes'),
       this.buildShortcutColumn('groups_indicator', 'Groups', 79, 'G'),

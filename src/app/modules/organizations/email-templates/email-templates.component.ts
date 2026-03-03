@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { NgxWigModule } from 'ngx-wig'
 import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { type EmailTemplate, PostOfficeService, UserService } from '@seed/api'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
@@ -15,7 +15,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-email-templates',
   templateUrl: './email-templates.component.html',
-  imports: [CommonModule, MaterialImports, NgxWigModule, PageComponent, ReactiveFormsModule],
+  imports: [CommonModule, MaterialImports, NgxWigModule, NotFoundComponent, PageComponent, ReactiveFormsModule],
 })
 export class EmailTemplatesComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)

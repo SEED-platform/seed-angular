@@ -19,12 +19,11 @@ import type {
   MappingSuggestionsResponse,
 } from '@seed/api'
 import { ColumnMappingProfileService } from '@seed/api'
-import { AlertComponent, PageComponent } from '@seed/components'
+import { AlertComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj } from '@seed/services/uploader'
 import type { InventoryDisplayType } from 'app/modules/inventory'
-import { HelpComponent } from '../help.component'
 import { buildColumnDefs } from './column-defs'
 import { dataTypeMap, displayToDataTypeMap } from './constants'
 import { CreateProfileComponent } from './modal/create-profile.component'
@@ -32,7 +31,7 @@ import { CreateProfileComponent } from './modal/create-profile.component'
 @Component({
   selector: 'seed-map-data',
   templateUrl: './map-data.component.html',
-  imports: [AgGridAngular, AlertComponent, CommonModule, HelpComponent, MaterialImports, PageComponent, ReactiveFormsModule, FormsModule],
+  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ReactiveFormsModule, FormsModule],
 })
 export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() orgId: number

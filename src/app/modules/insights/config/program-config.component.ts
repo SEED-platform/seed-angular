@@ -10,7 +10,7 @@ import type { Program, ProgramResponse, ProgramUpsertPayload } from '@seed/api'
 import { ProgramService } from '@seed/api'
 import type { Column } from '@seed/api/column/column.types'
 import type { Cycle } from '@seed/api/cycle/cycle.types'
-import { AlertComponent, ModalHeaderComponent } from '@seed/components'
+import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { Organization } from 'app/modules/organizations/organizations.types'
@@ -18,7 +18,7 @@ import type { Organization } from 'app/modules/organizations/organizations.types
 @Component({
   selector: 'seed-program-config',
   templateUrl: './program-config.component.html',
-  imports: [AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
 })
 export class ProgramConfigComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<ProgramConfigComponent>)
