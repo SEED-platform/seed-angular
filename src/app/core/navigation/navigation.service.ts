@@ -198,7 +198,7 @@ export class NavigationService {
           id: 'insights/program-overview',
           link: '/insights/program-overview',
           title: 'Program Overview',
-          icon: 'fa-solid:chart-simple',
+          icon: 'fa-solid:chart-column',
           type: 'basic',
         },
         {

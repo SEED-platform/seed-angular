@@ -107,6 +107,7 @@ export type OrganizationUserSettings = {
   profile?: UserSettingsProfiles;
   crossCycles?: UserSettingsCrossCycles;
   labels?: UserLabelSettings;
+  insights?: InsightsUserSettings;
 }
 
 type UserSettingsFilters = {
@@ -130,6 +131,22 @@ type UserSettingsCrossCycles = {
 }
 
 type UserLabelSettings = { ids: number[]; operator: LabelOperator }
+
+export type InsightDatasetVisibility = 'compliant' | 'non-compliant' | 'unknown' | 'whisker'
+
+export type PropertyInsightsUserSettings = {
+  programId?: number | null;
+  cycleId?: number | null;
+  metricType?: 0 | 1 | null;
+  xAxisColumnId?: number | null;
+  accessLevel?: string | null;
+  accessLevelInstanceId?: number | null;
+  datasetVisibility?: InsightDatasetVisibility[];
+}
+
+export type InsightsUserSettings = {
+  propertyInsights?: PropertyInsightsUserSettings;
+}
 
 export type OrganizationUsersResponse = {
   users: OrganizationUser[];
