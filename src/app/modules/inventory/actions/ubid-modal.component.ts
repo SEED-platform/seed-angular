@@ -177,6 +177,9 @@ export class UbidModalComponent implements OnInit, OnDestroy {
       .pipe(
         filter(Boolean),
         switchMap(() => this.CreateUpdateDeleteUbid()),
+        tap(() => {
+          this.close(true)
+        }),
         finalize(() => {
           this.inProgress = false
         }),
@@ -185,13 +188,24 @@ export class UbidModalComponent implements OnInit, OnDestroy {
   }
 
   validateNewUbids() {
-    const originalUbidStrings = this.originalUbids.map((u) => u.ubid)
-    const ubidsToValidate: string[] = []
-    for (const ubid of this.ubids.map((u) => u.ubid)) {
-      if (!originalUbidStrings.includes(ubid)) {
-        ubidsToValidate.push(ubid)
-      }
+    const ubidStrings = this.ubids.map((u) => u.ubid?.trim()).filter(Boolean)
+    const duplicateUbidStrings = new Set<string>()
+    const seenUbidStrings = new Set<string>()
+
+    for (const ubid of ubidStrings) {
+      if (seenUbidStrings.has(ubid)) duplicateUbidStrings.add(ubid)
+      seenUbidStrings.add(ubid)
     }
+
+    if (duplicateUbidStrings.size) {
+      for (const ubid of duplicateUbidStrings) {
+        this.errMessages.push(`UBID ${ubid} already exists`)
+      }
+      return of(false)
+    }
+
+    const originalUbidStrings = new Set(this.originalUbids.map((u) => u.ubid))
+    const ubidsToValidate = [...seenUbidStrings].filter((ubid) => !originalUbidStrings.has(ubid))
     if (!ubidsToValidate.length) return of(true)
 
     return forkJoin(ubidsToValidate.map((ubid) => this._ubidService.validate(this.data.orgId, ubid))).pipe(

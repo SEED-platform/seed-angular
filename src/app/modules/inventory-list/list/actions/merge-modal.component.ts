@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, EMPTY, Subject, take, tap } from 'rxjs'
+import { catchError, combineLatest, EMPTY, of, Subject, take, tap } from 'rxjs'
 import type { Column } from '@seed/api'
 import { InventoryService, MappableColumnService, MatchingService } from '@seed/api'
 import { AlertComponent, ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
@@ -53,7 +53,7 @@ export class MergeModalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const { orgId, viewIds } = this.data
-    const metersExist$ = this._inventoryService.propertiesMetersExist(orgId, viewIds)
+    const metersExist$ = this.data.type === 'properties' ? this._inventoryService.propertiesMetersExist(orgId, viewIds) : of(false)
     const columns$
       = this.data.type === 'taxlots'
         ? this._mappableColumnService.getTaxLotColumns(orgId)
@@ -117,11 +117,11 @@ export class MergeModalComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.status = 'confirm'
     this.title = 'Are you sure you want to continue?'
-    console.log('are you sure')
   }
 
   onConfirm() {
-    const { orgId, viewIds, type } = this.data
+    const { orgId, type } = this.data
+    const viewIds = this.getOrderedViewIds()
     const singularType = type === 'taxlots' ? 'tax lot' : 'property'
     this._matchingService
       .mergeInventory(orgId, viewIds, type)
@@ -141,6 +141,19 @@ export class MergeModalComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe()
+  }
+
+  getOrderedViewIds(): number[] {
+    const orderedViewIds: number[] = []
+
+    this.preGridApi?.forEachNodeAfterFilterAndSort((node) => {
+      const state = node.data as State | undefined
+      const viewId = this.data.type === 'taxlots' ? state?.taxlot_view_id : state?.property_view_id
+      if (viewId) orderedViewIds.push(viewId)
+    })
+
+    // Legacy merge order is bottom-to-top; reverse the displayed top-to-bottom order.
+    return orderedViewIds.length ? orderedViewIds.toReversed() : [...this.data.viewIds]
   }
 
   close(success = false): void {

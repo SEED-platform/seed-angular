@@ -35,16 +35,19 @@ export class FempExportModalComponent implements OnDestroy {
   }
 
   onSubmit() {
+    const filename = this.filename.trim()
+    if (!filename) return
+    const downloadFilename = filename.toLowerCase().endsWith('.xlsx') ? filename : `${filename}.xlsx`
     this.inProgress = true
     const exportRequest
       = this.exportType === 'evaluation'
-        ? this._inventoryService.evaluationExportToCts(this.data.orgId, this.data.viewIds, this.filename)
-        : this._inventoryService.facilityBpsExportToCts(this.data.orgId, this.data.viewIds, this.filename)
+        ? this._inventoryService.evaluationExportToCts(this.data.orgId, this.data.viewIds, downloadFilename)
+        : this._inventoryService.facilityBpsExportToCts(this.data.orgId, this.data.viewIds, downloadFilename)
 
     exportRequest
       .pipe(
         tap((response) => {
-          this.downloadData(response)
+          this.downloadData(response, downloadFilename)
         }),
         finalize(() => {
           this.inProgress = false
@@ -54,14 +57,14 @@ export class FempExportModalComponent implements OnDestroy {
       .subscribe()
   }
 
-  downloadData(data: Blob) {
+  downloadData(data: Blob, filename: string) {
     const a = document.createElement('a')
     const url = URL.createObjectURL(data)
     a.href = url
-    a.download = this.filename
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
-    this._snackBar.success(`Exported ${this.filename}`)
+    this._snackBar.success(`Exported ${filename}`)
   }
 
   close(): void {

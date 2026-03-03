@@ -31,5 +31,5 @@
 </div>
 
 <div class="mt-4 flex justify-end gap-2">
-  <button [disabled]="!filename || inProgress" (click)="onSubmit()" mat-raised-button color="primary">Export</button>
+  <button [disabled]="!filename.trim() || inProgress" (click)="onSubmit()" mat-raised-button color="primary">Export</button>
 </div>
