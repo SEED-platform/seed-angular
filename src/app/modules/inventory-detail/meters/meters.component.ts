@@ -176,7 +176,7 @@ export class MetersComponent implements OnDestroy, OnInit {
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
 
-    // hide column if all values are falsey
+    // hide column if all values are falsy
     const showColumn = (field: string, rowData: Record<string, unknown>[]) => rowData.some((row) => !!row[field])
     this.meterDefs = this.meterDefs.filter((colDef) => colDef.field === 'actions' || showColumn(colDef.field, this.meterData))
   }

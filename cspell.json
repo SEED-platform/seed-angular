@@ -18,28 +18,5 @@
     "/.spelling.dic",
     "/pnpm-lock.yaml"
   ],
-  "useGitignore": true,
-  "words": [
-    "BEDES",
-    "bsyncr",
-    "CEJST",
-    "eeej",
-    "EPSG",
-    "EISA",
-    "FEMP",
-    "falsey",
-    "greenbutton",
-    "moveend",
-    "NMEC",
-    "overlaycontainer",
-    "pvwatts",
-    "SRID",
-    "Syncr",
-    "sqft",
-    "ubids",
-    "unlinkable",
-    "unpair",
-    "Unpair",
-    "unpairing",
-  ]
+  "useGitignore": true
 }

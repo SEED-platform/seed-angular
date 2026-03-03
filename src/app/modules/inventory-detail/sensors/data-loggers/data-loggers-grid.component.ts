@@ -56,7 +56,7 @@ export class DataLoggersGridComponent implements OnChanges {
     if (changes.dataLoggers) {
       this.gridHeight = Math.min(this.dataLoggers.length * 43 + 50, 400)
 
-      // hide column if all values are falsey
+      // hide column if all values are falsy
       const constantCols = new Set(['id', 'display_name', 'location_description', 'actions'])
       const showColumn = (field: string, rowData: Record<string, unknown>[]) => rowData.some((row) => !!row[field])
       this.columnDefs = this.columnDefs.filter((colDef) => constantCols.has(colDef.field) || showColumn(colDef.field, this.dataLoggers))
