@@ -22,22 +22,27 @@ export class ProgramService {
   constructor() {
     this._userService.currentOrganizationId$
       .pipe(
-        tap((orgId) => { this.list(orgId) }),
+        tap((orgId) => {
+          this.list(orgId)
+        }),
       )
       .subscribe()
   }
 
   list(orgId: number) {
     const url = `/api/v3/compliance_metrics/?organization_id=${orgId}`
-    this._httpClient.get<ProgramsResponse>(url).pipe(
-      map(({ compliance_metrics }) => {
-        this.programs$.next(compliance_metrics)
-        return compliance_metrics
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching Programs')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<ProgramsResponse>(url)
+      .pipe(
+        map(({ compliance_metrics }) => {
+          this.programs$.next(compliance_metrics)
+          return compliance_metrics
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching Programs')
+        }),
+      )
+      .subscribe()
   }
 
   create(orgId: number, data: Program): Observable<ProgramResponse> {

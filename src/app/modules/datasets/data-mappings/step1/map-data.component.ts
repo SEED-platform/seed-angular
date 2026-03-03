@@ -75,7 +75,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   gridOptions = {
     singleClickEdit: true,
     suppressMovableColumns: true,
-    getRowClass: (params: RowClassParams<DataMappingRow>) => params.data?.hasDuplicate ? 'bg-red-700/50' : '',
+    getRowClass: (params: RowClassParams<DataMappingRow>) => (params.data?.hasDuplicate ? 'bg-red-700/50' : ''),
   }
 
   progressBarObj: ProgressBarObj = {

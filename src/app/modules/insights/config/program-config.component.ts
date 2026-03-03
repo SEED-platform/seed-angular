@@ -18,15 +18,7 @@ import type { Organization } from 'app/modules/organizations/organizations.types
 @Component({
   selector: 'seed-program-config',
   templateUrl: './program-config.component.html',
-  imports: [
-    AlertComponent,
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-  ],
+  imports: [AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
 })
 export class ProgramConfigComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<ProgramConfigComponent>)
@@ -89,11 +81,15 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   }
 
   removeProgram() {
-    this._programService.delete(this.data.org.id, this.program.id)
+    this._programService
+      .delete(this.data.org.id, this.program.id)
       .pipe(
         take(1),
-        finalize(() => { this.close() }),
-      ).subscribe()
+        finalize(() => {
+          this.close()
+        }),
+      )
+      .subscribe()
   }
 
   removeItem(item: number, key: 'cycles' | 'x_axis_columns') {
@@ -126,13 +122,15 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
       ? this._programService.update(this.data.org.id, this.program.id, data)
       : this._programService.create(this.data.org.id, data)
 
-    request$.pipe(
-      take(1),
-      tap(({ compliance_metric }) => {
-        const programId = compliance_metric.id
-        this.close(programId)
-      }),
-    ).subscribe()
+    request$
+      .pipe(
+        take(1),
+        tap(({ compliance_metric }) => {
+          const programId = compliance_metric.id
+          this.close(programId)
+        }),
+      )
+      .subscribe()
   }
 
   close(programId = null) {

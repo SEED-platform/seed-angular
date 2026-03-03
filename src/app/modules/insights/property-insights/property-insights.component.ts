@@ -11,7 +11,19 @@ import type { ActiveElement, ScatterDataPoint, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 import { combineLatest, debounceTime, EMPTY, filter, map, merge, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
-import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Column, Cycle, Organization, Program, ProgramData, PropertyInsightDataset, PropertyInsightPoint, ResultsByCycles, SimpleCartesianScale } from '@seed/api'
+import type {
+  AccessLevelInstancesByDepth,
+  AccessLevelsByDepth,
+  Column,
+  Cycle,
+  Organization,
+  Program,
+  ProgramData,
+  PropertyInsightDataset,
+  PropertyInsightPoint,
+  ResultsByCycles,
+  SimpleCartesianScale,
+} from '@seed/api'
 import { ColumnService, CycleService, OrganizationService, ProgramService } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -143,10 +155,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     })
   }
 
-  setDependencies(
-    { org, cycles, propertyColumns }:
-    { org: Organization; cycles: Cycle[]; propertyColumns: Column[] },
-  ) {
+  setDependencies({ org, cycles, propertyColumns }: { org: Organization; cycles: Cycle[]; propertyColumns: Column[] }) {
     this.org = org
     this.cycles = cycles
     this.propertyColumns = propertyColumns
@@ -154,20 +163,24 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   getPrograms() {
-    this._programService.programs$.pipe(
-      filter(() => !!this.org),
-      tap((programs) => {
-        this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
-        this.program = programs.find((p) => p.id === this.programId)
-        if (!this.program) {
-          this.programChange(this.programs[0])
-        }
-      }),
-      filter(() => !!(this.program)),
-      switchMap(() => this.evaluateProgram(this.accessLevelInstanceId)),
-      tap(() => { this.setForm() }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    this._programService.programs$
+      .pipe(
+        filter(() => !!this.org),
+        tap((programs) => {
+          this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
+          this.program = programs.find((p) => p.id === this.programId)
+          if (!this.program) {
+            this.programChange(this.programs[0])
+          }
+        }),
+        filter(() => !!this.program),
+        switchMap(() => this.evaluateProgram(this.accessLevelInstanceId)),
+        tap(() => {
+          this.setForm()
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
   }
 
   setForm() {
@@ -198,30 +211,44 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       this.form.get('cycleId')?.valueChanges.pipe(map((value) => ({ field: 'cycleId', value }))),
       this.form.get('xAxisColumnId')?.valueChanges.pipe(map((value) => ({ field: 'xAxisColumnId', value }))),
       this.form.get('metricType')?.valueChanges.pipe(map((value) => ({ field: 'metricType', value }))),
-    ).pipe(
-      tap(() => { this.loading = true }),
-      debounceTime(300),
-      tap(() => {
-        this.setChart()
-        if (this.cycleId) {
-          this.setResults()
-          this.loading = false
-        }
-      }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    )
+      .pipe(
+        tap(() => {
+          this.loading = true
+        }),
+        debounceTime(300),
+        tap(() => {
+          this.setChart()
+          if (this.cycleId) {
+            this.setResults()
+            this.loading = false
+          }
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
 
-    this.form.get('accessLevel')?.valueChanges.pipe(
-      tap((accessLevel) => { this.getPossibleAccessLevelInstances(accessLevel) }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    this.form
+      .get('accessLevel')
+      ?.valueChanges.pipe(
+        tap((accessLevel) => {
+          this.getPossibleAccessLevelInstances(accessLevel)
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
 
-    this.form.get('accessLevelInstanceId')?.valueChanges.pipe(
-      filter((id) => !!(id && this.org && this.cycleId)),
-      switchMap((id) => this.evaluateProgram(id)),
-      tap(() => { this.setChart() }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    this.form
+      .get('accessLevelInstanceId')
+      ?.valueChanges.pipe(
+        filter((id) => !!(id && this.org && this.cycleId)),
+        switchMap((id) => this.evaluateProgram(id)),
+        tap(() => {
+          this.setChart()
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
   }
 
   setChart() {
@@ -234,20 +261,19 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   getAliTree() {
-    zip(
-      this._organizationService.accessLevelTree$,
-      this._organizationService.accessLevelInstancesByDepth$,
-    ).pipe(
-      tap(([accessLevelTree, accessLevelsByDepth]) => {
-        this.accessLevelNames = accessLevelTree.accessLevelNames
-        this.accessLevelInstancesByDepth = accessLevelsByDepth
-        this.getPossibleAccessLevelInstances(this.accessLevelNames?.at(-1))
+    zip(this._organizationService.accessLevelTree$, this._organizationService.accessLevelInstancesByDepth$)
+      .pipe(
+        tap(([accessLevelTree, accessLevelsByDepth]) => {
+          this.accessLevelNames = accessLevelTree.accessLevelNames
+          this.accessLevelInstancesByDepth = accessLevelsByDepth
+          this.getPossibleAccessLevelInstances(this.accessLevelNames?.at(-1))
 
-        // suggest access level instance if null
-        this.form.get('accessLevelInstanceId')?.setValue(this.accessLevelInstances[0]?.id)
-      }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+          // suggest access level instance if null
+          this.form.get('accessLevelInstanceId')?.setValue(this.accessLevelInstances[0]?.id)
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
   }
 
   getPossibleAccessLevelInstances(accessLevelName: string): void {
@@ -338,10 +364,13 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       { field: 'distance', headerName: 'Distance to Target', flex: 1 },
     ]
 
-    this.rowData = this.chart.data.datasets.reduce((acc, { label, data }) => {
-      acc[label] = data
-      return acc
-    }, { compliant: [], 'non-compliant': [], unknown: [] })
+    this.rowData = this.chart.data.datasets.reduce(
+      (acc, { label, data }) => {
+        acc[label] = data
+        return acc
+      },
+      { compliant: [], 'non-compliant': [], unknown: [] },
+    )
   }
 
   setScheme() {
@@ -355,8 +384,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * Step 2, set chart settings (axes name, background, labels...)
-  */
+   * Step 2, set chart settings (axes name, background, labels...)
+   */
   setChartSettings() {
     if (!this.program) return
     const [xAxisName, yAxisName] = this.getXYAxisName()
@@ -386,9 +415,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.xCategorical = ['string', 'boolean'].includes(xAxisCol.data_type)
     const energyCol = this.propertyColumns.find((col) => col.id === this.program.actual_energy_column)
     const emissionCol = this.propertyColumns.find((col) => col.id === this.program.actual_emission_column)
-    const yAxisName = this.metricType === 0
-      ? energyCol?.display_name
-      : emissionCol?.display_name
+    const yAxisName = this.metricType === 0 ? energyCol?.display_name : emissionCol?.display_name
 
     return [xAxisName, yAxisName]
   }
@@ -400,8 +427,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   /*
-  * Step 3: Loads datasets into the chart.
-  */
+   * Step 3: Loads datasets into the chart.
+   */
   loadDatasets() {
     if (!this.program || !this.data) return
 
@@ -477,7 +504,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     // Ranked distance from target (col id = 0)
     if (this.xAxisColumnId === 0) {
-      nonCompliant.data.sort((a, b) => (b.distance) - (a.distance))
+      nonCompliant.data.sort((a, b) => b.distance - a.distance)
       for (const [i, item] of nonCompliant.data.entries()) {
         item.x = i + 1
       }
@@ -524,7 +551,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       xMax: 0,
       yMin: 0,
       yMax: 0,
-      borderColor: () => this.scheme === 'dark' ? '#ffffffff' : '#333333',
+      borderColor: () => (this.scheme === 'dark' ? '#ffffffff' : '#333333'),
       borderWidth: 1,
       display: this.datasetVisibility.includes('whisker'),
       arrowHeads: {

@@ -18,13 +18,7 @@ import { ProgramConfigComponent } from '../config'
 @Component({
   selector: 'seed-program-overview',
   templateUrl: './program-overview.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    PageComponent,
-    ProgressBarComponent,
-    NotFoundComponent,
-  ],
+  imports: [CommonModule, MaterialImports, PageComponent, ProgressBarComponent, NotFoundComponent],
 })
 export class ProgramOverviewComponent implements OnDestroy, OnInit {
   @ViewChild('programOverviewChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
@@ -73,24 +67,26 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
       propertyColumns: this._columnService.propertyColumns$,
       programs: this._programService.programs$,
       scheme: this._configService.scheme$,
-    }).pipe(
-      tap(({ org, cycles, propertyColumns, programs, scheme }) => {
-        this.org = org
-        this.cycles = cycles
-        this.propertyColumns = propertyColumns
-        this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
-        this.scheme = scheme
-        this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
-        this.program = programs.find((p) => p.id === this.programId)
-        if (!this.program) {
-          this.loading = false
-          this.programChange(this.programs[0])
-        }
-      }),
-      filter(() => this.program?.organization_id === this.org.id),
-      switchMap(() => this.evaluateProgram()),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    })
+      .pipe(
+        tap(({ org, cycles, propertyColumns, programs, scheme }) => {
+          this.org = org
+          this.cycles = cycles
+          this.propertyColumns = propertyColumns
+          this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
+          this.scheme = scheme
+          this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
+          this.program = programs.find((p) => p.id === this.programId)
+          if (!this.program) {
+            this.loading = false
+            this.programChange(this.programs[0])
+          }
+        }),
+        filter(() => this.program?.organization_id === this.org.id),
+        switchMap(() => this.evaluateProgram()),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
   }
 
   programChange(program: Program) {
@@ -187,7 +183,7 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
 
     const barValues = this.chart.data.datasets.map((ds) => ds.data[dataIndex]) as number[]
     const barTotal = barValues.reduce((acc, cur) => acc + cur, 0)
-    const percentage = `${((raw as number / barTotal) * 100).toPrecision(4)}%`
+    const percentage = `${(((raw as number) / barTotal) * 100).toPrecision(4)}%`
 
     return [label, percentage]
   }
@@ -239,7 +235,9 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
       .afterClosed()
       .pipe(
         filter(Boolean),
-        tap((programId: number) => { this.program = this.programs.find((p) => p.id == programId) }),
+        tap((programId: number) => {
+          this.program = this.programs.find((p) => p.id == programId)
+        }),
       )
       .subscribe()
   }
