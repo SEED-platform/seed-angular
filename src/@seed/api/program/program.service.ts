@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
-import type { Program, ProgramData, ProgramResponse, ProgramsResponse } from './program.types'
+import type { Program, ProgramData, ProgramResponse, ProgramsResponse, ProgramUpsertPayload } from './program.types'
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
@@ -45,9 +45,10 @@ export class ProgramService {
       .subscribe()
   }
 
-  create(orgId: number, data: Program): Observable<ProgramResponse> {
+  create(orgId: number, data: ProgramUpsertPayload): Observable<ProgramResponse> {
     const url = `/api/v3/compliance_metrics/?organization_id=${orgId}`
-    return this._httpClient.post<ProgramResponse>(url, data).pipe(
+    const payload = this._normalizePayload(data)
+    return this._httpClient.post<ProgramResponse>(url, payload).pipe(
       tap(() => {
         this.list(orgId)
         this._snackBar.success('Successfully created Program')
@@ -58,9 +59,10 @@ export class ProgramService {
     )
   }
 
-  update(orgId: number, programId: number, data: Program): Observable<ProgramResponse> {
+  update(orgId: number, programId: number, data: ProgramUpsertPayload): Observable<ProgramResponse> {
     const url = `/api/v3/compliance_metrics/${programId}/?organization_id=${orgId}`
-    return this._httpClient.put<ProgramResponse>(url, data).pipe(
+    const payload = this._normalizePayload(data)
+    return this._httpClient.put<ProgramResponse>(url, payload).pipe(
       tap(() => {
         this.list(orgId)
         this._snackBar.success('Successfully updated Program')
@@ -94,5 +96,26 @@ export class ProgramService {
         return this._errorService.handleError(error, 'Error evaluating Program')
       }),
     )
+  }
+
+  private _normalizePayload(data: ProgramUpsertPayload): ProgramUpsertPayload {
+    const payload = { ...data } as ProgramUpsertPayload & Partial<Program>
+    delete payload.organization_id
+    delete payload.id
+    delete payload.energy_bool
+    delete payload.emission_bool
+
+    return {
+      ...payload,
+      actual_emission_column: payload.actual_emission_column ?? null,
+      actual_energy_column: payload.actual_energy_column ?? null,
+      cycles: payload.cycles ?? [],
+      emission_metric_type: payload.emission_metric_type ?? '',
+      energy_metric_type: payload.energy_metric_type ?? '',
+      filter_group: payload.filter_group ?? null,
+      target_emission_column: payload.target_emission_column ?? null,
+      target_energy_column: payload.target_energy_column ?? null,
+      x_axis_columns: payload.x_axis_columns ?? [],
+    }
   }
 }

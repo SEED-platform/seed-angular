@@ -6,9 +6,9 @@ import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
 import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
-import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Column, Cycle, Organization, Program, ProgramData } from '@seed/api'
-import { ColumnService, CycleService, OrganizationService, ProgramService } from '@seed/api'
+import { combineLatest, filter, merge, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { Column, CurrentUser, Cycle, FilterGroup, Organization, Program, ProgramData } from '@seed/api'
+import { ColumnService, CycleService, FilterGroupService, OrganizationService, ProgramService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
@@ -25,21 +25,25 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
+  private _filterGroupService = inject(FilterGroupService)
   private _programService = inject(ProgramService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
+  private _userService = inject(UserService)
+  private _reset$ = new Subject<void>()
   private _unsubscribeAll$ = new Subject<void>()
   chart: Chart
   chartName: string
   colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
+  currentUser: CurrentUser
   cycles: Cycle[]
   data: ProgramData
-  filterGroups: unknown[]
+  filterGroups: FilterGroup[] = []
   loading = true
   org: Organization
-  programId = 0
+  programId: number
   program: Program
   programs: Program[]
   propertyColumns: Column[]
@@ -48,13 +52,14 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
   xAxisDataTypes = ['number', 'string', 'float', 'integer', 'ghg', 'ghg_intensity', 'area', 'eui', 'boolean']
 
   ngOnInit(): void {
-    this._route.paramMap.subscribe((params: ParamMap) => {
-      this.programId = parseInt(params.get('id'))
+    this._route.paramMap.pipe(takeUntil(this._unsubscribeAll$)).subscribe((params: ParamMap) => {
+      this.programId = parseInt(params.get('id') ?? '', 10)
       this.initProgram()
     })
   }
 
   initProgram() {
+    this._reset$.next()
     this.getDependencies()
     this.initChart()
     this.setScheme()
@@ -65,33 +70,41 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
       org: this._organizationService.currentOrganization$,
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
+      filterGroups: this._filterGroupService.filterGroups$,
       programs: this._programService.programs$,
       scheme: this._configService.scheme$,
+      currentUser: this._userService.currentUser$,
     })
       .pipe(
-        tap(({ org, cycles, propertyColumns, programs, scheme }) => {
+        tap(({ org, cycles, propertyColumns, filterGroups, programs, scheme, currentUser }) => {
           this.org = org
           this.cycles = cycles
           this.propertyColumns = propertyColumns
+          this.filterGroups = filterGroups
           this.xAxisColumns = this.propertyColumns.filter((c) => this.validColumn(c, this.xAxisDataTypes))
           this.scheme = scheme
+          this.currentUser = currentUser
           this.programs = programs.filter((p) => p.organization_id === org.id).sort((a, b) => naturalSort(a.name, b.name))
-          this.program = programs.find((p) => p.id === this.programId)
+          const hasRouteProgramId = Number.isFinite(this.programId)
+          this.program = this.programs.find((p) => p.id === this.programId)
           if (!this.program) {
             this.loading = false
-            this.programChange(this.programs[0])
+            if (!hasRouteProgramId && this.programs.length) {
+              this.programChange(this.programs[0])
+            }
           }
         }),
         filter(() => this.program?.organization_id === this.org.id),
         switchMap(() => this.evaluateProgram()),
-        takeUntil(this._unsubscribeAll$),
+        takeUntil(merge(this._unsubscribeAll$, this._reset$)),
       )
       .subscribe()
   }
 
-  programChange(program: Program) {
+  programChange(program: Program | number | null | undefined) {
+    const programId = typeof program === 'number' ? program : program?.id
     const segments = ['/insights/program-overview']
-    if (program?.id) segments.push(program.id.toString())
+    if (programId) segments.push(programId.toString())
     void this._router.navigate(segments)
   }
 
@@ -116,9 +129,6 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
     this.chart.data.labels = labels
     this.chart.data.datasets = datasets
     this.chart.update()
-    console.log('ALL DATA', {
-      chart: this.chart,
-    })
   }
 
   initChart() {
@@ -131,6 +141,7 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
       },
       options: {
         onClick: (_, elements: ActiveElement[], chart: Chart<'bar'>) => {
+          if (!elements.length) return
           const { datasetIndex, index } = elements[0]
           const label = chart.data.datasets[datasetIndex]?.label
           const cycleName = chart.data.labels[index]
@@ -163,11 +174,10 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
         maintainAspectRatio: false,
       },
     })
-    this.setScheme()
   }
 
   setScheme() {
-    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+    this._configService.scheme$.pipe(takeUntil(merge(this._unsubscribeAll$, this._reset$))).subscribe((scheme) => {
       const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
       this.chart.options.scales.x.grid = { color }
       this.chart.options.scales.y.grid = { color }
@@ -198,6 +208,10 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
   setChartName(program: Program) {
     if (!program) return
     const cycles = this.cycles.filter((c) => program.cycles.includes(c.id))
+    if (!cycles.length) {
+      this.chartName = program.name
+      return
+    }
     const cycleFirst = cycles.reduce((prev, curr) => (prev.start < curr.start ? prev : curr))
     const cycleLast = cycles.reduce((prev, curr) => (prev.end > curr.end ? prev : curr))
     const cycleRange = cycleFirst === cycleLast ? cycleFirst.name : `${cycleFirst.name} - ${cycleLast.name}`
@@ -218,13 +232,15 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
   }
 
   openProgramConfig = () => {
+    if (!this.canConfigureProgram) return
+
     const dialogRef = this._dialog.open(ProgramConfigComponent, {
       width: '50rem',
       data: {
         cycles: this.cycles,
         filterGroups: this.filterGroups,
         programs: this.programs,
-        selectedProgram: this.program,
+        program: this.program,
         org: this.org,
         propertyColumns: this.propertyColumns?.sort((a, b) => naturalSort(a.display_name, b.display_name)),
         xAxisColumns: this.xAxisColumns,
@@ -236,13 +252,19 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
       .pipe(
         filter(Boolean),
         tap((programId: number) => {
-          this.program = this.programs.find((p) => p.id == programId)
+          this.programChange(programId)
         }),
       )
       .subscribe()
   }
 
+  get canConfigureProgram() {
+    return this.currentUser?.org_role !== 'viewer'
+  }
+
   ngOnDestroy(): void {
+    this._reset$.next()
+    this._reset$.complete()
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }

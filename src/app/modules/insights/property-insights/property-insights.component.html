@@ -2,7 +2,7 @@
   [config]="{
     title: 'Property Insights',
     titleIcon: 'fa-solid:chart-line',
-    action: openProgramConfig,
+    action: canConfigureProgram ? openProgramConfig : undefined,
     actionIcon: 'fa-solid:gears',
     actionText: 'Program Configuration',
   }"
@@ -119,9 +119,11 @@
             </mat-form-field>
           </form>
 
-          <button class="my-2 flex gap-2" (click)="openLabelModal()" mat-stroked-button>
-            <mat-icon svgIcon="fa-solid:tags"></mat-icon>Update Labels
-          </button>
+          @if (canUpdateLabels) {
+            <button class="my-2 flex gap-2" (click)="openLabelModal()" mat-stroked-button>
+              <mat-icon svgIcon="fa-solid:tags"></mat-icon>Update Labels
+            </button>
+          }
         </div>
       }
       <!-- Chart -->

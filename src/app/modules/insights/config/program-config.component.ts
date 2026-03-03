@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { finalize, Subject, take, tap } from 'rxjs'
-import type { Program, ProgramResponse } from '@seed/api'
+import type { Program, ProgramResponse, ProgramUpsertPayload } from '@seed/api'
 import { ProgramService } from '@seed/api'
 import type { Column } from '@seed/api/column/column.types'
 import type { Cycle } from '@seed/api/cycle/cycle.types'
@@ -38,7 +38,7 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
   data = inject(MAT_DIALOG_DATA) as {
     programs: Program[];
     cycles: Cycle[];
-    filterGroups: unknown[];
+    filterGroups: { id: number; name: string }[];
     program: Program;
     org: Organization;
     propertyColumns: Column[];
@@ -51,9 +51,8 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
     cycles: new FormControl<number[]>([], Validators.required),
     emission_metric_type: new FormControl<string>(''),
     energy_metric_type: new FormControl<string>(''),
-    filter_group: new FormControl<unknown>(null),
+    filter_group: new FormControl<number | null>(null),
     name: new FormControl<string>('', Validators.required),
-    organization_id: new FormControl<number>(this.data.org?.id),
     target_emission_column: new FormControl<number>(null),
     target_energy_column: new FormControl<number>(null),
     x_axis_columns: new FormControl<number[]>([], Validators.required),
@@ -72,12 +71,34 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
 
   selectProgram(program: Program) {
     this.program = program
-    this.form.patchValue(program)
+    this.form.patchValue({
+      actual_emission_column: program.actual_emission_column,
+      actual_energy_column: program.actual_energy_column,
+      cycles: program.cycles,
+      emission_metric_type: program.emission_metric_type ?? '',
+      energy_metric_type: program.energy_metric_type ?? '',
+      filter_group: program.filter_group,
+      name: program.name,
+      target_emission_column: program.target_emission_column,
+      target_energy_column: program.target_energy_column,
+      x_axis_columns: program.x_axis_columns,
+    })
   }
 
   newProgram() {
     this.program = null
-    this.form.reset()
+    this.form.reset({
+      actual_emission_column: null,
+      actual_energy_column: null,
+      cycles: [],
+      emission_metric_type: '',
+      energy_metric_type: '',
+      filter_group: null,
+      name: '',
+      target_emission_column: null,
+      target_energy_column: null,
+      x_axis_columns: [],
+    })
   }
 
   removeProgram() {
@@ -105,18 +126,52 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
     return this.data.xAxisColumns.find((column) => column.id === id).display_name
   }
 
-  hasMetric() {
+  getColumnDataType(columnId: number): string | null {
+    if (!columnId) return null
+    return this.metricColumns.find((column) => column.id === columnId)?.data_type ?? null
+  }
+
+  getValidationError() {
     const values = this.form.value
-    const energy = values.actual_energy_column && values.target_energy_column && values.energy_metric_type
-    const emission = values.actual_emission_column && values.target_emission_column && values.emission_metric_type
-    return !!(energy || emission)
+    const hasEnergyMetric = values.actual_energy_column && values.energy_metric_type
+    const hasEmissionMetric = values.actual_emission_column && values.emission_metric_type
+    const noEnergyMetricType = values.actual_energy_column && !values.energy_metric_type
+    const noEmissionMetricType = values.actual_emission_column && !values.emission_metric_type
+    const actualEnergyNoTargetNotBoolean
+      = values.actual_energy_column && !values.target_energy_column && this.getColumnDataType(values.actual_energy_column) !== 'boolean'
+    const actualEmissionNoTargetNotBoolean
+      = values.actual_emission_column && !values.target_emission_column && this.getColumnDataType(values.actual_emission_column) !== 'boolean'
+    const targetWithoutActual
+      = (!values.actual_energy_column && values.target_energy_column) || (!values.actual_emission_column && values.target_emission_column)
+
+    if ((!hasEnergyMetric && !hasEmissionMetric) || noEnergyMetricType || noEmissionMetricType) {
+      return 'A completed energy or emission metric is required'
+    }
+    if (actualEnergyNoTargetNotBoolean || actualEmissionNoTargetNotBoolean) {
+      return 'The actual energy or emission column must be boolean if no target column is selected'
+    }
+    if (targetWithoutActual) {
+      return 'The actual energy or emission column must be included when a target column is selected'
+    }
+    return null
   }
 
   onSubmit() {
-    if (!this.hasMetric()) {
-      this._snackBar.alert('At least one Metric is required')
+    const validationError = this.getValidationError()
+    if (validationError) {
+      this._snackBar.alert(validationError)
+      return
     }
-    const data = this.form.value as Program
+
+    const values = this.form.getRawValue()
+    const data: ProgramUpsertPayload = {
+      ...values,
+      cycles: values.cycles ?? [],
+      emission_metric_type: values.emission_metric_type || '',
+      energy_metric_type: values.energy_metric_type || '',
+      filter_group: values.filter_group ?? null,
+      x_axis_columns: values.x_axis_columns ?? [],
+    }
 
     const request$: Observable<ProgramResponse> = this.program
       ? this._programService.update(this.data.org.id, this.program.id, data)

@@ -7,7 +7,7 @@ import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, RowClickedEvent } from 'ag-grid-community'
-import type { ActiveElement, ScatterDataPoint, TooltipItem } from 'chart.js'
+import type { ActiveElement, TooltipItem } from 'chart.js'
 import { Chart } from 'chart.js'
 import type { AnnotationOptions } from 'chartjs-plugin-annotation'
 import { combineLatest, debounceTime, EMPTY, filter, map, merge, Subject, switchMap, take, takeUntil, tap, zip } from 'rxjs'
@@ -15,16 +15,20 @@ import type {
   AccessLevelInstancesByDepth,
   AccessLevelsByDepth,
   Column,
+  CurrentUser,
   Cycle,
+  FilterGroup,
+  InsightDatasetVisibility,
   Organization,
   Program,
   ProgramData,
   PropertyInsightDataset,
   PropertyInsightPoint,
+  PropertyInsightsUserSettings,
   ResultsByCycles,
   SimpleCartesianScale,
 } from '@seed/api'
-import { ColumnService, CycleService, OrganizationService, ProgramService } from '@seed/api'
+import { ColumnService, CycleService, FilterGroupService, OrganizationService, ProgramService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
@@ -53,12 +57,16 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
+  private _filterGroupService = inject(FilterGroupService)
   private _programService = inject(ProgramService)
   private _dialog = inject(MatDialog)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private _snackBar = inject(SnackBarService)
+  private _userService = inject(UserService)
+  private _persistSettings$ = new Subject<void>()
+  private _reset$ = new Subject<void>()
   private _unsubscribeAll$ = new Subject<void>()
 
   accessLevelNames: AccessLevelInstancesByDepth['accessLevelNames'] = []
@@ -68,11 +76,13 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   chart: Chart
   colDefs: ColDef[] = []
   colors: Record<string, string> = { compliant: '#77CCCB', 'non-compliant': '#A94455', unknown: '#DDDDDD' }
+  currentUser: CurrentUser
   cycles: Cycle[]
   data: ProgramData
   datasets: PropertyInsightDataset[] = []
-  datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
-  filterGroups: unknown[] = []
+  datasetOrder: InsightDatasetVisibility[] = ['compliant', 'non-compliant', 'unknown', 'whisker']
+  datasetVisibility: InsightDatasetVisibility[] = [...this.datasetOrder]
+  filterGroups: FilterGroup[] = []
   gridOptions = { rowClass: 'cursor-pointer' }
   gridTheme$ = this._configService.gridTheme$
   loading = true
@@ -124,8 +134,22 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.watchForm()
-    this._route.paramMap.subscribe((params: ParamMap) => {
-      this.programId = parseInt(params.get('id'))
+    this.getAliTree()
+
+    this._persistSettings$
+      .pipe(
+        filter(() => !!(this.currentUser && this.org)),
+        debounceTime(300),
+        switchMap(() =>
+          this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.org.id, this.currentUser.settings),
+        ),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
+
+    this._route.paramMap.pipe(takeUntil(this._unsubscribeAll$)).subscribe((params: ParamMap) => {
+      this.programId = parseInt(params.get('id') ?? '', 10)
+      this._reset$.next()
       this.initChart()
       this.setScheme()
       this.initProgram()
@@ -140,11 +164,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
           this.setDependencies(dependencies)
           this.getPrograms()
         }),
-        takeUntil(this._unsubscribeAll$),
+        takeUntil(merge(this._unsubscribeAll$, this._reset$)),
       )
       .subscribe()
-
-    this.getAliTree()
   }
 
   getDependencies() {
@@ -152,13 +174,29 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       org: this._organizationService.currentOrganization$,
       cycles: this._cycleService.cycles$,
       propertyColumns: this._columnService.propertyColumns$,
+      filterGroups: this._filterGroupService.filterGroups$,
+      currentUser: this._userService.currentUser$,
     })
   }
 
-  setDependencies({ org, cycles, propertyColumns }: { org: Organization; cycles: Cycle[]; propertyColumns: Column[] }) {
+  setDependencies({
+    org,
+    cycles,
+    propertyColumns,
+    filterGroups,
+    currentUser,
+  }: {
+    org: Organization;
+    cycles: Cycle[];
+    propertyColumns: Column[];
+    filterGroups: FilterGroup[];
+    currentUser: CurrentUser;
+  }) {
     this.org = org
     this.cycles = cycles
+    this.currentUser = currentUser
     this.propertyColumns = propertyColumns
+    this.filterGroups = filterGroups
     this.xAxisColumns = this.propertyColumns.filter((c) => this.isValidColumn(c, this.xAxisDataTypes))
   }
 
@@ -168,9 +206,15 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         filter(() => !!this.org),
         tap((programs) => {
           this.programs = programs.filter((p) => p.organization_id === this.org.id).sort((a, b) => naturalSort(a.name, b.name))
-          this.program = programs.find((p) => p.id === this.programId)
+          const hasRouteProgramId = Number.isFinite(this.programId)
+          const savedProgramId = this.currentUser?.settings?.insights?.propertyInsights?.programId
+          this.program = hasRouteProgramId
+            ? this.programs.find((p) => p.id === this.programId)
+            : this.programs.find((p) => p.id === savedProgramId)
           if (!this.program) {
-            this.programChange(this.programs[0])
+            if (!hasRouteProgramId && this.programs.length) {
+              this.programChange(this.programs[0])
+            }
           }
         }),
         filter(() => !!this.program),
@@ -178,30 +222,57 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
         tap(() => {
           this.setForm()
         }),
-        takeUntil(this._unsubscribeAll$),
+        takeUntil(merge(this._unsubscribeAll$, this._reset$)),
       )
       .subscribe()
   }
 
   setForm() {
     if (!this.program) return
-    if (!this.accessLevelInstances) {
-      this.getPossibleAccessLevelInstances(this.accessLevelNames?.at(-1))
+    this.setFormOptions()
+    const savedSettings = this.currentUser?.settings?.insights?.propertyInsights
+    const { cycleId: stateCycleId, label: stateDatasetLabel } = this.getNavigationState()
+
+    this.datasetVisibility = this.validDatasetVisibility(savedSettings?.datasetVisibility)
+    if (stateDatasetLabel) {
+      this.handleLegendVisibility(stateDatasetLabel)
     }
 
-    this.setFormOptions()
-    const cycleId = this.getStateCycle()
-    const metricType = this.program.actual_energy_column ? 0 : 1
+    const savedAccessLevel = savedSettings?.accessLevel
+    const validAccessLevel
+      = savedAccessLevel && this.accessLevelNames.includes(savedAccessLevel) ? savedAccessLevel : (this.accessLevelNames?.at(-1) ?? null)
+    this.getPossibleAccessLevelInstances(validAccessLevel)
+
+    const validAliId
+      = this.accessLevelInstances.find((ali) => ali.id === savedSettings?.accessLevelInstanceId)?.id
+        ?? this.accessLevelInstances[0]?.id
+        ?? null
+
+    const validStateCycleId = stateCycleId && this.program.cycles.includes(stateCycleId) ? stateCycleId : null
+    const savedCycleId = savedSettings?.cycleId
+    const validSavedCycleId = savedCycleId && this.program.cycles.includes(savedCycleId) ? savedCycleId : null
+    const cycleId = validStateCycleId ?? validSavedCycleId ?? this.program.cycles[0]
+
+    const defaultMetricType: 0 | 1 = this.program.actual_energy_column ? 0 : 1
+    const validMetricType = this.programMetricTypes.find(({ key }) => key === savedSettings?.metricType)?.key ?? defaultMetricType
+
+    const validXAxisColumnId
+      = this.programXAxisColumns.find((column) => column.id === savedSettings?.xAxisColumnId)?.id
+        ?? this.program.x_axis_columns[0]
+        ?? this.rankedCol.id
+
     const data: Record<string, unknown> = {
       cycleId,
-      xAxisColumnId: this.program.x_axis_columns[0],
-      metricType,
-      accessLevel: this.accessLevelNames.at(-1),
-      accessLevelInstanceId: this.accessLevelInstances[0]?.id ?? null,
+      xAxisColumnId: validXAxisColumnId,
+      metricType: validMetricType,
+      accessLevel: validAccessLevel,
+      accessLevelInstanceId: validAliId,
     }
+
     // wait for DOM to update before patching to avoid blank selections
     setTimeout(() => {
       this.form.patchValue(data)
+      this.persistPropertyInsightsSettings()
     })
   }
 
@@ -223,6 +294,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
             this.setResults()
             this.loading = false
           }
+          this.persistPropertyInsightsSettings()
         }),
         takeUntil(this._unsubscribeAll$),
       )
@@ -233,6 +305,16 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       ?.valueChanges.pipe(
         tap((accessLevel) => {
           this.getPossibleAccessLevelInstances(accessLevel)
+          const aliIdCtrl = this.form.get('accessLevelInstanceId')
+          if (!aliIdCtrl) return
+          const currentAliId = aliIdCtrl.value
+          const validAliId = this.accessLevelInstances.some(({ id }) => id === currentAliId)
+            ? currentAliId
+            : (this.accessLevelInstances[0]?.id ?? null)
+          if (validAliId !== currentAliId) {
+            aliIdCtrl.setValue(validAliId)
+          }
+          this.persistPropertyInsightsSettings()
         }),
         takeUntil(this._unsubscribeAll$),
       )
@@ -241,10 +323,16 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.form
       .get('accessLevelInstanceId')
       ?.valueChanges.pipe(
+        tap(() => {
+          this.loading = true
+        }),
         filter((id) => !!(id && this.org && this.cycleId)),
         switchMap((id) => this.evaluateProgram(id)),
         tap(() => {
           this.setChart()
+          this.setResults()
+          this.loading = false
+          this.persistPropertyInsightsSettings()
         }),
         takeUntil(this._unsubscribeAll$),
       )
@@ -276,15 +364,21 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  getPossibleAccessLevelInstances(accessLevelName: string): void {
+  getPossibleAccessLevelInstances(accessLevelName: string | null | undefined): void {
+    if (!accessLevelName) {
+      this.accessLevelInstances = []
+      return
+    }
+
     const depth = this.accessLevelNames.findIndex((name) => name === accessLevelName)
-    this.accessLevelInstances = this.accessLevelInstancesByDepth[depth]
+    this.accessLevelInstances = this.accessLevelInstancesByDepth[depth] ?? []
   }
 
-  programChange(program: Program) {
+  programChange(program: Program | number | null | undefined) {
+    const programId = typeof program === 'number' ? program : program?.id
     this.form.reset()
     const segments = ['/insights/property-insights']
-    if (program?.id) segments.push(program.id.toString())
+    if (programId) segments.push(programId.toString())
     void this._router.navigate(segments)
   }
 
@@ -300,28 +394,53 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     return this._programService.evaluate(this.org.id, this.program.id, aliId).pipe(
       tap((data) => {
         this.data = data
-        console.log('evaluate program', this.cycleId)
         this.setResults()
       }),
       take(1),
     )
   }
 
-  getStateCycle() {
-    // use incoming state cycle if coming from program overview, but clear state after initial load
-    const { cycles } = this.program
+  getNavigationState() {
+    // Use incoming state if coming from program overview, then clear to avoid stale re-use.
     const state = this._location.getState() as { cycleId?: number; label?: string }
-    const stateCycleId = state.cycleId
-    const dataset = state.label
-    this.handleLegendVisibility(dataset)
     history.replaceState({}, document.title)
-    return cycles.find((c) => c === stateCycleId) ?? cycles[0]
+    return state
   }
 
   handleLegendVisibility(dataset: string) {
-    if (!dataset) this.datasetVisibility = ['compliant', 'non-compliant', 'unknown', 'whisker']
-    if (dataset) this.datasetVisibility = [dataset]
-    if (dataset === 'non-compliant') this.datasetVisibility.push('whisker')
+    if (!dataset) {
+      this.datasetVisibility = [...this.datasetOrder]
+      return
+    }
+
+    if (this.datasetOrder.includes(dataset as InsightDatasetVisibility)) {
+      this.datasetVisibility = [dataset as InsightDatasetVisibility]
+      if (dataset === 'non-compliant') {
+        this.datasetVisibility.push('whisker')
+      }
+    }
+  }
+
+  validDatasetVisibility(datasetVisibility: InsightDatasetVisibility[] = []): InsightDatasetVisibility[] {
+    if (!datasetVisibility?.length) return [...this.datasetOrder]
+    return datasetVisibility.filter((value) => this.datasetOrder.includes(value))
+  }
+
+  persistPropertyInsightsSettings() {
+    if (!this.currentUser || !this.program || !this.org) return
+
+    this.currentUser.settings.insights ??= {}
+    const settings: PropertyInsightsUserSettings = {
+      accessLevel: this.form.value.accessLevel,
+      accessLevelInstanceId: this.accessLevelInstanceId,
+      cycleId: this.cycleId,
+      datasetVisibility: this.datasetVisibility,
+      metricType: this.metricType,
+      programId: this.program.id,
+      xAxisColumnId: this.xAxisColumnId,
+    }
+    this.currentUser.settings.insights.propertyInsights = settings
+    this._persistSettings$.next()
   }
 
   setFormOptions() {
@@ -374,7 +493,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   setScheme() {
-    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+    this._configService.scheme$.pipe(takeUntil(merge(this._unsubscribeAll$, this._reset$))).subscribe((scheme) => {
       this.scheme = scheme
       const color = scheme === 'light' ? '#0000001a' : '#ffffff2b'
       this.chart.options.scales.x.grid = { color }
@@ -395,6 +514,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     const yScale = this.chart.options.scales.y as SimpleCartesianScale
     yScale.title = { display: true, text: yAxisName }
+    this.chart.options.plugins.annotation ??= { annotations: {} }
     this.chart.options.plugins.annotation.annotations = this.annotations
     this.chart.options.scales.x.ticks = {
       callback(value) {
@@ -443,20 +563,24 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     this.formatDataPoints()
     this.formatNonCompliantPoints()
     this.chart.data.datasets = this.datasets
-    const flatData = this.chart.data.datasets?.flatMap((ds) => ds.data as ScatterDataPoint[])
-    const yMax = Math.max(...flatData.map((p) => p.y))
-    const xMax = Math.max(...flatData.map((p) => p.x))
-    this.chart.options.scales.y.suggestedMax = yMax * 1.1
-    this.chart.options.scales.x.suggestedMax = xMax * 1.1
-    this.setDatasetColor()
-    this.chart.options.plugins.annotation.annotations = this.annotations
 
-    // console.log('ALL DATA', {
-    //   form: this.form.value,
-    //   data: this.data,
-    //   datasets: this.datasets,
-    //   chart: this.chart,
-    // })
+    this.chart.data.labels = []
+    if (this.xCategorical) {
+      const labels = this.datasets.flatMap((dataset) => dataset.data.map((point) => point.x)).filter((label) => label !== undefined)
+      this.chart.data.labels = [...new Set(labels)]
+    }
+
+    const flatData = this.datasets.flatMap((dataset) => dataset.data)
+    if (flatData.length) {
+      const yMax = Math.max(...flatData.map((p) => p.y))
+      const xMax = Math.max(...flatData.map((p) => p.x))
+      this.chart.options.scales.y.suggestedMax = yMax * 1.1
+      this.chart.options.scales.x.suggestedMax = xMax * 1.1
+    }
+
+    this.setDatasetColor()
+    this.chart.options.plugins.annotation ??= { annotations: {} }
+    this.chart.options.plugins.annotation.annotations = this.annotations
   }
 
   formatDataPoints() {
@@ -504,7 +628,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
     // Ranked distance from target (col id = 0)
     if (this.xAxisColumnId === 0) {
-      nonCompliant.data.sort((a, b) => b.distance - a.distance)
+      nonCompliant.data.sort((a, b) => (b.distance ?? -Infinity) - (a.distance ?? -Infinity))
       for (const [i, item] of nonCompliant.data.entries()) {
         item.x = i + 1
       }
@@ -514,12 +638,12 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       const annotation = this.blankAnnotation()
 
       item.distance = null
-      // if (!(item.x && item.y && item.target)) return
+      // Only show whiskers for non-compliant points that violate the target.
       const belowTarget = targetType === 1 && item?.target < item?.y
-      const aboveTarget = targetType === 0 && item?.target > item?.y
+      const aboveTarget = targetType === 2 && item?.target > item?.y
       const addWhisker = belowTarget || aboveTarget
 
-      if (!addWhisker) return
+      if (!addWhisker) continue
 
       item.distance = Math.abs(item.target - item.y)
       annotation.xMin = item.x
@@ -536,7 +660,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   resetDatasets() {
-    const isHidden = (label: string) => !this.datasetVisibility.includes(label)
+    const isHidden = (label: InsightDatasetVisibility) => !this.datasetVisibility.includes(label)
     this.datasets = [
       { data: [], label: 'compliant', pointStyle: 'circle', pointRadius: 7, hidden: isHidden('compliant') },
       { data: [], label: 'non-compliant', pointStyle: 'triangle', pointRadius: 7, hidden: isHidden('non-compliant') },
@@ -565,12 +689,22 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   toggleVisibility(idx: number, show: boolean) {
+    const label = this.datasetOrder[idx]
+    if (!label) return
+
+    if (show && !this.datasetVisibility.includes(label)) {
+      this.datasetVisibility.push(label)
+    } else if (!show) {
+      this.datasetVisibility = this.datasetVisibility.filter((value) => value !== label)
+    }
+
     if (idx === 3) {
       this.toggleWhiskers(show)
     } else {
       this.chart.setDatasetVisibility(idx, show)
     }
     this.chart.update()
+    this.persistPropertyInsightsSettings()
   }
 
   toggleWhiskers(show: boolean) {
@@ -592,7 +726,6 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     if (!this.program) return
     this.initChart()
     this.setChart()
-    this.setScheme()
   }
 
   clearChart() {
@@ -624,6 +757,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   openLabelModal = () => {
+    if (!this.canUpdateLabels) return
+
     const visibleData = this.chart.data.datasets.filter((_, i) => this.chart.isDatasetVisible(i)).map((ds) => ds.data)
     if (!visibleData.length) return
 
@@ -639,6 +774,8 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
   }
 
   openProgramConfig = () => {
+    if (!this.canConfigureProgram) return
+
     const dialogRef = this._dialog.open(ProgramConfigComponent, {
       width: '50rem',
       data: {
@@ -657,15 +794,25 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
       .pipe(
         filter(Boolean),
         tap((programId: number) => {
-          this.program = this.programs.find((p) => p.id == programId)
-          this.programChange(this.program)
+          this.programChange(programId)
         }),
         takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }
 
+  get canConfigureProgram() {
+    return this.currentUser?.org_role !== 'viewer'
+  }
+
+  get canUpdateLabels() {
+    return this.currentUser?.org_role !== 'viewer'
+  }
+
   ngOnDestroy(): void {
+    this._persistSettings$.complete()
+    this._reset$.next()
+    this._reset$.complete()
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
   }
@@ -733,6 +880,9 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
               },
               mode: 'xy',
             },
+          },
+          annotation: {
+            annotations: {},
           },
         },
         scales: {

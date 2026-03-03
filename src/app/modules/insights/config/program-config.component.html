@@ -74,6 +74,16 @@
         </mat-chip-set>
       </div>
 
+      <mat-form-field class="w-1/4">
+        <mat-label>Filter Group</mat-label>
+        <mat-select formControlName="filter_group" panelClass="wide-select">
+          <mat-option [value]="null"></mat-option>
+          @for (group of data.filterGroups; track $index) {
+            <mat-option class="compact-form" [value]="group.id">{{ group.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
       <div class="my-5">
         <div class="flex items-center text-lg">
           <mat-icon class="scale-50" svgIcon="fa-solid:gears"></mat-icon>
@@ -110,7 +120,7 @@
         <mat-form-field class="flex-1">
           <mat-label>Compliance Type</mat-label>
           <mat-select formControlName="energy_metric_type">
-            <mat-option [value]="null"></mat-option>
+            <mat-option [value]="''"></mat-option>
             @for (metricType of metricTypes; track $index) {
               <mat-option class="compact-form" [value]="metricType.value">{{ metricType.key }}</mat-option>
             }
@@ -142,7 +152,7 @@
         <mat-form-field class="flex-1">
           <mat-label>Compliance Type</mat-label>
           <mat-select formControlName="emission_metric_type">
-            <mat-option [value]="null"></mat-option>
+            <mat-option [value]="''"></mat-option>
             @for (metricType of metricTypes; track $index) {
               <mat-option class="compact-form" [value]="metricType.value">{{ metricType.key }}</mat-option>
             }

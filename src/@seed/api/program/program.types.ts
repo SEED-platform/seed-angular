@@ -1,21 +1,35 @@
 import type { ChartDataset } from 'chart.js'
 
 export type Program = {
-  actual_emission_column: number;
-  actual_energy_column: number;
+  actual_emission_column: number | null;
+  actual_energy_column: number | null;
   cycles: number[];
-  emission_metric_type: string;
-  energy_metric_type: string;
-  filter_group: null;
-  id: number;
+  emission_metric_type: string | null;
+  energy_metric_type: string | null;
+  filter_group: number | null;
+  id?: number;
   name: string;
-  organization_id: number;
-  target_emission_column: number;
-  target_energy_column: number;
+  organization_id: number | null;
+  target_emission_column: number | null;
+  target_energy_column: number | null;
   x_axis_columns: number[];
   energy_bool?: boolean;
   emission_bool?: boolean;
 }
+
+export type ProgramUpsertPayload = Pick<
+  Program,
+  | 'actual_emission_column'
+  | 'actual_energy_column'
+  | 'cycles'
+  | 'emission_metric_type'
+  | 'energy_metric_type'
+  | 'filter_group'
+  | 'name'
+  | 'target_emission_column'
+  | 'target_energy_column'
+  | 'x_axis_columns'
+>
 
 export type EvaluatedProgram = {
   actual_emission_column: number;
@@ -29,7 +43,7 @@ export type EvaluatedProgram = {
   energy_bool: boolean;
   energy_metric: boolean;
   energy_metric_type: number;
-  filter_group: number;
+  filter_group: number | null;
   target_emission_column: number;
   target_energy_column: number;
 }

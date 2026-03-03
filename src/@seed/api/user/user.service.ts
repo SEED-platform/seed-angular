@@ -194,5 +194,9 @@ export class UserService {
     userSettings.sorts ??= {}
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
+
+    userSettings.insights ??= {}
+    userSettings.insights.propertyInsights ??= {}
+    userSettings.insights.propertyInsights.datasetVisibility ??= ['compliant', 'non-compliant', 'unknown', 'whisker']
   }
 }
