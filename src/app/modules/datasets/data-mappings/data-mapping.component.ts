@@ -4,7 +4,6 @@ import { Component, inject, ViewChild } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import type { MatStepper } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
 import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type {
   Column,
@@ -41,7 +40,6 @@ import { MatchMergeComponent } from './step4/match-merge.component'
   selector: 'seed-data-mapping-stepper',
   templateUrl: './data-mapping.component.html',
   imports: [
-    AgGridAngular,
     CommonModule,
     FormsModule,
     HelpComponent,

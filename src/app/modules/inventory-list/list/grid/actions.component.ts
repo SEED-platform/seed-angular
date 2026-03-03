@@ -4,7 +4,7 @@ import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { GroupsService, InventoryService } from '@seed/api'
+import { InventoryService } from '@seed/api'
 import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
@@ -17,7 +17,7 @@ import {
   LabelsModalComponent,
   UbidModalComponent,
 } from 'app/modules/inventory/actions'
-import type { InventoryType, Profile } from '../../../inventory/inventory.types'
+import type { InventoryType, Profile } from '../../../inventory'
 import {
   EmailModalComponent,
   FempExportModalComponent,
@@ -32,7 +32,7 @@ import {
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [MenuItemComponent, DeleteModalComponent, MaterialImports],
+  imports: [MenuItemComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
@@ -47,7 +47,6 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Output() refreshInventory = new EventEmitter<null>()
   @Output() selectedAll = new EventEmitter<number[]>()
   private _inventoryService = inject(InventoryService)
-  private _groupsService = inject(GroupsService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
   hasSelection: boolean

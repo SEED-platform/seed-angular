@@ -7,9 +7,8 @@ import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Label, OrganizationUserResponse, OrganizationUserSettings } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
-import { InventoryTabComponent, PageComponent } from '@seed/components'
+import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import type {
   AgFilterResponse,
@@ -31,11 +30,9 @@ import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, In
     CommonModule,
     ConfigSelectorComponent,
     FilterSortChipsComponent,
-    MaterialImports,
+    InventoryGridComponent,
     PageComponent,
     SharedImports,
-    InventoryTabComponent,
-    InventoryGridComponent,
   ],
 })
 export class InventoryComponent implements OnDestroy, OnInit {

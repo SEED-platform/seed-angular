@@ -15,7 +15,7 @@ import { DocumentUploadModalComponent } from '../modal/document-upload.component
 @Component({
   selector: 'seed-inventory-detail-documents-grid',
   templateUrl: './documents-grid.component.html',
-  imports: [AgGridAngular, CommonModule, DocumentUploadModalComponent, MaterialImports],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class DocumentsGridComponent implements OnChanges, OnDestroy {
   @Input() org: Organization

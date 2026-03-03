@@ -17,7 +17,7 @@ import { MapComponent } from './map.component'
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
-  imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports, ModalComponent],
+  imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports],
 })
 export class HeaderComponent implements OnInit {
   @Input() currentProfile: Profile

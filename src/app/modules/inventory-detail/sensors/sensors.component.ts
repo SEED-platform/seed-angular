@@ -3,13 +3,11 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { DataLogger, ReadingInterval, Sensor, SensorUsage, SensorUsageRequestConfig } from '@seed/api'
 import { CycleService, DatasetService, OrganizationService, SensorService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
-import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { DataLoggersGridComponent } from './data-loggers/data-loggers-grid.component'
 import { FormModalComponent } from './data-loggers/modal/form-modal.component'
@@ -19,16 +17,7 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
 @Component({
   selector: 'seed-inventory-detail-sensors',
   templateUrl: './sensors.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    DataLoggersGridComponent,
-    MaterialImports,
-    NotFoundComponent,
-    PageComponent,
-    SensorsGridComponent,
-    SensorReadingsGridComponent,
-  ],
+  imports: [CommonModule, DataLoggersGridComponent, NotFoundComponent, PageComponent, SensorsGridComponent, SensorReadingsGridComponent],
 })
 export class SensorsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)

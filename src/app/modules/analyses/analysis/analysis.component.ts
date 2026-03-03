@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -18,7 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-analyses-analysis',
   templateUrl: './analysis.component.html',
-  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent, RouterLink, SharedImports],
+  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent, SharedImports],
 })
 export class AnalysisComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)

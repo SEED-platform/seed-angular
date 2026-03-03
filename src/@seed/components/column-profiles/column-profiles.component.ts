@@ -8,7 +8,7 @@ import type { ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } f
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser } from '@seed/api'
 import { ColumnService, InventoryService, OrganizationService, UserService } from '@seed/api'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { DeleteModalComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
@@ -19,7 +19,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-column-profiles',
   templateUrl: './column-profiles.component.html',
-  imports: [AgGridAngular, CommonModule, PageComponent, MaterialImports, ModalComponent],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class ColumnProfilesComponent implements OnDestroy, OnInit {
   @Input() profileType: 'list' | 'detail'

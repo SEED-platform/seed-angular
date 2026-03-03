@@ -5,14 +5,13 @@ import { AgGridAngular } from 'ag-grid-angular'
 import { combineLatest, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
-import { CriteriaListComponent } from './criteria-list.component'
 import { MatchingCriteriaComponent } from './matching-criteria.component'
 
 @Component({
   selector: 'seed-organizations-column-matching-criteria-taxlots',
   templateUrl: './matching-criteria.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [AgGridAngular, CommonModule, CriteriaListComponent, FormsModule, MaterialImports, SharedImports, ReactiveFormsModule],
+  imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class MatchingCriteriaTaxlotsComponent extends MatchingCriteriaComponent implements OnInit {
   ngOnInit(): void {

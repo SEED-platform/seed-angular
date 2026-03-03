@@ -1,28 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { RouterLink } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
 import { filter, Subject, tap } from 'rxjs'
 import type { Analysis, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
-import { SharedImports } from '@seed/directives'
-import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-analyses',
   templateUrl: './analyses.component.html',
-  imports: [
-    AnalysesGridComponent,
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    NotFoundComponent,
-    PageComponent,
-    RouterLink,
-    SharedImports,
-  ],
+  imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent],
 })
 export class AnalysesComponent implements AfterViewInit, OnDestroy {
   private _analysisService = inject(AnalysisService)

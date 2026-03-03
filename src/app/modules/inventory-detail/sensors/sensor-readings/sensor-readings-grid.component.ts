@@ -9,12 +9,11 @@ import type { ReadingInterval, SensorReading, SensorUsage } from '@seed/api'
 import { SensorService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { Pagination } from 'app/modules/inventory/inventory.types'
-import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
 
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',
   templateUrl: './sensor-readings-grid.component.html',
-  imports: [AgGridAngular, CommonModule, MaterialImports, InventoryGridControlsComponent, FormsModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports, FormsModule],
 })
 export class SensorReadingsGridComponent implements OnChanges {
   @Input() usage: SensorUsage
