@@ -159,9 +159,7 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
   }
 
   updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings)
-      .pipe(take(1))
-      .subscribe()
+    return this._organizationService.updateOrganizationUser(this.orgUserId, this.orgId, this.userSettings).pipe(take(1)).subscribe()
   }
 
   detach() {

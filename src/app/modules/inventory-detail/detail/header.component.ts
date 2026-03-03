@@ -17,14 +17,7 @@ import { MapComponent } from './map.component'
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    LabelComponent,
-    MapComponent,
-    MaterialImports,
-    ModalComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports, ModalComponent],
 })
 export class HeaderComponent implements OnInit {
   @Input() currentProfile: Profile
@@ -209,11 +202,14 @@ export class HeaderComponent implements OnInit {
       },
     })
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
         take(1),
         filter(Boolean),
-        tap(() => { this.refreshDetail.emit() }),
+        tap(() => {
+          this.refreshDetail.emit()
+        }),
       )
       .subscribe()
   }

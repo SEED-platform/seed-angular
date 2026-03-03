@@ -10,11 +10,7 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
 @Component({
   selector: 'seed-column-mappings-edit-modal',
   templateUrl: './edit-modal.component.html',
-  imports: [
-    MaterialImports,
-    ReactiveFormsModule,
-    SeedHeaderAutocompleteComponent,
-  ],
+  imports: [MaterialImports, ReactiveFormsModule, SeedHeaderAutocompleteComponent],
 })
 export class EditModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditModalComponent>)

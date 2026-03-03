@@ -22,21 +22,28 @@ export class DatasetService {
 
   constructor() {
     // Refresh dataset count only when the organization ID changes
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => {
-        this.orgId = orgId
-        this.list(this.orgId)
-        this.countDatasets(this.orgId)
-      }),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+          this.list(this.orgId)
+          this.countDatasets(this.orgId)
+        }),
+      )
+      .subscribe()
   }
 
   list(organizationId: number) {
     const url = `/api/v3/datasets/?organization_id=${organizationId}`
-    this._httpClient.get<ListDatasetsResponse>(url).pipe(
-      map(({ datasets }) => datasets),
-      tap((datasets) => { this._datasets.next(datasets) }),
-    ).subscribe()
+    this._httpClient
+      .get<ListDatasetsResponse>(url)
+      .pipe(
+        map(({ datasets }) => datasets),
+        tap((datasets) => {
+          this._datasets.next(datasets)
+        }),
+      )
+      .subscribe()
   }
 
   get(orgId: number, datasetId: number): Observable<Dataset> {
@@ -52,7 +59,9 @@ export class DatasetService {
   create(orgId: number, name: string): Observable<Dataset> {
     const url = `/api/v3/datasets/?organization_id=${orgId}`
     return this._httpClient.post<Dataset>(url, { name }).pipe(
-      tap((response) => { console.log('temp', response) }),
+      tap((response) => {
+        console.log('temp', response)
+      }),
       tap(() => {
         this.countDatasets(orgId)
         this.list(orgId)
@@ -67,7 +76,9 @@ export class DatasetService {
   update(orgId: number, datasetId: number, name: string): Observable<Dataset> {
     const url = `/api/v3/datasets/${datasetId}/?organization_id=${orgId}`
     return this._httpClient.put<Dataset>(url, { dataset: name }).pipe(
-      tap((response) => { console.log('temp', response) }),
+      tap((response) => {
+        console.log('temp', response)
+      }),
       tap(() => {
         this.countDatasets(orgId)
         this.list(orgId)
@@ -94,19 +105,26 @@ export class DatasetService {
   }
 
   countDatasets(orgId: number) {
-    this._httpClient.get<CountDatasetsResponse>(`/api/v3/datasets/count/?organization_id=${orgId}`).pipe(
-      map(({ datasets_count }) => datasets_count),
-      tap((datasetsCount) => { this._datasetCount.next(datasetsCount) }),
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching dataset count')
-      }),
-    ).subscribe()
+    this._httpClient
+      .get<CountDatasetsResponse>(`/api/v3/datasets/count/?organization_id=${orgId}`)
+      .pipe(
+        map(({ datasets_count }) => datasets_count),
+        tap((datasetsCount) => {
+          this._datasetCount.next(datasetsCount)
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching dataset count')
+        }),
+      )
+      .subscribe()
   }
 
   deleteFile(orgId: number, fileId: number) {
     const url = `/api/v3/import_files/${fileId}/?organization_id=${orgId}`
     return this._httpClient.delete(url).pipe(
-      tap(() => { this._snackBar.success('File deleted successfully') }),
+      tap(() => {
+        this._snackBar.success('File deleted successfully')
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting file')
       }),

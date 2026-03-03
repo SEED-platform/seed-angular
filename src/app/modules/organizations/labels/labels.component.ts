@@ -12,12 +12,7 @@ import { FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-labels',
   templateUrl: './labels.component.html',
-  imports: [
-    LabelComponent,
-    PageComponent,
-    TableContainerComponent,
-    MaterialImports,
-  ],
+  imports: [LabelComponent, PageComponent, TableContainerComponent, MaterialImports],
 })
 export class LabelsComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()

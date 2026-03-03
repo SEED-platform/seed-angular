@@ -14,13 +14,7 @@ import { DataQualityValidator } from '../../data-quality.validator'
 @Component({
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    LabelComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, LabelComponent, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

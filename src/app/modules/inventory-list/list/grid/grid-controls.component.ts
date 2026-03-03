@@ -75,7 +75,8 @@ export class InventoryGridControlsComponent implements OnChanges, OnInit {
 
   updateOrgUser() {
     const { org_id, org_user_id } = this.currentUser
-    this._organizationService.updateOrganizationUser(org_user_id, org_id, this.userSettings)
+    this._organizationService
+      .updateOrganizationUser(org_user_id, org_id, this.userSettings)
       .pipe(
         take(1),
         tap(() => {

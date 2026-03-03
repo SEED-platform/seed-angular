@@ -16,13 +16,7 @@ import { ResultsComponent } from './results.component'
 @Component({
   selector: 'seed-match-merge',
   templateUrl: './match-merge.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    ProgressBarComponent,
-    RouterModule,
-    ResultsComponent,
-  ],
+  imports: [CommonModule, MaterialImports, ProgressBarComponent, RouterModule, ResultsComponent],
 })
 export class MatchMergeComponent implements OnDestroy {
   @Input() datasetId: number
@@ -43,7 +37,8 @@ export class MatchMergeComponent implements OnDestroy {
 
   startMatchMerge() {
     this.inProgress = true
-    this._mappingService.mappingDone(this.orgId, this.importFileId)
+    this._mappingService
+      .mappingDone(this.orgId, this.importFileId)
       .pipe(
         switchMap(() => this._mappingService.startMatchMerge(this.orgId, this.importFileId)),
         switchMap((response) => this.checkProgressResponse(response)),

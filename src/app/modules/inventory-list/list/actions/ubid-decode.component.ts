@@ -14,14 +14,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-ubid-decode-modal',
   templateUrl: './ubid-decode.component.html',
-  imports: [
-    AgGridAngular,
-    AlertComponent,
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-  ],
+  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class UbidDecodeComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<UbidDecodeComponent>)
@@ -46,7 +39,8 @@ export class UbidDecodeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._ubidService.decodeResults(this.data.orgId, this.data.viewIds, this.data.type)
+    this._ubidService
+      .decodeResults(this.data.orgId, this.data.viewIds, this.data.type)
       .pipe(
         take(1),
         tap((results) => {
@@ -63,7 +57,8 @@ export class UbidDecodeComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     this.status = 'inProgress'
-    this._ubidService.decodeByIds(this.data.orgId, this.data.viewIds, this.data.type)
+    this._ubidService
+      .decodeByIds(this.data.orgId, this.data.viewIds, this.data.type)
       .pipe(
         filter(({ status }) => status === 'success'),
         switchMap(() => this._ubidService.decodeResults(this.data.orgId, this.data.viewIds, this.data.type)),

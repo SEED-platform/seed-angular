@@ -15,14 +15,7 @@ import type { InventoryType, InventoryTypeSingular, ViewResponse } from '../inve
 @Component({
   selector: 'seed-ubid-modal',
   templateUrl: './ubid-modal.component.html',
-  imports: [
-    AgGridAngular,
-    AlertComponent,
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-  ],
+  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class UbidModalComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
@@ -101,7 +94,8 @@ export class UbidModalComponent implements OnInit, OnDestroy {
       {
         field: 'delete',
         headerName: 'Delete',
-        flex: 0.5, cellRenderer: this.deleteRenderer,
+        flex: 0.5,
+        cellRenderer: this.deleteRenderer,
       },
     ]
   }
@@ -183,7 +177,9 @@ export class UbidModalComponent implements OnInit, OnDestroy {
       .pipe(
         filter(Boolean),
         switchMap(() => this.CreateUpdateDeleteUbid()),
-        finalize(() => { this.inProgress = false }),
+        finalize(() => {
+          this.inProgress = false
+        }),
       )
       .subscribe()
   }
@@ -198,9 +194,7 @@ export class UbidModalComponent implements OnInit, OnDestroy {
     }
     if (!ubidsToValidate.length) return of(true)
 
-    return forkJoin(
-      ubidsToValidate.map((ubid) => this._ubidService.validate(this.data.orgId, ubid)),
-    ).pipe(
+    return forkJoin(ubidsToValidate.map((ubid) => this._ubidService.validate(this.data.orgId, ubid))).pipe(
       tap((response) => {
         for (const [index, validity] of response.entries()) {
           if (!validity) {

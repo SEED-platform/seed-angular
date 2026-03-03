@@ -17,13 +17,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-organizations-derived-columns',
   templateUrl: './derived-columns.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    InventoryTabComponent,
-    MaterialImports,
-    PageComponent,
-    SharedImports,
-    TableContainerComponent,
-  ],
+  imports: [InventoryTabComponent, MaterialImports, PageComponent, SharedImports, TableContainerComponent],
 })
 export class DerivedColumnsComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)

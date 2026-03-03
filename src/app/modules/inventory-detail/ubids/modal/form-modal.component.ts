@@ -14,11 +14,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-detail-ubids-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

@@ -15,14 +15,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-email-templates',
   templateUrl: './email-templates.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    NgxWigModule,
-    NotFoundComponent,
-    PageComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MaterialImports, NgxWigModule, NotFoundComponent, PageComponent, ReactiveFormsModule],
 })
 export class EmailTemplatesComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)

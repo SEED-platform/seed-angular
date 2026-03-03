@@ -135,4 +135,8 @@ export type BETTERConfig = {
 
 export type AnalysisConfig = BETTERConfig | Record<string, unknown>
 
-export type BSyncrModelTypes = 'Simple Linear Regression' | 'Three bsyncrOptionsParameter Linear Model Cooling' | 'Three Parameter Linear Model Heating' | 'Four Parameter Linear Model'
+export type BSyncrModelTypes =
+  | 'Simple Linear Regression'
+  | 'Three bsyncrOptionsParameter Linear Model Cooling'
+  | 'Three Parameter Linear Model Heating'
+  | 'Four Parameter Linear Model'

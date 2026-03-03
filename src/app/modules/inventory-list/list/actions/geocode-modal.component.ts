@@ -68,15 +68,17 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
       this._geocodeService.geocodingEnabled(this.data.orgId),
       this._geocodeService.geocodingColumns(this.data.orgId),
       this._geocodeService.confidenceSummary(this.data.orgId, this.data.viewIds, this.data.type),
-    ]).pipe(
-      tap(([hasApiKey, geocodingEnabled, geoColumns, confidenceSummary]) => {
-        this.hasApiKey = hasApiKey
-        this.geocodingEnabled = geocodingEnabled
-        this.processGeoColumns(geoColumns)
-        this.processConfidenceSummary(confidenceSummary)
-        this.suggestVerify = hasApiKey && this.hasGeoColumns && this.geocodeState === 'verify'
-      }),
-    ).subscribe()
+    ])
+      .pipe(
+        tap(([hasApiKey, geocodingEnabled, geoColumns, confidenceSummary]) => {
+          this.hasApiKey = hasApiKey
+          this.geocodingEnabled = geocodingEnabled
+          this.processGeoColumns(geoColumns)
+          this.processConfidenceSummary(confidenceSummary)
+          this.suggestVerify = hasApiKey && this.hasGeoColumns && this.geocodeState === 'verify'
+        }),
+      )
+      .subscribe()
   }
 
   processGeoColumns({ PropertyState, TaxLotState }: GeocodingColumns) {
@@ -88,8 +90,11 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
     this.pSummary = properties
     this.tSummary = taxlots
 
-    this.pMessages = !!properties && !!(properties.high_confidence || properties.low_confidence || properties.manual || properties.missing_address_components)
-    this.tMessages = !!taxlots && !!(taxlots.high_confidence || taxlots.low_confidence || taxlots.manual || taxlots.missing_address_components)
+    this.pMessages
+      = !!properties
+        && !!(properties.high_confidence || properties.low_confidence || properties.manual || properties.missing_address_components)
+    this.tMessages
+      = !!taxlots && !!(taxlots.high_confidence || taxlots.low_confidence || taxlots.manual || taxlots.missing_address_components)
   }
 
   close(success = false) {
@@ -102,7 +107,8 @@ export class GeocodeModalComponent implements OnInit, OnDestroy {
     this.processConfidenceSummary({}) // reset confidence summary
 
     const { orgId, viewIds, type } = this.data
-    this._geocodeService.geocode(orgId, viewIds, type)
+    this._geocodeService
+      .geocode(orgId, viewIds, type)
       .pipe(
         switchMap(() => this._geocodeService.confidenceSummary(this.data.orgId, this.data.viewIds, this.data.type)),
         tap((confidenceSummary) => {

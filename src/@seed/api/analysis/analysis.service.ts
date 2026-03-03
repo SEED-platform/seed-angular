@@ -8,7 +8,20 @@ import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
-import type { AnalysesMessage, Analysis, AnalysisCreateData, AnalysisResponse, AnalysisServiceType, AnalysisSummary, AnalysisView, AnalysisViews, ListAnalysesResponse, ListMessagesResponse, PropertyAnalysesResponse, View } from './analysis.types'
+import type {
+  AnalysesMessage,
+  Analysis,
+  AnalysisCreateData,
+  AnalysisResponse,
+  AnalysisServiceType,
+  AnalysisSummary,
+  AnalysisView,
+  AnalysisViews,
+  ListAnalysesResponse,
+  ListMessagesResponse,
+  PropertyAnalysesResponse,
+  View,
+} from './analysis.types'
 
 @Injectable({ providedIn: 'root' })
 export class AnalysisService {

@@ -53,12 +53,15 @@ export class BetterConfigComponent implements OnInit, OnDestroy {
     this.form.valueChanges
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.formChange.emit(this.form) }),
+        tap(() => {
+          this.formChange.emit(this.form)
+        }),
       )
       .subscribe()
 
-    this.form.get('select_meters')?.valueChanges
-      .pipe(
+    this.form
+      .get('select_meters')
+      ?.valueChanges.pipe(
         tap((selection) => {
           if (selection !== 'date_range') {
             this.form.get('meter.start_date')?.setValue(null)

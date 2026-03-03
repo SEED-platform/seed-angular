@@ -47,15 +47,13 @@ export class CycleService {
 
   getCycle(orgId: number, cycleId: number): Observable<Cycle> {
     const url = `/api/v3/cycles/${cycleId}?organization_id=${orgId}`
-    return this._httpClient
-      .get<CycleResponse>(url)
-      .pipe(
-        take(1),
-        map(({ cycles }) => cycles),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching cycles')
-        }),
-      )
+    return this._httpClient.get<CycleResponse>(url).pipe(
+      take(1),
+      map(({ cycles }) => cycles),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching cycles')
+      }),
+    )
   }
 
   post({ data, orgId }): Observable<CycleResponse | null> {

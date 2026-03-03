@@ -44,13 +44,7 @@ type RenderMapping = ColumnMapping & {
   selector: 'seed-organizations-column-mappings',
   templateUrl: './mappings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    SharedImports,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [AgGridAngular, CommonModule, SharedImports, MaterialImports, ReactiveFormsModule],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)

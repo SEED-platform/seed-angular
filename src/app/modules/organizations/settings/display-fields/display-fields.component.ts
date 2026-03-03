@@ -12,12 +12,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-organizations-settings-display-fields',
   templateUrl: './display-fields.component.html',
-  imports: [
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class DisplayFieldsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

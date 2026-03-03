@@ -18,13 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-meter-data-upload-modal',
   templateUrl: './meter-upload-modal.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
@@ -90,10 +84,11 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
     this.completed[1] = true
     this.step1ProgressTitle = 'Analyzing file...'
 
-    this._datasetService.reuseInventoryFileForMeters(this.data.orgId, this.data.reusedImportFileId)
+    this._datasetService
+      .reuseInventoryFileForMeters(this.data.orgId, this.data.reusedImportFileId)
       .pipe(
         take(1),
-        tap((importFileId) => this.importFileId = importFileId),
+        tap((importFileId) => (this.importFileId = importFileId)),
         switchMap(() => this.getMetersPreview()),
       )
       .subscribe()
@@ -123,24 +118,23 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
 
   getMetersPreview() {
     const { orgId } = this.data
-    return this._uploaderService.metersPreview(orgId, this.importFileId)
-      .pipe(
-        tap((response) => {
-          const { proposed_imports, validated_type_units } = response
-          this.setReadingTitle(proposed_imports)
-          this.proposedImports = proposed_imports
-          this.validatedTypeUnits = validated_type_units
-          this.readingHeight = Math.min(this.proposedImports.length * 35 + 42, 250)
-          this.unitHeight = Math.min(this.validatedTypeUnits.length * 35 + 42, 200)
-          this.stepper.next()
-          this.completed[2] = true
-          this.uploading = false
-        }),
-        catchError(() => {
-          this.uploading = false
-          return EMPTY
-        }),
-      )
+    return this._uploaderService.metersPreview(orgId, this.importFileId).pipe(
+      tap((response) => {
+        const { proposed_imports, validated_type_units } = response
+        this.setReadingTitle(proposed_imports)
+        this.proposedImports = proposed_imports
+        this.validatedTypeUnits = validated_type_units
+        this.readingHeight = Math.min(this.proposedImports.length * 35 + 42, 250)
+        this.unitHeight = Math.min(this.validatedTypeUnits.length * 35 + 42, 200)
+        this.stepper.next()
+        this.completed[2] = true
+        this.uploading = false
+      }),
+      catchError(() => {
+        this.uploading = false
+        return EMPTY
+      }),
+    )
   }
 
   step3() {
@@ -158,16 +152,19 @@ export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {
       })
     }
 
-    const failureFn = () => this.inProgress = false
+    const failureFn = () => (this.inProgress = false)
 
-    this._uploaderService.saveRawData(orgId, cycleId, this.importFileId)
+    this._uploaderService
+      .saveRawData(orgId, cycleId, this.importFileId)
       .pipe(
-        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          successFn,
-          failureFn,
-          progressBarObj: this.progressBarObj,
-        })),
+        switchMap(({ progress_key }) =>
+          this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            successFn,
+            failureFn,
+            progressBarObj: this.progressBarObj,
+          }),
+        ),
         catchError(() => {
           this.completed[3] = true
           setTimeout(() => {

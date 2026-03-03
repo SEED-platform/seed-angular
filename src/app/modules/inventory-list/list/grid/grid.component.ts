@@ -14,12 +14,7 @@ import { InventoryGridControlsComponent } from './grid-controls.component'
 @Component({
   selector: 'seed-inventory-grid',
   templateUrl: './grid.component.html',
-  imports: [
-    AgGridAngular,
-    CellHeaderMenuComponent,
-    CommonModule,
-    InventoryGridControlsComponent,
-  ],
+  imports: [AgGridAngular, CellHeaderMenuComponent, CommonModule, InventoryGridControlsComponent],
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() columnDefs!: ColDef[]

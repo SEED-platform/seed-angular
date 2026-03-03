@@ -14,12 +14,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-email-modal',
   templateUrl: './email-modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    RouterModule,
-  ],
+  imports: [FormsModule, MaterialImports, ModalHeaderComponent, RouterModule],
 })
 export class EmailModalComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<EmailModalComponent>)
@@ -37,7 +32,8 @@ export class EmailModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._postOfficeService.getEmailTemplates(this.data.orgId)
+    this._postOfficeService
+      .getEmailTemplates(this.data.orgId)
       .pipe(
         tap((emailTemplates) => {
           this.emailTemplates = emailTemplates
@@ -50,7 +46,8 @@ export class EmailModalComponent implements OnInit, OnDestroy {
 
   // selectTemplate()
   onSubmit() {
-    this._postOfficeService.sendEmail(this.data.orgId, this.data.stateIds, this.selectedTemplateId, this.data.type)
+    this._postOfficeService
+      .sendEmail(this.data.orgId, this.data.stateIds, this.selectedTemplateId, this.data.type)
       .pipe(
         take(1),
         finalize(() => {

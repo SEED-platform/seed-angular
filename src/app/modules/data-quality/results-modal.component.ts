@@ -13,11 +13,7 @@ import { ConfigService } from '@seed/services'
 @Component({
   selector: 'seed-data-quality-results',
   templateUrl: './results-modal.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class DQCResultsModalComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -33,7 +29,8 @@ export class DQCResultsModalComponent implements OnDestroy, OnInit {
   results: DataQualityResults[] = []
 
   ngOnInit() {
-    this._dataQualityService.getDataQualityResults(this.data.orgId, this.data.dqcId)
+    this._dataQualityService
+      .getDataQualityResults(this.data.orgId, this.data.dqcId)
       .pipe(
         takeUntil(this._unsubscribeAll$),
         tap((results) => {

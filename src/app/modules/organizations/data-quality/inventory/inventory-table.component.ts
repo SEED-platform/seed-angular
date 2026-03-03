@@ -19,12 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-data-quality-inventory-table',
   templateUrl: './inventory-table.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    LabelComponent,
-    MaterialImports,
-  ],
+  imports: [CommonModule, FormsModule, LabelComponent, MaterialImports],
 })
 export class DataQualityInventoryTableComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]

@@ -13,13 +13,7 @@ import type { CreateInstanceData } from '..'
   selector: 'seed-create-instance-dialog',
   templateUrl: './create-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    A11yModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [A11yModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class CreateInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as CreateInstanceData

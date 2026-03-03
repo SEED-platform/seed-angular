@@ -13,14 +13,7 @@ import { DataTypesComponent } from './data-types.component'
   selector: 'seed-organizations-column-data-types-properties',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    CommonModule,
-    SharedImports,
-    TableContainerComponent,
-    MaterialImports,
-    MatPaginator,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, SharedImports, TableContainerComponent, MaterialImports, MatPaginator, ReactiveFormsModule],
 })
 export class DataTypesPropertiesComponent extends DataTypesComponent implements AfterViewInit, OnInit {
   type = 'PropertyState'

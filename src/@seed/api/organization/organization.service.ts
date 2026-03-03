@@ -116,7 +116,9 @@ export class OrganizationService {
     const data = { settings }
     const url = `/api/v4/organization_users/${orgUserId}/?organization_id=${orgId}`
     return this._httpClient.put<OrganizationUserResponse>(url, data).pipe(
-      tap(({ data }) => { this._orgUserSettings.next(data.settings) }),
+      tap(({ data }) => {
+        this._orgUserSettings.next(data.settings)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating organization user')
       }),

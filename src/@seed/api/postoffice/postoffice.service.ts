@@ -77,18 +77,17 @@ export class PostOfficeService {
       inventory_id: stateIds,
       inventory_type,
     }
-    return this._httpClient.post<SendEmailResponse>(url, data)
-      .pipe(
-        tap(({ status }) => {
-          if (status === 'success') {
-            this._snackBar.success('Successfully sent email')
-          } else {
-            this._snackBar.alert('Error sending email')
-          }
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error sending email')
-        }),
-      )
+    return this._httpClient.post<SendEmailResponse>(url, data).pipe(
+      tap(({ status }) => {
+        if (status === 'success') {
+          this._snackBar.success('Successfully sent email')
+        } else {
+          this._snackBar.alert('Error sending email')
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error sending email')
+      }),
+    )
   }
 }

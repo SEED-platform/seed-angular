@@ -12,13 +12,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-ubid-compare-modal',
   templateUrl: './ubid-compare.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class UbidCompareComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<UbidCompareComponent>)
@@ -60,8 +54,8 @@ export class UbidCompareComponent implements OnInit, OnDestroy {
       view2: this._inventoryService.getView(orgId, viewIds[1], type),
     }).pipe(
       tap(({ view1, view2 }) => {
-        this.ubid1 = view1?.state.ubid as string || ''
-        this.ubid2 = view2?.state.ubid as string || ''
+        this.ubid1 = (view1?.state.ubid as string) || ''
+        this.ubid2 = (view2?.state.ubid as string) || ''
       }),
     )
   }
@@ -79,8 +73,9 @@ export class UbidCompareComponent implements OnInit, OnDestroy {
   }
 
   watchUbid(controlName: string) {
-    this.form.get(controlName)?.valueChanges
-      .pipe(
+    this.form
+      .get(controlName)
+      ?.valueChanges.pipe(
         switchMap((value: string) => this._ubidService.validate(this.data.orgId, value)),
         tap((result) => {
           this.result = null
@@ -98,10 +93,13 @@ export class UbidCompareComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     const { ubid1, ubid2 } = this.form.value
-    this._ubidService.compareUbids(this.data.orgId, ubid1, ubid2)
+    this._ubidService
+      .compareUbids(this.data.orgId, ubid1, ubid2)
       .pipe(
         take(1),
-        tap((result) => { this.result = result }),
+        tap((result) => {
+          this.result = result
+        }),
       )
       .subscribe()
   }

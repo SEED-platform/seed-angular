@@ -16,11 +16,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-save-mappings',
   templateUrl: './save-mappings.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class SaveMappingsComponent implements OnChanges, OnDestroy {
   @Input() columns: Column[]
@@ -66,7 +62,8 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
       this.dqcComplete = true
     }
 
-    this._dataQualityService.startDataQualityCheckForImportFile(this.orgId, this.importFile.id)
+    this._dataQualityService
+      .startDataQualityCheckForImportFile(this.orgId, this.importFile.id)
       .pipe(
         take(1),
         switchMap(({ progress_key }) => {
@@ -76,7 +73,9 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
             progressBarObj: this.progressBarObj,
           })
         }),
-        tap(({ unique_id }) => { this.dqcId = unique_id }),
+        tap(({ unique_id }) => {
+          this.dqcId = unique_id
+        }),
       )
       .subscribe()
   }
@@ -110,7 +109,10 @@ export class SaveMappingsComponent implements OnChanges, OnDestroy {
     aliColumnDefs = [aliErrorDef, ...aliColumnDefs]
 
     // Inventory Columns
-    const columnNameMap: Record<string, string> = this.columns.reduce((acc, { name, display_name }) => ({ ...acc, [name]: display_name }), {})
+    const columnNameMap: Record<string, string> = this.columns.reduce(
+      (acc, { name, display_name }) => ({ ...acc, [name]: display_name }),
+      {},
+    )
     const inventoryColumnDefs = keys.map((key) => ({ field: key, headerName: columnNameMap[key] || key }))
 
     const columnDefs = [...hiddenColumnDefs, ...aliColumnDefs, ...inventoryColumnDefs]

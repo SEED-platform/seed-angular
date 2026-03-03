@@ -17,12 +17,13 @@ export class MatchingService {
     const url = `/api/v3/${type}/merge/?organization_id=${orgId}`
     const key = type === 'taxlots' ? 'taxlot_view_ids' : 'property_view_ids'
     const data = { [key]: viewIds }
-    return this._httpClient.post<MergingResponse>(url, data)
-      .pipe(
-        tap(() => { this._snackBar.success('Successfully merged inventory') }),
-        catchError(() => {
-          return this._errorService.handleError(null, 'Error merging inventory')
-        }),
-      )
+    return this._httpClient.post<MergingResponse>(url, data).pipe(
+      tap(() => {
+        this._snackBar.success('Successfully merged inventory')
+      }),
+      catchError(() => {
+        return this._errorService.handleError(null, 'Error merging inventory')
+      }),
+    )
   }
 }

@@ -9,11 +9,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-email-templates-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

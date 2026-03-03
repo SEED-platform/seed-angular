@@ -9,11 +9,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-data-mapping-create-profile',
   templateUrl: './create-profile.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class CreateProfileComponent {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
@@ -22,7 +18,12 @@ export class CreateProfileComponent {
   profileName = ''
   profile: ColumnMappingProfile
 
-  data = inject(MAT_DIALOG_DATA) as { orgId: number; profileType: ColumnMappingProfileType; mappings: ColumnMapping[]; existingNames: string[] }
+  data = inject(MAT_DIALOG_DATA) as {
+    orgId: number;
+    profileType: ColumnMappingProfileType;
+    mappings: ColumnMapping[];
+    existingNames: string[];
+  }
   form = new FormGroup({
     name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
   })
@@ -34,10 +35,9 @@ export class CreateProfileComponent {
       mappings: this.data.mappings,
     } as ColumnMappingProfile
 
-    this._columnMappingProfileService.create(this.data.orgId, this.profile)
-      .subscribe(() => {
-        this.close()
-      })
+    this._columnMappingProfileService.create(this.data.orgId, this.profile).subscribe(() => {
+      this.close()
+    })
   }
 
   close() {

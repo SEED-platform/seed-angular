@@ -83,15 +83,19 @@ export class DataQualityService {
 
   startDataQualityCheckForImportFile(orgId: number, importFileId: number): Observable<FullProgressResponse> {
     const url = `/api/v3/import_files/${importFileId}/start_data_quality_checks/?organization_id=${orgId}`
-    return this._httpClient.post<FullProgressResponse>(url, {})
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error starting data quality checks for import file')
-        }),
-      )
+    return this._httpClient.post<FullProgressResponse>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting data quality checks for import file')
+      }),
+    )
   }
 
-  startDataQualityCheckForOrg(orgId: number, property_view_ids: number[], taxlot_view_ids: number[], goal_id: number): Observable<FullProgressResponse> {
+  startDataQualityCheckForOrg(
+    orgId: number,
+    property_view_ids: number[],
+    taxlot_view_ids: number[],
+    goal_id: number,
+  ): Observable<FullProgressResponse> {
     const url = `/api/v3/data_quality_checks/${orgId}/start/`
     const data = {
       property_view_ids,

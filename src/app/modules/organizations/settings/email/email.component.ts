@@ -11,12 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-organizations-settings-email',
   templateUrl: './email.component.html',
-  imports: [
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class EmailComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

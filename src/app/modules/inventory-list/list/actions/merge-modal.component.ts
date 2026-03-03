@@ -17,15 +17,7 @@ import type { FilterResponse, InventoryType, State } from 'app/modules/inventory
 @Component({
   selector: 'seed-merge-modal',
   templateUrl: './merge-modal.component.html',
-  imports: [
-    AgGridAngular,
-    AlertComponent,
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-    SharedImports,
-  ],
+  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, SharedImports],
 })
 export class MergeModalComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
@@ -62,7 +54,10 @@ export class MergeModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const { orgId, viewIds } = this.data
     const metersExist$ = this._inventoryService.propertiesMetersExist(orgId, viewIds)
-    const columns$ = this.data.type === 'taxlots' ? this._mappableColumnService.getTaxLotColumns(orgId) : this._mappableColumnService.getPropertyColumns(orgId)
+    const columns$
+      = this.data.type === 'taxlots'
+        ? this._mappableColumnService.getTaxLotColumns(orgId)
+        : this._mappableColumnService.getPropertyColumns(orgId)
     const inventory$ = this.getInventory$()
 
     combineLatest([metersExist$, columns$, inventory$])
@@ -128,7 +123,8 @@ export class MergeModalComponent implements OnInit, OnDestroy {
   onConfirm() {
     const { orgId, viewIds, type } = this.data
     const singularType = type === 'taxlots' ? 'tax lot' : 'property'
-    this._matchingService.mergeInventory(orgId, viewIds, type)
+    this._matchingService
+      .mergeInventory(orgId, viewIds, type)
       .pipe(
         tap(({ match_link_count, match_merged_count }) => {
           this.results = [

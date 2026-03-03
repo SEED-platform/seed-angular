@@ -44,14 +44,23 @@ export class ExportModalComponent implements OnDestroy {
   })
 
   export() {
-    this._inventoryService.startInventoryExport(this.data.orgId)
+    this._inventoryService
+      .startInventoryExport(this.data.orgId)
       .pipe(
-        tap(({ progress_key }) => { this.initExport(progress_key) }),
+        tap(({ progress_key }) => {
+          this.initExport(progress_key)
+        }),
         switchMap(() => this.pollExport()),
-        tap((response) => { this.downloadData(response[0]) }),
+        tap((response) => {
+          this.downloadData(response[0])
+        }),
         takeUntil(this._unsubscribeAll$),
-        catchError(() => { return EMPTY }),
-        finalize(() => { this.close() }),
+        catchError(() => {
+          return EMPTY
+        }),
+        finalize(() => {
+          this.close()
+        }),
       )
       .subscribe()
   }

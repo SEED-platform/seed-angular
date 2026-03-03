@@ -9,10 +9,7 @@ import { isOrderedSubset } from '@seed/utils/string-matching.util'
 @Component({
   selector: 'seed-inventory-list-map-labels',
   templateUrl: './labels.component.html',
-  imports: [
-    MaterialImports,
-    FormsModule,
-  ],
+  imports: [MaterialImports, FormsModule],
 })
 export class LabelsComponent implements OnChanges {
   @Input() labels: Label[]

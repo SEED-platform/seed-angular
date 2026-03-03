@@ -125,11 +125,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
-    this._organizationService.orgUserSettings$
-      .pipe(
-        tap((settings) => this.userSettings = settings),
-      )
-      .subscribe()
+    this._organizationService.orgUserSettings$.pipe(tap((settings) => (this.userSettings = settings))).subscribe()
 
     this.refreshInventory$.pipe(switchMap(() => this.refreshInventory())).subscribe()
   }
@@ -284,9 +280,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onSelectAll(selectedViewIds: number[]) {
     this.selectedViewIds = selectedViewIds
-    this.selectedStateIds = this.type === 'taxlots'
-      ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
-      : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
+    this.selectedStateIds
+      = this.type === 'taxlots'
+        ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
+        : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
   }
 
   onProfileChange(id: number) {

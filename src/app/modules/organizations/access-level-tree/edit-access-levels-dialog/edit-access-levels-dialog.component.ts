@@ -15,13 +15,7 @@ import type { EditAccessLevelsData } from '..'
   selector: 'seed-edit-access-levels-dialog',
   templateUrl: './edit-access-levels-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
   private _data = inject(MAT_DIALOG_DATA) as EditAccessLevelsData

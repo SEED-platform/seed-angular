@@ -20,15 +20,7 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: 
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
-  imports: [
-    CommonModule,
-    SharedImports,
-    InventoryTabComponent,
-    MaterialImports,
-    PageComponent,
-    VerticalNavigationComponent,
-    RouterOutlet,
-  ],
+  imports: [CommonModule, SharedImports, InventoryTabComponent, MaterialImports, PageComponent, VerticalNavigationComponent, RouterOutlet],
 })
 export class ColumnsComponent implements AfterViewInit, OnInit {
   @ViewChild('drawer') drawer!: MatDrawer

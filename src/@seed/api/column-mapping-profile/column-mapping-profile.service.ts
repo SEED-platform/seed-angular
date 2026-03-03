@@ -69,7 +69,9 @@ export class ColumnMappingProfileService {
       map((response) => {
         return response.data
       }),
-      tap(() => { this._snackBar.success('Profile updated successfully') }),
+      tap(() => {
+        this._snackBar.success('Profile updated successfully')
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating profile')
       }),
@@ -91,7 +93,9 @@ export class ColumnMappingProfileService {
   create(orgId: number, profile: ColumnMappingProfile): Observable<ColumnMappingProfileUpdateResponse> {
     const url = `/api/v3/column_mapping_profiles/?organization_id=${orgId}`
     return this._httpClient.post<ColumnMappingProfileUpdateResponse>(url, { ...profile }).pipe(
-      tap(() => { this._snackBar.success('Profile created successfully') }),
+      tap(() => {
+        this._snackBar.success('Profile created successfully')
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating profile')
       }),

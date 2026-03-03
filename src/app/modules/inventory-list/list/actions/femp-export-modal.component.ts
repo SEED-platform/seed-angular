@@ -12,12 +12,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-femp-export-modal',
   templateUrl: './femp-export-modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-  ],
+  imports: [FormsModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class FempExportModalComponent implements OnDestroy {
   private _dialog = inject(MatDialogRef<FempExportModalComponent>)
@@ -41,18 +36,22 @@ export class FempExportModalComponent implements OnDestroy {
 
   onSubmit() {
     this.inProgress = true
-    const exportRequest = this.exportType === 'evaluation'
-      ? this._inventoryService.evaluationExportToCts(this.data.orgId, this.data.viewIds, this.filename)
-      : this._inventoryService.facilityBpsExportToCts(this.data.orgId, this.data.viewIds, this.filename)
+    const exportRequest
+      = this.exportType === 'evaluation'
+        ? this._inventoryService.evaluationExportToCts(this.data.orgId, this.data.viewIds, this.filename)
+        : this._inventoryService.facilityBpsExportToCts(this.data.orgId, this.data.viewIds, this.filename)
 
     exportRequest
       .pipe(
-        tap((response) => { this.downloadData(response) }),
+        tap((response) => {
+          this.downloadData(response)
+        }),
         finalize(() => {
           this.inProgress = false
           this.close()
         }),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   downloadData(data: Blob) {
