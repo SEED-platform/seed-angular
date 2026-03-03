@@ -11,13 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-profile-info',
   templateUrl: './info.component.html',
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileInfoComponent implements OnInit, OnDestroy {
   private _userService = inject(UserService)

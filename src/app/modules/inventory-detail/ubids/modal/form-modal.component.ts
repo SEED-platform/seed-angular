@@ -14,11 +14,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-detail-ubids-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -62,7 +58,9 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .update(this.data.orgId, this.data.viewId, this.data.ubid.id, ubidDetails, this.data.type)
         .pipe(
-          tap(() => { this.close(preferred) }),
+          tap(() => {
+            this.close(preferred)
+          }),
         )
         .subscribe()
     } else {
@@ -71,7 +69,9 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .create(this.data.orgId, this.data.viewId, ubidDetails, this.data.type)
         .pipe(
-          tap(() => { this.close(preferred) }),
+          tap(() => {
+            this.close(preferred)
+          }),
         )
         .subscribe()
     }

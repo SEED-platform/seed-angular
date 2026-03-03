@@ -15,15 +15,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
-  imports: [
-    AnalysesGridComponent,
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    NotFoundComponent,
-    PageComponent,
-    SharedImports,
-  ],
+  imports: [AnalysesGridComponent, AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent, SharedImports],
 })
 export class AnalysesComponent implements OnInit {
   private _analysisService = inject(AnalysisService)

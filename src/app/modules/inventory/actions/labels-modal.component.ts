@@ -17,14 +17,7 @@ import type { InventoryType } from '../inventory.types'
 @Component({
   selector: 'seed-labels-modal',
   templateUrl: './labels-modal.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class LabelsModalComponent implements OnInit, OnDestroy {
   private _unsubscribeAll$ = new Subject<void>()
@@ -65,9 +58,7 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   setValidator() {
     this.existingNames = this.labels.map((g) => g.name)
     const nameCtrl = this.form.get('name')
-    nameCtrl?.setValidators([
-      SEEDValidators.uniqueValue(this.existingNames),
-    ])
+    nameCtrl?.setValidators([SEEDValidators.uniqueValue(this.existingNames)])
   }
 
   setGrid() {
@@ -123,11 +114,16 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     const data = this.form.value as Label
-    this._labelService.create(data)
+    this._labelService
+      .create(data)
       .pipe(
-        tap((label) => { this.newLabel = label }),
+        tap((label) => {
+          this.newLabel = label
+        }),
         switchMap(() => this._labelService.getByOrgId(data.organization_id)),
-        tap(() => { this.form.reset() }),
+        tap(() => {
+          this.form.reset()
+        }),
       )
       .subscribe()
   }

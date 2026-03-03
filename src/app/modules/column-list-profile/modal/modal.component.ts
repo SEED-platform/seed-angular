@@ -12,11 +12,7 @@ import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, Pro
 @Component({
   selector: 'seed-column-list-profile-modal',
   templateUrl: './modal.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class ModalComponent {
   private _dialogRef = inject(MatDialogRef<ModalComponent>)

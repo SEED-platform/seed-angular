@@ -36,13 +36,7 @@ type Layer = VectorLayer | TileLayer
 @Component({
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
-  imports: [
-    LabelsComponent,
-    MaterialImports,
-    NotFoundComponent,
-    PageComponent,
-    ProgressBarComponent,
-  ],
+  imports: [LabelsComponent, MaterialImports, NotFoundComponent, PageComponent, ProgressBarComponent],
 })
 export class MapComponent implements OnDestroy, OnInit {
   private _inventoryService = inject(InventoryService)

@@ -19,14 +19,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-data-upload-modal',
   templateUrl: './data-upload-modal.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ProgressBarComponent,
-    ReactiveFormsModule,
-    RouterModule,
-  ],
+  imports: [CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, ReactiveFormsModule, RouterModule],
 })
 export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper

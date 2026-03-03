@@ -40,10 +40,7 @@ export class AliChangeModalComponent implements OnInit, OnDestroy {
   }
 
   getTree() {
-    combineLatest([
-      this._organizationService.accessLevelTree$,
-      this._organizationService.accessLevelInstancesByDepth$,
-    ])
+    combineLatest([this._organizationService.accessLevelTree$, this._organizationService.accessLevelInstancesByDepth$])
       .pipe(
         tap(([tree, accessLevelsByDepth]) => {
           this.accessLevelNames = tree.accessLevelNames
@@ -76,10 +73,13 @@ export class AliChangeModalComponent implements OnInit, OnDestroy {
   onSubmit() {
     const { orgId, viewIds } = this.data
     const aliId = this.form.get('access_level_instance')?.value
-    this._inventoryService.movePropertiesToAccessLevelInstance(orgId, aliId, viewIds)
+    this._inventoryService
+      .movePropertiesToAccessLevelInstance(orgId, aliId, viewIds)
       .pipe(
         take(1),
-        tap(() => { this.close(true) }),
+        tap(() => {
+          this.close(true)
+        }),
       )
       .subscribe()
   }

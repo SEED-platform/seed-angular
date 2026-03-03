@@ -81,7 +81,9 @@ export class LabelService {
   create(label: Label): Observable<Label> {
     const url = `/api/v3/labels/?organization_id=${label.organization_id}`
     return this._httpClient.post<Label>(url, { ...label }).pipe(
-      tap(() => { this._snackBar.success('Label Created') }),
+      tap(() => {
+        this._snackBar.success('Label Created')
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error creating label: ${error.message}`)
       }),
@@ -127,7 +129,13 @@ export class LabelService {
     )
   }
 
-  updateLabelInventory(orgId: number, viewIds: number[], type: InventoryType, addLabelIds: number[], removeLabelIds: number[]): Observable<HttpResponse<null>> {
+  updateLabelInventory(
+    orgId: number,
+    viewIds: number[],
+    type: InventoryType,
+    addLabelIds: number[],
+    removeLabelIds: number[],
+  ): Observable<HttpResponse<null>> {
     const singularType: InventoryTypeSingular = type === 'taxlots' ? 'taxlot' : 'property'
     const url = `/api/v3/labels_${singularType}/?organization_id=${orgId}`
     const data = { inventory_ids: viewIds, add_label_ids: addLabelIds, remove_label_ids: removeLabelIds }

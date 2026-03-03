@@ -19,16 +19,23 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
   private _unsubscribeAll$ = new Subject<void>()
 
   aboutMap = {
-    BSyncr: 'The BSyncr analysis leverages the Normalized Metered Energy Consumption (NMEC) analysis to calculate a change point model. The data are passed to the analysis using BuildingSync. The result of the analysis are the coefficients of the change point model.',
+    BSyncr:
+      'The BSyncr analysis leverages the Normalized Metered Energy Consumption (NMEC) analysis to calculate a change point model. The data are passed to the analysis using BuildingSync. The result of the analysis are the coefficients of the change point model.',
     EUI: "The EUI analysis will sum the property's meter readings for the last twelve months to calculate the energy use per square footage per year.If there are missing meter readings, then the analysis will return a less that 100% coverage to alert the user that there is a missing meter reading.",
     CO2: "This analysis calculates the average annual CO2 emissions for the property's meter data. The analysis requires an eGRID Subregion to be defined in order to accurately determine the emission rates.",
     EEEJ: "The EEEJ Analysis uses each property's address to identify the 2010 census tract. Based on census tract, disadvantaged community classification and energy burden information can be retrieved from the CEJST dataset. The number of affordable housing locations is retrieved from HUD datasets. Location is used to generate a link to view an EJScreen Report providing more demographic indicators.",
-    'Element Statistics': "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C.Control Panel'. It also generates the aggregated (average) condition index values for EISA 2007-432 elements and saves those quantities to the property.",
+    'Element Statistics':
+      "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C.Control Panel'. It also generates the aggregated (average) condition index values for EISA 2007-432 elements and saves those quantities to the property.",
   }
   formMap: Record<string, FormGroup> = {}
   form: FormGroup
 
-  bsyncrModelOptions: BSyncrModelTypes[] = ['Simple Linear Regression', 'Three bsyncrOptionsParameter Linear Model Cooling', 'Three Parameter Linear Model Heating', 'Four Parameter Linear Model']
+  bsyncrModelOptions: BSyncrModelTypes[] = [
+    'Simple Linear Regression',
+    'Three bsyncrOptionsParameter Linear Model Cooling',
+    'Three Parameter Linear Model Heating',
+    'Four Parameter Linear Model',
+  ]
 
   formBSyncr = new FormGroup({
     model_type: new FormControl<BSyncrModelTypes>('Simple Linear Regression'),
@@ -71,7 +78,9 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
   watchForm() {
     this.form.valueChanges
       .pipe(
-        tap(() => { this.formChange.emit(this.form) }),
+        tap(() => {
+          this.formChange.emit(this.form)
+        }),
         takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
@@ -83,8 +92,9 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   watchSelectMeters() {
-    this.form.get('select_meters')?.valueChanges
-      .pipe(
+    this.form
+      .get('select_meters')
+      ?.valueChanges.pipe(
         tap((selection) => {
           // reset dates
           if (selection !== 'date_range') {

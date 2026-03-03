@@ -11,14 +11,7 @@ import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
-import type {
-  AgFilterResponse,
-  FiltersSorts,
-  InventoryDependencies,
-  InventoryType,
-  Pagination,
-  Profile,
-} from 'app/modules/inventory'
+import type { AgFilterResponse, FiltersSorts, InventoryDependencies, InventoryType, Pagination, Profile } from 'app/modules/inventory'
 import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
 
 @Component({
@@ -255,9 +248,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    this.selectedViewIds = this.type === 'taxlots'
-      ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
-      : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
+    this.selectedViewIds
+      = this.type === 'taxlots'
+        ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
+        : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
   }
 
   onSelectAll(selectedViewIds: number[]) {

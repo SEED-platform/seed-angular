@@ -19,13 +19,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-column-profiles',
   templateUrl: './column-profiles.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    PageComponent,
-    MaterialImports,
-    ModalComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, PageComponent, MaterialImports, ModalComponent],
 })
 export class ColumnProfilesComponent implements OnDestroy, OnInit {
   @Input() profileType: 'list' | 'detail'

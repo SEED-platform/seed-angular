@@ -15,13 +15,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-labels-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

@@ -12,11 +12,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-inventory-detail-data-loggers-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)

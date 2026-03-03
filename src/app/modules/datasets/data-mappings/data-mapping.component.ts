@@ -6,8 +6,27 @@ import type { MatStepper } from '@angular/material/stepper'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import { catchError, filter, forkJoin, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import type { Column, ColumnMappingProfile, ColumnMappingProfileType, Cycle, ImportFile, MappingResultsResponse, MappingSuggestionsResponse, Organization, ProgressResponse } from '@seed/api'
-import { CacheService, ColumnMappingProfileService, ColumnService, CycleService, DatasetService, MappingService, OrganizationService, UserService } from '@seed/api'
+import type {
+  Column,
+  ColumnMappingProfile,
+  ColumnMappingProfileType,
+  Cycle,
+  ImportFile,
+  MappingResultsResponse,
+  MappingSuggestionsResponse,
+  Organization,
+  ProgressResponse,
+} from '@seed/api'
+import {
+  CacheService,
+  ColumnMappingProfileService,
+  ColumnService,
+  CycleService,
+  DatasetService,
+  MappingService,
+  OrganizationService,
+  UserService,
+} from '@seed/api'
 import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
@@ -89,7 +108,9 @@ export class DataMappingComponent implements OnDestroy, OnInit {
         }),
         switchMap(() => this.getImportFile()),
         filter(Boolean),
-        tap(() => { this.getProfiles() }),
+        tap(() => {
+          this.getProfiles()
+        }),
         switchMap(() => this.getMappingData()),
         switchMap(() => this.getColumns()),
       )
@@ -97,18 +118,18 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   }
 
   getImportFile() {
-    return this._datasetService.getImportFile(this.orgId, this.fileId)
-      .pipe(
-        take(1),
-        tap((importFile) => {
-          this.importFile = importFile
-          this.datasetId = importFile.dataset?.id
-          this.columnMappingProfileTypes = importFile.source_type === 'BuildingSync Raw' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
-        }),
-        catchError(() => {
-          return of(null)
-        }),
-      )
+    return this._datasetService.getImportFile(this.orgId, this.fileId).pipe(
+      take(1),
+      tap((importFile) => {
+        this.importFile = importFile
+        this.datasetId = importFile.dataset?.id
+        this.columnMappingProfileTypes
+          = importFile.source_type === 'BuildingSync Raw' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
+      }),
+      catchError(() => {
+        return of(null)
+      }),
+    )
   }
 
   getMappingData() {
@@ -117,16 +138,15 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       this._mappingService.firstFiveRows(this.orgId, this.fileId),
       this._mappingService.mappingSuggestions(this.orgId, this.fileId),
       this._mappingService.rawColumnNames(this.orgId, this.fileId),
-    ])
-      .pipe(
-        take(1),
-        tap(([cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
-          this.cycle = cycle
-          this.firstFiveRows = firstFiveRows
-          this.mappingSuggestions = mappingSuggestions
-          this.rawColumnNames = rawColumnNames
-        }),
-      )
+    ]).pipe(
+      take(1),
+      tap(([cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
+        this.cycle = cycle
+        this.firstFiveRows = firstFiveRows
+        this.mappingSuggestions = mappingSuggestions
+        this.rawColumnNames = rawColumnNames
+      }),
+    )
   }
 
   getColumns() {
@@ -135,35 +155,34 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       this._organizationService.getMatchingCriteriaColumns(this.orgId, 'taxlots'),
       this._columnService.propertyColumns$.pipe(take(1)),
       this._columnService.taxLotColumns$.pipe(take(1)),
-    ])
-      .pipe(
-        take(1),
-        tap(([
-          matchingPropertyColumns,
-          matchingTaxLotColumns,
-          propertyColumns,
-          taxlotColumns,
-        ]) => {
-          this.matchingPropertyColumns = matchingPropertyColumns as string[]
-          this.matchingTaxLotColumns = matchingTaxLotColumns as string[]
-          this.propertyColumns = propertyColumns
-          this.taxlotColumns = taxlotColumns
+    ]).pipe(
+      take(1),
+      tap(([matchingPropertyColumns, matchingTaxLotColumns, propertyColumns, taxlotColumns]) => {
+        this.matchingPropertyColumns = matchingPropertyColumns as string[]
+        this.matchingTaxLotColumns = matchingTaxLotColumns as string[]
+        this.propertyColumns = propertyColumns
+        this.taxlotColumns = taxlotColumns
 
-          const propertyMap = new Map(propertyColumns.filter((c) => c.table_name === 'PropertyState').map((c) => [c.column_name, c.display_name]))
-          const taxlotMap = new Map(taxlotColumns.filter((c) => c.table_name === 'TaxLotState').map((c) => [c.column_name, c.display_name]))
+        const propertyMap = new Map(
+          propertyColumns.filter((c) => c.table_name === 'PropertyState').map((c) => [c.column_name, c.display_name]),
+        )
+        const taxlotMap = new Map(taxlotColumns.filter((c) => c.table_name === 'TaxLotState').map((c) => [c.column_name, c.display_name]))
 
-          this.matchingPropertyColumnDisplayNames = this.matchingPropertyColumns.map((name) => propertyMap.get(name) || name).join(', ')
-          this.matchingTaxLotColumnDisplayNames = this.matchingTaxLotColumns.map((name) => taxlotMap.get(name) || name).join(', ')
-        }),
-      )
+        this.matchingPropertyColumnDisplayNames = this.matchingPropertyColumns.map((name) => propertyMap.get(name) || name).join(', ')
+        this.matchingTaxLotColumnDisplayNames = this.matchingTaxLotColumns.map((name) => taxlotMap.get(name) || name).join(', ')
+      }),
+    )
   }
 
   getProfiles() {
-    this._columnMappingProfileService.getProfiles(this.orgId, this.columnMappingProfileTypes)
+    this._columnMappingProfileService
+      .getProfiles(this.orgId, this.columnMappingProfileTypes)
       .pipe(
         switchMap(() => this._columnMappingProfileService.profiles$),
         takeUntil(this._unsubscribeAll$),
-        tap((profiles) => { this.columnMappingProfiles = profiles }),
+        tap((profiles) => {
+          this.columnMappingProfiles = profiles
+        }),
       )
       .subscribe()
   }
@@ -185,7 +204,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
       this.getMappingResults()
     }
 
-    this._mappingService.startMapping(this.orgId, this.fileId, mappedData)
+    this._mappingService
+      .startMapping(this.orgId, this.fileId, mappedData)
       .pipe(
         switchMap(() => this._mappingService.remapBuildings(this.orgId, this.fileId)),
         tap((response: ProgressResponse) => {
@@ -216,7 +236,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   getMappingResults(): void {
     this.progressTitle = 'Fetching Mapping Results...'
     const successFn = ({ unique_id }: ProgressResponse) => {
-      this._cacheService.getCacheEntry(this.orgId, unique_id)
+      this._cacheService
+        .getCacheEntry(this.orgId, unique_id)
         .pipe(
           tap((response) => {
             this.mappingResultsResponse = response as MappingResultsResponse
@@ -227,13 +248,16 @@ export class DataMappingComponent implements OnDestroy, OnInit {
         .subscribe()
     }
 
-    this._mappingService.mappingResults(this.orgId, this.fileId)
+    this._mappingService
+      .mappingResults(this.orgId, this.fileId)
       .pipe(
-        switchMap(({ progress_key }) => this._uploaderService.checkProgressLoop({
-          progressKey: progress_key,
-          successFn,
-          progressBarObj: this.progressBarObj,
-        })),
+        switchMap(({ progress_key }) =>
+          this._uploaderService.checkProgressLoop({
+            progressKey: progress_key,
+            successFn,
+            progressBarObj: this.progressBarObj,
+          }),
+        ),
       )
       .subscribe()
   }

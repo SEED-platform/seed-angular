@@ -15,12 +15,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-settings-salesforce',
   templateUrl: './salesforce.component.html',
-  imports: [
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class SalesforceComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

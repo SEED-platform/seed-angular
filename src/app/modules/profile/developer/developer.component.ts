@@ -13,13 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   selector: 'seed-profile-developer',
   templateUrl: './developer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ClipboardComponent,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [ClipboardComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileDeveloperComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

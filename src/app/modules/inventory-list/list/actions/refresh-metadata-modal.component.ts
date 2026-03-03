@@ -39,7 +39,8 @@ export class RefreshMetadataModalComponent implements OnInit, OnDestroy {
 
   refresh() {
     this.inProgress = true
-    this._inventoryService.startRefreshMetadata(this.data.orgId)
+    this._inventoryService
+      .startRefreshMetadata(this.data.orgId)
       .pipe(
         switchMap(({ progress_key }) => this.pollRefresh(progress_key)),
         filter(([_, progressResponse]) => progressResponse.progress >= 100),
@@ -48,7 +49,9 @@ export class RefreshMetadataModalComponent implements OnInit, OnDestroy {
           this.close(true)
         }),
         takeUntil(this._unsubscribeAll$),
-        finalize(() => { this.inProgress = false }),
+        finalize(() => {
+          this.inProgress = false
+        }),
       )
       .subscribe()
   }

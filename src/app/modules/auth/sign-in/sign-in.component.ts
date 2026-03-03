@@ -17,13 +17,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-in.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
 })
 export class AuthSignInComponent implements OnInit, OnDestroy {
   private _route = inject(ActivatedRoute)

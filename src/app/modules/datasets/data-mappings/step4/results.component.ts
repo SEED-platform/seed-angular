@@ -17,12 +17,7 @@ import { MeterDataUploadModalComponent } from '../../data-upload/meter-upload-mo
 @Component({
   selector: 'seed-match-merge-results',
   templateUrl: './results.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    RouterModule,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, RouterModule],
 })
 export class ResultsComponent implements OnChanges, OnDestroy {
   @Input() cycleId: number
@@ -61,14 +56,18 @@ export class ResultsComponent implements OnChanges, OnDestroy {
   }
 
   getMatchingResults() {
-    this._mappingService.getMatchingResults(this.orgId, this.importFileId)
+    this._mappingService
+      .getMatchingResults(this.orgId, this.importFileId)
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap((results) => { this.setGrid(results) }),
+        tap((results) => {
+          this.setGrid(results)
+        }),
       )
       .subscribe()
 
-    this._datasetService.checkMetersTabExists(this.orgId, this.importFileId)
+    this._datasetService
+      .checkMetersTabExists(this.orgId, this.importFileId)
       .pipe(
         take(1),
         tap((hasData) => {

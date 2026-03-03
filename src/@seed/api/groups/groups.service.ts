@@ -95,7 +95,13 @@ export class GroupsService {
     )
   }
 
-  bulkUpdate(orgId: number, addGroupIds: number[], removeGroupIds: number[], viewIds: number[], type: 'property' | 'tax_lot'): Observable<unknown> {
+  bulkUpdate(
+    orgId: number,
+    addGroupIds: number[],
+    removeGroupIds: number[],
+    viewIds: number[],
+    type: 'property' | 'tax_lot',
+  ): Observable<unknown> {
     const url = `/api/v3/inventory_group_mappings/put/?organization_id=${orgId}`
     const data = {
       inventory_ids: viewIds,
@@ -104,7 +110,9 @@ export class GroupsService {
       inventory_type: type,
     }
     return this._httpClient.put(url, data).pipe(
-      tap(() => { this.list(orgId) }),
+      tap(() => {
+        this.list(orgId)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating groups')
       }),

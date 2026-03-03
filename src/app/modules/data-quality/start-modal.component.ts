@@ -32,17 +32,22 @@ export class DQCStartModalComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     const [propertyViewIds, taxlotViewIds] = this.data.type === 'properties' ? [this.data.viewIds, []] : [[], this.data.viewIds]
-    this._dataQualityService.startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, null)
+    this._dataQualityService
+      .startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, null)
       .pipe(
         switchMap(({ progress_key }) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
-            successFn: () => { this.openDataQualityResultsModal(this.uniqueId) },
+            successFn: () => {
+              this.openDataQualityResultsModal(this.uniqueId)
+            },
             progressBarObj: this.progressBarObj,
           })
         }),
         takeUntil(this._unsubscribeAll$),
-        tap(({ unique_id }) => { this.uniqueId = unique_id }),
+        tap(({ unique_id }) => {
+          this.uniqueId = unique_id
+        }),
       )
       .subscribe()
   }

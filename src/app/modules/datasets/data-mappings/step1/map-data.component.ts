@@ -8,7 +8,16 @@ import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowClassParams, RowNode } from 'ag-grid-community'
 import { Subject, switchMap, take } from 'rxjs'
-import type { Column, ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType, Cycle, DataMappingRow, ImportFile, MappingSuggestionsResponse } from '@seed/api'
+import type {
+  Column,
+  ColumnMapping,
+  ColumnMappingProfile,
+  ColumnMappingProfileType,
+  Cycle,
+  DataMappingRow,
+  ImportFile,
+  MappingSuggestionsResponse,
+} from '@seed/api'
 import { ColumnMappingProfileService } from '@seed/api'
 import { AlertComponent, PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -23,16 +32,7 @@ import { CreateProfileComponent } from './modal/create-profile.component'
 @Component({
   selector: 'seed-map-data',
   templateUrl: './map-data.component.html',
-  imports: [
-    AgGridAngular,
-    AlertComponent,
-    CommonModule,
-    HelpComponent,
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    FormsModule,
-  ],
+  imports: [AgGridAngular, AlertComponent, CommonModule, HelpComponent, MaterialImports, PageComponent, ReactiveFormsModule, FormsModule],
 })
 export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() orgId: number
@@ -212,7 +212,10 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   copyHeadersToSeed() {
     const { suggested_column_mappings } = this.mappingSuggestions
     const columns = this.getColumns()
-    const columnMap: Record<string, string> = columns.reduce((acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }), {})
+    const columnMap: Record<string, string> = columns.reduce(
+      (acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }),
+      {},
+    )
 
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
       const fileHeader = node.data.from_field
@@ -268,7 +271,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   createProfile() {
     const profileType: ColumnMappingProfileType = this.importFile.source_type === 'BuildingSync' ? 'BuildingSync Custom' : 'Normal'
-    const profileTypes: ColumnMappingProfileType[] = profileType === 'BuildingSync Custom' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
+    const profileTypes: ColumnMappingProfileType[]
+      = profileType === 'BuildingSync Custom' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
     const dialogRef = this._dialog.open(CreateProfileComponent, {
       width: '40rem',
       data: {
@@ -321,7 +325,10 @@ export class MapDataComponent implements OnChanges, OnDestroy {
     // at least one matching column
     const hasMatchingCol = toFields.some((col) => matchingColumns.includes(col))
     if (!hasMatchingCol) {
-      const matchingColNames = this.getColumns().filter((c) => c.is_matching_criteria).map((c) => c.display_name).join(', ')
+      const matchingColNames = this.getColumns()
+        .filter((c) => c.is_matching_criteria)
+        .map((c) => c.display_name)
+        .join(', ')
       this.errorMessages.push(`At least one of the following Property fields is required: ${matchingColNames}.`)
     }
 

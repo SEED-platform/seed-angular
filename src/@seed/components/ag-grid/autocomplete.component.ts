@@ -8,11 +8,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-ag-grid-auto-complete-cell',
   templateUrl: './autocomplete.component.html',
-  imports: [
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterViewInit {
   @ViewChild('input') input!: ElementRef<HTMLInputElement>

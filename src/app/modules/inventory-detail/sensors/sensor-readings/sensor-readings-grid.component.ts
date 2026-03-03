@@ -14,13 +14,7 @@ import { InventoryGridControlsComponent } from 'app/modules/inventory-list'
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',
   templateUrl: './sensor-readings-grid.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    InventoryGridControlsComponent,
-    FormsModule,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, InventoryGridControlsComponent, FormsModule],
 })
 export class SensorReadingsGridComponent implements OnChanges {
   @Input() usage: SensorUsage

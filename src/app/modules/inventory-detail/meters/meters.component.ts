@@ -18,13 +18,7 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
 @Component({
   selector: 'seed-inventory-detail-meters',
   templateUrl: './meters.component.html',
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    NotFoundComponent,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class MetersComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -150,7 +144,9 @@ export class MetersComponent implements OnDestroy, OnInit {
 
     this._datasetService.datasets$
       .pipe(
-        tap((datasets) => { this.datasets = datasets }),
+        tap((datasets) => {
+          this.datasets = datasets
+        }),
       )
       .subscribe()
   }

@@ -6,12 +6,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-documentation',
   templateUrl: './documentation.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    InnerHTMLExternalLinksDirective,
-    InnerHTMLImageOverlayDirective,
-    MaterialImports,
-    SharedImports,
-  ],
+  imports: [InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, MaterialImports, SharedImports],
 })
 export class DocumentationComponent {
   readonly faq: { category: string; faqs: { question: string; answer: string }[] }[] = [

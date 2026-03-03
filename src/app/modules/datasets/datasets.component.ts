@@ -20,12 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-data',
   templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    MaterialImports,
-    PageComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent],
 })
 export class DatasetsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
@@ -53,23 +48,22 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     //   })
     // })
 
-    this._userService.currentOrganizationId$.pipe(
-      tap((orgId) => {
-        this.orgId = orgId
-        this._datasetService.list(orgId)
-      }),
-      switchMap(() => combineLatest([
-        this._cycleService.cycles$,
-        this._datasetService.datasets$,
-      ])),
-      tap(([cycles, datasets]) => {
-        this.cycles = cycles
-        this.datasets = datasets.sort((a, b) => naturalSort(a.name, b.name))
-        this.existingNames = datasets.map((ds) => ds.name)
-        this.setColumnDefs()
-      }),
-      takeUntil(this._unsubscribeAll$),
-    ).subscribe()
+    this._userService.currentOrganizationId$
+      .pipe(
+        tap((orgId) => {
+          this.orgId = orgId
+          this._datasetService.list(orgId)
+        }),
+        switchMap(() => combineLatest([this._cycleService.cycles$, this._datasetService.datasets$])),
+        tap(([cycles, datasets]) => {
+          this.cycles = cycles
+          this.datasets = datasets.sort((a, b) => naturalSort(a.name, b.name))
+          this.existingNames = datasets.map((ds) => ds.name)
+          this.setColumnDefs()
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
   }
 
   setColumnDefs() {
@@ -77,7 +71,12 @@ export class DatasetsComponent implements OnDestroy, OnInit {
       { field: 'id', hide: true },
       { field: 'name', headerName: 'Name', cellRenderer: this.nameRenderer },
       { field: 'importfiles', headerName: 'Files', flex: 0.5, valueGetter: ({ data }: { data: Dataset }) => data.importfiles.length },
-      { field: 'updated_at', headerName: 'Updated At', flex: 0.5, valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString() },
+      {
+        field: 'updated_at',
+        headerName: 'Updated At',
+        flex: 0.5,
+        valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString(),
+      },
       { field: 'last_modified_by', headerName: 'Last Modified By' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionsRenderer, flex: 1 },
     ]
@@ -156,10 +155,13 @@ export class DatasetsComponent implements OnDestroy, OnInit {
       data: { model: 'Dataset', instance: dataset.name },
     })
 
-    dialogRef.afterClosed().pipe(
-      filter(Boolean),
-      switchMap(() => this._datasetService.delete(this.orgId, dataset.id)),
-    ).subscribe()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._datasetService.delete(this.orgId, dataset.id)),
+      )
+      .subscribe()
   }
 
   createDataset = () => {

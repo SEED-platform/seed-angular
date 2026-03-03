@@ -11,12 +11,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-bur-config',
   templateUrl: './bur-config.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule],
 })
 // BUR: Building Upgrade Recommendation
 export class BurConfigComponent implements OnInit, OnDestroy {
@@ -63,15 +58,20 @@ export class BurConfigComponent implements OnInit, OnDestroy {
           this.watchForm()
         }),
         takeUntil(this._unsubscribeAll$),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   getColumns() {
-    return this._columnService.propertyColumns$
-      .pipe(
-        tap((propertyColumns) => this.propertyColumns = propertyColumns.filter((c) => c.table_name === 'PropertyState').sort((a, b) => naturalSort(a.display_name, b.display_name))),
-        takeUntil(this._unsubscribeAll$),
-      )
+    return this._columnService.propertyColumns$.pipe(
+      tap(
+        (propertyColumns) =>
+          (this.propertyColumns = propertyColumns
+            .filter((c) => c.table_name === 'PropertyState')
+            .sort((a, b) => naturalSort(a.display_name, b.display_name))),
+      ),
+      takeUntil(this._unsubscribeAll$),
+    )
   }
 
   setForm() {
@@ -198,7 +198,9 @@ export class BurConfigComponent implements OnInit, OnDestroy {
     this.form.valueChanges
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        tap(() => { this.formChange.emit(this.form) }),
+        tap(() => {
+          this.formChange.emit(this.form)
+        }),
       )
       .subscribe()
   }

@@ -12,12 +12,7 @@ import * as UnitOptions from './units.types'
 @Component({
   selector: 'seed-organizations-settings-display-units',
   templateUrl: './display-units.component.html',
-  imports: [
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class DisplayUnitsComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

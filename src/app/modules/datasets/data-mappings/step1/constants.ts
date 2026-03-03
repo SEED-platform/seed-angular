@@ -15,33 +15,31 @@ export const dataTypeMap: Record<string, { display: string; units: string }> = {
   // wui: { display: 'Water Use Intensity', units: 'gal/ft²/year' },
 }
 
-const displayDataTypes = ['None', 'Number', 'Integer', 'Text', 'Datetime', 'Date', 'Boolean', 'Area', 'EUI', 'Geometry', 'GHG', 'GHG Intensity'] // 'Water Use', 'Water Use Intensity'
+const displayDataTypes = [
+  'None',
+  'Number',
+  'Integer',
+  'Text',
+  'Datetime',
+  'Date',
+  'Boolean',
+  'Area',
+  'EUI',
+  'Geometry',
+  'GHG',
+  'GHG Intensity',
+] // 'Water Use', 'Water Use Intensity'
 const dataTypes = ['None', 'number', 'integer', 'string', 'datetime', 'date', 'boolean', 'area', 'eui', 'geometry', 'ghg', 'ghg_intensity'] // 'water_use', 'wui'
 
 export const displayToDataTypeMap: Record<string, string> = Object.fromEntries(displayDataTypes.map((k, i) => [k, dataTypes[i]]))
 
 export const unitMap: Record<string, string[]> = {
   Area: ['ft²', 'm²'],
-  EUI: [
-    'kBtu/ft²/year',
-    'kWh/m²/year',
-    'GJ/m²/year',
-    'MJ/m²/year',
-    'kBtu/m²/year',
-  ],
+  EUI: ['kBtu/ft²/year', 'kWh/m²/year', 'GJ/m²/year', 'MJ/m²/year', 'kBtu/m²/year'],
   GHG: ['MtCO2e/year', 'kgCO2e/year'],
-  'GHG Intensity': [
-    'MtCO2e/ft²/year',
-    'kgCO2e/ft²/year',
-    'MtCO2e/m²/year',
-    'kgCO2e/m²/year',
-  ],
+  'GHG Intensity': ['MtCO2e/ft²/year', 'kgCO2e/ft²/year', 'MtCO2e/m²/year', 'kgCO2e/m²/year'],
   'Water Use': ['kgal/year', 'gal/year', 'L/year'],
-  'Water Use Intensity': [
-    'kgal/ft²/year',
-    'gal/ft²/year',
-    'L/m²/year',
-  ],
+  'Water Use Intensity': ['kgal/ft²/year', 'gal/ft²/year', 'L/m²/year'],
 }
 
 export const dataTypeOptions = [

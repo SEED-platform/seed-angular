@@ -12,12 +12,7 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
-  imports: [
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-    SeedHeaderAutocompleteComponent,
-  ],
+  imports: [MaterialImports, ReactiveFormsModule, SharedImports, SeedHeaderAutocompleteComponent],
 })
 export class CreateModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)

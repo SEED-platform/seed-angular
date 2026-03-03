@@ -17,14 +17,7 @@ import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/
 @Component({
   selector: 'seed-inventory-groups-modal',
   templateUrl: './groups-modal.component.html',
-  imports: [AgGridAngular,
-    AlertComponent,
-    CommonModule,
-    FormsModule,
-    MaterialImports,
-    ModalHeaderComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [AgGridAngular, AlertComponent, CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class GroupsModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<GroupsModalComponent>)
@@ -59,26 +52,27 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     const { orgId, type, viewIds } = this.data
     this._groupsService.list(orgId)
-    this._organizationService.filterAccessLevelsByViews(orgId, type, viewIds)
+    this._organizationService
+      .filterAccessLevelsByViews(orgId, type, viewIds)
       .pipe(
         tap((aliIds) => {
           this.aliIds = aliIds
           this.setGrid()
         }),
         switchMap(() => this._groupsService.groups$),
-        tap((groups) => { this.setGroups(groups) }),
+        tap((groups) => {
+          this.setGroups(groups)
+        }),
         takeUntil(this._unsubscribeAll$),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   setGroups(groups: InventoryGroup[]) {
     this.groups = groups
     this.existingNames = groups.map((g) => g.name)
     const nameCtrl = this.form.get('name')
-    nameCtrl?.setValidators([
-      Validators.required,
-      SEEDValidators.uniqueValue(this.existingNames),
-    ])
+    nameCtrl?.setValidators([Validators.required, SEEDValidators.uniqueValue(this.existingNames)])
 
     this.aliGroups = this.groups
       .filter((g) => this.aliIds.includes(g.access_level_instance))
@@ -97,8 +91,19 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
     this.columnDefs = [
       { field: 'name', headerName: 'Group Name', flex: 1 },
       { field: 'access_level_instance_data.name', headerName: 'Access Level Instance' },
-      { field: 'inventory_list', headerName: 'Inventory', flex: 0.5, valueFormatter: ({ data }: { data: InventoryGroup }) => String(data.inventory_list.length) },
-      { field: 'add', headerName: 'Add', flex: 0.5, editable: this.allSameAli, headerClass: () => this.allSameAli ? '' : 'text-secondary' },
+      {
+        field: 'inventory_list',
+        headerName: 'Inventory',
+        flex: 0.5,
+        valueFormatter: ({ data }: { data: InventoryGroup }) => String(data.inventory_list.length),
+      },
+      {
+        field: 'add',
+        headerName: 'Add',
+        flex: 0.5,
+        editable: this.allSameAli,
+        headerClass: () => (this.allSameAli ? '' : 'text-secondary'),
+      },
       { field: 'remove', headerName: 'Remove', flex: 0.5, editable: true },
     ]
   }
@@ -126,7 +131,8 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   }
 
   onSubmit() {
-    this._groupsService.create(this.data.orgId, this.form.value as unknown as InventoryGroup)
+    this._groupsService
+      .create(this.data.orgId, this.form.value as unknown as InventoryGroup)
       .pipe(take(1))
       .subscribe()
   }

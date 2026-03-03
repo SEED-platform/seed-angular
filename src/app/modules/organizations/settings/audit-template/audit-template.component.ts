@@ -13,12 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-organizations-settings-audit-template',
   templateUrl: './audit-template.component.html',
-  imports: [
-    MaterialImports,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class AuditTemplateComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)

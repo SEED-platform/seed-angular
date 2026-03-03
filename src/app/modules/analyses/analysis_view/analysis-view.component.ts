@@ -70,10 +70,7 @@ export class AnalysisViewComponent implements OnDestroy, OnInit {
     this.messages = messages.filter((m) => m.analysis_property_view === this.apvId)
 
     return this._analysisService.getAnalysisView(this.orgId, this.analysisId, this.apvId).pipe(
-      switchMap(() => combineLatest([
-        this._analysisService.view$,
-        this._analysisService.originalView$,
-      ])),
+      switchMap(() => combineLatest([this._analysisService.view$, this._analysisService.originalView$])),
       takeUntil(this._unsubscribeAll$),
       tap(([view, originalView]) => {
         this.view = view

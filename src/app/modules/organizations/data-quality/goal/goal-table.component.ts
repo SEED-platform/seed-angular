@@ -16,12 +16,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-data-quality-goal-table',
   templateUrl: './goal-table.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    LabelComponent,
-    MaterialImports,
-  ],
+  imports: [CommonModule, FormsModule, LabelComponent, MaterialImports],
 })
 export class DataQualityGoalTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]

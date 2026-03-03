@@ -16,13 +16,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MaterialImports,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileSecurityComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
