@@ -1,24 +1,22 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { inject } from '@angular/core'
-import { Component, ViewEncapsulation } from '@angular/core'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import { Subject } from 'rxjs'
-import { SharedImports } from '@seed/directives'
-import { type Cycle, CycleService } from '@seed/api/cycle'
-import { type Goal, GoalService } from '@seed/api/goal'
-import { catchError, combineLatest, map, of, ReplaySubject, switchMap, tap, takeUntil } from 'rxjs'
 import type { MatSelectChange } from '@angular/material/select'
 import { MatSelectModule } from '@angular/material/select'
-import { AnnualReport, SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
-import { MAT_DIALOG_DATA } from '@angular/material/dialog'
-import type { AddCycleData, ConfigureGoalsData } from '../portfolio-summary.types'
+import { Subject, takeUntil } from 'rxjs'
+import { type Cycle, CycleService } from '@seed/api/cycle'
+import { GoalService } from '@seed/api/goal'
+import type { AnnualReport } from '@seed/api/salesforce-portfolio'
+import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
+import { SharedImports } from '@seed/directives'
+import type { AddCycleData } from '../portfolio-summary.types'
 
 @Component({
   selector: 'seed-add-cycle-dialog',
@@ -44,8 +42,8 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
   private _goalService = inject(GoalService)
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
   cycles: Cycle[] = []
-  selectedCycle?: Cycle = null;
-  selectedAnnualReport?: AnnualReport = null;
+  selectedCycle?: Cycle = null
+  selectedAnnualReport?: AnnualReport = null
   data = inject(MAT_DIALOG_DATA) as AddCycleData
   isLoggedIntoBbSalesforce: boolean
   annualReports: AnnualReport[] = []
@@ -58,7 +56,7 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
 
     this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce
     if (this.isLoggedIntoBbSalesforce) {
-      this._salesforcePortfolioService.getAnnualReports(this.data.currentGoal.id).subscribe(annualReports => {
+      this._salesforcePortfolioService.getAnnualReports(this.data.currentGoal.id).subscribe((annualReports) => {
         this.annualReports = annualReports.results
       })
     }
@@ -88,14 +86,11 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
   submit(): void {
     console.log(this.selectedAnnualReport)
     console.log(this.selectedCycle)
-    this._goalService.createCycleGoal(
-      this.data.currentGoal.id, 
-      this.selectedCycle.id, 
-      this.selectedAnnualReport.id, 
-      this.selectedAnnualReport.name,
-    ).subscribe(newCycleGoal => {
-      console.log(newCycleGoal)
-      this._dialogRef.close(newCycleGoal)
-    })
+    this._goalService
+      .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport.id, this.selectedAnnualReport.name)
+      .subscribe((newCycleGoal) => {
+        console.log(newCycleGoal)
+        this._dialogRef.close(newCycleGoal)
+      })
   }
 }

@@ -37,7 +37,6 @@ export type getPartnersResponse = {
   results: SalesforcePartner[];
 }
 
-
 export type AnnualReport = {
   id: string;
   name: string;

@@ -13,16 +13,17 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import type { MatSelectChange } from '@angular/material/select'
 import { MatSelectModule } from '@angular/material/select'
-import { RouterLink } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { Subject, takeUntil, switchMap } from 'rxjs'
+import { Subject, switchMap, takeUntil } from 'rxjs'
 import type { CycleGoal, Goal, PortfolioSummary, WeightedEUI } from '@seed/api/goal'
 import { GoalService } from '@seed/api/goal'
 import type { Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 import type { CurrentUser } from '@seed/api/user'
 import { UserService } from '@seed/api/user'
 import { NotFoundComponent, PageComponent } from '@seed/components'
@@ -31,8 +32,6 @@ import { ConfigService } from '@seed/services'
 import { AddCycleDialogComponent } from './add-cycle-dialog'
 import { ConfigureGoalsDialogComponent } from './configure-goals-dialog'
 import type { AddCycleData, ConfigureGoalsData } from './portfolio-summary.types'
-import { Router } from '@angular/router'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 
 Chart.register(annotationPlugin)
 @Component({
@@ -107,15 +106,17 @@ export class PortfolioSummaryComponent implements OnInit {
   ]
 
   ngOnInit(): void {
-    this._organizationService.currentOrganization$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap((organization) => {
-         this.organization = organization
-        return this._salesforcePortfolioService.verifyToken(this.organization.id)
-    })
-    ).subscribe((r) => {
-      this.isLoggedIntoBbSalesforce = r.valid
-    })
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((organization) => {
+          this.organization = organization
+          return this._salesforcePortfolioService.verifyToken(this.organization.id)
+        }),
+      )
+      .subscribe((r) => {
+        this.isLoggedIntoBbSalesforce = r.valid
+      })
 
     this._goalService.goals$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((goals) => {
       this.goals = goals
@@ -130,12 +131,12 @@ export class PortfolioSummaryComponent implements OnInit {
     const dialogRef = this._matDialog.open(AddCycleDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      data: {currentGoal: this.currentGoal, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce} satisfies AddCycleData,
+      data: { currentGoal: this.currentGoal, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce } satisfies AddCycleData,
     })
 
-    dialogRef.afterClosed().subscribe((newCycleGoal) => {
+    dialogRef.afterClosed().subscribe((newCycleGoal?: CycleGoal) => {
       if (newCycleGoal) this.currentGoal.cycle_goals.push(newCycleGoal)
-    });
+    })
   }
 
   openConfigureGoals(): void {
@@ -144,7 +145,11 @@ export class PortfolioSummaryComponent implements OnInit {
       disableClose: true,
       width: '50rem',
       height: '50rem',
-      data: { goals: this.goals, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce, bb_salesforce_enabled: this.organization.bb_salesforce_enabled } satisfies ConfigureGoalsData,
+      data: {
+        goals: this.goals,
+        isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce,
+        bb_salesforce_enabled: this.organization.bb_salesforce_enabled,
+      } satisfies ConfigureGoalsData,
     })
   }
 
@@ -197,8 +202,8 @@ export class PortfolioSummaryComponent implements OnInit {
       })
   }
 
-  toSettings() {
-    this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+  async toSettings() {
+    await this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
   }
 
   loginToSalesforce(): void {
@@ -207,8 +212,8 @@ export class PortfolioSummaryComponent implements OnInit {
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((response) => {
         console.log(response)
-        window.location.href = response.url;
-    })
+        window.location.href = response.url
+      })
   }
 
   // Selectors

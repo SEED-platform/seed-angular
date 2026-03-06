@@ -1,6 +1,7 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { MatButtonModule } from '@angular/material/button'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
@@ -11,12 +12,19 @@ import { OrganizationService } from '@seed/api/organization'
 import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { MatButtonModule } from '@angular/material/button'
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'seed-salesforce-portfolio-integration',
-  imports: [MatButtonModule, PageComponent, SharedImports, ReactiveFormsModule, MatInputModule, MatIconModule, MatSlideToggleModule, MatFormFieldModule],
+  imports: [
+    MatButtonModule,
+    PageComponent,
+    SharedImports,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatFormFieldModule,
+  ],
   templateUrl: './salesforce-portfolio-integration.component.html',
   styleUrl: './salesforce-portfolio-integration.component.scss',
 })
@@ -34,7 +42,6 @@ export class SalesforcePortfolioIntegrationComponent implements OnInit {
   organization: Organization
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
-  private router = inject(Router);
   isLoggedIntoBbSalesforce: boolean
 
   ngOnInit(): void {
@@ -59,12 +66,12 @@ export class SalesforcePortfolioIntegrationComponent implements OnInit {
         })
 
       this._salesforcePortfolioService
-      .verifyToken(this.organization.id)
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe((response) => {
-        this.isLoggedIntoBbSalesforce = response.valid
-        console.log(response)
-      })
+        .verifyToken(this.organization.id)
+        .pipe(takeUntil(this._unsubscribeAll$))
+        .subscribe((response) => {
+          this.isLoggedIntoBbSalesforce = response.valid
+          console.log(response)
+        })
     })
   }
 
@@ -93,15 +100,15 @@ export class SalesforcePortfolioIntegrationComponent implements OnInit {
   togglePassword(): void {
     this.passwordHidden = !this.passwordHidden
   }
-  
+
   loginToSalesforce(): void {
     this._salesforcePortfolioService
       .getLoginUrl(this.organization.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((response) => {
         console.log(response)
-        window.location.href = response.url;
-    })
+        window.location.href = response.url
+      })
   }
 
   toggleForm(): void {

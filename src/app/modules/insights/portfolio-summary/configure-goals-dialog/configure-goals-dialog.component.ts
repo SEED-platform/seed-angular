@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatSelectModule } from '@angular/material/select'
-import { Subject, takeUntil, combineLatest, switchMap } from 'rxjs'
+import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { type Cycle, CycleService } from '@seed/api/cycle'
@@ -18,10 +18,10 @@ import type { Goal } from '@seed/api/goal'
 import { GoalService } from '@seed/api/goal'
 import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Organization } from '@seed/api/organization'
 import { OrganizationService } from '@seed/api/organization'
+import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
+import type { SalesforceGoal, SalesforcePartner } from '@seed/api/salesforce-portfolio/salesforce-portfolio.types'
 import { SharedImports } from '@seed/directives'
 import type { ConfigureGoalsData } from '../portfolio-summary.types'
-import { SalesforcePartner, SalesforceGoal } from '@seed/api/salesforce-portfolio/salesforce-portfolio.types'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 
 @Component({
   selector: 'seed-configure-goals-dialog',
@@ -76,42 +76,45 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   isLoggedIntoBbSalesforce: boolean
   bb_salesforce_enabled: boolean
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
-  salesforcePartners: SalesforcePartner[];
-  salesforceGoals: SalesforceGoal[];
+  salesforcePartners: SalesforcePartner[]
+  salesforceGoals: SalesforceGoal[]
 
   ngOnInit(): void {
-    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce;
-    this.bb_salesforce_enabled = this.data.bb_salesforce_enabled;
+    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce
+    this.bb_salesforce_enabled = this.data.bb_salesforce_enabled
     this.goals = this.data.goals
 
-    this._organizationService.currentOrganization$.pipe(
-      takeUntil(this._unsubscribeAll$),
-      switchMap((organization) => {
-        this.organization = organization
-        return this._salesforcePortfolioService.getPartners(this.organization.id)
-    })
-    ).subscribe((r) => {
-      this.salesforcePartners = r.results;
-    })
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((organization) => {
+          this.organization = organization
+          return this._salesforcePortfolioService.getPartners(this.organization.id)
+        }),
+      )
+      .subscribe((r) => {
+        this.salesforcePartners = r.results
+      })
 
     combineLatest([
       this._cycleService.cycles$,
       this._organizationService.accessLevelTree$,
       this._organizationService.accessLevelInstancesByDepth$,
       this._columnService.propertyColumns$,
-    ]).pipe(takeUntil(this._unsubscribeAll$))
-    .subscribe(([cycles, {accessLevelNames}, accessLevelsByDepth, propertyColumns]) => {
-      this.cycles = cycles
-      this.accessLevelNames = accessLevelNames
-      this.accessLevelInstancesByDepth = accessLevelsByDepth
-      this.areaColumns = propertyColumns.filter((c) => c.data_type == 'area')
-      this.euiColumns = propertyColumns.filter((c) => c.data_type == 'eui')
-    })
+    ])
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(([cycles, { accessLevelNames }, accessLevelsByDepth, propertyColumns]) => {
+        this.cycles = cycles
+        this.accessLevelNames = accessLevelNames
+        this.accessLevelInstancesByDepth = accessLevelsByDepth
+        this.areaColumns = propertyColumns.filter((c) => c.data_type == 'area')
+        this.euiColumns = propertyColumns.filter((c) => c.data_type == 'eui')
+      })
 
     if (this.goals.length > 0) {
       this.currentGoal = this.goals[0]
       this.selectGoal(this.goals[0].id)
-    }  
+    }
   }
 
   selectGoal(goalId?: number) {
@@ -148,15 +151,14 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   }
 
   onPartnerChange(partnerId: string) {
-    const partner = this.salesforcePartners.find(p => p.id == partnerId)
+    const partner = this.salesforcePartners.find((p) => p.id == partnerId)
     this.salesforceGoals = partner.goals
   }
 
-
   save(): void {
     const formValues = this.goalForm.value
-    const partner = this.salesforcePartners.find(p => p.id == formValues.salesforcePartnerID)
-    const goal = partner.goals.find(g => g.id == formValues.salesforceGoalID)
+    const partner = this.salesforcePartners.find((p) => p.id == formValues.salesforcePartnerID)
+    const goal = partner.goals.find((g) => g.id == formValues.salesforceGoalID)
 
     const request_data = {
       name: formValues.name,

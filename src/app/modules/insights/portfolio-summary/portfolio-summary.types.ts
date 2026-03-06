@@ -4,10 +4,9 @@ export type ConfigureGoalsData = {
   goals: Goal[];
   isLoggedIntoBbSalesforce: boolean;
   bb_salesforce_enabled: boolean;
-
 }
 
 export type AddCycleData = {
-  currentGoal: Goal
-  isLoggedIntoBbSalesforce: boolean
+  currentGoal: Goal;
+  isLoggedIntoBbSalesforce: boolean;
 }

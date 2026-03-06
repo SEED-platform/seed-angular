@@ -137,37 +137,35 @@
         <mat-hint>{{ t('Committed Area') }}</mat-hint>
       </mat-form-field>
 
-    <!-- SAlESFORCE -->
-     @if (bb_salesforce_enabled) {
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('SALESFORCE') }}</div>
-      @if (isLoggedIntoBbSalesforce) {
+      <!-- SAlESFORCE -->
+      @if (bb_salesforce_enabled) {
+        <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('SALESFORCE') }}</div>
+        @if (isLoggedIntoBbSalesforce) {
+          <mat-form-field appearance="fill">
+            <mat-label>Salesforce Partner</mat-label>
+            <mat-select (selectionChange)="onPartnerChange($event.value)" formControlName="salesforcePartnerID">
+              <mat-option value="">--</mat-option>
+              @for (partner of salesforcePartners; track partner.id) {
+                <mat-option [value]="partner.id">{{ partner.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label>Salesforce Partner</mat-label>
-          <mat-select formControlName="salesforcePartnerID" (selectionChange)="onPartnerChange($event.value)">
-            <mat-option value="">--</mat-option>
-            @for (partner of salesforcePartners; track partner.id) {
-              <mat-option [value]="partner.id">{{ partner.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Salesforce Goals</mat-label>
-          <mat-select formControlName="salesforceGoalID">
-            @for (salesforceGoal of salesforceGoals; track salesforceGoal.id) {
-              <mat-option [value]="salesforceGoal.id">{{ salesforceGoal.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-      } @else{
-        <div class="flex">
-          <mat-icon class="icon-size-5" [svgIcon]="'warning'" matSuffix color="warn"></mat-icon>
-          <p>{{ t('Log in to Salesforce first to be able to configure Salesforce Partner and Goal associations here.')}}</p>
-        </div>
+          <mat-form-field>
+            <mat-label>Salesforce Goals</mat-label>
+            <mat-select formControlName="salesforceGoalID">
+              @for (salesforceGoal of salesforceGoals; track salesforceGoal.id) {
+                <mat-option [value]="salesforceGoal.id">{{ salesforceGoal.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        } @else {
+          <div class="flex">
+            <mat-icon class="icon-size-5" [svgIcon]="'warning'" matSuffix color="warn"></mat-icon>
+            <p>{{ t('Log in to Salesforce first to be able to configure Salesforce Partner and Goal associations here.') }}</p>
+          </div>
+        }
       }
-    }
     </form>
   </div>
 

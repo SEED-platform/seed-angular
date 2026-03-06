@@ -2,10 +2,17 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { catchError, map, takeUntil, tap, Subject } from 'rxjs'
+import { catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
-import type { SalesforcePortfolioConfig, SalesforcePortfolioConfigResponse, verifyTokenResponse, loginUrlResponse, getTokenResponse, getPartnersResponse } from './salesforce-portfolio.types'
 import { UserService } from '../user'
+import type {
+  getPartnersResponse,
+  getTokenResponse,
+  loginUrlResponse,
+  SalesforcePortfolioConfig,
+  SalesforcePortfolioConfigResponse,
+  verifyTokenResponse,
+} from './salesforce-portfolio.types'
 
 @Injectable({
   providedIn: 'root',

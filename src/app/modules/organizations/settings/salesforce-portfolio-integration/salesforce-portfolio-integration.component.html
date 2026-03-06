@@ -7,12 +7,8 @@
   }"
 >
   <div class="flex-auto p-6 sm:p-10" *transloco="let t">
-    <div class="max-w-2xl bg-card flex flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow">
-      <form
-        class=""
-        [formGroup]="salesforceForm"
-        (ngSubmit)="submit()"
-      >
+    <div class="bg-card flex max-w-2xl flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow">
+      <form class="" [formGroup]="salesforceForm" (ngSubmit)="submit()">
         <!-- enable -->
         <div class="prose">Enable this if you would like to sync data between SEED and a Salesforce instance</div>
         <div class="mb-6 flex">
@@ -60,11 +56,15 @@
       <div class="flex items-center">
         <span style="margin-right: 10px">Salesforce Connection Status:</span>
         @if (isLoggedIntoBbSalesforce) {
-        <mat-icon class="text-green-500">check_circle</mat-icon>
-        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Logout') }}</button>
+          <mat-icon class="text-green-500">check_circle</mat-icon>
+          <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">
+            {{ t('Logout') }}
+          </button>
         } @else {
-        <mat-icon class="text-red-500">cancel</mat-icon>
-        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Login') }}</button>
+          <mat-icon class="text-red-500">cancel</mat-icon>
+          <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">
+            {{ t('Login') }}
+          </button>
         }
       </div>
     </div>

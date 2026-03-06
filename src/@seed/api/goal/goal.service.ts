@@ -86,14 +86,16 @@ export class GoalService {
 
   createCycleGoal(goalId: number, cycleId: number, annual_report_id: string, annual_report_name: string): Observable<CycleGoal> {
     const url = `/api/v3/goals/${goalId}/cycles/?organization_id=${this.orgId}`
-    return this._httpClient.post<CycleGoal>(url, {
+    return this._httpClient
+      .post<CycleGoal>(url, {
         current_cycle: cycleId,
         salesforce_annual_report_id: annual_report_id,
-        salesforce_annual_report_name: annual_report_name
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
-      }),
-    )
+        salesforce_annual_report_name: annual_report_name,
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
+        }),
+      )
   }
 }

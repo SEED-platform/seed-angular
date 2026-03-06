@@ -3,7 +3,13 @@
   <div class="flex" mat-dialog-title>
     <div class="text-2xl font-medium">{{ t('Add Cycle') }}</div>
   </div>
-  <div class="text-secondary font-medium">{{ t('Add a new cycle to the selected goal to compare against the baseline. The latest cycle added will be considered the "current" cycle for comparison purposes. Older cycles added will remain available for historical reference.') }}</div>
+  <div class="text-secondary font-medium">
+    {{
+      t(
+        'Add a new cycle to the selected goal to compare against the baseline. The latest cycle added will be considered the "current" cycle for comparison purposes. Older cycles added will remain available for historical reference.'
+      )
+    }}
+  </div>
 
   <!-- Cycle selector -->
   <div>
@@ -20,16 +26,15 @@
     </mat-select>
   </div>
 
-
   <!-- Annual Report selector -->
   <div>
     <mat-label class="text-secondary mr-4 text-sm">Annual Report</mat-label>
     <mat-select
       class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
       [value]="selectedAnnualReport?.id"
+      [disabled]="!isLoggedIntoBbSalesforce"
       (selectionChange)="selectAnnualReport($event)"
       placeholder="(select a annual report)"
-      [disabled]="!isLoggedIntoBbSalesforce"
     >
       @for (annualReport of annualReports; track annualReport.id) {
         <mat-option [value]="annualReport.id">{{ annualReport.name }}</mat-option>
@@ -37,12 +42,12 @@
     </mat-select>
   </div>
 
-  @if (!isLoggedIntoBbSalesforce){
+  @if (!isLoggedIntoBbSalesforce) {
     <div class="text-secondary font-medium">{{ t('You must be logged in to salesforce to select a Annual Report') }}</div>
   }
 
   <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button class="w-24" mat-stroked-button (click)="submit()">{{ t('Submit') }}</button>
+    <button class="w-24" (click)="submit()" mat-stroked-button>{{ t('Submit') }}</button>
     <button class="w-24" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
   </div>
 </div>
