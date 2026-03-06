@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, take, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
+import type { CycleGoal, Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
 
 @Injectable({ providedIn: 'root' })
 export class GoalService {
@@ -25,6 +25,7 @@ export class GoalService {
       .pipe(
         tap(({ org_id }) => {
           this.get(org_id)
+          this.orgId = org_id
         }),
       )
       .subscribe()
@@ -77,6 +78,19 @@ export class GoalService {
   createGoal(newGoal, orgId: number): Observable<Goal> {
     const url = `/api/v3/goals/?organization_id=${orgId}`
     return this._httpClient.post<Goal>(url, { ...newGoal, organization: orgId }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
+      }),
+    )
+  }
+
+  createCycleGoal(goalId: number, cycleId: number, annual_report_id: string, annual_report_name: string): Observable<CycleGoal> {
+    const url = `/api/v3/goals/${goalId}/cycles/?organization_id=${this.orgId}`
+    return this._httpClient.post<CycleGoal>(url, {
+        current_cycle: cycleId,
+        salesforce_annual_report_id: annual_report_id,
+        salesforce_annual_report_name: annual_report_name
+    }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
       }),

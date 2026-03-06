@@ -18,7 +18,7 @@ import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { Subject, takeUntil } from 'rxjs'
+import { Subject, takeUntil, switchMap } from 'rxjs'
 import type { CycleGoal, Goal, PortfolioSummary, WeightedEUI } from '@seed/api/goal'
 import { GoalService } from '@seed/api/goal'
 import type { Organization } from '@seed/api/organization'
@@ -31,6 +31,8 @@ import { ConfigService } from '@seed/services'
 import { AddCycleDialogComponent } from './add-cycle-dialog'
 import { ConfigureGoalsDialogComponent } from './configure-goals-dialog'
 import type { AddCycleData, ConfigureGoalsData } from './portfolio-summary.types'
+import { Router } from '@angular/router'
+import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 
 Chart.register(annotationPlugin)
 @Component({
@@ -64,6 +66,9 @@ export class PortfolioSummaryComponent implements OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   @ViewChild('canvas') canvas!: ElementRef<HTMLCanvasElement>
   private _userService = inject(UserService)
+  private _router = inject(Router)
+  private _salesforcePortfolioService = inject(SalesforcePortfolioService)
+  isLoggedIntoBbSalesforce: boolean
 
   goals: Goal[]
   currentGoal: Goal
@@ -102,11 +107,18 @@ export class PortfolioSummaryComponent implements OnInit {
   ]
 
   ngOnInit(): void {
+    this._organizationService.currentOrganization$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap((organization) => {
+         this.organization = organization
+        return this._salesforcePortfolioService.verifyToken(this.organization.id)
+    })
+    ).subscribe((r) => {
+      this.isLoggedIntoBbSalesforce = r.valid
+    })
+
     this._goalService.goals$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((goals) => {
       this.goals = goals
-    })
-    this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
-      this.organization = organization
     })
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
       this.currentUser = currentUser
@@ -115,11 +127,15 @@ export class PortfolioSummaryComponent implements OnInit {
 
   // Dialog openers
   openAddCycle(): void {
-    this._matDialog.open(AddCycleDialogComponent, {
+    const dialogRef = this._matDialog.open(AddCycleDialogComponent, {
       autoFocus: false,
       disableClose: true,
-      data: {} satisfies AddCycleData,
+      data: {currentGoal: this.currentGoal, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce} satisfies AddCycleData,
     })
+
+    dialogRef.afterClosed().subscribe((newCycleGoal) => {
+      if (newCycleGoal) this.currentGoal.cycle_goals.push(newCycleGoal)
+    });
   }
 
   openConfigureGoals(): void {
@@ -128,7 +144,7 @@ export class PortfolioSummaryComponent implements OnInit {
       disableClose: true,
       width: '50rem',
       height: '50rem',
-      data: { goals: this.goals } satisfies ConfigureGoalsData,
+      data: { goals: this.goals, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce, bb_salesforce_enabled: this.organization.bb_salesforce_enabled } satisfies ConfigureGoalsData,
     })
   }
 
@@ -179,6 +195,20 @@ export class PortfolioSummaryComponent implements OnInit {
       .subscribe((editedGoal) => {
         this.currentGoal = editedGoal
       })
+  }
+
+  toSettings() {
+    this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+  }
+
+  loginToSalesforce(): void {
+    this._salesforcePortfolioService
+      .getLoginUrl(this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((response) => {
+        console.log(response)
+        window.location.href = response.url;
+    })
   }
 
   // Selectors

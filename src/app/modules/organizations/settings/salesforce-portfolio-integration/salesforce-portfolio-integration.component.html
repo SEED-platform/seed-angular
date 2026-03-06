@@ -1,0 +1,72 @@
+<seed-page
+  [config]="{
+    titleIcon: 'fa-solid:gears',
+    title: 'Salesforce Portfolio Integration',
+    breadcrumbs: ['Organization Settings'],
+    sideNavToggle: true,
+  }"
+>
+  <div class="flex-auto p-6 sm:p-10" *transloco="let t">
+    <div class="max-w-2xl bg-card flex flex-col gap-y-6 overflow-hidden rounded-2xl p-2 pb-4 shadow">
+      <form
+        class=""
+        [formGroup]="salesforceForm"
+        (ngSubmit)="submit()"
+      >
+        <!-- enable -->
+        <div class="prose">Enable this if you would like to sync data between SEED and a Salesforce instance</div>
+        <div class="mb-6 flex">
+          <mat-slide-toggle [formControlName]="'enabled'" (click)="toggleForm()">{{ t('Enable Salesforce Integration') }}</mat-slide-toggle>
+        </div>
+
+        @if (salesforceForm.value.enabled) {
+          <div formGroupName="config">
+            <!-- URL -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('URL') }}</mat-label>
+              <input [formControlName]="'url'" matInput />
+            </mat-form-field>
+            <!-- Client ID -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('Client ID') }}</mat-label>
+              <input [formControlName]="'clientId'" matInput />
+            </mat-form-field>
+            <!-- Client Secret -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('Client Secret') }}</mat-label>
+              <input [formControlName]="'clientSecret'" [type]="passwordHidden ? 'password' : 'text'" matInput />
+              <button
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="passwordHidden"
+                (click)="togglePassword()"
+                mat-icon-button
+                matSuffix
+                type="button"
+              >
+                <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <!-- Save Changes -->
+          <div class="flex justify-center">
+            <button [disabled]="salesforceForm.invalid || salesforceForm.pending" mat-flat-button color="primary">
+              <span class="">{{ t('Save Changes') }}</span>
+            </button>
+          </div>
+        }
+      </form>
+
+      <div class="flex items-center">
+        <span style="margin-right: 10px">Salesforce Connection Status:</span>
+        @if (isLoggedIntoBbSalesforce) {
+        <mat-icon class="text-green-500">check_circle</mat-icon>
+        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Logout') }}</button>
+        } @else {
+        <mat-icon class="text-red-500">cancel</mat-icon>
+        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Login') }}</button>
+        }
+      </div>
+    </div>
+  </div>
+</seed-page>

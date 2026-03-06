@@ -25,6 +25,7 @@ export type BriefOrganization = {
   user_role: UserRole;
   display_decimal_places: number;
   salesforce_enabled: boolean;
+  bb_salesforce_enabled: boolean;
   access_level_names: string[];
   audit_template_conditional_import: boolean;
   property_display_field: string;

@@ -28,6 +28,22 @@
     </mat-select>
   </div>
 
+  @if (organization && organization.bb_salesforce_enabled) {
+    <p>Salesforce portfolio functionality is enabled for this organization. Configure connection details by clicking on </p>
+    <a class="underline background-blue" (click)="toSettings()">{{ t('Salesforce settings') }}</a>
+    <div class="flex items-center">
+      <span style="margin-right: 10px">Salesforce Connection Status:</span>
+      @if (isLoggedIntoBbSalesforce) {
+        <mat-icon class="text-green-500">check_circle</mat-icon>
+        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Logout') }}</button>
+      } @else {
+        <mat-icon class="text-red-500">cancel</mat-icon>
+        <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Login') }}</button>
+      }
+    </div>
+  }
+
+
   @if (currentGoal) {
     <div class="flex flex-row">
       <!-- Goal Summary  -->

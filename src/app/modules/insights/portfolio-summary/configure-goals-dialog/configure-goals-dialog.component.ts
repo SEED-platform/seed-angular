@@ -1,4 +1,3 @@
-import { CdkScrollable } from '@angular/cdk/scrolling'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
@@ -11,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatSelectModule } from '@angular/material/select'
-import { Subject, takeUntil } from 'rxjs'
+import { Subject, takeUntil, combineLatest, switchMap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
 import { type Cycle, CycleService } from '@seed/api/cycle'
@@ -21,6 +20,8 @@ import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Organization } f
 import { OrganizationService } from '@seed/api/organization'
 import { SharedImports } from '@seed/directives'
 import type { ConfigureGoalsData } from '../portfolio-summary.types'
+import { SalesforcePartner, SalesforceGoal } from '@seed/api/salesforce-portfolio/salesforce-portfolio.types'
+import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
 
 @Component({
   selector: 'seed-configure-goals-dialog',
@@ -38,7 +39,6 @@ import type { ConfigureGoalsData } from '../portfolio-summary.types'
     ReactiveFormsModule,
     SharedImports,
     MatSelectModule,
-    CdkScrollable,
     MatButtonToggleModule,
   ],
 })
@@ -57,6 +57,8 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
     euiColumn3: new FormControl<number | null>(null),
     targetPercentage: new FormControl<number | null>(null, Validators.required),
     commitmentSqft: new FormControl<number | null>(null, Validators.required),
+    salesforcePartnerID: new FormControl<string | null>(null, Validators.required),
+    salesforceGoalID: new FormControl<string | null>(null, Validators.required),
   })
   private _cycleService = inject(CycleService)
   cycles: Cycle[]
@@ -71,30 +73,45 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   currentGoal?: Goal
   private _goalService = inject(GoalService)
   organization: Organization
+  isLoggedIntoBbSalesforce: boolean
+  bb_salesforce_enabled: boolean
+  private _salesforcePortfolioService = inject(SalesforcePortfolioService)
+  salesforcePartners: SalesforcePartner[];
+  salesforceGoals: SalesforceGoal[];
 
   ngOnInit(): void {
+    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce;
+    this.bb_salesforce_enabled = this.data.bb_salesforce_enabled;
     this.goals = this.data.goals
-    this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((cycles) => {
+
+    this._organizationService.currentOrganization$.pipe(
+      takeUntil(this._unsubscribeAll$),
+      switchMap((organization) => {
+        this.organization = organization
+        return this._salesforcePortfolioService.getPartners(this.organization.id)
+    })
+    ).subscribe((r) => {
+      this.salesforcePartners = r.results;
+    })
+
+    combineLatest([
+      this._cycleService.cycles$,
+      this._organizationService.accessLevelTree$,
+      this._organizationService.accessLevelInstancesByDepth$,
+      this._columnService.propertyColumns$,
+    ]).pipe(takeUntil(this._unsubscribeAll$))
+    .subscribe(([cycles, {accessLevelNames}, accessLevelsByDepth, propertyColumns]) => {
       this.cycles = cycles
-      console.log(this.cycles)
-    })
-    this._organizationService.accessLevelTree$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ accessLevelNames }) => {
       this.accessLevelNames = accessLevelNames
-    })
-    this._organizationService.accessLevelInstancesByDepth$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((accessLevelsByDepth) => {
       this.accessLevelInstancesByDepth = accessLevelsByDepth
-    })
-    this._columnService.propertyColumns$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((propertyColumns) => {
       this.areaColumns = propertyColumns.filter((c) => c.data_type == 'area')
       this.euiColumns = propertyColumns.filter((c) => c.data_type == 'eui')
     })
-    this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
-      this.organization = organization
-    })
+
     if (this.goals.length > 0) {
       this.currentGoal = this.goals[0]
       this.selectGoal(this.goals[0].id)
-    }
+    }  
   }
 
   selectGoal(goalId?: number) {
@@ -106,7 +123,10 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
       // old goal
       this.currentGoal = this.goals.find((g) => g.id === goalId)
       this.onAccessLevelChange(this.currentGoal.level_name)
+      this.onPartnerChange(this.currentGoal.salesforce_partner_id)
       this.goalForm.setValue({
+        salesforcePartnerID: this.currentGoal.salesforce_partner_id,
+        salesforceGoalID: this.currentGoal.salesforce_goal_id,
         name: this.currentGoal.name,
         type: this.currentGoal.type,
         baselineCycle: this.currentGoal.baseline_cycle,
@@ -127,8 +147,17 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
     this.accessLevelInstances = this.accessLevelInstancesByDepth[depth]
   }
 
+  onPartnerChange(partnerId: string) {
+    const partner = this.salesforcePartners.find(p => p.id == partnerId)
+    this.salesforceGoals = partner.goals
+  }
+
+
   save(): void {
     const formValues = this.goalForm.value
+    const partner = this.salesforcePartners.find(p => p.id == formValues.salesforcePartnerID)
+    const goal = partner.goals.find(g => g.id == formValues.salesforceGoalID)
+
     const request_data = {
       name: formValues.name,
       type: formValues.type,
@@ -140,6 +169,10 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
       eui_column3: formValues.euiColumn3,
       target_percentage: formValues.targetPercentage,
       commitment_sqft: formValues.commitmentSqft,
+      salesforce_partner_id: partner.id,
+      salesforce_partner_name: partner.name,
+      salesforce_goal_id: goal.id,
+      salesforce_goal_name: goal.name,
     }
 
     if (this.currentGoal == null) {

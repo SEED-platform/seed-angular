@@ -26,8 +26,8 @@ import { naturalSort } from '@seed/utils'
 import { DeleteModalComponent, FormModalComponent } from './modal'
 
 @Component({
-  selector: 'seed-organizations-settings-salesforce',
-  templateUrl: './salesforce.component.html',
+  selector: 'seed-organizations-settings-salesforce-building-integration',
+  templateUrl: './salesforce-building-integration.component.html',
   imports: [
     MatButtonModule,
     MatDividerModule,
@@ -43,7 +43,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
     SharedImports,
   ],
 })
-export class SalesforceComponent implements OnDestroy, OnInit {
+export class SalesforceBuildingIntegrationComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _salesforceService = inject(SalesforceService)
   private _labelService = inject(LabelService)
