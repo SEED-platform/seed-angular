@@ -26,6 +26,8 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
   passwordHidden = true
   tokenHidden = true
+  testConnectionStatus: 'idle' | 'success' | 'error' = 'idle'
+  testConnectionMessage = ''
   labels: Label[]
   columns: Column[]
   organization: Organization
@@ -74,6 +76,7 @@ export class SalesforceComponent implements OnDestroy, OnInit {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
       this.salesforceForm.get('salesforce_enabled').setValue(this.organization.salesforce_enabled)
+      this._setFormEnabledState(this.organization.salesforce_enabled)
     })
     this._salesforceService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((config) => {
       this.salesforceConfig = config
@@ -186,22 +189,25 @@ export class SalesforceComponent implements OnDestroy, OnInit {
   }
 
   testConnection(): void {
+    this.testConnectionStatus = 'idle'
     this.updateConfig()
-    this._salesforceService.test_connection(this.organization.id, this.salesforceConfig).subscribe()
+    this._salesforceService.test_connection(this.organization.id, this.salesforceConfig).subscribe({
+      next: () => {
+        this.testConnectionStatus = 'success'
+        this.testConnectionMessage = ''
+      },
+      error: (error: { message?: string }) => {
+        this.testConnectionStatus = 'error'
+        this.testConnectionMessage = error?.message || 'Connection failed'
+      },
+    })
   }
 
   toggleForm(): void {
     const enabled = this.salesforceForm.get('salesforce_enabled').value
     this.organization.salesforce_enabled = enabled
     this._organizationService.updateSettings(this.organization).subscribe()
-    const fg = this.salesforceForm.get('salesforceConfig') as FormGroup
-    for (const field of Object.keys(fg.controls)) {
-      if (enabled) {
-        this.salesforceForm.get(`salesforceConfig.${field}`).enable()
-      } else {
-        this.salesforceForm.get(`salesforceConfig.${field}`).disable()
-      }
-    }
+    this._setFormEnabledState(enabled)
   }
 
   updateConfig(): void {
@@ -223,6 +229,17 @@ export class SalesforceComponent implements OnDestroy, OnInit {
         this._salesforceService.create(this.organization.id, this.salesforceConfig).subscribe((config) => {
           this.salesforceConfig = config
         })
+      }
+    }
+  }
+
+  private _setFormEnabledState(enabled: boolean): void {
+    const fg = this.salesforceForm.get('salesforceConfig') as FormGroup
+    for (const field of Object.keys(fg.controls)) {
+      if (enabled) {
+        this.salesforceForm.get(`salesforceConfig.${field}`).enable()
+      } else {
+        this.salesforceForm.get(`salesforceConfig.${field}`).disable()
       }
     }
   }

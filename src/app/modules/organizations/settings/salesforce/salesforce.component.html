@@ -16,351 +16,426 @@
               </div>
 
               <div formGroupName="salesforceConfig">
-                <div class="flex items-center space-x-2">
-                  <mat-icon svgIcon="heroicons-solid:signal" />
-                  <div class="text-2xl font-bold text-gray-700">{{ t('Salesforce Connection') }}</div>
-                </div>
-                <div class="prose mb-4">{{ t('Enter your Salesforce instance details and ensure your connection is successful') }}</div>
-                <div class="flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Salesforce URL') }}</mat-label>
-                    <input type="text" matInput formControlName="url" />
-                  </mat-form-field>
-                </div>
-                <div class="flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Username') }}</mat-label>
-                    <input type="text" matInput formControlName="username" />
-                  </mat-form-field>
-                </div>
-                <div class="flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Password') }}</mat-label>
-                    <input [type]="passwordHidden ? 'password' : 'text'" matInput formControlName="password" />
-                    <button
-                      [attr.aria-label]="'Hide password'"
-                      [attr.aria-pressed]="passwordHidden"
-                      (click)="togglePassword()"
-                      mat-icon-button
-                      matSuffix
-                      type="button"
-                    >
-                      <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
-                    </button>
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Security Token') }}</mat-label>
-                    <input [type]="tokenHidden ? 'password' : 'text'" matInput formControlName="security_token" />
-                    <button
-                      [attr.aria-label]="'Hide token'"
-                      [attr.aria-pressed]="tokenHidden"
-                      (click)="toggleToken()"
-                      mat-icon-button
-                      matSuffix
-                      type="button"
-                    >
-                      <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
-                    </button>
-                    <mat-hint>{{ t('Security token set in Salesforce') }}</mat-hint>
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Domain') }}</mat-label>
-                    <input type="text" matInput formControlName="domain" />
-                    <mat-hint>{{
-                      t("If your Salesforce instance is a sandbox, set this field to the value 'test'; otherwise leave blank.")
-                    }}</mat-hint>
-                  </mat-form-field>
-                </div>
-                <div>
-                  <button (click)="testConnection()" type="button" mat-raised-button color="accent">Test Connection</button>
-                </div>
-                <mat-divider
-                  class="mat-divider mat-divider-horizontal mb-6 mt-4"
-                  role="separator"
-                  aria-orientation="horizontal"
-                ></mat-divider>
-
-                <div class="flex items-center space-x-2">
-                  <mat-icon svgIcon="heroicons-solid:clock" />
-                  <div class="text-2xl font-bold text-gray-700">{{ t('Scheduled Daily Updates') }}</div>
-                </div>
-                <div class="prose mb-4">
-                  {{ t('If you would like to automatically update Salesforce on a daily basis, configure the fields below') }}
-                </div>
-                <div class="mb-20 flex flex-row gap-2">
-                  <mat-form-field class="flex">
-                    <mat-label>{{ t('Hour') }}</mat-label>
-                    <input type="number" matInput formControlName="update_at_hour" min="0" max="23" />
-                    <mat-hint>Enter the hour when the update should be run daily (0-23) Timezone: America/New_York</mat-hint>
-                  </mat-form-field>
-                  <mat-form-field class="flex">
-                    <mat-label>{{ t('Minute') }}</mat-label>
-                    <input type="number" matInput formControlName="update_at_minute" min="0" max="59" />
-                    <mat-hint>Enter the minute after the hour when the update should be run daily (0-59)</mat-hint>
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Logging Email') }}</mat-label>
-                    <input type="email" matInput formControlName="logging_email" />
-                    <mat-hint>Enter the e-mail address to use when reporting errors during the Salesforce updating process</mat-hint>
-                    @if (salesforceForm.get('salesforceConfig.logging_email').hasError('email')) {
-                      <mat-error>Please enter a valid email address</mat-error>
-                    }
-                  </mat-form-field>
-                </div>
-                @if (salesforceConfig) {
-                  <div class="flex flex-row items-center space-x-2">
-                    <div class="text-grey-700 text-lg">
-                      {{ t('Last Salesforce Update') }}: {{ salesforceConfig.last_update_date || 'N/A' }}
-                    </div>
-                    @if (salesforceConfig.last_update_date) {
-                      <button (click)="resetUpdateDate()" type="button" mat-raised-button color="accent">Reset</button>
-                    }
+                @if (salesforceForm.controls.salesforce_enabled.value) {
+                  <div class="flex items-center space-x-2">
+                    <mat-icon svgIcon="heroicons-solid:signal" />
+                    <div class="text-2xl font-bold text-gray-700">{{ t('Salesforce Connection') }}</div>
                   </div>
-                }
-                <mat-divider
-                  class="mat-divider mat-divider-horizontal mb-6 mt-4"
-                  role="separator"
-                  aria-orientation="horizontal"
-                ></mat-divider>
+                  <div class="prose mb-4">{{ t('Enter your Salesforce instance details and ensure your connection is successful') }}</div>
+                  <div class="flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Salesforce URL') }}</mat-label>
+                      <input type="text" matInput formControlName="url" />
+                    </mat-form-field>
+                  </div>
+                  <div class="flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Username') }}</mat-label>
+                      <input type="text" matInput formControlName="username" />
+                    </mat-form-field>
+                  </div>
+                  <div class="flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Password') }}</mat-label>
+                      <input [type]="passwordHidden ? 'password' : 'text'" matInput formControlName="password" />
+                      <button
+                        [attr.aria-label]="'Hide password'"
+                        [attr.aria-pressed]="passwordHidden"
+                        (click)="togglePassword()"
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                      >
+                        <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Security Token') }}</mat-label>
+                      <input [type]="tokenHidden ? 'password' : 'text'" matInput formControlName="security_token" />
+                      <button
+                        [attr.aria-label]="'Hide token'"
+                        [attr.aria-pressed]="tokenHidden"
+                        (click)="toggleToken()"
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                      >
+                        <mat-icon class="icon-size-5" [svgIcon]="passwordHidden ? 'fa-solid:eye-slash' : 'fa-solid:eye'"></mat-icon>
+                      </button>
+                      <mat-hint>{{ t('Security token set in Salesforce') }}</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Domain') }}</mat-label>
+                      <input type="text" matInput formControlName="domain" />
+                      <mat-hint>{{
+                        t("If your Salesforce instance is a sandbox, set this field to the value 'test'; otherwise leave blank.")
+                      }}</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div>
+                    <button (click)="testConnection()" type="button" mat-raised-button color="accent">Test Connection</button>
+                  </div>
+                  @if (testConnectionStatus === 'success') {
+                    <div class="mt-2 flex items-center space-x-2 rounded-lg bg-green-50 p-3 text-green-700">
+                      <mat-icon class="icon-size-5" svgIcon="heroicons-solid:check-circle" />
+                      <span>{{ t('Salesforce connection successful') }}</span>
+                    </div>
+                  }
+                  @if (testConnectionStatus === 'error') {
+                    <div class="mt-2 flex items-center space-x-2 rounded-lg bg-red-50 p-3 text-red-700">
+                      <mat-icon class="icon-size-5" svgIcon="heroicons-solid:exclamation-circle" />
+                      <span>{{ t('Connection error') }}{{ testConnectionMessage ? ': ' + testConnectionMessage : '' }}</span>
+                    </div>
+                  }
+                  <mat-divider
+                    class="mat-divider mat-divider-horizontal mb-6 mt-4"
+                    role="separator"
+                    aria-orientation="horizontal"
+                  ></mat-divider>
 
-                <div class="flex items-center space-x-2">
-                  <mat-icon svgIcon="heroicons-solid:cog" />
-                  <div class="text-2xl font-bold text-gray-700">{{ t('Configuration') }}</div>
-                </div>
-                <div class="prose mb-4">{{ t('Configure a few parameters needed for data transfer to Salesforce') }}</div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Indication Label') }}</mat-label>
-                    <mat-select formControlName="indication_label">
-                      @for (l of labels; track l.id) {
-                        <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                  <div class="flex items-center space-x-2">
+                    <mat-icon svgIcon="heroicons-solid:clock" />
+                    <div class="text-2xl font-bold text-gray-700">{{ t('Scheduled Daily Updates') }}</div>
+                  </div>
+                  <div class="prose mb-4">
+                    {{ t('If you would like to automatically update Salesforce on a daily basis, configure the fields below') }}
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Hour') }}</mat-label>
+                      <input type="number" matInput formControlName="update_at_hour" min="0" max="23" />
+                      <mat-hint>Enter the hour when the update should be run daily (0-23) Timezone: America/New_York</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Minute') }}</mat-label>
+                      <input type="number" matInput formControlName="update_at_minute" min="0" max="59" />
+                      <mat-hint>Enter the minute after the hour when the update should be run daily (0-59)</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Logging Email') }}</mat-label>
+                      <input type="email" matInput formControlName="logging_email" />
+                      <mat-hint>Enter the e-mail address to use when reporting errors during the Salesforce updating process</mat-hint>
+                      @if (salesforceForm.get('salesforceConfig.logging_email').hasError('email')) {
+                        <mat-error>Please enter a valid email address</mat-error>
                       }
-                    </mat-select>
-                    <mat-hint
-                      >Label used to designate that a SEED property should be updated in Salesforce. Example: 'Add to Salesforce'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-12 flex flex-col">
-                  <mat-slide-toggle formControlName="delete_label_after_sync">
-                    <mat-label>
-                      {{ t('Delete Indication Label After Successful Salesforce Update') }}
-                    </mat-label>
-                  </mat-slide-toggle>
-                  <mat-hint class="text-sm" style="color: rgb(148, 163, 184)">
-                    Check this checkbox to automatically remove the Indication Label from properties that were successfully updated in
-                    Salesforce in order to prevent future automatic updates.
-                  </mat-hint>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Violation Label') }}</mat-label>
-                    <mat-select formControlName="violation_label">
-                      @for (l of labels; track l.id) {
-                        <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                    </mat-form-field>
+                  </div>
+                  @if (salesforceConfig) {
+                    <div class="flex flex-row items-center space-x-2">
+                      <div class="text-grey-700 text-lg">
+                        {{ t('Last Salesforce Update') }}: {{ salesforceConfig.last_update_date || 'N/A' }}
+                      </div>
+                      @if (salesforceConfig.last_update_date) {
+                        <button (click)="resetUpdateDate()" type="button" mat-raised-button color="accent">Reset</button>
                       }
-                    </mat-select>
-                    <mat-hint
-                      >Label used to designate that a SEED property has a violation. Example: 'Violation - Insufficient Data'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Compliance Label') }}</mat-label>
-                    <mat-select formControlName="compliance_label">
-                      @for (l of labels; track l.id) {
-                        <mat-option [value]="l.id">{{ l.name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint>Label used to designate that a SEED property is in compliance. Example: 'Complied'</mat-hint>
-                  </mat-form-field>
-                </div>
-                <mat-divider
-                  class="mat-divider mat-divider-horizontal mb-6 mt-4"
-                  role="separator"
-                  aria-orientation="horizontal"
-                ></mat-divider>
+                    </div>
+                  }
+                  <mat-divider
+                    class="mat-divider mat-divider-horizontal mb-6 mt-4"
+                    role="separator"
+                    aria-orientation="horizontal"
+                  ></mat-divider>
 
-                <div class="flex items-center space-x-2">
-                  <mat-icon svgIcon="heroicons-solid:user-plus" />
-                  <div class="text-2xl font-bold text-gray-700">{{ t('Contacts and Accounts') }}</div>
-                </div>
-                <div class="prose mb-4">
-                  {{
-                    t(
-                      'Configure the contact information used for benchmark status notifications in Salesforce. When configured, this functionality will create or update contact records in Salesforce and link them to the Benchmark object'
-                    )
-                  }}
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Salesforce Account Object Record Type') }}</mat-label>
-                    <input type="text" matInput formControlName="account_rec_type" />
-                    <mat-hint
-                      >If your Salesforce instance has multiple account types, provide the Record Type ID of the type of account to use when
-                      accounts are automatically created from SEED</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Salesforce Contact Object Record Type') }}</mat-label>
-                    <input type="text" matInput formControlName="contact_rec_type" />
-                    <mat-hint
-                      >If your Salesforce instance has multiple contact types, provide the Record Type ID of the type to use when contacts
-                      are automatically created from SEED</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-
-                <div class="align-middle mt-12 font-bold">{{ t('Main Contact Settings') }}</div>
-                <div class="prose mb-4">
-                  {{
-                    t(
-                      'The following fields will be used to retrieve or create a main contact to associate with the Benchmark object in Salesforce. Leave blank if your instance does not use this functionality.'
-                    )
-                  }}
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Contact Account Name Column') }}</mat-label>
-                    <mat-select formControlName="account_name_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint
-                      >Select the SEED field that holds the account name for the contact record to be created in Salesforce. Ex:
-                      'Organization'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-16 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Default Contact Account Name') }}</mat-label>
-                    <input type="text" matInput formControlName="default_contact_account_name" />
-                    <mat-hint
-                      >Provide a default account name for Salesforce to use when there is no valid data in the Contact Account Name Column
-                      specified above. Leave this field blank to report an error and abort sync instead when the Contact Account Name Column
-                      is blank.</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Contact Name Column') }}</mat-label>
-                    <mat-select formControlName="contact_name_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint>Select the SEED field that holds the contact name for the benchmark record. Ex: 'On Behalf Of'</mat-hint>
-                  </mat-form-field>
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Contact Email Column') }}</mat-label>
-                    <mat-select formControlName="contact_email_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint>Select the SEED field that holds the contact email for the benchmark record. Ex: 'Email'</mat-hint>
-                  </mat-form-field>
-                </div>
-                <div class="mb-4 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Contact Benchmark Field') }}</mat-label>
-                    <input type="text" matInput formControlName="benchmark_contact_fieldname" />
-                    <mat-hint
-                      >If your Salesforce Benchmark Record stores a Salesforce Contact relation, provide the Salesforce field name here, ex:
-                      Contact_Name__c</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="align-middle mt-12 font-bold">{{ t('Data Administrator Contact Settings') }}</div>
-                <div class="prose mb-4">
-                  {{
-                    t(
-                      'The following fields will be used to retrieve or create a property data administrator contact to associate with the Benchmark object in Salesforce. Leave blank if your instance does not use this functionality.'
-                    )
-                  }}
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Data Administrator Account Name Column') }}</mat-label>
-                    <mat-select formControlName="data_admin_account_name_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint
-                      >Select the SEED field that holds the account name for the data administrator contact record to be created in
-                      Salesforce. Ex: 'Organization'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-16 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Default Data Administrator Account Name') }}</mat-label>
-                    <input type="text" matInput formControlName="default_data_admin_account_name" />
-                    <mat-hint
-                      >Provide a default account name for Salesforce to use when there is no valid data in the Data Administrator Account
-                      Name Column specified above. Leave this field blank to report an error and abort sync instead when the Data
-                      Administrator Account Name Column is blank</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Data Administrator Name Column') }}</mat-label>
-                    <mat-select formControlName="data_admin_account_name_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint
-                      >Select the SEED field that holds the property data administrator's name for the benchmark record. Ex: 'Property Data
-                      Administrator'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-8 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Data Administrator Email Column') }}</mat-label>
-                    <mat-select formControlName="data_admin_email_column">
-                      @for (c of columns; track c.id) {
-                        <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
-                      }
-                    </mat-select>
-                    <mat-hint
-                      >Select the SEED field that holds the property data administrator's email for the benchmark record. Ex: 'Property Data
-                      Administrator - Email'</mat-hint
-                    >
-                  </mat-form-field>
-                </div>
-                <div class="mb-16 flex flex-col">
-                  <mat-form-field>
-                    <mat-label>{{ t('Data Administrator Contact Field') }}</mat-label>
-                    <input type="text" matInput formControlName="default_data_admin_account_name" />
-                    <mat-hint>
-                      If your Salesforce Benchmark Record stores a Salesforce Contact relation for a Property Data Administrator, provide
-                      the Salesforce field name here, ex: Property_Data_Administrator__c
+                  <div class="flex items-center space-x-2">
+                    <mat-icon svgIcon="heroicons-solid:cog" />
+                    <div class="text-2xl font-bold text-gray-700">{{ t('Configuration') }}</div>
+                  </div>
+                  <div class="prose mb-4">{{ t('Configure a few parameters needed for data transfer to Salesforce') }}</div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Indication Label') }}</mat-label>
+                      <mat-select formControlName="indication_label">
+                        @for (l of labels; track l.id) {
+                          <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Label used to designate that a SEED property should be updated in Salesforce. Example: 'Add to
+                        Salesforce'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-12 flex flex-col">
+                    <mat-slide-toggle formControlName="delete_label_after_sync">
+                      <mat-label>
+                        {{ t('Delete Indication Label After Successful Salesforce Update') }}
+                      </mat-label>
+                    </mat-slide-toggle>
+                    <mat-hint class="text-sm" style="color: rgb(148, 163, 184)">
+                      Check this checkbox to automatically remove the Indication Label from properties that were successfully updated in
+                      Salesforce in order to prevent future automatic updates.
                     </mat-hint>
-                  </mat-form-field>
-                </div>
-                <mat-divider
-                  class="mat-divider mat-divider-horizontal mb-6 mt-4"
-                  role="separator"
-                  aria-orientation="horizontal"
-                ></mat-divider>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Violation Label') }}</mat-label>
+                      <mat-select formControlName="violation_label">
+                        @for (l of labels; track l.id) {
+                          <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Label used to designate that a SEED property has a violation. Example: 'Violation - Insufficient Data'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Compliance Label') }}</mat-label>
+                      <mat-select formControlName="compliance_label">
+                        @for (l of labels; track l.id) {
+                          <mat-option [value]="l.id">{{ l.name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint>Label used to designate that a SEED property is in compliance. Example: 'Complied'</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <mat-divider
+                    class="mat-divider mat-divider-horizontal mb-6 mt-4"
+                    role="separator"
+                    aria-orientation="horizontal"
+                  ></mat-divider>
+
+                  <div class="flex items-center space-x-2">
+                    <mat-icon svgIcon="heroicons-solid:identification" />
+                    <div class="text-2xl font-bold text-gray-700">{{ t('Benchmark Configuration') }}</div>
+                  </div>
+                  <div class="prose mb-4">
+                    {{ t('Configure the fields used to identify and update benchmark records in Salesforce') }}
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Salesforce Unique Benchmark ID Fieldname') }}</mat-label>
+                      <input type="text" matInput formControlName="unique_benchmark_id_fieldname" />
+                      <mat-hint
+                        >The API field name in the Salesforce Benchmark object that stores the unique identifier. Ex:
+                        Unique_Benchmark_ID__c</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('SEED Unique Benchmark ID Column') }}</mat-label>
+                      <mat-select formControlName="seed_benchmark_id_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Select the SEED property column that contains the unique identifier matching the Salesforce Benchmark ID
+                        field</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Cycle Name Benchmark Field') }}</mat-label>
+                      <input type="text" matInput formControlName="cycle_fieldname" />
+                      <mat-hint>The API field name in the Salesforce Benchmark object that stores the cycle name. Ex: Cycle__c</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Status Label Benchmark Field') }}</mat-label>
+                      <input type="text" matInput formControlName="status_fieldname" />
+                      <mat-hint>The API field name in the Salesforce Benchmark object that stores the status label. Ex: Status__c</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('All Labels Benchmark Field') }}</mat-label>
+                      <input type="text" matInput formControlName="labels_fieldname" />
+                      <mat-hint>The API field name in the Salesforce Benchmark object that stores all labels. Ex: Labels__c</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <mat-divider
+                    class="mat-divider mat-divider-horizontal mb-6 mt-4"
+                    role="separator"
+                    aria-orientation="horizontal"
+                  ></mat-divider>
+
+                  <div class="flex items-center space-x-2">
+                    <mat-icon svgIcon="heroicons-solid:user-plus" />
+                    <div class="text-2xl font-bold text-gray-700">{{ t('Contacts and Accounts') }}</div>
+                  </div>
+                  <div class="prose mb-4">
+                    {{
+                      t(
+                        'Configure the contact information used for benchmark status notifications in Salesforce. When configured, this functionality will create or update contact records in Salesforce and link them to the Benchmark object'
+                      )
+                    }}
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Salesforce Account Object Record Type') }}</mat-label>
+                      <input type="text" matInput formControlName="account_rec_type" />
+                      <mat-hint
+                        >If your Salesforce instance has multiple account types, provide the Record Type ID of the type of account to use
+                        when accounts are automatically created from SEED</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Salesforce Contact Object Record Type') }}</mat-label>
+                      <input type="text" matInput formControlName="contact_rec_type" />
+                      <mat-hint
+                        >If your Salesforce instance has multiple contact types, provide the Record Type ID of the type to use when contacts
+                        are automatically created from SEED</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+
+                  <div class="align-middle mt-12 font-bold">{{ t('Main Contact Settings') }}</div>
+                  <div class="prose mb-4">
+                    {{
+                      t(
+                        'The following fields will be used to retrieve or create a main contact to associate with the Benchmark object in Salesforce. Leave blank if your instance does not use this functionality.'
+                      )
+                    }}
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Contact Account Name Column') }}</mat-label>
+                      <mat-select formControlName="account_name_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Select the SEED field that holds the account name for the contact record to be created in Salesforce. Ex:
+                        'Organization'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-16 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Default Contact Account Name') }}</mat-label>
+                      <input type="text" matInput formControlName="default_contact_account_name" />
+                      <mat-hint
+                        >Provide a default account name for Salesforce to use when there is no valid data in the Contact Account Name Column
+                        specified above. Leave this field blank to report an error and abort sync instead when the Contact Account Name
+                        Column is blank.</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Contact Name Column') }}</mat-label>
+                      <mat-select formControlName="contact_name_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint>Select the SEED field that holds the contact name for the benchmark record. Ex: 'On Behalf Of'</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Contact Email Column') }}</mat-label>
+                      <mat-select formControlName="contact_email_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint>Select the SEED field that holds the contact email for the benchmark record. Ex: 'Email'</mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-4 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Contact Benchmark Field') }}</mat-label>
+                      <input type="text" matInput formControlName="benchmark_contact_fieldname" />
+                      <mat-hint
+                        >If your Salesforce Benchmark Record stores a Salesforce Contact relation, provide the Salesforce field name here,
+                        ex: Contact_Name__c</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="align-middle mt-12 font-bold">{{ t('Data Administrator Contact Settings') }}</div>
+                  <div class="prose mb-4">
+                    {{
+                      t(
+                        'The following fields will be used to retrieve or create a property data administrator contact to associate with the Benchmark object in Salesforce. Leave blank if your instance does not use this functionality.'
+                      )
+                    }}
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Data Administrator Account Name Column') }}</mat-label>
+                      <mat-select formControlName="data_admin_account_name_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Select the SEED field that holds the account name for the data administrator contact record to be created in
+                        Salesforce. Ex: 'Organization'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-16 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Default Data Administrator Account Name') }}</mat-label>
+                      <input type="text" matInput formControlName="default_data_admin_account_name" />
+                      <mat-hint
+                        >Provide a default account name for Salesforce to use when there is no valid data in the Data Administrator Account
+                        Name Column specified above. Leave this field blank to report an error and abort sync instead when the Data
+                        Administrator Account Name Column is blank</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Data Administrator Name Column') }}</mat-label>
+                      <mat-select formControlName="data_admin_name_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Select the SEED field that holds the property data administrator's name for the benchmark record. Ex: 'Property
+                        Data Administrator'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-8 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Data Administrator Email Column') }}</mat-label>
+                      <mat-select formControlName="data_admin_email_column">
+                        @for (c of columns; track c.id) {
+                          <mat-option [value]="c.id">{{ c.display_name }}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint
+                        >Select the SEED field that holds the property data administrator's email for the benchmark record. Ex: 'Property
+                        Data Administrator - Email'</mat-hint
+                      >
+                    </mat-form-field>
+                  </div>
+                  <div class="mb-16 flex flex-col">
+                    <mat-form-field>
+                      <mat-label>{{ t('Data Administrator Contact Field') }}</mat-label>
+                      <input type="text" matInput formControlName="data_admin_contact_fieldname" />
+                      <mat-hint>
+                        If your Salesforce Benchmark Record stores a Salesforce Contact relation for a Property Data Administrator, provide
+                        the Salesforce field name here, ex: Property_Data_Administrator__c
+                      </mat-hint>
+                    </mat-form-field>
+                  </div>
+                  <mat-divider
+                    class="mat-divider mat-divider-horizontal mb-6 mt-4"
+                    role="separator"
+                    aria-orientation="horizontal"
+                  ></mat-divider>
+                }
               </div>
 
               <div>
