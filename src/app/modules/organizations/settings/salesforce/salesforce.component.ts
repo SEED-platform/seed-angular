@@ -4,8 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { Column, Label, Organization, SalesforceConfig, SalesforceMapping } from '@seed/api'
-import { ColumnService, LabelService, OrganizationService, SalesforceService } from '@seed/api'
+import type { BbSalesforceConfig, Column, Label, Organization, SalesforceConfig, SalesforceMapping } from '@seed/api'
+import { BbSalesforceService, ColumnService, LabelService, OrganizationService, SalesforceService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -20,18 +20,22 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 export class SalesforceComponent implements OnDestroy, OnInit {
   private _organizationService = inject(OrganizationService)
   private _salesforceService = inject(SalesforceService)
+  private _bbSalesforceService = inject(BbSalesforceService)
   private _labelService = inject(LabelService)
   private _columnService = inject(ColumnService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
   passwordHidden = true
   tokenHidden = true
+  bbClientSecretHidden = true
   testConnectionStatus: 'idle' | 'success' | 'error' = 'idle'
   testConnectionMessage = ''
+  isLoggedIntoBbSalesforce = false
   labels: Label[]
   columns: Column[]
   organization: Organization
   salesforceConfig: SalesforceConfig
+  bbSalesforceConfig: BbSalesforceConfig
   salesforceMappings: SalesforceMapping[]
   salesforceMappingsDataSource = new MatTableDataSource<SalesforceMapping>([])
   salesforceMappingColumns = ['salesforce_fieldname', 'column', 'actions']
@@ -71,12 +75,25 @@ export class SalesforceComponent implements OnDestroy, OnInit {
       update_at_minute: new FormControl(0, [Validators.min(0), Validators.max(59)]),
     }),
   })
+  bbSalesforceForm = new FormGroup({
+    bb_salesforce_enabled: new FormControl(false),
+    bbSalesforceConfig: new FormGroup({
+      salesforce_url: new FormControl(''),
+      client_id: new FormControl(''),
+      client_secret: new FormControl(''),
+    }),
+  })
 
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organization) => {
       this.organization = organization
       this.salesforceForm.get('salesforce_enabled').setValue(this.organization.salesforce_enabled)
       this._setFormEnabledState(this.organization.salesforce_enabled)
+      this.bbSalesforceForm.get('bb_salesforce_enabled').setValue(this.organization.bb_salesforce_enabled)
+      this._setBbFormEnabledState(this.organization.bb_salesforce_enabled)
+      if (this.organization.bb_salesforce_enabled) {
+        this._checkBbLoginStatus()
+      }
     })
     this._salesforceService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((config) => {
       this.salesforceConfig = config
@@ -84,6 +101,15 @@ export class SalesforceComponent implements OnDestroy, OnInit {
         const key = `salesforceConfig.${field}`
         if (this.salesforceForm.get(key)) {
           this.salesforceForm.get(key).patchValue(config[field])
+        }
+      }
+    })
+    this._bbSalesforceService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((config) => {
+      this.bbSalesforceConfig = config
+      for (const field of Object.keys(config)) {
+        const key = `bbSalesforceConfig.${field}`
+        if (this.bbSalesforceForm.get(key)) {
+          this.bbSalesforceForm.get(key).patchValue(config[field])
         }
       }
     })
@@ -233,6 +259,66 @@ export class SalesforceComponent implements OnDestroy, OnInit {
     }
   }
 
+  toggleBbForm(): void {
+    const enabled = this.bbSalesforceForm.get('bb_salesforce_enabled').value
+    this.organization.bb_salesforce_enabled = enabled
+    this._organizationService.updateSettings(this.organization).subscribe()
+    this._setBbFormEnabledState(enabled)
+    if (enabled) {
+      this._checkBbLoginStatus()
+    }
+  }
+
+  toggleBbClientSecret(): void {
+    this.bbClientSecretHidden = !this.bbClientSecretHidden
+  }
+
+  bbLogin(): void {
+    this._bbSalesforceService.getLoginUrl(this.organization.id).subscribe((data) => {
+      if (data.status === 'error') {
+        this.testConnectionMessage = data.response || 'Cannot login to Salesforce'
+      } else if (data.url) {
+        window.location.href = data.url
+      }
+    })
+  }
+
+  bbLogout(): void {
+    this._bbSalesforceService.logout(this.organization.id).subscribe((data) => {
+      if (data.status === 'success') {
+        this.isLoggedIntoBbSalesforce = false
+      }
+    })
+  }
+
+  submitBb(): void {
+    this.organization.bb_salesforce_enabled = this.bbSalesforceForm.get('bb_salesforce_enabled').value
+    this._organizationService.updateSettings(this.organization).subscribe()
+    const configValues = this.bbSalesforceForm.controls.bbSalesforceConfig.value
+    if (this.bbSalesforceConfig?.id) {
+      this._bbSalesforceService.update(this.organization.id, { ...this.bbSalesforceConfig, ...configValues }).subscribe((config) => {
+        this.bbSalesforceConfig = config
+      })
+    } else {
+      this._bbSalesforceService
+        .create(this.organization.id, { ...configValues, organization_id: this.organization.id })
+        .subscribe((config) => {
+          this.bbSalesforceConfig = config
+        })
+    }
+  }
+
+  private _checkBbLoginStatus(): void {
+    this._bbSalesforceService.verifyToken(this.organization.id).subscribe({
+      next: (response) => {
+        this.isLoggedIntoBbSalesforce = response.valid
+      },
+      error: () => {
+        this.isLoggedIntoBbSalesforce = false
+      },
+    })
+  }
+
   private _setFormEnabledState(enabled: boolean): void {
     const fg = this.salesforceForm.get('salesforceConfig') as FormGroup
     for (const field of Object.keys(fg.controls)) {
@@ -240,6 +326,17 @@ export class SalesforceComponent implements OnDestroy, OnInit {
         this.salesforceForm.get(`salesforceConfig.${field}`).enable()
       } else {
         this.salesforceForm.get(`salesforceConfig.${field}`).disable()
+      }
+    }
+  }
+
+  private _setBbFormEnabledState(enabled: boolean): void {
+    const fg = this.bbSalesforceForm.get('bbSalesforceConfig') as FormGroup
+    for (const field of Object.keys(fg.controls)) {
+      if (enabled) {
+        this.bbSalesforceForm.get(`bbSalesforceConfig.${field}`).enable()
+      } else {
+        this.bbSalesforceForm.get(`bbSalesforceConfig.${field}`).disable()
       }
     }
   }
