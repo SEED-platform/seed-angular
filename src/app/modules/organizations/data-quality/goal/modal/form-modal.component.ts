@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -14,7 +13,7 @@ import { DataQualityValidator } from '../../data-quality.validator'
 @Component({
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, FormsModule, MaterialImports, LabelComponent, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, LabelComponent, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -41,22 +40,22 @@ export class FormModalComponent implements OnDestroy, OnInit {
   form: DataQualityFormGroup = new FormGroup(
     {
       condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
-      cross_cycle: new FormControl<boolean>(false), // unused
+      cross_cycle: new FormControl(false), // unused
       data_type: new FormControl<number | null>(null),
-      enabled: new FormControl<boolean>(true),
+      enabled: new FormControl(true),
       field: new FormControl<string | null>(null),
-      for_derived_column: new FormControl<boolean>(false), // unused
+      for_derived_column: new FormControl(false), // unused
       id: new FormControl<number | null>(null), // hidden
       max: new FormControl<number | null>(null),
       min: new FormControl<number | null>(null),
-      not_null: new FormControl<boolean>(false),
-      required: new FormControl<boolean>(false),
+      not_null: new FormControl(false),
+      required: new FormControl(false),
       rule_type: new FormControl<number | null>(null),
       severity: new FormControl<number | null>(null, Validators.required),
       status_label: new FormControl<number | null>(null),
       table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
       text_match: new FormControl<string | null>(null),
-      units: new FormControl<string>(''),
+      units: new FormControl(''),
     },
     { validators: [this._dataQualityValidator.hasRange(), this._dataQualityValidator.hasValidLabel()] },
   )

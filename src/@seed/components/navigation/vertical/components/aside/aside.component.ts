@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
-import { NavigationEnd, Router } from '@angular/router'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, untracked } from '@angular/core'
+import { isActive, NavigationEnd, Router } from '@angular/router'
 import { filter, Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import {
@@ -110,7 +110,7 @@ export class VerticalNavigationAsideItemComponent implements OnChanges, OnInit, 
       }
 
       // Check if the child has a link and is active
-      if (child.link && this._router.isActive(child.link, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
+      if (child.link && untracked(isActive(child.link, this._router, child.exactMatch ? exactMatchOptions : subsetMatchOptions))) {
         return true
       }
     }

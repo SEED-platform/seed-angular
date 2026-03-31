@@ -33,13 +33,13 @@ export class FormModalComponent implements OnDestroy, OnInit {
     existingNames: string[];
   }
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
+    name: new FormControl('', [
       Validators.required,
       SEEDValidators.uniqueValue(this.data.existingNames.filter((dc) => dc !== this.data.derivedColumn?.name)),
     ]),
-    inventory_type: new FormControl<string | null>(this.data.inventoryType, Validators.required),
+    inventory_type: new FormControl(this.data.inventoryType, Validators.required),
     parameters: new FormArray([this.newParameter('param_a', null)]),
-    expression: new FormControl<string | null>('$param_a / 100', Validators.required),
+    expression: new FormControl('$param_a / 100', Validators.required),
   })
   update = Boolean(this.data.derivedColumn)
 
@@ -114,8 +114,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
    */
   newParameter(name: string | null = null, sourceColumn: number | null = null) {
     const group = new FormGroup({
-      parameter_name: new FormControl<string | null>(name, this._derivedColumnValidator.inExpression()),
-      source_column: new FormControl<number | null>(sourceColumn, Validators.required),
+      parameter_name: new FormControl(name, this._derivedColumnValidator.inExpression()),
+      source_column: new FormControl(sourceColumn, Validators.required),
     })
     group.get('parameter_name')?.markAsTouched()
     group.get('parameter_name')?.updateValueAndValidity()

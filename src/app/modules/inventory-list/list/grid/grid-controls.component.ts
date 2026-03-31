@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import type { GridApi } from 'ag-grid-community'
@@ -12,7 +11,7 @@ import type { Pagination } from '../../../inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-grid-controls',
   templateUrl: './grid-controls.component.html',
-  imports: [CommonModule, MaterialImports],
+  imports: [MaterialImports],
 })
 export class InventoryGridControlsComponent implements OnChanges, OnInit {
   @Input() currentUser!: CurrentUser

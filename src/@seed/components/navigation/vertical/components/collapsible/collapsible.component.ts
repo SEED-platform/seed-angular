@@ -1,8 +1,8 @@
 import type { BooleanInput } from '@angular/cdk/coercion'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, input } from '@angular/core'
-import { NavigationEnd, Router } from '@angular/router'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, inject, input, untracked } from '@angular/core'
+import { isActive, NavigationEnd, Router } from '@angular/router'
 import { filter, Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
@@ -227,7 +227,7 @@ export class VerticalNavigationCollapsibleItemComponent implements OnInit, OnDes
       }
 
       // Check if the child has a link and is active
-      if (child.link && this._router.isActive(child.id, child.exactMatch ? exactMatchOptions : subsetMatchOptions)) {
+      if (child.link && untracked(isActive(child.link, this._router, child.exactMatch ? exactMatchOptions : subsetMatchOptions))) {
         return true
       }
     }

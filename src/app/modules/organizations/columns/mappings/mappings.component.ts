@@ -79,7 +79,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     { id: 'gal/year', value: 'gal/year', type: 'water_use' },
     { id: 'L/year', value: 'L/year', type: 'water_use' },
   ]
-  columnDefs: ColDef[] | ColGroupDef[] = [
+  columnDefs: (ColDef<RenderMapping> | ColGroupDef<RenderMapping>)[] = [
     {
       headerName: 'SEED',
       children: [
@@ -132,7 +132,6 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
         },
         {
           headerName: 'Actions',
-          field: 'actions',
           cellRendererSelector: (_params) => {
             if (this.profileReadOnly()) {
               return undefined
@@ -153,8 +152,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       ],
     },
   ]
-  rowData = []
-  gridOptions: GridOptions = {
+  rowData: RenderMapping[] = []
+  gridOptions: GridOptions<RenderMapping> = {
     columnDefs: this.columnDefs,
     pagination: false,
     suppressCellFocus: true,
@@ -259,8 +258,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     return count
   }
 
-  selectProfile(profileId = undefined) {
-    if (!profileId) {
+  selectProfile(profileId?: number) {
+    if (profileId === undefined) {
       profileId = this.selectedProfileForm.get('selectedProfile').value
     }
     if (profileId !== this.selectedProfile.id) {
@@ -316,10 +315,12 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     return mappings
   }
 
-  onCellDoubleClicked(event: CellDoubleClickedEvent) {
-    if (!this.profileReadOnly()) {
-      this.editMapping(event.data as ColumnMapping, event.node)
+  onCellDoubleClicked(event: CellDoubleClickedEvent<RenderMapping>): void {
+    if (this.profileReadOnly() || !event.data) {
+      return
     }
+
+    this.editMapping(event.data, event.node)
   }
 
   deleteMapping(_mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {
@@ -327,7 +328,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     this.changesToSave = true
   }
 
-  editMapping(mapping: ColumnMapping, node: IRowNode): void {
+  editMapping(mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {
     const dialogRef = this._dialog.open(EditModalComponent, {
       width: '80rem',
       data: {
@@ -503,7 +504,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     this.selectedProfileForm.get('selectedProfile').enable()
   }
 
-  buildMappingFromRowNode(rowNode: IRowNode<ColumnMapping>) {
+  buildMappingFromRowNode(rowNode: IRowNode<RenderMapping>): ColumnMapping {
     return {
       to_field: rowNode.data.to_field,
       from_field: rowNode.data.from_field,

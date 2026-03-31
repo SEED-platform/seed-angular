@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -12,7 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-ali-change-modal',
   templateUrl: './ali-change-modal.component.html',
-  imports: [CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class AliChangeModalComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<AliChangeModalComponent>)

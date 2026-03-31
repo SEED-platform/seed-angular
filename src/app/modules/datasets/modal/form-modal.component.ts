@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -12,14 +11,14 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-dataset-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
+  imports: [MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
   private _datasetService = inject(DatasetService)
   data = inject(MAT_DIALOG_DATA) as { orgId: number; dataset: Dataset; existingNames?: string[] }
   form = new FormGroup({
-    name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
   })
   create = this.data.dataset ? false : true
 

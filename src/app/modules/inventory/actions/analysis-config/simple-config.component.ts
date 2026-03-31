@@ -49,7 +49,7 @@ export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {
     }),
   })
   formCO2 = new FormGroup({
-    save_co2_results: new FormControl<boolean>(false),
+    save_co2_results: new FormControl(false),
   })
   formEEEJ = new FormGroup({})
   formES = new FormGroup({})

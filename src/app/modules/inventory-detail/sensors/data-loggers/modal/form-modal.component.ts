@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -12,7 +11,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-inventory-detail-data-loggers-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, MaterialImports, ReactiveFormsModule],
+  imports: [MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -24,12 +23,12 @@ export class FormModalComponent implements OnInit {
     existingDisplayNames: string[];
   }
   form = new FormGroup({
-    display_name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingDisplayNames)]),
-    identifier: new FormControl<string>('', Validators.required),
-    location_description: new FormControl<string>('', Validators.required),
-    manufacturer_name: new FormControl<string>('', Validators.required),
-    model_name: new FormControl<string>('', Validators.required),
-    serial_number: new FormControl<string>('', Validators.required),
+    display_name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingDisplayNames)]),
+    identifier: new FormControl('', Validators.required),
+    location_description: new FormControl('', Validators.required),
+    manufacturer_name: new FormControl('', Validators.required),
+    model_name: new FormControl('', Validators.required),
+    serial_number: new FormControl('', Validators.required),
   })
   create = !this.data.dataLogger
 

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -18,7 +17,6 @@ import { BetterConfigComponent, BurConfigComponent, SimpleConfigComponent } from
   imports: [
     BetterConfigComponent,
     BurConfigComponent,
-    CommonModule,
     FormsModule,
     MaterialImports,
     ModalHeaderComponent,
@@ -60,7 +58,7 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   form = new FormGroup({
     access_level_instance_id: new FormControl<number | null>(null),
     name: new FormControl<string | null>(null, [Validators.required]),
-    property_view_ids: new FormControl<number[]>(this.data.viewIds),
+    property_view_ids: new FormControl(this.data.viewIds),
     service: new FormControl<AnalysisServiceType | null>(null, [Validators.required]),
   })
 

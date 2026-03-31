@@ -21,7 +21,7 @@ export class CreateModalComponent implements OnInit {
   inProgress = false
   profile: ColumnMappingProfile
   form = new FormGroup({
-    name: new FormControl<string>('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
     mappings: new FormArray([]),
   })
   columns: Column[]
@@ -70,10 +70,10 @@ export class CreateModalComponent implements OnInit {
 
   addMapping() {
     const mapping = new FormGroup({
-      to_table_name: new FormControl<string>('PropertyState', [Validators.required]),
-      to_field: new FormControl<string>('', []),
-      from_field: new FormControl<string>('', [Validators.required]),
-      from_units: new FormControl<string>(''),
+      to_table_name: new FormControl('PropertyState', [Validators.required]),
+      to_field: new FormControl('', []),
+      from_field: new FormControl('', [Validators.required]),
+      from_units: new FormControl(''),
     })
     mapping.get('from_units').disable()
     mapping.get('to_field').valueChanges.subscribe((val) => {

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
@@ -11,7 +10,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-inventory-detail-sensors-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, MaterialImports, ReactiveFormsModule],
+  imports: [MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -24,12 +23,12 @@ export class FormModalComponent implements OnInit {
     existingDisplayNames: string[];
   }
   form = new FormGroup({
-    display_name: new FormControl<string>('', SEEDValidators.uniqueValue(this.data.existingDisplayNames)),
-    location_description: new FormControl<string>(''),
-    description: new FormControl<string>(''),
-    sensor_type: new FormControl<string>(''),
-    units: new FormControl<string>(''),
-    column_name: new FormControl<string>('', SEEDValidators.uniqueValue(this.data.existingColumnNames)),
+    display_name: new FormControl('', SEEDValidators.uniqueValue(this.data.existingDisplayNames)),
+    location_description: new FormControl(''),
+    description: new FormControl(''),
+    sensor_type: new FormControl(''),
+    units: new FormControl(''),
+    column_name: new FormControl('', SEEDValidators.uniqueValue(this.data.existingColumnNames)),
   })
 
   ngOnInit() {

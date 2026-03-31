@@ -54,13 +54,14 @@ export class SensorService {
   }
 
   listSensorUsage(orgId: number, viewId: number, config: SensorUsageRequestConfig = {}) {
-    const {
-      interval = 'Exact',
-      showOnlyOccupiedReadings = false,
-      page = 1,
-      per_page = 100000000000, // not an expensive request, just retrieve all (was 500)
-      excluded_sensor_ids = [],
-    } = config
+    const { interval, showOnlyOccupiedReadings, page, per_page, excluded_sensor_ids } = {
+      interval: 'Exact',
+      showOnlyOccupiedReadings: false,
+      page: 1,
+      per_page: 1_000_000_000, // not an expensive request, just retrieve all (was 500)
+      excluded_sensor_ids: [],
+      ...config,
+    }
 
     const params = new URLSearchParams({
       organization_id: orgId.toString(),

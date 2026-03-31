@@ -31,8 +31,8 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
     selectedTemplate: new FormControl<number | null>(null),
   })
   templateForm = new FormGroup({
-    subject: new FormControl<string>('', [Validators.required]),
-    html_content: new FormControl<string>('', [Validators.required]),
+    subject: new FormControl('', [Validators.required]),
+    html_content: new FormControl('', [Validators.required]),
   })
 
   ngOnInit(): void {

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -15,7 +14,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-labels-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -37,10 +36,10 @@ export class FormModalComponent implements OnDestroy, OnInit {
     progressLastChecked: null,
   }
   form = new FormGroup({
-    display_name: new FormControl<string | null>('', [Validators.required]),
+    display_name: new FormControl('', [Validators.required]),
     column_description: new FormControl<string | null>(null, [Validators.required]),
     organization_id: new FormControl<number | null>(null, [Validators.required]),
-    table_name: new FormControl<string | null>('', [Validators.required]),
+    table_name: new FormControl('', [Validators.required]),
     comstock_mapping: new FormControl<string | null>(null),
     id: new FormControl<number | null>(null),
   })
