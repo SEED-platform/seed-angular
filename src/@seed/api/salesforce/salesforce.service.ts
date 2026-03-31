@@ -50,8 +50,7 @@ export class SalesforceService {
         return response
       }),
       catchError((error: HttpErrorResponse) => {
-        // TODO need to figure out error handling
-        return this._errorService.handleError(error, 'Error fetching organization')
+        return this._errorService.handleError(error, 'Error fetching Salesforce config')
       }),
     )
   }
@@ -64,14 +63,12 @@ export class SalesforceService {
         return response
       }),
       catchError((error: HttpErrorResponse) => {
-        // TODO need to figure out error handling
-        return this._errorService.handleError(error, 'Error fetching organization')
+        return this._errorService.handleError(error, 'Error fetching Salesforce mappings')
       }),
     )
   }
 
   create(organizationId: number, config: SalesforceConfig): Observable<SalesforceConfig> {
-    console.log('Creating: ', config)
     const url = `/api/v3/salesforce_configs/?organization_id=${organizationId}`
     return this._httpClient.post<SalesforceConfigResponse>(url, { ...config }).pipe(
       map((response) => {
@@ -79,7 +76,7 @@ export class SalesforceService {
         return response.salesforce_config
       }),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching organization')
+        return this._errorService.handleError(error, 'Error creating Salesforce config')
       }),
     )
   }
@@ -93,7 +90,7 @@ export class SalesforceService {
         return response.salesforce_config
       }),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching organization')
+        return this._errorService.handleError(error, 'Error updating Salesforce config')
       }),
     )
   }
@@ -119,10 +116,11 @@ export class SalesforceService {
         return response
       }),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, `Salesforce Mapping could not be created: ${error.message}`)
+        return this._errorService.handleError(error, 'Error creating Salesforce mapping')
       }),
     )
   }
+
   updateMapping(organizationId: number, mapping: SalesforceMapping): Observable<SalesforceMappingResponse> {
     const url = `/api/v3/salesforce_mappings/${mapping.id}/?organization_id=${organizationId}`
     return this._httpClient.put<SalesforceMappingResponse>(url, { ...mapping }).pipe(
@@ -131,7 +129,7 @@ export class SalesforceService {
         return response
       }),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, `Salesforce Mapping could not be created: ${error.message}`)
+        return this._errorService.handleError(error, 'Error updating Salesforce mapping')
       }),
     )
   }

@@ -45,7 +45,7 @@ export type SalesforceConfigsResponse = {
 export type SalesforceMapping = {
   id: number;
   organization_id: number;
-  column: 10;
+  column: number;
   salesforce_fieldname: string;
 }
 
