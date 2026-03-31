@@ -1,6 +1,6 @@
 {
   "name": "seed",
-  "version": "3.2.5",
+  "version": "3.4.0",
   "description": "Standard Energy Efficiency Data (SEED) Platform™",
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": {
@@ -11,12 +11,12 @@
     "url": "https://github.com/SEED-platform/seed/issues"
   },
   "engines": {
-    "node": ">=22",
+    "node": ">=24",
     "pnpm": ">=10"
   },
+  "packageManager": "pnpm@10.33.0",
   "private": true,
   "scripts": {
-    "preinstall": "npx -y only-allow pnpm",
     "ng": "ng",
     "start": "ng serve",
     "start:prod": "ng serve -c production",
@@ -32,7 +32,7 @@
     "prettier:fix": "npm run prettier -- -w",
     "stylelint": "stylelint \"src/**/*.scss\"",
     "stylelint:fix": "npm run stylelint -- --fix",
-    "update-translations": "node --env-file=.env --import=tsx --no-warnings update-translations.mts"
+    "update-translations": "node --env-file=.env --no-warnings update-translations.mts"
   },
   "dependencies": {
     "@angular/animations": "^20.0.5",
