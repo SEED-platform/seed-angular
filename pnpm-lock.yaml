@@ -220,14 +220,14 @@ importers:
         specifier: ^8.5.8
         version: 8.5.8
       prettier:
-        specifier: ^4.0.0-alpha.13
-        version: 4.0.0-alpha.13
+        specifier: ^3.8.1
+        version: 3.8.1
       prettier-plugin-organize-attributes:
         specifier: ^1.0.0
-        version: 1.0.0(prettier@4.0.0-alpha.13)
+        version: 1.0.0(prettier@3.8.1)
       prettier-plugin-tailwindcss:
         specifier: ^0.7.2
-        version: 0.7.2(prettier-plugin-organize-attributes@1.0.0(prettier@4.0.0-alpha.13))(prettier@4.0.0-alpha.13)
+        version: 0.7.2(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.1))(prettier@3.8.1)
       stylelint:
         specifier: ^17.6.0
         version: 17.6.0(typescript@5.9.3)
@@ -5030,11 +5030,6 @@ packages:
   prettier@3.8.1:
     resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
     engines: {node: '>=14'}
-    hasBin: true
-
-  prettier@4.0.0-alpha.13:
-    resolution: {integrity: sha512-177K/2S5iYDKtvZkDC2ZMqpyXtoiiVQBVQZpcQsRs+ZIIUQxsXomWIjquAlwt2pXpio9riz5IgtaUEnoZH44tg==}
-    engines: {node: '>=18'}
     hasBin: true
 
   proc-log@6.1.0:
@@ -10911,19 +10906,17 @@ snapshots:
     dependencies:
       fast-diff: 1.3.0
 
-  prettier-plugin-organize-attributes@1.0.0(prettier@4.0.0-alpha.13):
+  prettier-plugin-organize-attributes@1.0.0(prettier@3.8.1):
     dependencies:
-      prettier: 4.0.0-alpha.13
+      prettier: 3.8.1
 
-  prettier-plugin-tailwindcss@0.7.2(prettier-plugin-organize-attributes@1.0.0(prettier@4.0.0-alpha.13))(prettier@4.0.0-alpha.13):
+  prettier-plugin-tailwindcss@0.7.2(prettier-plugin-organize-attributes@1.0.0(prettier@3.8.1))(prettier@3.8.1):
     dependencies:
-      prettier: 4.0.0-alpha.13
+      prettier: 3.8.1
     optionalDependencies:
-      prettier-plugin-organize-attributes: 1.0.0(prettier@4.0.0-alpha.13)
+      prettier-plugin-organize-attributes: 1.0.0(prettier@3.8.1)
 
   prettier@3.8.1: {}
-
-  prettier@4.0.0-alpha.13: {}
 
   proc-log@6.1.0: {}
 

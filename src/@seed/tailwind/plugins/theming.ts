@@ -29,6 +29,12 @@ const normalizeTheme = (theme: Theme) => {
   )
 }
 
+// Emit space-separated channels so downstream CSS can use modern
+// `rgb(var(--seed-*-rgb) / alpha)` syntax consistently.
+const toRgbChannels = (color: string) => chroma(color).rgb().join(' ')
+
+const withSeedRgbAlpha = (token: string, alpha = '<alpha-value>') => `rgb(var(--seed-${token}-rgb) / ${alpha})`
+
 // -----------------------------------------------------------------------------------------------------
 // @ SEED TailwindCSS Main Plugin
 // -----------------------------------------------------------------------------------------------------
@@ -138,7 +144,7 @@ export const theming = plugin.withOptions(
                   ),
                   (color: string, key: string) => [
                     [`--seed-${e(key)}`, color],
-                    [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
+                    [`--seed-${e(key)}-rgb`, toRgbChannels(color)],
                   ],
                 ),
               ),
@@ -188,7 +194,7 @@ export const theming = plugin.withOptions(
               flatten(
                 map(background, (color: string, key) => [
                   [`--seed-${e(key)}`, color],
-                  [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
+                  [`--seed-${e(key)}-rgb`, toRgbChannels(color)],
                 ]),
               ),
             ),
@@ -196,7 +202,7 @@ export const theming = plugin.withOptions(
               flatten(
                 map(foreground, (color: string, key) => [
                   [`--seed-${e(key)}`, color],
-                  [`--seed-${e(key)}-rgb`, chroma(color).rgb().join(',')],
+                  [`--seed-${e(key)}-rgb`, toRgbChannels(color)],
                 ]),
               ),
             ),
@@ -219,8 +225,8 @@ export const theming = plugin.withOptions(
             flatten(
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               map(keys(flattenColorPalette(normalizeTheme(options.themes.default))), (name) => [
-                [name, `rgba(var(--seed-${name}-rgb), <alpha-value>)`],
-                [`on-${name}`, `rgba(var(--seed-on-${name}-rgb), <alpha-value>)`],
+                [name, withSeedRgbAlpha(name)],
+                [`on-${name}`, withSeedRgbAlpha(`on-${name}`)],
               ]),
             ),
           ),
@@ -241,7 +247,7 @@ export const theming = plugin.withOptions(
                 'bg-card': colors.slate[800],
                 'bg-default': colors.slate[900],
                 'bg-dialog': colors.slate[800],
-                'bg-hover': 'rgba(255, 255, 255, 0.05)',
+                'bg-hover': 'rgb(255 255 255 / 5%)',
                 'bg-status-bar': colors.slate[900],
               },
             },
