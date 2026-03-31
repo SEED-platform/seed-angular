@@ -42,7 +42,7 @@ export class AuthMockApi {
     this._mockApiService.onPost('api/auth/sign-in', 1500).reply(({ request }) => {
       // Sign in successful
       const body = request.body as Record<string, string>
-      if (body.email === 'alex.swindler@nrel.gov' && body.password === 'password') {
+      if (body.email === 'alex.swindler@nlr.gov' && body.password === 'password') {
         return [
           200,
           {
