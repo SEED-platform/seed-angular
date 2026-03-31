@@ -3,6 +3,10 @@
   @apply bg-black bg-opacity-60 sm:bg-transparent #{'!important'};
 }
 
+.cdk-overlay-container {
+  background-color: transparent !important;
+}
+
 // Font smoothing
 *[class*='mat-'],
 *[class*='mat-mdc-'] {
@@ -283,6 +287,10 @@
 
 // Dialog
 .mat-mdc-dialog-container {
+  --mat-dialog-container-color: var(--seed-bg-dialog);
+  --mat-dialog-subhead-color: rgb(var(--seed-text-default-rgb) / 87%);
+  --mat-dialog-supporting-text-color: rgb(var(--seed-text-secondary-rgb) / 100%);
+
   .mdc-dialog__surface {
     border-radius: 16px !important;
     padding: 24px;
@@ -937,7 +945,7 @@
       .mat-icon-no-color {
         --tw-text-opacity: 1;
 
-        color: rgba(var(--seed-mat-icon-rgb), var(--tw-text-opacity));
+        color: rgb(var(--seed-mat-icon-rgb) / var(--tw-text-opacity));
       }
     }
 

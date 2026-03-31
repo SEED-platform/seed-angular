@@ -1,3 +1,4 @@
+import { OverlayContainer } from '@angular/cdk/overlay'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
@@ -22,6 +23,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
   private _document = inject(DOCUMENT)
   private _mediaWatcherService = inject(MediaWatcherService)
+  private _overlayContainer = inject(OverlayContainer)
   private _platformService = inject(PlatformService)
   private _renderer = inject(Renderer2)
   private _router = inject(Router)
@@ -158,9 +160,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private _updateScheme(): void {
     // Remove class names for all schemes
     this._document.body.classList.remove('light', 'dark')
+    this._overlayContainer.getContainerElement().classList.remove('light', 'dark')
 
     // Add class name for the currently selected scheme
     this._document.body.classList.add(this.scheme)
+    this._overlayContainer.getContainerElement().classList.add(this.scheme)
   }
 
   /**
@@ -175,8 +179,14 @@ export class LayoutComponent implements OnInit, OnDestroy {
         this._document.body.classList.remove(className, className.split('-')[1])
       }
     }
+    for (const className of this._overlayContainer.getContainerElement().classList) {
+      if (className.startsWith('theme-')) {
+        this._overlayContainer.getContainerElement().classList.remove(className, className.split('-')[1])
+      }
+    }
 
     // Add class name for the currently selected theme
     this._document.body.classList.add(this.theme)
+    this._overlayContainer.getContainerElement().classList.add(this.theme)
   }
 }
