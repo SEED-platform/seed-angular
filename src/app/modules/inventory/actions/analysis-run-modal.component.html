@@ -4,7 +4,7 @@
   <div class="relative max-h-[60vh] overflow-y-auto !text-sm">
     <form class="compact-form flex flex-col gap-1" [formGroup]="form">
       <mat-form-field class="mt-1">
-        <mat-label>Group Name</mat-label>
+        <mat-label>Analysis Name</mat-label>
         <input matInput formControlName="name" />
         @if (form.controls.name?.hasError('valueExists')) {
           <mat-error>This name already exists.</mat-error>
@@ -30,6 +30,8 @@
       ></seed-better-config>
     } @else if (service === 'Building Upgrade Recommendation') {
       <seed-bur-config [orgId]="data.orgId" (formChange)="onFormChange($event)"></seed-bur-config>
+    } @else if (service === 'HVAC Metrics') {
+      <seed-hvac-config [orgId]="data.orgId" (formChange)="onFormChange($event)"></seed-hvac-config>
     } @else if (service) {
       <seed-simple-config [cycles]="cycles" [service]="service" (formChange)="onFormChange($event)"></seed-simple-config>
     }

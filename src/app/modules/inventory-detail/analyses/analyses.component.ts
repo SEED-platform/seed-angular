@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Analysis, Cycle } from '@seed/api'
+import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { Analysis, CurrentUser, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
@@ -15,16 +17,18 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
   templateUrl: './analyses.component.html',
   imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent, SharedImports],
 })
-export class AnalysesComponent implements OnInit {
+export class AnalysesComponent implements OnInit, OnDestroy {
   private _analysisService = inject(AnalysisService)
   private _cycleService = inject(CycleService)
   private _userService = inject(UserService)
   private _organizationService = inject(OrganizationService)
   private _inventoryService = inject(InventoryService)
   private _route = inject(ActivatedRoute)
+  private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
   analyses: Analysis[] = []
   cycles: Cycle[] = []
+  currentUser: CurrentUser
   orgId: number
   viewDisplayField$: Observable<string>
   viewId: number
@@ -39,6 +43,10 @@ export class AnalysesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user) => {
+      this.currentUser = user
+    })
+
     this.getParams()
       .pipe(
         switchMap(() => this._userService.currentOrganizationId$),
@@ -50,7 +58,10 @@ export class AnalysesComponent implements OnInit {
           this.cycles = cycles
         }),
         tap(() => {
-          this.watchAnalyses()
+          // Defer to avoid ExpressionChangedAfterItHasBeenCheckedError in LoadingBarComponent
+          setTimeout(() => {
+            this.watchAnalyses()
+          })
         }),
       )
       .subscribe()
@@ -76,7 +87,10 @@ export class AnalysesComponent implements OnInit {
         return this._analysisService.getPropertyAnalyses(id)
       }),
       tap((analyses) => {
-        this.analyses = analyses
+        setTimeout(() => {
+          // suppress ExpressionChangedAfterItHasBeenCheckedError
+          this.analyses = analyses
+        })
       }),
     )
   }
@@ -90,7 +104,27 @@ export class AnalysesComponent implements OnInit {
       .subscribe()
   }
 
-  createAnalysis() {
-    console.log('Create Analysis')
+  createAnalysis = () => {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewIds: [this.viewId] },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.getAnalyses()),
+      )
+      .subscribe()
+  }
+
+  get isViewer() {
+    return this.currentUser?.org_role === 'viewer'
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

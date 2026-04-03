@@ -6,8 +6,8 @@ import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, switchMap, take } from 'rxjs'
-import type { Analysis, Cycle, Highlight } from '@seed/api'
-import { AnalysisService } from '@seed/api'
+import type { Analysis, CurrentUser, Cycle, Highlight } from '@seed/api'
+import { AnalysisService, UserService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
@@ -25,8 +25,10 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   @Input() highlights = false
   private _analysisService = inject(AnalysisService)
   private _configService = inject(ConfigService)
+  private _userService = inject(UserService)
   private _router = inject(Router)
   private _dialog = inject(MatDialog)
+  currentUser: CurrentUser
 
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
@@ -34,6 +36,9 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   columnDefs: ColDef[] = []
 
   ngAfterViewInit(): void {
+    this._userService.currentUser$.subscribe((user) => {
+      this.currentUser = user
+    })
     this._analysisService.pollStatuses(this.orgId)
   }
 
@@ -93,14 +98,21 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   }
 
   statusRenderer = ({ value }: { value: string }) => {
-    const styleMap = {
-      Completed: 'bg-green-900 text-white',
-      Failed: 'bg-red-900 text-white',
+    const styleMap: Record<string, string> = {
+      Completed: 'background-color: #198754; color: white;',
+      Failed: 'background-color: #dc3545; color: white;',
+      Running: '',
+      Creating: '',
+    }
+    const classMap: Record<string, string> = {
       Running: 'bg-primary text-white animate-pulse',
       Creating: 'bg-primary text-white animate-pulse',
     }
 
-    return `<div class="overflow-hidden ${styleMap[value]} px-2">${value}</div>`
+    const style = styleMap[value] ?? ''
+    const classes = classMap[value] ?? ''
+
+    return `<div class="overflow-hidden ${classes} px-2" style="${style}">${value}</div>`
   }
 
   resultsRenderer = ({ data }: { data: Analysis }) => {
@@ -134,6 +146,8 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   }
 
   actionRenderer = ({ data }: { data: Analysis }) => {
+    if (this.currentUser?.org_role === 'viewer') return ''
+
     const runningStatuses = new Set(['Pending Creation', 'Creating', 'Queued', 'Running'])
     const isRunning = runningStatuses.has(data.status)
 

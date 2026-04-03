@@ -134,8 +134,13 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   }
 
   statusRenderer = ({ value }: { value: string }) => {
-    const bgColor = value === 'Completed' ? 'bg-green-900 text-white' : value === 'Failed' ? 'bg-red-900 text-white' : ''
-    return `<div class="overflow-hidden ${bgColor} px-2">${value}</div>`
+    const style
+      = value === 'Completed'
+        ? 'background-color: #198754; color: white;'
+        : value === 'Failed'
+          ? 'background-color: #dc3545; color: white;'
+          : ''
+    return `<div class="overflow-hidden px-2" style="${style}">${value}</div>`
   }
 
   getCycle(params: { value: number[] }): string {

@@ -5,9 +5,9 @@
     titleIcon: 'fa-solid:chart-simple',
     breadcrumbs: ['Property', 'Analyses'],
     sideNavToggle: true,
-    action: createAnalysis,
-    actionIcon: 'fa-solid:plus',
-    actionText: 'Create Analysis',
+    action: isViewer ? undefined : createAnalysis,
+    actionIcon: isViewer ? undefined : 'fa-solid:plus',
+    actionText: isViewer ? undefined : 'Create Analysis',
   }"
 >
   <div class="h-full-page-tabs p-5" id="content" #parentDiv>

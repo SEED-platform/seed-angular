@@ -10,6 +10,7 @@ import type { AccessLevelInstance, Label, Organization } from '@seed/api'
 import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
+import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { ModalComponent } from '../../column-list-profile/modal/modal.component'
 import { MapComponent } from './map.component'
@@ -110,9 +111,9 @@ export class HeaderComponent implements OnInit {
     {
       name: 'Run Analysis',
       action: () => {
-        this.tempAction()
+        this.openRunAnalysisModal()
       },
-      disabled: true,
+      disabled: false,
     },
     {
       name: 'Update with Audit Template',
@@ -199,6 +200,27 @@ export class HeaderComponent implements OnInit {
         profile: this.currentProfile,
         profiles: this.profiles,
         type: this.type === 'taxlots' ? 'Tax Lot' : 'Property',
+      },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(Boolean),
+        tap(() => {
+          this.refreshDetail.emit()
+        }),
+      )
+      .subscribe()
+  }
+
+  openRunAnalysisModal() {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.org.id,
+        viewIds: [this.selectedView.id],
       },
     })
 

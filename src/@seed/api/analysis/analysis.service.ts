@@ -259,6 +259,8 @@ export class AnalysisService {
       EUI: "The EUI analysis will sum the property's meter readings for the last twelve months to calculate the energy use per square footage per year. If there are missing meter readings, then the analysis will return a less that 100% coverage to alert the user that there is a missing meter reading.",
       'Element Statistics':
         "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C. Control Panel'. It also generates the aggregated (average) condition index values for scope 1 emission elements and saves those quantities to the property.",
+      'HVAC Metrics':
+        'The HVAC Metrics analysis calculates HVAC-related metrics for the property based on floor area and available meter data.',
     }
     return descriptionMap[analysis.service] ?? 'No description available for this analysis.'
   }
