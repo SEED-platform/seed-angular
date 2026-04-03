@@ -185,7 +185,7 @@
   "Building has BAS field": "El edificio tiene campo BAS",
   "BuildingSync Recommended Measures": "BuildingSync Medidas recomendadas",
   "Buildings": "Edificios",
-  "By clicking the Log In button you accept the NLR Data Terms.": "Al hacer clic en el botón Iniciar sesión, acepta las Condiciones de datos del NLR.",
+  "By clicking the Log In button you accept the NREL Data Terms.": "Al hacer clic en el botón Iniciar sesión, acepta las Condiciones de datos del NREL.",
   "CLICK_LEGEND": "Haga clic en una etiqueta para mostrarla u ocultarla en el gráfico",
   "COLUMN_NAME_DUPLICATE_ERROR": "Error: El nuevo nombre de columna no coincide con el anterior.",
   "COLUMN_NAME_EXISTS_WARNING": "Advertencia: El nombre de la columna ya existe.",
