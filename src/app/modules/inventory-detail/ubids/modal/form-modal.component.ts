@@ -36,7 +36,7 @@ export class FormModalComponent implements OnInit {
         validators: [Validators.required, SEEDValidators.uniqueValue(this.data.existingUbids)],
         asyncValidators: [this.validUbid(this.data.orgId)],
       }),
-      preferred: new FormControl<boolean | null>(false, Validators.required),
+      preferred: new FormControl(false, Validators.required),
     })
     if (this.data.ubid) {
       setTimeout(() => {

@@ -3,6 +3,10 @@
   @apply bg-black bg-opacity-60 sm:bg-transparent #{'!important'};
 }
 
+.cdk-overlay-container {
+  background-color: transparent !important;
+}
+
 // Font smoothing
 *[class*='mat-'],
 *[class*='mat-mdc-'] {
@@ -283,10 +287,38 @@
 
 // Dialog
 .mat-mdc-dialog-container {
+  --mat-dialog-container-color: var(--seed-bg-dialog);
+  --mat-dialog-subhead-color: rgb(var(--seed-text-default-rgb) / 87%);
+  --mat-dialog-supporting-text-color: rgb(var(--seed-text-secondary-rgb));
+
   .mdc-dialog__surface {
     border-radius: 16px !important;
     padding: 24px;
   }
+}
+
+// Datepicker
+.mat-datepicker-content {
+  --mat-datepicker-calendar-container-background-color: var(--seed-bg-card);
+  --mat-datepicker-calendar-container-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-datepicker-calendar-body-label-text-color: rgb(var(--seed-text-secondary-rgb));
+  --mat-datepicker-calendar-period-button-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-datepicker-calendar-period-button-icon-color: rgb(var(--seed-mat-icon-rgb));
+  --mat-datepicker-calendar-navigation-button-icon-color: rgb(var(--seed-mat-icon-rgb));
+  --mat-datepicker-calendar-header-text-color: rgb(var(--seed-text-secondary-rgb));
+  --mat-datepicker-calendar-header-divider-color: var(--seed-divider);
+  --mat-datepicker-calendar-date-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-datepicker-calendar-date-disabled-state-text-color: rgb(var(--seed-text-disabled-rgb));
+  --mat-datepicker-calendar-date-today-outline-color: var(--seed-primary);
+  --mat-datepicker-calendar-date-today-disabled-state-outline-color: rgb(var(--seed-text-disabled-rgb));
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--seed-primary);
+  --mat-datepicker-calendar-date-selected-state-text-color: rgb(var(--seed-on-primary-rgb));
+  --mat-datepicker-calendar-date-selected-disabled-state-background-color: rgb(var(--seed-primary-rgb) / 38%);
+  --mat-datepicker-calendar-date-today-selected-state-outline-color: rgb(var(--seed-on-primary-rgb));
+  --mat-datepicker-calendar-date-hover-state-background-color: rgb(var(--seed-text-default-rgb) / 4%);
+  --mat-datepicker-calendar-date-focus-state-background-color: rgb(var(--seed-text-default-rgb) / 12%);
+  --mat-datepicker-calendar-date-preview-state-outline-color: var(--seed-primary);
+  --mat-datepicker-calendar-date-in-range-state-background-color: rgb(var(--seed-primary-rgb) / 20%);
 }
 
 // Drawer
@@ -926,18 +958,30 @@
 .mat-mdc-menu-panel {
   min-width: 144px !important;
 
+  --mat-menu-container-color: var(--seed-bg-card);
+  --mat-icon-color: rgb(var(--seed-mat-icon-rgb));
+  --mat-menu-item-label-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-menu-item-icon-color: var(--mat-icon-color);
+  --mat-menu-divider-color: var(--seed-divider);
+  --mat-menu-item-hover-state-layer-color: rgb(var(--seed-text-default-rgb) / 8%);
+  --mat-menu-item-focus-state-layer-color: rgb(var(--seed-text-default-rgb) / 12%);
+
   .mat-mdc-menu-content {
     .mat-mdc-menu-item {
+      &:not([disabled]):hover {
+        background-color: rgb(var(--seed-text-default-rgb) / 8%) !important;
+      }
+
+      &:not([disabled]).cdk-program-focused,
+      &:not([disabled]).cdk-keyboard-focused,
+      &:not([disabled]).mat-mdc-menu-item-highlighted {
+        background-color: rgb(var(--seed-text-default-rgb) / 12%) !important;
+      }
+
       .mat-mdc-menu-item-text {
         display: flex;
         align-items: center;
         padding-right: 16px;
-      }
-
-      .mat-icon-no-color {
-        --tw-text-opacity: 1;
-
-        color: rgba(var(--seed-mat-icon-rgb), var(--tw-text-opacity));
       }
     }
 
@@ -946,6 +990,20 @@
       margin: 8px 0;
     }
   }
+}
+
+// Options
+.mat-mdc-option {
+  --mat-option-label-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-option-selected-state-label-text-color: var(--seed-primary);
+  --mat-option-hover-state-layer-color: rgb(var(--seed-text-default-rgb) / 4%);
+  --mat-option-focus-state-layer-color: rgb(var(--seed-text-default-rgb) / 12%);
+  --mat-option-selected-state-layer-color: rgb(var(--seed-text-default-rgb) / 12%);
+}
+
+// Autocomplete
+div.mat-mdc-autocomplete-panel {
+  --mat-autocomplete-background-color: var(--seed-bg-card);
 }
 
 // Paginator
@@ -1001,6 +1059,13 @@
 .mat-mdc-select {
   display: inline-flex !important;
 
+  --mat-select-enabled-trigger-text-color: rgb(var(--seed-text-default-rgb));
+  --mat-select-placeholder-text-color: rgb(var(--seed-text-secondary-rgb));
+  --mat-select-enabled-arrow-color: rgb(var(--seed-text-secondary-rgb));
+  --mat-select-focused-arrow-color: var(--seed-primary);
+  --mat-select-disabled-trigger-text-color: rgb(var(--seed-text-disabled-rgb));
+  --mat-select-disabled-arrow-color: rgb(var(--seed-text-disabled-rgb));
+
   .mat-mdc-select-placeholder {
     transition: none !important;
 
@@ -1034,6 +1099,10 @@
       @apply text-secondary #{!important};
     }
   }
+}
+
+div.mat-mdc-select-panel {
+  --mat-select-panel-background-color: var(--seed-bg-card);
 }
 
 // Snack bar

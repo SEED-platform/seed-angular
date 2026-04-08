@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { HttpErrorResponse } from '@angular/common/http'
 import type { AfterViewInit, ElementRef, OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
@@ -19,7 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-data-upload-modal',
   templateUrl: './data-upload-modal.component.html',
-  imports: [CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, ReactiveFormsModule, RouterModule],
+  imports: [MaterialImports, ModalHeaderComponent, ProgressBarComponent, ReactiveFormsModule, RouterModule],
 })
 export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
@@ -60,7 +59,7 @@ export class DataUploadModalComponent implements AfterViewInit, OnDestroy {
 
   form = new FormGroup({
     cycleId: new FormControl<number>(null, Validators.required),
-    multiCycle: new FormControl<boolean>(false),
+    multiCycle: new FormControl(false),
   })
 
   ngAfterViewInit() {

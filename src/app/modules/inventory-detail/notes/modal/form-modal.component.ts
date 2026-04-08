@@ -21,7 +21,7 @@ export class FormModalComponent implements OnDestroy {
   data = inject(MAT_DIALOG_DATA) as { orgId: number; viewId: number; type: InventoryType; note: Note }
   create = !this.data.note
   form = new FormGroup({
-    text: new FormControl<string | null>(this.data.note?.text ?? '', Validators.required),
+    text: new FormControl(this.data.note?.text ?? '', Validators.required),
   })
 
   onSubmit() {

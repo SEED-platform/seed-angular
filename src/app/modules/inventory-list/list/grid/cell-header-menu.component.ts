@@ -1,7 +1,6 @@
 import type { FlexibleConnectedPositionStrategyOrigin, OverlayRef } from '@angular/cdk/overlay'
 import { Overlay } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
-import { CommonModule } from '@angular/common'
 import type { AfterViewInit, TemplateRef } from '@angular/core'
 import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
@@ -16,7 +15,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-grid-cell-header-menu',
   templateUrl: './cell-header-menu.component.html',
-  imports: [CommonModule, MaterialImports],
+  imports: [MaterialImports],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit {
   @ViewChild('menu') menuTemplate!: TemplateRef<unknown>

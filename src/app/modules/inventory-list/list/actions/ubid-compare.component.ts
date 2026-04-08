@@ -31,8 +31,8 @@ export class UbidCompareComponent implements OnInit, OnDestroy {
   }
 
   form = new FormGroup({
-    ubid1: new FormControl<string>('', [Validators.required]),
-    ubid2: new FormControl<string>('', [Validators.required]),
+    ubid1: new FormControl('', [Validators.required]),
+    ubid2: new FormControl('', [Validators.required]),
   })
 
   ngOnInit(): void {

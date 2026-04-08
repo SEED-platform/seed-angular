@@ -34,7 +34,7 @@ export class ModalComponent {
   existingNames = this.data.profiles?.map((p) => p.name).filter((name) => name !== this.data.profile?.name) ?? []
 
   form = new FormGroup({
-    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
   })
 
   errorMessage = false

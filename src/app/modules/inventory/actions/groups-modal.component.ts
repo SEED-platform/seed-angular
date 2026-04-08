@@ -43,8 +43,8 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
   data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[] }
 
   form = new FormGroup({
-    name: new FormControl<string | null>('', Validators.required), // existing names set when data is fetched
-    organization: new FormControl<number>(this.data.orgId),
+    name: new FormControl('', Validators.required), // existing names set when data is fetched
+    organization: new FormControl(this.data.orgId),
     inventory_type: new FormControl<InventoryDisplayType>(this.data.type === 'taxlots' ? 'Tax Lot' : 'Property'),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
   })

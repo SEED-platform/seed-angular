@@ -39,12 +39,12 @@ export class UploaderService {
    */
   checkProgressLoop({
     progressKey,
-    offset = 0,
-    multiplier = 1,
-    successFn = () => null,
-    failureFn = () => null,
+    offset,
+    multiplier,
+    successFn,
+    failureFn,
     progressBarObj,
-    subProgress = false,
+    subProgress,
   }: CheckProgressLoopParams): Observable<ProgressResponse> {
     const isCompleted = (status: string) => ['error', 'success', 'warning'].includes(status)
 

@@ -14,11 +14,11 @@ export type ProgressBarObj = {
 
 export type CheckProgressLoopParams = {
   progressKey: string;
+  progressBarObj: ProgressBarObj;
   offset?: number;
   multiplier?: number;
   successFn?: (response: ProgressResponse) => void;
   failureFn?: () => void;
-  progressBarObj: ProgressBarObj;
   subProgress?: boolean;
 }
 

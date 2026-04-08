@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { AfterViewInit } from '@angular/core'
 import { Component, Input } from '@angular/core'
 import { defaults as defaultControls } from 'ol/control'
@@ -19,7 +18,7 @@ import type { InventoryType, State } from 'app/modules/inventory/inventory.types
 @Component({
   selector: 'seed-inventory-detail-map',
   templateUrl: './map.component.html',
-  imports: [CommonModule, MaterialImports],
+  imports: [MaterialImports],
 })
 export class MapComponent implements AfterViewInit {
   @Input() state: State

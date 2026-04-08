@@ -19,7 +19,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   create = true
   data = inject(MAT_DIALOG_DATA) as { template: EmailTemplate | null; organization_id: number }
   form = new FormGroup({
-    name: new FormControl<string | null>('', Validators.required),
+    name: new FormControl('', Validators.required),
   })
 
   ngOnInit(): void {

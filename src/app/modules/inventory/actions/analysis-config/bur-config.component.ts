@@ -40,14 +40,14 @@ export class BurConfigComponent implements OnInit, OnDestroy {
       condition_index: new FormControl<number | null>(null, Validators.required),
       has_bas: new FormControl<number | null>(null, Validators.required),
     }),
-    total_eui_goal: new FormControl<number | null>(40),
-    ff_eui_goal: new FormControl<number | null>(20),
-    year_built_threshold: new FormControl<number | null>(2008),
-    fair_actual_to_benchmark_eui_ratio: new FormControl<number | null>(1.2),
-    poor_actual_to_benchmark_eui_ratio: new FormControl<number | null>(1.3),
-    building_sqft_threshold: new FormControl<number | null>(10000),
-    condition_index_threshold: new FormControl<number | null>(90),
-    ff_fired_equipment_rsl_threshold: new FormControl<number | null>(15),
+    total_eui_goal: new FormControl(40),
+    ff_eui_goal: new FormControl(20),
+    year_built_threshold: new FormControl(2008),
+    fair_actual_to_benchmark_eui_ratio: new FormControl(1.2),
+    poor_actual_to_benchmark_eui_ratio: new FormControl(1.3),
+    building_sqft_threshold: new FormControl(10000),
+    condition_index_threshold: new FormControl(90),
+    ff_fired_equipment_rsl_threshold: new FormControl(15),
   })
 
   ngOnInit(): void {

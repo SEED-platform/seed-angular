@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -12,7 +11,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-inventory-list-groups-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -34,7 +33,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
   existingNames = this.data.groups?.map((g) => g.name).filter((name) => name !== this.data.group?.name) ?? []
   form = new FormGroup({
-    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
     access_level: new FormControl<string | null>(null),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
   })

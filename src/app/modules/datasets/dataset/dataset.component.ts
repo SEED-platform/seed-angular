@@ -93,8 +93,8 @@ export class DatasetComponent implements OnDestroy, OnInit {
   }
 
   actionsRenderer({ data }: { data: ImportFile }) {
-    const enableMapping = !!(data.num_rows && data.cached_second_to_fifth_row)
-    const enablePairing = !!(data.num_rows && data.mapping_done && data.matching_done && data.cycle_name !== undefined)
+    const enableMapping = data.num_rows > 0 && data.cached_second_to_fifth_row.length > 0
+    const enablePairing = data.num_rows > 0 && data.mapping_done && data.matching_done && data.cycle_name !== undefined
 
     const mappingSpan = `<span class="inline-flex items-center gap-1 border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800 ${enableMapping ? 'cursor-pointer' : 'opacity-25'}" title="Data Mapping" ${enableMapping ? 'data-action="dataMapping"' : ''}>`
     const pairingSpan = `<span class="inline-flex items-center gap-1 border rounded-full h-8 mt-1 px-3 hover:bg-primary-800 ${enablePairing ? 'cursor-pointer' : 'opacity-25'}" title="Data Pairing" ${enablePairing ? 'data-action="dataPairing"' : ''}>`
@@ -113,10 +113,6 @@ export class DatasetComponent implements OnDestroy, OnInit {
         <span class="material-icons cursor-pointer text-secondary my-auto" title="Delete Dataset" data-action="delete">clear</span>
       </div>
     `
-  }
-
-  enableDataMapping(file: ImportFile) {
-    return !file.num_rows || !file.cached_second_to_fifth_row
   }
 
   onGridReady(agGrid: GridReadyEvent) {

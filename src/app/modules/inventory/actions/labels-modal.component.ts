@@ -36,10 +36,10 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[] }
 
   form = new FormGroup({
-    organization_id: new FormControl<number>(this.data.orgId),
+    organization_id: new FormControl(this.data.orgId),
     name: new FormControl<string>(null),
     color: new FormControl<LabelColor>('gray'),
-    show_in_list: new FormControl<boolean>(true),
+    show_in_list: new FormControl(true),
   })
 
   ngOnInit(): void {

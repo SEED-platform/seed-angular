@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -10,7 +9,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-better-config',
   templateUrl: './better-config.component.html',
-  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class BetterConfigComponent implements OnInit, OnDestroy {
   @Input() cycles: Cycle[]
@@ -22,14 +21,14 @@ export class BetterConfigComponent implements OnInit, OnDestroy {
   form = new FormGroup({
     benchmark_data_type: new FormControl<BenchmarkDataType>(null, [Validators.required]),
     cycle_id: new FormControl<number>(null),
-    enable_pvwatts: new FormControl<boolean>(false),
+    enable_pvwatts: new FormControl(false),
     meter: new FormGroup({
       start_date: new FormControl<string>(null),
       end_date: new FormControl<string>(null, SEEDValidators.afterDate('start_date')),
     }),
-    min_model_r_squared: new FormControl<number>(0.6, [Validators.required]),
-    preprocess_meters: new FormControl<boolean>(false),
-    portfolio_analysis: new FormControl<boolean>(false),
+    min_model_r_squared: new FormControl(0.6, [Validators.required]),
+    preprocess_meters: new FormControl(false),
+    portfolio_analysis: new FormControl(false),
     savings_target: new FormControl<SavingsTarget>(null, [Validators.required]),
     select_meters: new FormControl<SelectMetersType>('all', [Validators.required]),
   })

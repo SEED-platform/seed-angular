@@ -26,9 +26,9 @@ export class MockApiService {
     method: string,
     url: string,
   ): {
-      handler: MockApiHandler | undefined;
-      urlParams: Record<string, string>;
-    } {
+    handler: MockApiHandler | undefined;
+    urlParams: Record<string, string>;
+  } {
     // Prepare the return object
     const matchingHandler: {
       handler: MockApiHandler | undefined;

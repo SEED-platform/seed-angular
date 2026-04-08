@@ -22,10 +22,10 @@ export class EditModalComponent implements OnInit {
   from_fields: string[]
   form = new FormGroup({
     is_omitted: new FormControl<boolean | null>(null),
-    to_table_name: new FormControl<string>('', [Validators.required]),
-    to_field: new FormControl<string>('', []),
-    from_field: new FormControl<string>('', []),
-    from_units: new FormControl<string>(''),
+    to_table_name: new FormControl('', [Validators.required]),
+    to_field: new FormControl('', []),
+    from_field: new FormControl('', []),
+    from_units: new FormControl(''),
   })
   data = inject(MAT_DIALOG_DATA) as { mapping: ColumnMapping; org_id: number; columns: Column[]; profile: ColumnMappingProfile }
 

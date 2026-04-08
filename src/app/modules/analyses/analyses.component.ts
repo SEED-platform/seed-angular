@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { filter, Subject, tap } from 'rxjs'
@@ -9,7 +8,7 @@ import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/c
 @Component({
   selector: 'seed-analyses',
   templateUrl: './analyses.component.html',
-  imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent],
+  imports: [AnalysesGridComponent, NotFoundComponent, PageComponent],
 })
 export class AnalysesComponent implements AfterViewInit, OnDestroy {
   private _analysisService = inject(AnalysisService)
