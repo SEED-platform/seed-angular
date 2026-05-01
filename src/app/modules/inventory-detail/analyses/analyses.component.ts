@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
@@ -25,6 +25,7 @@ export class AnalysesComponent implements OnInit, OnDestroy {
   private _inventoryService = inject(InventoryService)
   private _route = inject(ActivatedRoute)
   private _dialog = inject(MatDialog)
+  private _cdr = inject(ChangeDetectorRef)
   private readonly _unsubscribeAll$ = new Subject<void>()
   analyses: Analysis[] = []
   cycles: Cycle[] = []
@@ -88,10 +89,8 @@ export class AnalysesComponent implements OnInit, OnDestroy {
         return this._analysisService.getPropertyAnalyses(id)
       }),
       tap((analyses) => {
-        setTimeout(() => {
-          // suppress ExpressionChangedAfterItHasBeenCheckedError
-          this.analyses = analyses
-        })
+        this.analyses = analyses
+        this._cdr.markForCheck()
       }),
     )
   }
