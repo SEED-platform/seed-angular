@@ -36,8 +36,10 @@ export class AnalysesGridComponent implements AfterViewInit, OnChanges {
   columnDefs: ColDef[] = []
 
   ngAfterViewInit(): void {
-    this._userService.currentUser$.subscribe((user) => {
+    this._userService.currentUser$.pipe(take(1)).subscribe((user) => {
       this.currentUser = user
+      this.setColumnDefs()
+      this.gridApi?.refreshCells({ force: true })
     })
     this._analysisService.pollStatuses(this.orgId)
   }
