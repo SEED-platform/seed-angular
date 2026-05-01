@@ -4,7 +4,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
-import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { filter, ReplaySubject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Analysis, CurrentUser, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
@@ -26,7 +26,7 @@ export class AnalysesComponent implements OnInit, OnDestroy {
   private _route = inject(ActivatedRoute)
   private _dialog = inject(MatDialog)
   private _cdr = inject(ChangeDetectorRef)
-  private readonly _unsubscribeAll$ = new Subject<void>()
+  private readonly _unsubscribeAll$ = new ReplaySubject<void>(1)
   analyses: Analysis[] = []
   cycles: Cycle[] = []
   currentUser: CurrentUser
