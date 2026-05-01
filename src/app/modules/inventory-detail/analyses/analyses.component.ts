@@ -63,6 +63,7 @@ export class AnalysesComponent implements OnInit, OnDestroy {
             this.watchAnalyses()
           })
         }),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }
