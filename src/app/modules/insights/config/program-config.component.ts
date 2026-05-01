@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -18,7 +17,7 @@ import type { Organization } from 'app/modules/organizations/organizations.types
 @Component({
   selector: 'seed-program-config',
   templateUrl: './program-config.component.html',
-  imports: [CommonModule, MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
 })
 export class ProgramConfigComponent implements OnInit, OnDestroy {
   private _dialogRef = inject(MatDialogRef<ProgramConfigComponent>)
@@ -49,10 +48,10 @@ export class ProgramConfigComponent implements OnInit, OnDestroy {
     actual_emission_column: new FormControl<number>(null),
     actual_energy_column: new FormControl<number>(null),
     cycles: new FormControl<number[]>([], Validators.required),
-    emission_metric_type: new FormControl<string>(''),
-    energy_metric_type: new FormControl<string>(''),
+    emission_metric_type: new FormControl(''),
+    energy_metric_type: new FormControl(''),
     filter_group: new FormControl<number | null>(null),
-    name: new FormControl<string>('', Validators.required),
+    name: new FormControl('', Validators.required),
     target_emission_column: new FormControl<number>(null),
     target_energy_column: new FormControl<number>(null),
     x_axis_columns: new FormControl<number[]>([], Validators.required),

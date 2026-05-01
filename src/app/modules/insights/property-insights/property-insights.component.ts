@@ -113,7 +113,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     accessLevel: new FormControl<string | null>(null),
     accessLevelInstanceId: new FormControl<number | null>(null),
     program: new FormControl<Program>(null),
-    annotationVisibility: new FormControl<boolean>(true),
+    annotationVisibility: new FormControl(true),
   })
 
   get cycleId() {
@@ -382,7 +382,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
     void this._router.navigate(segments)
   }
 
-  compareSelection = (a: { id: number }, b: { id: number }) => a && b && a.id === b.id
+  compareSelection = (a: { id: number }, b: { id: number }) => a?.id === b?.id
 
   evaluateProgram(aliId: number = null) {
     if (this.program?.organization_id !== this.org.id) {

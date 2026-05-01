@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { RouterModule } from '@angular/router'
@@ -16,7 +15,7 @@ import { ResultsComponent } from './results.component'
 @Component({
   selector: 'seed-match-merge',
   templateUrl: './match-merge.component.html',
-  imports: [CommonModule, MaterialImports, ProgressBarComponent, RouterModule, ResultsComponent],
+  imports: [MaterialImports, ProgressBarComponent, RouterModule, ResultsComponent],
 })
 export class MatchMergeComponent implements OnDestroy {
   @Input() datasetId: number

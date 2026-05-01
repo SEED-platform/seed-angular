@@ -38,7 +38,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   create = true
   data = inject(MAT_DIALOG_DATA) as { cycle: Cycle | null; orgId: number; existingNames: string[] }
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
+    name: new FormControl('', [
       Validators.required,
       SEEDValidators.uniqueValue(this.data.existingNames.filter((name) => name !== this.data.cycle?.name)),
     ]),

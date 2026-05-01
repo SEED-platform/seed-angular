@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
@@ -25,15 +24,7 @@ import { ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, In
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    ActionsComponent,
-    CommonModule,
-    ConfigSelectorComponent,
-    FilterSortChipsComponent,
-    InventoryGridComponent,
-    PageComponent,
-    SharedImports,
-  ],
+  imports: [ActionsComponent, ConfigSelectorComponent, FilterSortChipsComponent, InventoryGridComponent, PageComponent, SharedImports],
 })
 export class InventoryComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)

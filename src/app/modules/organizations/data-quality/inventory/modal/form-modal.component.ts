@@ -44,22 +44,22 @@ export class FormModalComponent implements OnDestroy, OnInit {
   form: DataQualityFormGroup = new FormGroup(
     {
       condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
-      cross_cycle: new FormControl<boolean>(false), // unused
+      cross_cycle: new FormControl(false), // unused
       data_type: new FormControl<number | null>(null, Validators.required),
-      enabled: new FormControl<boolean>(true),
+      enabled: new FormControl(true),
       field: new FormControl<string | null>(null, Validators.required),
-      for_derived_column: new FormControl<boolean>(false), // unused
+      for_derived_column: new FormControl(false), // unused
       id: new FormControl<number | null>(null), // hidden
       max: new FormControl<number | null>(null),
       min: new FormControl<number | null>(null),
-      not_null: new FormControl<boolean>(false),
-      required: new FormControl<boolean>(false),
+      not_null: new FormControl(false),
+      required: new FormControl(false),
       rule_type: new FormControl<number | null>(null),
       severity: new FormControl<number | null>(null, Validators.required),
       status_label: new FormControl<number | null>(null),
       table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
       text_match: new FormControl<string | null>(null),
-      units: new FormControl<string>(''),
+      units: new FormControl(''),
     },
     {
       validators: [

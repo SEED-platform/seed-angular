@@ -144,17 +144,17 @@ export class VerticalNavigationComponent implements OnChanges, OnInit, AfterView
       })
   }
 
-  @HostListener('mouseenter') private _onMouseenter(): void {
+  @HostListener('mouseenter') handleMouseEnter(): void {
     this._enableAnimations()
     this._hovered = true
   }
 
-  @HostListener('mouseleave') private _onMouseleave(): void {
+  @HostListener('mouseleave') handleMouseLeave(): void {
     this._enableAnimations()
     this._hovered = false
   }
 
-  @HostListener('window:resize') private _onResize() {
+  @HostListener('window:resize') handleResize(): void {
     this.checkScrollNeeded()
   }
 

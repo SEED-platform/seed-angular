@@ -25,7 +25,7 @@ export class CreateProfileComponent {
     existingNames: string[];
   }
   form = new FormGroup({
-    name: new FormControl<string>('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.data.existingNames)]),
   })
 
   onSubmit() {

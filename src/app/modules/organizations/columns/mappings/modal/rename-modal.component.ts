@@ -17,7 +17,7 @@ export class RenameModalComponent implements OnInit {
   inProgress = false
   profile: ColumnMappingProfile
   form = new FormGroup({
-    name: new FormControl<string>('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
   })
   data = inject(MAT_DIALOG_DATA) as { profile: ColumnMappingProfile; org_id: number }
 

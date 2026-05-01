@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
@@ -12,7 +11,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-edit-state',
   templateUrl: './edit-state.component.html',
-  imports: [CommonModule, MaterialImports, ReactiveFormsModule],
+  imports: [MaterialImports, ReactiveFormsModule],
 })
 export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)

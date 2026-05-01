@@ -27,9 +27,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
   accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
   roles = ['owner', 'member', 'viewer']
   form = new FormGroup({
-    first_name: new FormControl<string | null>('', Validators.required),
-    last_name: new FormControl<string | null>('', Validators.required),
-    email: new FormControl<string | null>('', [Validators.required, Validators.email]),
+    first_name: new FormControl('', Validators.required),
+    last_name: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
     access_level: new FormControl<string | null>(null, Validators.required),
     access_level_instance_id: new FormControl<number | null>(null, Validators.required),
     role: new FormControl<UserRole | null>('member', Validators.required),
