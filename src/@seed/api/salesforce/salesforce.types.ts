@@ -49,6 +49,43 @@ export type SalesforceMapping = {
   salesforce_fieldname: string;
 }
 
+export type BbSalesforceConfig = {
+  id: number;
+  organization_id: number;
+  salesforce_url: string;
+  client_id: string;
+  client_secret: string;
+}
+
+export type BbSalesforceConfigResponse = {
+  status: string;
+  bb_salesforce_config: BbSalesforceConfig;
+}
+
+export type BbSalesforceConfigsResponse = {
+  status: string;
+  bb_salesforce_configs: BbSalesforceConfig[];
+}
+
+export type BbSalesforceLoginUrlResponse = {
+  status: string;
+  url?: string;
+  response?: string;
+}
+
+export type BbSalesforceTokenResponse = {
+  status: string;
+  response?: string;
+}
+
+export type BbSalesforceVerifyTokenResponse = {
+  valid: boolean;
+}
+
+export type BbSalesforceLogoutResponse = {
+  status: string;
+}
+
 export type SalesforceMappingDeleteResponse = {
   status: string;
   message: string;
