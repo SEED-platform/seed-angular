@@ -33,7 +33,15 @@ export type AnalysisCreateData = {
   access_level_instance_id: number;
 }
 
-export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation'
+export type AnalysisServiceType
+  = | 'BSyncr'
+    | 'BETTER'
+    | 'EUI'
+    | 'CO2'
+    | 'EEEJ'
+    | 'Element Statistics'
+    | 'Building Upgrade Recommendation'
+    | 'HVAC Metrics'
 
 // Analysis by View type
 export type View = {

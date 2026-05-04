@@ -9,7 +9,7 @@ import { AnalysisService, CycleService, UserService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
-import { BetterConfigComponent, BurConfigComponent, SimpleConfigComponent } from './analysis-config'
+import { BetterConfigComponent, BurConfigComponent, HvacConfigComponent, SimpleConfigComponent } from './analysis-config'
 
 @Component({
   selector: 'seed-analysis-run-modal',
@@ -18,6 +18,7 @@ import { BetterConfigComponent, BurConfigComponent, SimpleConfigComponent } from
     BetterConfigComponent,
     BurConfigComponent,
     FormsModule,
+    HvacConfigComponent,
     MaterialImports,
     ModalHeaderComponent,
     ReactiveFormsModule,
@@ -46,6 +47,7 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
     { value: 'Element Statistics', display: 'Element Statistics' },
     { value: 'EEEJ', display: 'Energy Equity & Environmental Justice (EEEJ)' },
     { value: 'EUI', display: 'EUI' },
+    { value: 'HVAC Metrics', display: 'HVAC Metrics' },
   ]
 
   existingNames: string[] = []
