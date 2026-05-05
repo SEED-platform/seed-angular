@@ -23,12 +23,24 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     return next(req)
   }
 
+  // Read CSRF token from cookie for mutating requests
+  let headers = req.headers
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+    const csrfToken = document.cookie
+      .split('; ')
+      .find((c) => c.startsWith('csrftoken='))
+      ?.split('=')[1]
+    if (csrfToken) {
+      headers = headers.set('X-CSRFToken', csrfToken)
+    }
+  }
+
   // First refresh the token if necessary
   return authService.isAuthenticated().pipe(
     switchMap((isAuthenticated) => {
       if (isAuthenticated) {
         const newReq = req.clone({
-          headers: req.headers.set('Authorization', `Bearer ${authService.accessToken}`),
+          headers: headers.set('Authorization', `Bearer ${authService.accessToken}`),
         })
 
         return next(newReq).pipe(
@@ -38,7 +50,8 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
         )
       } else {
         // Unauthenticated API request
-        return next(req).pipe(
+        const newReq = req.clone({ headers })
+        return next(newReq).pipe(
           catchError((error) => {
             // Handle "401 Unauthorized" responses (except on sign-in page)
             if (error instanceof HttpErrorResponse && error.status === 401 && currentPath(router) !== 'sign-in') {
