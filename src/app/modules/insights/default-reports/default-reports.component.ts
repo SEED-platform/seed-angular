@@ -536,14 +536,14 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
     this.currentConfig = this.reportConfigurations.find((c) => c.id === configId) ?? null
     if (!this.currentConfig) return
 
-    const accessLevelIndex = (this.currentConfig.access_level_depth ?? 0) - Math.max(0, this._usersDepth - 1)
+    const accessLevelIndex = Math.max(0, (this.currentConfig.access_level_depth ?? 0) - this._usersDepth)
 
     this.form.patchValue(
       {
         xAxis: this.currentConfig.x_column,
         yAxis: this.currentConfig.y_column,
         cycles: this.currentConfig.cycles ?? [],
-        accessLevelIndex: Math.max(0, accessLevelIndex),
+        accessLevelIndex,
         accessLevelInstanceId: this.currentConfig.access_level_instance_id,
         filterGroupId: this.currentConfig.filter_group_id,
       },
@@ -563,7 +563,7 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
       x_column: xAxis,
       y_column: yAxis,
       access_level_instance_id: accessLevelInstanceId,
-      access_level_depth: accessLevelIndex,
+      access_level_depth: (accessLevelIndex ?? 0) + this._usersDepth,
       cycles: cycles ?? [],
       filter_group_id: filterGroupId,
     }
@@ -585,7 +585,7 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
       x_column: xAxis,
       y_column: yAxis,
       access_level_instance_id: accessLevelInstanceId,
-      access_level_depth: accessLevelIndex,
+      access_level_depth: (accessLevelIndex ?? 0) + this._usersDepth,
       cycles: cycles ?? [],
       filter_group_id: filterGroupId,
     }
