@@ -193,8 +193,7 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
 
   appendAccessLevelAxis() {
     const index = this.form.value.accessLevelIndex ?? 0
-    const depth = index + this._usersDepth
-    const groupByLevel = this.levelNames[depth] ?? this.levelNames[this.levelNames.length - 1]
+    const groupByLevel = this.levelNames[index] ?? this.levelNames[this.levelNames.length - 1]
     if (!groupByLevel) return
 
     // Remove previous access-level axis if present
