@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { Router, RouterLink } from '@angular/router'
 import { Chart } from 'chart.js'
-import { combineLatest, filter, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, finalize, Subject, take, takeUntil, tap } from 'rxjs'
 import type {
   AccessLevelsByDepth,
   AggregatedChartPoint,
@@ -381,6 +381,9 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
       .getReportData(this.org.id, xAxis, yAxis, cycles, accessLevelInstanceId, filterGroupId)
       .pipe(
         take(1),
+        finalize(() => {
+          this.scatterLoading = false
+        }),
         tap((data) => {
           const colorMap = this.mapColors(data.property_counts)
           this.scatterPropertyCounts = data.property_counts
@@ -401,11 +404,10 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
               this.scatterChart.options.scales.x.ticks = { callback: (value) => String(value) }
             }
           } else {
+            const uniqueLabels = [...new Set(data.chart_data.map((d) => String(d.x)))].sort()
             this.scatterChart.options.scales.x = {
               type: 'category',
-              labels: Object.entries(this.orderByX)
-                .sort(([, a], [, b]) => a - b)
-                .map(([k]) => k),
+              labels: uniqueLabels,
               title: { display: true, text: this.getSelectedAxisVar('x')?.axisLabel ?? '' },
             }
           }
@@ -430,9 +432,6 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
         error: () => {
           this.scatterStatusMessage = 'Data Load Error'
         },
-        complete: () => {
-          this.scatterLoading = false
-        },
       })
   }
 
@@ -453,8 +452,10 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
       .getAggregatedReportData(this.org.id, yAxis, xAxis, cycles, accessLevelInstanceId, filterGroupId, aggregationType ?? 'Sum')
       .pipe(
         take(1),
+        finalize(() => {
+          this.aggLoading = false
+        }),
         tap((data) => {
-          // Sort categorical data
           const isCategory = data.chart_data.every((d) => typeof d.y === 'number') ? 'linear' : 'category'
           if (isCategory === 'category') {
             const mostRecentYearEnd = Math.max(...data.chart_data.map((d) => Number(d.yr_e)))
@@ -490,9 +491,6 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
       .subscribe({
         error: () => {
           this.aggStatusMessage = 'Data Load Error'
-        },
-        complete: () => {
-          this.aggLoading = false
         },
       })
   }
