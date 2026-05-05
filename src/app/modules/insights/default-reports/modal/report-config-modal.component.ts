@@ -22,10 +22,7 @@ export class ReportConfigModalComponent {
     orgId: number;
   }
 
-  nameControl = new FormControl(
-    this.data.action === 'rename' ? (this.data.config?.name ?? '') : '',
-    Validators.required,
-  )
+  nameControl = new FormControl(this.data.action === 'rename' ? (this.data.config?.name ?? '') : '', Validators.required)
   submitting = false
 
   get title() {

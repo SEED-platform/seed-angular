@@ -16,13 +16,31 @@
 
       @if (isOwner) {
         <div class="flex gap-1">
-          <button [disabled]="!currentConfig?.id || !reportModified" (click)="saveReportConfig()" mat-icon-button title="Save" aria-label="Save">
+          <button
+            [disabled]="!currentConfig?.id || !reportModified"
+            (click)="saveReportConfig()"
+            mat-icon-button
+            title="Save"
+            aria-label="Save"
+          >
             <mat-icon class="scale-75" svgIcon="fa-solid:floppy-disk"></mat-icon>
           </button>
-          <button [disabled]="!currentConfig || currentConfig.id === null" (click)="renameConfig()" mat-icon-button title="Rename" aria-label="Rename">
+          <button
+            [disabled]="!currentConfig || currentConfig.id === null"
+            (click)="renameConfig()"
+            mat-icon-button
+            title="Rename"
+            aria-label="Rename"
+          >
             <mat-icon class="scale-75" svgIcon="fa-solid:pen"></mat-icon>
           </button>
-          <button [disabled]="!currentConfig || currentConfig.id === null" (click)="deleteConfig()" mat-icon-button title="Delete" aria-label="Delete">
+          <button
+            [disabled]="!currentConfig || currentConfig.id === null"
+            (click)="deleteConfig()"
+            mat-icon-button
+            title="Delete"
+            aria-label="Delete"
+          >
             <mat-icon class="scale-75 text-red-500" svgIcon="fa-solid:trash"></mat-icon>
           </button>
           <button (click)="newConfig()" mat-icon-button title="New" aria-label="New">
