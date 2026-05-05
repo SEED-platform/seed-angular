@@ -9,7 +9,7 @@ import { Chart } from 'chart.js'
 import { combineLatest, filter, merge, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser, Cycle, FilterGroup, Organization, Program, ProgramData } from '@seed/api'
 import { ColumnService, CycleService, FilterGroupService, OrganizationService, ProgramService, UserService } from '@seed/api'
-import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
+import { PageComponent, ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
@@ -18,10 +18,10 @@ import { ProgramConfigComponent } from '../config'
 @Component({
   selector: 'seed-program-overview',
   templateUrl: './program-overview.component.html',
-  imports: [CommonModule, MaterialImports, PageComponent, ProgressBarComponent, NotFoundComponent],
+  imports: [CommonModule, MaterialImports, PageComponent, ProgressBarComponent],
 })
 export class ProgramOverviewComponent implements OnDestroy, OnInit {
-  @ViewChild('programOverviewChart', { static: true }) canvas!: ElementRef<HTMLCanvasElement>
+  @ViewChild('programOverviewChart') canvas!: ElementRef<HTMLCanvasElement>
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _cycleService = inject(CycleService)
@@ -61,8 +61,6 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
   initProgram() {
     this._reset$.next()
     this.getDependencies()
-    this.initChart()
-    this.setScheme()
   }
 
   getDependencies() {
@@ -112,6 +110,8 @@ export class ProgramOverviewComponent implements OnDestroy, OnInit {
     return this._programService.evaluate(this.org.id, this.program.id).pipe(
       tap((data) => {
         this.data = data
+        this.initChart()
+        this.setScheme()
         this.setDatasets()
         this.loading = false
         this.setChartName(this.program)
