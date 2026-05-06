@@ -81,7 +81,7 @@ export class ReportConfigurationService {
 
   delete(orgId: number, id: number): Observable<unknown> {
     const url = `/api/v3/report_configurations/${id}/?organization_id=${orgId}`
-    return this._httpClient.delete<unknown>(url).pipe(
+    return this._httpClient.delete(url, { observe: 'response' }).pipe(
       tap(() => {
         this.list(orgId)
         this._snackBar.success('Deleted report configuration')
