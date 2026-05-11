@@ -127,7 +127,7 @@
         </div>
       }
       <!-- Chart -->
-      <div class="mx-5 flex w-full flex-1 flex-col gap-2">
+      <div class="mx-5 flex w-full flex-1 flex-col gap-2" [class.hidden]="!program">
         <div class="graph mx-auto flex w-[90%] justify-center">
           <canvas #propertyInsightsChart></canvas>
         </div>
@@ -135,6 +135,7 @@
     </div>
 
     <!-- Data Table -->
+    @if (program) {
     <div>
       <mat-divider></mat-divider>
       <div class="flex items-end justify-between">
@@ -196,8 +197,9 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
+    }
 
-    @if (loading) {
+    @if (loading && program) {
       <div class="absolute top-20 w-full">
         <seed-progress-bar [outline]="true" title="Loading Program..."></seed-progress-bar>
       </div>

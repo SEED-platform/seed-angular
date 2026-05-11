@@ -54,14 +54,12 @@
     <mat-divider></mat-divider>
 
     <!-- Chart -->
-    <div class="m-2">
-      @if (program) {
-        <div class="flex">
-          <div class="flex flex-1 items-center justify-center gap-2 text-lg font-bold">
-            <mat-icon svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}
-          </div>
+    <div class="m-2" [hidden]="!program">
+      <div class="flex">
+        <div class="flex flex-1 items-center justify-center gap-2 text-lg font-bold">
+          <mat-icon svgIcon="fa-solid:chart-column"></mat-icon>{{ chartName | titlecase }}
         </div>
-      }
+      </div>
       <div class="graph mx-[5vw] h-[calc(100vh-400px)]">
         <canvas #programOverviewChart></canvas>
       </div>
