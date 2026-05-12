@@ -44,6 +44,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
+  private _currentRouteId: number | null = null
+  private _isRouteParamMapSubscribed = false
+  private _currentScheme = 'light'
 
   readonly aggregations: Aggregation[] = [
     { id: 1, name: 'Average' },
@@ -159,6 +162,13 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   // --- Lifecycle ---
 
   ngOnInit(): void {
+    this._configService.scheme$
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((scheme) => {
+        this._currentScheme = scheme
+        this._applyScheme()
+      })
+
     combineLatest([
       this._userService.auth$,
       this._customReportService.customReports$,
@@ -491,9 +501,6 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     this.secondAxisAggregations = []
   }
 
-  private _currentRouteId: number | null = null
-  private _isRouteParamMapSubscribed = false
-
   private _initData(): void {
     if (!this._isRouteParamMapSubscribed) {
       this._isRouteParamMapSubscribed = true
@@ -640,17 +647,13 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _applyScheme(): void {
-    this._configService.scheme$
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe((scheme) => {
-        if (!this.chart) return
-        const gridColor = scheme === 'light' ? '#0000001a' : '#ffffff2b'
-        const scales = this.chart.options.scales ?? {}
-        if (scales.y1) scales.y1.grid = { color: gridColor }
-        if (scales.y2) scales.y2.grid = { color: gridColor }
-        if (scales.x) scales.x.grid = { color: gridColor }
-        this.chart.update()
-      })
+    if (!this.chart) return
+    const gridColor = this._currentScheme === 'light' ? '#0000001a' : '#ffffff2b'
+    const scales = this.chart.options.scales ?? {}
+    if (scales.y1) scales.y1.grid = { color: gridColor }
+    if (scales.y2) scales.y2.grid = { color: gridColor }
+    if (scales.x) scales.x.grid = { color: gridColor }
+    this.chart.update()
   }
 
   private _assignDatasets(): void {
