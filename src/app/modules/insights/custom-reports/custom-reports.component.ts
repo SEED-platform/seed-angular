@@ -681,7 +681,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     if (axis1Column) {
       for (const aggregation of axis1Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
+          const escapedColumn = ds.column.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (aggregation === ds.aggregation && columnPattern.test(axis1Column) && (noFilterGroups || ds.filter_group in this.selectedFilterGroups)) {
             const color = this.colorsByLabelPrefix[`${ds.filter_group} - ${ds.aggregation}`]
             datasets.push({
