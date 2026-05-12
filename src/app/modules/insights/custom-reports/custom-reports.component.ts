@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { Chart } from 'chart.js'
-import { combineLatest, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, finalize, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, CustomReport, CustomReportEvaluateResponse, Cycle, FilterGroup, SimpleCartesianScale, UserAuth } from '@seed/api'
 import { ColumnService, CustomReportService, CycleService, FilterGroupService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
@@ -319,6 +319,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
             this._loadData()
             this.editing = false
           }
+        }),
+        finalize(() => {
           this.loading = false
         }),
         takeUntil(this._unsubscribeAll$),
@@ -349,6 +351,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
             if (this.selectedReport?.id === report.id) {
               void this._router.navigate(['/insights/custom-reports'])
             }
+          }),
+          finalize(() => {
             this.loading = false
           }),
           takeUntil(this._unsubscribeAll$),
@@ -583,10 +587,12 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
         take(1),
         tap((data) => {
           this.evaluateData = data
-          this.loading = false
           setTimeout(() => {
             this._buildChart()
           }, 0)
+        }),
+        finalize(() => {
+          this.loading = false
         }),
         takeUntil(this._unsubscribeAll$),
       )
