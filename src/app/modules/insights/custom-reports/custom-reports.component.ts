@@ -491,8 +491,24 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     this.secondAxisAggregations = []
   }
 
+  private _currentRouteId: number | null = null
+  private _isRouteParamMapSubscribed = false
+
   private _initData(): void {
-    const routeId = Number(this._route.snapshot.paramMap.get('id'))
+    if (!this._isRouteParamMapSubscribed) {
+      this._isRouteParamMapSubscribed = true
+      this._route.paramMap.subscribe((paramMap) => {
+        const routeId = Number(paramMap.get('id'))
+        if (routeId !== this._currentRouteId) {
+          this._currentRouteId = routeId
+          this._initData()
+          this._loadData()
+        }
+      })
+    }
+
+    const routeId = this._currentRouteId ?? Number(this._route.snapshot.paramMap.get('id'))
+    this._currentRouteId = routeId
     this.selectedReport = routeId ? this.customReports.find((r) => r.id === routeId) ?? null : null
 
     if (this.selectedReport) {
