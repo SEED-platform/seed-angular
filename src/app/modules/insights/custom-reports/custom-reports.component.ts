@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { Chart } from 'chart.js'
-import { combineLatest, finalize, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, finalize, skip, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, CustomReport, CustomReportEvaluateResponse, Cycle, FilterGroup, SimpleCartesianScale, UserAuth } from '@seed/api'
 import { ColumnService, CustomReportService, CycleService, FilterGroupService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
@@ -60,8 +60,6 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
-  private _currentRouteId: number | null = null
-  private _isRouteParamMapSubscribed = false
   private _currentScheme = 'light'
 
   readonly aggregations: Aggregation[] = [
@@ -78,6 +76,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   editing = false
   showConfig = true
   createErrors: string[] = []
+  private _initializing = false
 
   // Data
   customReports: CustomReport[] = []
@@ -205,10 +204,27 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
           this.columnsById = Object.fromEntries([...propertyCols, ...taxLotCols].map((c) => [c.id, c]))
           this._buildColorMap()
           this._initFields()
+          this._initializing = true
           this._initData()
+          this._initializing = false
           this._loadData()
         }),
         takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
+
+    this._route.paramMap
+      .pipe(
+        skip(1),
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this.editing = false
+          this._initFields()
+          this._initializing = true
+          this._initData()
+          this._initializing = false
+          this._loadData()
+        }),
       )
       .subscribe()
   }
@@ -239,6 +255,12 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   clickEdit(): void {
     if (!this.selectedReport) return
     this.fields.name = this.selectedReport.name
+    for (const cycleId of Object.keys(this.fields.cycleCheckboxes)) {
+      this.fields.cycleCheckboxes[Number(cycleId)] = false
+    }
+    for (const filterGroupId of Object.keys(this.fields.filterGroupCheckboxes)) {
+      this.fields.filterGroupCheckboxes[Number(filterGroupId)] = false
+    }
     for (const cycleId of this.selectedReport.cycles) {
       this.fields.cycleCheckboxes[cycleId] = true
     }
@@ -252,7 +274,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     this.selectedReport = null
     this.createErrors = []
     this._initFields()
+    this._initializing = true
     this._initData()
+    this._initializing = false
     this.editing = false
   }
 
@@ -327,7 +351,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
             this.customReports = this.customReports.map((r) => (r.id === data_view.id ? data_view : r))
             this.selectedReport = data_view
             this._initFields()
+            this._initializing = true
             this._initData()
+            this._initializing = false
             this._loadData()
             this.editing = false
           }
@@ -409,7 +435,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       aggregations.push(aggregationId)
     }
     if (this.chart) {
-      if (!this.editing) {
+      if (!this.editing && !this._initializing) {
         this.clickEdit()
       }
       this._assignDatasets()
@@ -433,7 +459,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
     if (reloadData && this.selectedReport?.id) {
       this._loadData()
-      if (!this.editing) {
+      if (!this.editing && !this._initializing) {
         this.clickEdit()
       }
     }
@@ -518,20 +544,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _initData(): void {
-    if (!this._isRouteParamMapSubscribed) {
-      this._isRouteParamMapSubscribed = true
-      this._route.paramMap.subscribe((paramMap) => {
-        const routeId = Number(paramMap.get('id'))
-        if (routeId !== this._currentRouteId) {
-          this._currentRouteId = routeId
-          this._initData()
-          this._loadData()
-        }
-      })
-    }
-
-    const routeId = this._currentRouteId ?? Number(this._route.snapshot.paramMap.get('id'))
-    this._currentRouteId = routeId
+    const routeId = Number(this._route.snapshot.paramMap.get('id'))
     this.selectedReport = routeId ? (this.customReports.find((r) => r.id === routeId) ?? null) : null
 
     if (this.selectedReport) {
@@ -695,7 +708,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     if (axis1Column) {
       for (const aggregation of axis1Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const escapedColumn = ds.column.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const escapedColumn = this._escapeRegexValue(ds.column)
           const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (
             aggregation === ds.aggregation
@@ -727,7 +740,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
       for (const aggregation of axis2Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
+          const escapedColumn = this._escapeRegexValue(ds.column)
+          const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (
             aggregation === ds.aggregation
             && columnPattern.test(axis2Column)
@@ -764,5 +778,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       if (titlePlugin) titlePlugin.text = `Selected Configuration: ${this.selectedReport.name}`
     }
     this.chart.update()
+  }
+
+  private _escapeRegexValue(value: string): string {
+    return value.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&')
   }
 }

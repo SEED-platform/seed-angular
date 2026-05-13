@@ -10,7 +10,13 @@ Chart.register(zoomPlugin)
 Chart.register({
   id: 'customCanvasBackgroundColor',
   beforeDraw(chart, _args, options) {
-    const color = typeof options === 'string' ? options : typeof options?.color === 'string' ? options.color : undefined
+    let color: string | undefined
+
+    if (typeof options === 'string') {
+      color = options
+    } else if (typeof options?.color === 'string') {
+      color = options.color
+    }
 
     if (!color) {
       return
