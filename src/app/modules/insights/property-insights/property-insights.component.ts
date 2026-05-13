@@ -212,6 +212,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
             ? this.programs.find((p) => p.id === this.programId)
             : this.programs.find((p) => p.id === savedProgramId)
           if (!this.program) {
+            this.loading = false
             if (!hasRouteProgramId && this.programs.length) {
               this.programChange(this.programs[0])
             }

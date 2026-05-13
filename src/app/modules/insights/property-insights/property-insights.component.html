@@ -127,7 +127,7 @@
         </div>
       }
       <!-- Chart -->
-      <div class="mx-5 flex w-full flex-1 flex-col gap-2">
+      <div class="mx-5 flex w-full flex-1 flex-col gap-2" [class.hidden]="!program">
         <div class="graph mx-auto flex w-[90%] justify-center">
           <canvas #propertyInsightsChart></canvas>
         </div>
@@ -135,69 +135,71 @@
     </div>
 
     <!-- Data Table -->
-    <div>
-      <mat-divider></mat-divider>
-      <div class="flex items-end justify-between">
-        <div class="m-4 flex items-center text-lg font-medium">
-          <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
-          <span class="ml-4">Data Table</span>
+    @if (program) {
+      <div>
+        <mat-divider></mat-divider>
+        <div class="flex items-end justify-between">
+          <div class="m-4 flex items-center text-lg font-medium">
+            <mat-icon svgIcon="fa-solid:layer-group"></mat-icon>
+            <span class="ml-4">Data Table</span>
+          </div>
+          <span class="text-secondary mx-2 text-sm italic">Click to expand</span>
         </div>
-        <span class="text-secondary mx-2 text-sm italic">Click to expand</span>
+
+        <mat-accordion class="accordion-sub-tables" multi>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Compliant:</mat-panel-title>
+              <mat-panel-description>{{ results.y }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData.compliant"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Non-Compliant:</mat-panel-title>
+              <mat-panel-description>{{ results.n }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData['non-compliant']"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Unknown:</mat-panel-title>
+              <mat-panel-description>{{ results.u }}</mat-panel-description>
+            </mat-expansion-panel-header>
+            <ag-grid-angular
+              [columnDefs]="colDefs"
+              [rowData]="rowData.unknown"
+              [theme]="gridTheme$ | async"
+              [domLayout]="'autoHeight'"
+              [gridOptions]="gridOptions"
+              [pagination]="true"
+              [paginationPageSize]="100"
+              (rowClicked)="onRowClicked($event)"
+            ></ag-grid-angular>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
+    }
 
-      <mat-accordion class="accordion-sub-tables" multi>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Compliant:</mat-panel-title>
-            <mat-panel-description>{{ results.y }}</mat-panel-description>
-          </mat-expansion-panel-header>
-          <ag-grid-angular
-            [columnDefs]="colDefs"
-            [rowData]="rowData.compliant"
-            [theme]="gridTheme$ | async"
-            [domLayout]="'autoHeight'"
-            [gridOptions]="gridOptions"
-            [pagination]="true"
-            [paginationPageSize]="100"
-            (rowClicked)="onRowClicked($event)"
-          ></ag-grid-angular>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Non-Compliant:</mat-panel-title>
-            <mat-panel-description>{{ results.n }}</mat-panel-description>
-          </mat-expansion-panel-header>
-          <ag-grid-angular
-            [columnDefs]="colDefs"
-            [rowData]="rowData['non-compliant']"
-            [theme]="gridTheme$ | async"
-            [domLayout]="'autoHeight'"
-            [gridOptions]="gridOptions"
-            [pagination]="true"
-            [paginationPageSize]="100"
-            (rowClicked)="onRowClicked($event)"
-          ></ag-grid-angular>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Unknown:</mat-panel-title>
-            <mat-panel-description>{{ results.u }}</mat-panel-description>
-          </mat-expansion-panel-header>
-          <ag-grid-angular
-            [columnDefs]="colDefs"
-            [rowData]="rowData.unknown"
-            [theme]="gridTheme$ | async"
-            [domLayout]="'autoHeight'"
-            [gridOptions]="gridOptions"
-            [pagination]="true"
-            [paginationPageSize]="100"
-            (rowClicked)="onRowClicked($event)"
-          ></ag-grid-angular>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </div>
-
-    @if (loading) {
+    @if (loading && program) {
       <div class="absolute top-20 w-full">
         <seed-progress-bar [outline]="true" title="Loading Program..."></seed-progress-bar>
       </div>

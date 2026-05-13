@@ -14,6 +14,11 @@ export default [
     component: CustomReportsComponent,
   },
   {
+    path: 'custom-reports/:id',
+    title: 'Custom Reports',
+    component: CustomReportsComponent,
+  },
+  {
     path: 'default-reports',
     title: 'Default Reports',
     component: DefaultReportsComponent,
