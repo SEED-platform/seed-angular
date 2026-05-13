@@ -765,6 +765,6 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _escapeRegexValue(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&')
+    return value.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&')
   }
 }
