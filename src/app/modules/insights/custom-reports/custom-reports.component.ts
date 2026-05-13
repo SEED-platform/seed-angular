@@ -520,7 +520,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   private _initData(): void {
     if (!this._isRouteParamMapSubscribed) {
       this._isRouteParamMapSubscribed = true
-      this._route.paramMap.subscribe((paramMap) => {
+      this._route.paramMap.pipe(takeUntil(this._unsubscribeAll$)).subscribe((paramMap) => {
         const routeId = Number(paramMap.get('id'))
         if (routeId !== this._currentRouteId) {
           this._currentRouteId = routeId
@@ -695,7 +695,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     if (axis1Column) {
       for (const aggregation of axis1Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const escapedColumn = ds.column.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const escapedColumn = this._escapeRegexValue(ds.column)
           const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (
             aggregation === ds.aggregation
@@ -727,7 +727,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
       for (const aggregation of axis2Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
+          const escapedColumn = this._escapeRegexValue(ds.column)
+          const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (
             aggregation === ds.aggregation
             && columnPattern.test(axis2Column)
@@ -764,5 +765,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       if (titlePlugin) titlePlugin.text = `Selected Configuration: ${this.selectedReport.name}`
     }
     this.chart.update()
+  }
+
+  private _escapeRegexValue(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   }
 }
