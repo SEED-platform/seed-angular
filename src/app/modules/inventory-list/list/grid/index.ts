@@ -1,5 +1,6 @@
 export * from './actions.component'
 export * from './cell-header-menu.component'
+export * from './filter-group'
 export * from './filter-sort-chips.component'
 export * from './grid-controls.component'
 export * from './grid.component'

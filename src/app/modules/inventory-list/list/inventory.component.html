@@ -11,7 +11,7 @@
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-2">
     <!-- GRID CONFIG -->
-    <div class="m-2 flex">
+    <div class="relative m-2 flex items-start">
       <!-- Actions -->
       <seed-inventory-grid-actions
         [cycleId]="cycleId"
@@ -39,6 +39,19 @@
         label="Profile"
       >
       </seed-inventory-grid-config-selector>
+
+      <!-- Filter Groups -->
+      @if (gridApi) {
+        <seed-filter-group-selector
+          [currentUser]="currentUser"
+          [gridApi]="gridApi"
+          [inventoryType]="filterGroupInventoryType"
+          [labels]="labels"
+          [orgId]="orgId"
+          (filterGroupApplied)="onFilterGroupApplied($event)"
+          (labelSelectionsChanged)="onLabelSelectionsChanged($event)"
+        ></seed-filter-group-selector>
+      }
     </div>
 
     <!-- Filter and Sort chips -->
