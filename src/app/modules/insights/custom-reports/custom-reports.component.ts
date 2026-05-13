@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { Chart } from 'chart.js'
-import { combineLatest, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, finalize, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, CustomReport, CustomReportEvaluateResponse, Cycle, FilterGroup, SimpleCartesianScale, UserAuth } from '@seed/api'
 import { ColumnService, CustomReportService, CycleService, FilterGroupService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
@@ -60,6 +60,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
+  private _currentRouteId: number | null = null
+  private _isRouteParamMapSubscribed = false
+  private _currentScheme = 'light'
 
   readonly aggregations: Aggregation[] = [
     { id: 1, name: 'Average' },
@@ -175,6 +178,11 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   // --- Lifecycle ---
 
   ngOnInit(): void {
+    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+      this._currentScheme = scheme
+      this._applyScheme()
+    })
+
     combineLatest([
       this._userService.auth$,
       this._customReportService.customReports$,
@@ -323,6 +331,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
             this._loadData()
             this.editing = false
           }
+        }),
+        finalize(() => {
           this.loading = false
         }),
         takeUntil(this._unsubscribeAll$),
@@ -356,6 +366,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
               if (this.selectedReport?.id === report.id) {
                 void this._router.navigate(['/insights/custom-reports'])
               }
+            }),
+            finalize(() => {
               this.loading = false
             }),
             takeUntil(this._unsubscribeAll$),
@@ -506,7 +518,20 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _initData(): void {
-    const routeId = Number(this._route.snapshot.paramMap.get('id'))
+    if (!this._isRouteParamMapSubscribed) {
+      this._isRouteParamMapSubscribed = true
+      this._route.paramMap.subscribe((paramMap) => {
+        const routeId = Number(paramMap.get('id'))
+        if (routeId !== this._currentRouteId) {
+          this._currentRouteId = routeId
+          this._initData()
+          this._loadData()
+        }
+      })
+    }
+
+    const routeId = this._currentRouteId ?? Number(this._route.snapshot.paramMap.get('id'))
+    this._currentRouteId = routeId
     this.selectedReport = routeId ? (this.customReports.find((r) => r.id === routeId) ?? null) : null
 
     if (this.selectedReport) {
@@ -574,10 +599,12 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
         take(1),
         tap((data) => {
           this.evaluateData = data
-          this.loading = false
           setTimeout(() => {
             this._buildChart()
           }, 0)
+        }),
+        finalize(() => {
+          this.loading = false
         }),
         takeUntil(this._unsubscribeAll$),
       )
@@ -638,15 +665,13 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _applyScheme(): void {
-    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
-      if (!this.chart) return
-      const gridColor = scheme === 'light' ? '#0000001a' : '#ffffff2b'
-      const scales = this.chart.options.scales ?? {}
-      if (scales.y1) scales.y1.grid = { color: gridColor }
-      if (scales.y2) scales.y2.grid = { color: gridColor }
-      if (scales.x) scales.x.grid = { color: gridColor }
-      this.chart.update()
-    })
+    if (!this.chart) return
+    const gridColor = this._currentScheme === 'light' ? '#0000001a' : '#ffffff2b'
+    const scales = this.chart.options.scales ?? {}
+    if (scales.y1) scales.y1.grid = { color: gridColor }
+    if (scales.y2) scales.y2.grid = { color: gridColor }
+    if (scales.x) scales.x.grid = { color: gridColor }
+    this.chart.update()
   }
 
   private _assignDatasets(): void {
@@ -670,7 +695,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     if (axis1Column) {
       for (const aggregation of axis1Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
-          const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
+          const escapedColumn = ds.column.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const columnPattern = new RegExp(`^${escapedColumn}( \\(.+?\\))?$`)
           if (
             aggregation === ds.aggregation
             && columnPattern.test(axis1Column)
