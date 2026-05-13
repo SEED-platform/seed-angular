@@ -18,10 +18,26 @@ type AxisLocation = 'first_axis' | 'second_axis'
 const VALID_DATA_TYPES = ['number', 'float', 'integer', 'area', 'eui', 'ghg', 'ghg_intensity']
 
 const COLORS = [
-  '#4477AA', '#DDDD77', '#77CCCC', '#117744', '#DD7788',
-  '#AA4455', '#77AADD', '#44AAAA', '#AAAA44', '#114477',
-  '#117777', '#771122', '#777711', '#AA7744', '#DDAA77',
-  '#771155', '#AA4488', '#CC99BB', '#44AA77', '#88CCAA',
+  '#4477AA',
+  '#DDDD77',
+  '#77CCCC',
+  '#117744',
+  '#DD7788',
+  '#AA4455',
+  '#77AADD',
+  '#44AAAA',
+  '#AAAA44',
+  '#114477',
+  '#117777',
+  '#771122',
+  '#777711',
+  '#AA7744',
+  '#DDAA77',
+  '#771155',
+  '#AA4488',
+  '#CC99BB',
+  '#44AA77',
+  '#88CCAA',
   '#774411',
 ]
 
@@ -178,9 +194,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
           this.filterGroups = filterGroups
           this.propertyColumns = propertyCols.filter((c) => VALID_DATA_TYPES.includes(c.data_type))
           this.taxLotColumns = taxLotCols.filter((c) => VALID_DATA_TYPES.includes(c.data_type))
-          this.columnsById = Object.fromEntries(
-            [...propertyCols, ...taxLotCols].map((c) => [c.id, c]),
-          )
+          this.columnsById = Object.fromEntries([...propertyCols, ...taxLotCols].map((c) => [c.id, c]))
           this._buildColorMap()
           this._initFields()
           this._initData()
@@ -327,24 +341,27 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       data: { instance: report.name, model: 'Custom Report' },
     })
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((confirmed) => {
-      if (!confirmed) return
-      this.loading = true
-      this._customReportService
-        .delete(this.orgId, report.id)
-        .pipe(
-          take(1),
-          tap(() => {
-            this.customReports = this.customReports.filter((r) => r.id !== report.id)
-            if (this.selectedReport?.id === report.id) {
-              void this._router.navigate(['/insights/custom-reports'])
-            }
-            this.loading = false
-          }),
-          takeUntil(this._unsubscribeAll$),
-        )
-        .subscribe()
-    })
+    dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed) => {
+        if (!confirmed) return
+        this.loading = true
+        this._customReportService
+          .delete(this.orgId, report.id)
+          .pipe(
+            take(1),
+            tap(() => {
+              this.customReports = this.customReports.filter((r) => r.id !== report.id)
+              if (this.selectedReport?.id === report.id) {
+                void this._router.navigate(['/insights/custom-reports'])
+              }
+              this.loading = false
+            }),
+            takeUntil(this._unsubscribeAll$),
+          )
+          .subscribe()
+      })
   }
 
   toggleFilterGroup(filterGroupId: number): void {
@@ -428,18 +445,17 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   getTableValue(columnId: number, filterGroupId: number, cycleId: number, aggregationName: string): number | null {
-    const cycleData = this.evaluateData?.columns_by_id?.[columnId]
-      ?.filter_groups_by_id?.[filterGroupId]
-      ?.cycles_by_id?.[cycleId]
+    const cycleData = this.evaluateData?.columns_by_id?.[columnId]?.filter_groups_by_id?.[filterGroupId]?.cycles_by_id?.[cycleId]
     if (!cycleData) return null
     return (cycleData as unknown as Record<string, number | null>)[aggregationName] ?? null
   }
 
   getPropertyValue(columnId: number, filterGroupId: number, cycleId: number, viewName: string): number | null {
-    return this.evaluateData?.columns_by_id?.[columnId]
-      ?.filter_groups_by_id?.[filterGroupId]
-      ?.cycles_by_id?.[cycleId]
-      ?.views_by_default_field?.[viewName] ?? null
+    return (
+      this.evaluateData?.columns_by_id?.[columnId]?.filter_groups_by_id?.[filterGroupId]?.cycles_by_id?.[cycleId]?.views_by_default_field?.[
+        viewName
+      ] ?? null
+    )
   }
 
   getPropertiesForFilterGroup(filterGroupId: number): [string, string][] {
@@ -466,9 +482,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
   private _buildColorMap(): void {
     let colorIndex = 0
-    const filterGroupNames = this.filterGroups.length > 0
-      ? this.filterGroups.map((fg) => fg.name)
-      : ['All']
+    const filterGroupNames = this.filterGroups.length > 0 ? this.filterGroups.map((fg) => fg.name) : ['All']
     for (const agg of this.aggregations) {
       for (const fgName of filterGroupNames) {
         this.colorsByLabelPrefix[`${fgName} - ${agg.name}`] = COLORS[colorIndex % COLORS.length]
@@ -493,7 +507,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
   private _initData(): void {
     const routeId = Number(this._route.snapshot.paramMap.get('id'))
-    this.selectedReport = routeId ? this.customReports.find((r) => r.id === routeId) ?? null : null
+    this.selectedReport = routeId ? (this.customReports.find((r) => r.id === routeId) ?? null) : null
 
     if (this.selectedReport) {
       this.firstAxisAggregations = []
@@ -624,17 +638,15 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _applyScheme(): void {
-    this._configService.scheme$
-      .pipe(takeUntil(this._unsubscribeAll$))
-      .subscribe((scheme) => {
-        if (!this.chart) return
-        const gridColor = scheme === 'light' ? '#0000001a' : '#ffffff2b'
-        const scales = this.chart.options.scales ?? {}
-        if (scales.y1) scales.y1.grid = { color: gridColor }
-        if (scales.y2) scales.y2.grid = { color: gridColor }
-        if (scales.x) scales.x.grid = { color: gridColor }
-        this.chart.update()
-      })
+    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
+      if (!this.chart) return
+      const gridColor = scheme === 'light' ? '#0000001a' : '#ffffff2b'
+      const scales = this.chart.options.scales ?? {}
+      if (scales.y1) scales.y1.grid = { color: gridColor }
+      if (scales.y2) scales.y2.grid = { color: gridColor }
+      if (scales.x) scales.x.grid = { color: gridColor }
+      this.chart.update()
+    })
   }
 
   private _assignDatasets(): void {
@@ -646,12 +658,8 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
     const datasets: Record<string, unknown>[] = []
     const noFilterGroups = !this.hasFilterGroups
-    const axis1Names = this.firstAxisAggregations.map(
-      (id) => this.aggregations.find((a) => a.id === id)?.name ?? '',
-    )
-    const axis2Names = this.secondAxisAggregations.map(
-      (id) => this.aggregations.find((a) => a.id === id)?.name ?? '',
-    )
+    const axis1Names = this.firstAxisAggregations.map((id) => this.aggregations.find((a) => a.id === id)?.name ?? '')
+    const axis2Names = this.secondAxisAggregations.map((id) => this.aggregations.find((a) => a.id === id)?.name ?? '')
 
     // Show/hide y1
     const scales = this.chart.options.scales ?? {}
@@ -663,7 +671,11 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       for (const aggregation of axis1Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
           const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
-          if (aggregation === ds.aggregation && columnPattern.test(axis1Column) && (noFilterGroups || ds.filter_group in this.selectedFilterGroups)) {
+          if (
+            aggregation === ds.aggregation
+            && columnPattern.test(axis1Column)
+            && (noFilterGroups || ds.filter_group in this.selectedFilterGroups)
+          ) {
             const color = this.colorsByLabelPrefix[`${ds.filter_group} - ${ds.aggregation}`]
             datasets.push({
               ...ds,
@@ -683,14 +695,18 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     if (this.sourceColumnByLocation.second_axis) {
       const axis2Column = this.sourceColumnByLocation.second_axis.display_name
       if (scales.y2) {
-        (scales.y2 as Record<string, unknown>).display = true
+        ;(scales.y2 as Record<string, unknown>).display = true
         ;(scales.y2 as SimpleCartesianScale).title = { text: axis2Column, display: true }
       }
 
       for (const aggregation of axis2Names) {
         for (const ds of this.evaluateData.graph_data.datasets) {
           const columnPattern = new RegExp(`^${ds.column}( \\(.+?\\))?$`)
-          if (aggregation === ds.aggregation && columnPattern.test(axis2Column) && (noFilterGroups || ds.filter_group in this.selectedFilterGroups)) {
+          if (
+            aggregation === ds.aggregation
+            && columnPattern.test(axis2Column)
+            && (noFilterGroups || ds.filter_group in this.selectedFilterGroups)
+          ) {
             const color = this.colorsByLabelPrefix[`${ds.filter_group} - ${ds.aggregation}`]
             datasets.push({
               ...ds,
