@@ -249,6 +249,12 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   clickEdit(): void {
     if (!this.selectedReport) return
     this.fields.name = this.selectedReport.name
+    for (const cycleId of Object.keys(this.fields.cycleCheckboxes)) {
+      this.fields.cycleCheckboxes[Number(cycleId)] = false
+    }
+    for (const filterGroupId of Object.keys(this.fields.filterGroupCheckboxes)) {
+      this.fields.filterGroupCheckboxes[Number(filterGroupId)] = false
+    }
     for (const cycleId of this.selectedReport.cycles) {
       this.fields.cycleCheckboxes[cycleId] = true
     }

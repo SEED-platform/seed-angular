@@ -126,11 +126,12 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
   }
 
   saveFilterGroup(): void {
-    if (!this.selectedFilterGroup) return
+    const selectedFilterGroup = this.selectedFilterGroup
+    if (!selectedFilterGroup) return
 
     const filters = this.gridApi?.getFilterModel() ?? {}
     const payload = {
-      name: this.selectedFilterGroup.name,
+      name: selectedFilterGroup.name,
       inventory_type: this.inventoryType,
       query_dict: filters,
       and_labels: this.andLabels,
@@ -139,7 +140,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     }
 
     this._filterGroupService
-      .update(this.orgId, this.selectedFilterGroup.id, payload)
+      .update(this.orgId, selectedFilterGroup.id, payload)
       .pipe(
         take(1),
         tap((fg) => {
@@ -152,11 +153,12 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
   }
 
   renameFilterGroup(): void {
-    if (!this.selectedFilterGroup) return
+    const selectedFilterGroup = this.selectedFilterGroup
+    if (!selectedFilterGroup) return
 
     const dialogRef = this._dialog.open(FilterGroupModalComponent, {
       width: '28rem',
-      data: { action: 'rename', name: this.selectedFilterGroup.name } satisfies FilterGroupModalData,
+      data: { action: 'rename', name: selectedFilterGroup.name } satisfies FilterGroupModalData,
     })
 
     dialogRef
@@ -167,14 +169,14 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
           const payload = {
             name,
             inventory_type: this.inventoryType,
-            query_dict: this.selectedFilterGroup.query_dict,
-            and_labels: this.selectedFilterGroup.and_labels,
-            or_labels: this.selectedFilterGroup.or_labels,
-            exclude_labels: this.selectedFilterGroup.exclude_labels,
+            query_dict: selectedFilterGroup.query_dict,
+            and_labels: selectedFilterGroup.and_labels,
+            or_labels: selectedFilterGroup.or_labels,
+            exclude_labels: selectedFilterGroup.exclude_labels,
           }
 
           this._filterGroupService
-            .update(this.orgId, this.selectedFilterGroup.id, payload)
+            .update(this.orgId, selectedFilterGroup.id, payload)
             .pipe(
               take(1),
               tap((fg) => {
@@ -189,11 +191,12 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
   }
 
   deleteFilterGroup(): void {
-    if (!this.selectedFilterGroup) return
+    const selectedFilterGroup = this.selectedFilterGroup
+    if (!selectedFilterGroup) return
 
     const dialogRef = this._dialog.open(FilterGroupModalComponent, {
       width: '28rem',
-      data: { action: 'delete', name: this.selectedFilterGroup.name } satisfies FilterGroupModalData,
+      data: { action: 'delete', name: selectedFilterGroup.name } satisfies FilterGroupModalData,
     })
 
     dialogRef
@@ -201,9 +204,9 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
       .pipe(
         filter(Boolean),
         tap(() => {
-          const name = this.selectedFilterGroup.name
+          const name = selectedFilterGroup.name
           this._filterGroupService
-            .delete(this.orgId, this.selectedFilterGroup.id)
+            .delete(this.orgId, selectedFilterGroup.id)
             .pipe(
               take(1),
               tap(() => {

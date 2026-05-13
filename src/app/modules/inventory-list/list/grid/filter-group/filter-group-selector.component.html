@@ -82,26 +82,29 @@
           <mat-icon class="icon-size-4" fontIcon="close" />
         </button>
       </div>
-      <div class="grid grid-cols-3 gap-2 text-xs">
+      <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-2 text-xs">
+        <div></div>
         <div class="font-semibold">AND (all match)</div>
         <div class="font-semibold">OR (any match)</div>
         <div class="font-semibold">Exclude</div>
       </div>
       <div class="max-h-48 overflow-y-auto">
         @for (label of labels; track label.id) {
-          <div class="grid grid-cols-3 gap-2 border-t py-1">
-            <label class="flex cursor-pointer items-center gap-1 text-xs">
-              <input [checked]="isLabelSelected(label.id, 'and')" (change)="toggleLabel(label.id, 'and')" type="checkbox" />
+          <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 border-t py-1">
+            <div class="flex items-center gap-1 text-xs">
               <span
-                class="inline-block size-2.5 rounded-full"
+                class="inline-block size-2.5 shrink-0 rounded-full"
                 [style.background-color]="label.color === 'white' ? '#e5e7eb' : label.color"
               ></span>
-              {{ label.name }}
+              <span class="truncate">{{ label.name }}</span>
+            </div>
+            <label class="flex cursor-pointer items-center justify-center text-xs">
+              <input [checked]="isLabelSelected(label.id, 'and')" (change)="toggleLabel(label.id, 'and')" type="checkbox" />
             </label>
-            <label class="flex cursor-pointer items-center gap-1 text-xs">
+            <label class="flex cursor-pointer items-center justify-center text-xs">
               <input [checked]="isLabelSelected(label.id, 'or')" (change)="toggleLabel(label.id, 'or')" type="checkbox" />
             </label>
-            <label class="flex cursor-pointer items-center gap-1 text-xs">
+            <label class="flex cursor-pointer items-center justify-center text-xs">
               <input [checked]="isLabelSelected(label.id, 'exclude')" (change)="toggleLabel(label.id, 'exclude')" type="checkbox" />
             </label>
           </div>

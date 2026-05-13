@@ -6,7 +6,7 @@ import { catchError, map, ReplaySubject, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { UserService } from '../user'
-import type { FilterGroup, FilterGroupResponse, FilterGroupsResponse, FilterGroupUpsertPayload } from './filter-group.types'
+import type { FilterGroup, FilterGroupInventoryType, FilterGroupResponse, FilterGroupsResponse, FilterGroupUpsertPayload } from './filter-group.types'
 
 @Injectable({ providedIn: 'root' })
 export class FilterGroupService {
@@ -28,8 +28,9 @@ export class FilterGroupService {
       .subscribe()
   }
 
-  list(orgId: number) {
-    const url = `/api/v3/filter_groups/?organization_id=${orgId}`
+  list(orgId: number, inventoryType?: FilterGroupInventoryType) {
+    const inventoryTypeQuery = inventoryType ? `&inventory_type=${encodeURIComponent(inventoryType)}` : ''
+    const url = `/api/v3/filter_groups/?organization_id=${orgId}${inventoryTypeQuery}`
     this._httpClient
       .get<FilterGroupsResponse>(url)
       .pipe(
