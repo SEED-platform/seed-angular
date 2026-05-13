@@ -438,10 +438,15 @@ export class InventoryComponent implements OnDestroy, OnInit {
       }
 
       if (includeViewIds !== null) {
-        // Intersect with AND results
-        const orSet = union
-        const combined = includeViewIds.filter((id) => orSet.has(id))
-        includeViewIds = combined.length > 0 ? combined : [0]
+        // If AND labels already produced the no-match sentinel, preserve it.
+        if (includeViewIds.length === 1 && includeViewIds[0] === 0) {
+          includeViewIds = [0]
+        } else {
+          // Intersect with AND results
+          const orSet = union
+          const combined = includeViewIds.filter((id) => orSet.has(id))
+          includeViewIds = combined.length > 0 ? combined : [0]
+        }
       } else {
         includeViewIds = union.size > 0 ? [...union] : [0]
       }
