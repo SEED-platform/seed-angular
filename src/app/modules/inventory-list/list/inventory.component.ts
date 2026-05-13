@@ -373,15 +373,22 @@ export class InventoryComponent implements OnDestroy, OnInit {
   onFilterGroupApplied(fg: { query_dict?: Record<string, unknown> } | null): void {
     // Sync filter group's query_dict into userSettings so loadInventory uses consistent filters
     if (fg?.query_dict) {
-      this.userSettings.filters[this.type] = fg.query_dict as Record<string, Record<string, unknown>>
+      this.userSettings = { ...this.userSettings, filters: { ...this.userSettings.filters, [this.type]: fg.query_dict as Record<string, Record<string, unknown>> } }
+    } else {
+      // When deselecting a filter group, preserve whatever filters the grid currently has
+      const currentGridFilters = this.gridApi?.getFilterModel() ?? {}
+      this.userSettings = { ...this.userSettings, filters: { ...this.userSettings.filters, [this.type]: currentGridFilters as Record<string, Record<string, unknown>> } }
     }
     this.page = 1
-    this.loadInventory().pipe(take(1)).subscribe()
+    // Don't call loadInventory here — labelSelectionsChanged always fires right after
+    // and will trigger the reload with the correct label state
   }
 
   onLabelSelectionsChanged(selections: LabelSelections): void {
     this.labelSelections = selections
     this.page = 1
+    // Create new userSettings reference to trigger OnChanges in FilterSortChipsComponent
+    this.userSettings = { ...this.userSettings }
     this.loadInventory().pipe(take(1)).subscribe()
   }
 

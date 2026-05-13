@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { Chart } from 'chart.js'
-import { combineLatest, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, skip, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, CustomReport, CustomReportEvaluateResponse, Cycle, FilterGroup, SimpleCartesianScale, UserAuth } from '@seed/api'
 import { ColumnService, CustomReportService, CycleService, FilterGroupService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
@@ -187,6 +187,19 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
           this._loadData()
         }),
         takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
+
+    // Re-init when route param changes (component reused across report IDs)
+    this._route.paramMap
+      .pipe(
+        skip(1),
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this._initFields()
+          this._initData()
+          this._loadData()
+        }),
       )
       .subscribe()
   }
