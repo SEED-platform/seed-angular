@@ -76,6 +76,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   editing = false
   showConfig = true
   createErrors: string[] = []
+  private _initializing = false
 
   // Data
   customReports: CustomReport[] = []
@@ -203,7 +204,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
           this.columnsById = Object.fromEntries([...propertyCols, ...taxLotCols].map((c) => [c.id, c]))
           this._buildColorMap()
           this._initFields()
+          this._initializing = true
           this._initData()
+          this._initializing = false
           this._loadData()
         }),
         takeUntil(this._unsubscribeAll$),
@@ -215,8 +218,11 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
         skip(1),
         takeUntil(this._unsubscribeAll$),
         tap(() => {
+          this.editing = false
           this._initFields()
+          this._initializing = true
           this._initData()
+          this._initializing = false
           this._loadData()
         }),
       )
@@ -268,7 +274,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
     this.selectedReport = null
     this.createErrors = []
     this._initFields()
+    this._initializing = true
     this._initData()
+    this._initializing = false
     this.editing = false
   }
 
@@ -343,7 +351,9 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
             this.customReports = this.customReports.map((r) => (r.id === data_view.id ? data_view : r))
             this.selectedReport = data_view
             this._initFields()
+            this._initializing = true
             this._initData()
+            this._initializing = false
             this._loadData()
             this.editing = false
           }
@@ -425,7 +435,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       aggregations.push(aggregationId)
     }
     if (this.chart) {
-      if (!this.editing) {
+      if (!this.editing && !this._initializing) {
         this.clickEdit()
       }
       this._assignDatasets()
@@ -449,7 +459,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
 
     if (reloadData && this.selectedReport?.id) {
       this._loadData()
-      if (!this.editing) {
+      if (!this.editing && !this._initializing) {
         this.clickEdit()
       }
     }

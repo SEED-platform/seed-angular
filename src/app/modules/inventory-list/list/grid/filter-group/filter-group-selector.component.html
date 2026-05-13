@@ -82,15 +82,15 @@
           <mat-icon class="icon-size-4" fontIcon="close" />
         </button>
       </div>
-      <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-2 text-xs">
+      <div class="grid grid-cols-[minmax(0,1fr)_5rem_5rem_5rem] gap-2 text-xs">
         <div></div>
-        <div class="font-semibold">AND (all match)</div>
-        <div class="font-semibold">OR (any match)</div>
-        <div class="font-semibold">Exclude</div>
+        <div class="text-center font-semibold">AND</div>
+        <div class="text-center font-semibold">OR</div>
+        <div class="text-center font-semibold">Exclude</div>
       </div>
       <div class="max-h-48 overflow-y-auto">
         @for (label of labels; track label.id) {
-          <div class="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 border-t py-1">
+          <div class="grid grid-cols-[minmax(0,1fr)_5rem_5rem_5rem] items-center gap-2 border-t py-1">
             <div class="flex items-center gap-1 text-xs">
               <span
                 class="inline-block size-2.5 shrink-0 rounded-full"
