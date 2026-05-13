@@ -438,7 +438,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
       }
 
       if (includeViewIds !== null) {
-        // If AND labels already produced the no-match sentinel, preserve it by skipping
+        // If AND-label filtering already produced the no-match sentinel, preserve it by skipping
         // the OR intersection logic.
         if (!(includeViewIds.length === 1 && includeViewIds[0] === 0)) {
           // Intersect with AND results
