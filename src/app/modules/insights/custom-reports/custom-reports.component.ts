@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import type { Chart } from 'chart.js'
-import { combineLatest, finalize, Subject, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, finalize, skip, Subject, take, takeUntil, tap } from 'rxjs'
 import type { Column, CustomReport, CustomReportEvaluateResponse, Cycle, FilterGroup, SimpleCartesianScale, UserAuth } from '@seed/api'
 import { ColumnService, CustomReportService, CycleService, FilterGroupService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
@@ -60,8 +60,6 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   private _router = inject(Router)
   private _userService = inject(UserService)
   private _unsubscribeAll$ = new Subject<void>()
-  private _currentRouteId: number | null = null
-  private _isRouteParamMapSubscribed = false
   private _currentScheme = 'light'
 
   readonly aggregations: Aggregation[] = [
@@ -209,6 +207,18 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
           this._loadData()
         }),
         takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe()
+
+    this._route.paramMap
+      .pipe(
+        skip(1),
+        takeUntil(this._unsubscribeAll$),
+        tap(() => {
+          this._initFields()
+          this._initData()
+          this._loadData()
+        }),
       )
       .subscribe()
   }
@@ -518,20 +528,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _initData(): void {
-    if (!this._isRouteParamMapSubscribed) {
-      this._isRouteParamMapSubscribed = true
-      this._route.paramMap.pipe(takeUntil(this._unsubscribeAll$)).subscribe((paramMap) => {
-        const routeId = Number(paramMap.get('id'))
-        if (routeId !== this._currentRouteId) {
-          this._currentRouteId = routeId
-          this._initData()
-          this._loadData()
-        }
-      })
-    }
-
-    const routeId = this._currentRouteId ?? Number(this._route.snapshot.paramMap.get('id'))
-    this._currentRouteId = routeId
+    const routeId = Number(this._route.snapshot.paramMap.get('id'))
     this.selectedReport = routeId ? (this.customReports.find((r) => r.id === routeId) ?? null) : null
 
     if (this.selectedReport) {
@@ -768,6 +765,6 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
   }
 
   private _escapeRegexValue(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return value.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&')
   }
 }
