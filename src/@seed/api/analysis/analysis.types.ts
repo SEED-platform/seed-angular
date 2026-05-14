@@ -116,6 +116,7 @@ export type AnalysisSummary = {
   number_extra_data_fields: number;
   status: string;
   total_records: number;
+  total_sqft: number;
 }
 
 export type AnalysisSummaryStats = {
