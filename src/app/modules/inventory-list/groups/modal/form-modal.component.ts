@@ -91,15 +91,25 @@ export class FormModalComponent implements OnDestroy, OnInit {
       access_level_instance: this.form.value.access_level_instance,
     }
 
-    this._groupsService.create(this.data.orgId, data as InventoryGroup).subscribe(({ id }) => {
-      this._dialogRef.close(id)
+    this._groupsService.create(this.data.orgId, data as InventoryGroup).subscribe({
+      next: (group) => {
+        this._dialogRef.close(group?.id ?? true)
+      },
+      error: () => {
+        this._dialogRef.close(false)
+      },
     })
   }
 
   onEdit() {
     const data = { ...this.data.group, name: this.form.value.name }
-    this._groupsService.update(this.data.orgId, this.data.id, data).subscribe(({ id }) => {
-      this._dialogRef.close(id)
+    this._groupsService.update(this.data.orgId, this.data.id, data).subscribe({
+      next: (group) => {
+        this._dialogRef.close(group?.id ?? true)
+      },
+      error: () => {
+        this._dialogRef.close(false)
+      },
     })
   }
 

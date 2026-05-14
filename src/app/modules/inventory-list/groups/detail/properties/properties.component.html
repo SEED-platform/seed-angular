@@ -1,0 +1,27 @@
+<seed-page
+  [config]="{
+    title: 'Properties',
+    titleIcon: 'fa-solid:building',
+  }"
+>
+</seed-page>
+
+<div class="m-5 flex flex-col gap-4">
+  @if (loading) {
+    <div class="text-secondary text-sm">Loading...</div>
+  } @else if (properties.length === 0) {
+    <div class="text-secondary text-sm">
+      No properties in this group. Properties can be added from the
+      <a routerLink="/properties" class="text-primary underline">Inventory → Properties</a> page.
+    </div>
+  } @else {
+    <ag-grid-angular
+      class="ag-theme-material"
+      style="height: 600px; width: 100%;"
+      [rowData]="properties"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      (rowClicked)="onRowClicked($event)"
+    ></ag-grid-angular>
+  }
+</div>
