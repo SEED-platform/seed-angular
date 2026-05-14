@@ -9,7 +9,7 @@
 <div class="m-5 flex flex-col gap-6 bg-white p-2.5">
   <!-- Back navigation -->
   <div>
-    <button mat-stroked-button (click)="goBackToSystems()">
+    <button (click)="goBackToSystems()" mat-stroked-button>
       <mat-icon svgIcon="fa-solid:chevron-left"></mat-icon>
       Back to Systems
     </button>
@@ -38,12 +38,12 @@
             @for (prop of service.properties; track prop.property_id) {
               <tr class="border-b hover:bg-gray-50">
                 <td class="px-3 py-2">
-                  <a [routerLink]="['/', inventoryType, prop.property_view_id]" class="text-primary hover:underline">
+                  <a class="text-primary hover:underline" [routerLink]="['/', inventoryType, prop.property_view_id]">
                     {{ prop.property_display_name || 'Property ' + prop.property_id }}
                   </a>
                 </td>
                 <td class="px-3 py-2">
-                  <a [routerLink]="['/', inventoryType, prop.property_view_id, 'meters']" class="text-primary hover:underline">
+                  <a class="text-primary hover:underline" [routerLink]="['/', inventoryType, prop.property_view_id, 'meters']">
                     {{ prop.meter_alias || 'Meter ' + prop.meter_id }}
                   </a>
                 </td>

@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { catchError, of, switchMap } from 'rxjs'
 import { GroupsService, OrganizationService } from '@seed/api'
@@ -64,7 +64,8 @@ export class UploadReadingsDialogComponent implements OnInit {
     const datasetName = `Meter Readings Upload - ${new Date().toISOString()}`
 
     // Step 1: Create dataset
-    this._httpClient.post<{ id: number }>(`/api/v3/datasets/?organization_id=${this.orgId}`, { name: datasetName })
+    this._httpClient
+      .post<{ id: number }>(`/api/v3/datasets/?organization_id=${this.orgId}`, { name: datasetName })
       .pipe(
         // Step 2: Upload file
         switchMap((dataset) => {
@@ -78,7 +79,7 @@ export class UploadReadingsDialogComponent implements OnInit {
         switchMap((uploadResult) => {
           return this._groupsService.uploadMeterReadings(this.orgId, uploadResult.import_file_id, this._data.meter.id)
         }),
-        catchError((error) => {
+        catchError((error: { error?: { message?: string }; message?: string }) => {
           const message = error?.error?.message || error?.message || 'Upload failed'
           return of({ message: `Failure: ${message}` })
         }),

@@ -33,7 +33,7 @@ export class GroupPropertiesComponent implements OnDestroy, OnInit {
       headerName: 'Property Name',
       field: 'property_display_name',
       flex: 1,
-      valueGetter: ({ data }) => data?.property_display_name || `Property ${data?.property_id}`,
+      valueGetter: ({ data }: { data: GroupProperty }) => data?.property_display_name || `Property ${data?.property_id}`,
     },
     {
       headerName: 'Property ID',

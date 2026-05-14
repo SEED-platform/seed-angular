@@ -19,11 +19,11 @@
   } @else {
     <ag-grid-angular
       class="ag-theme-material"
-      style="height: 300px; width: 100%;"
       [rowData]="meters"
       [columnDefs]="meterColumnDefs"
       [defaultColDef]="defaultColDef"
       (cellClicked)="onMeterCellClicked($event)"
+      style="height: 300px; width: 100%"
     ></ag-grid-angular>
   }
 
@@ -48,10 +48,10 @@
   } @else if (readings.length) {
     <ag-grid-angular
       class="ag-theme-material"
-      style="height: 400px; width: 100%;"
       [rowData]="readings"
       [columnDefs]="readingColumnDefs"
       [defaultColDef]="defaultColDef"
+      style="height: 400px; width: 100%"
     ></ag-grid-angular>
   }
 </div>

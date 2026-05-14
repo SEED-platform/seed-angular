@@ -3,13 +3,16 @@
     <div class="mb-4 text-xl font-medium">{{ title }}</div>
 
     @if (action === 'delete') {
-      <p class="text-sm">Are you sure you want to delete the system <strong>{{ systemName }}</strong>?</p>
+      <p class="text-sm">
+        Are you sure you want to delete the system <strong>{{ systemName }}</strong
+        >?
+      </p>
     } @else {
       <div class="flex flex-col gap-4">
         <!-- Name -->
         <mat-form-field class="w-full">
           <mat-label>System Name</mat-label>
-          <input matInput [(ngModel)]="systemName" autocomplete="off" />
+          <input [(ngModel)]="systemName" matInput autocomplete="off" />
         </mat-form-field>
 
         <!-- Type (only on create) -->
@@ -38,20 +41,20 @@
           @if (desType !== 'Chiller') {
             <mat-form-field class="w-full">
               <mat-label>Heating Capacity (MMBtu)</mat-label>
-              <input matInput type="number" [(ngModel)]="heatingCapacity" placeholder="2.5" />
+              <input [(ngModel)]="heatingCapacity" matInput type="number" placeholder="2.5" />
             </mat-form-field>
           }
 
           @if (desType === 'Chiller' || desType === 'CHP') {
             <mat-form-field class="w-full">
               <mat-label>Cooling Capacity (Ton)</mat-label>
-              <input matInput type="number" [(ngModel)]="coolingCapacity" placeholder="250" />
+              <input [(ngModel)]="coolingCapacity" matInput type="number" placeholder="250" />
             </mat-form-field>
           }
 
           <mat-form-field class="w-full">
             <mat-label>Count</mat-label>
-            <input matInput type="number" [(ngModel)]="count" min="1" placeholder="1" />
+            <input [(ngModel)]="count" matInput type="number" min="1" placeholder="1" />
           </mat-form-field>
         }
 
@@ -68,17 +71,17 @@
 
           <mat-form-field class="w-full">
             <mat-label>Power (kW)</mat-label>
-            <input matInput type="number" [(ngModel)]="power" placeholder="6.6" />
+            <input [(ngModel)]="power" matInput type="number" placeholder="6.6" />
           </mat-form-field>
 
           <mat-form-field class="w-full">
             <mat-label>Voltage (V)</mat-label>
-            <input matInput type="number" [(ngModel)]="voltage" placeholder="240" />
+            <input [(ngModel)]="voltage" matInput type="number" placeholder="240" />
           </mat-form-field>
 
           <mat-form-field class="w-full">
             <mat-label>Count</mat-label>
-            <input matInput type="number" [(ngModel)]="count" min="1" placeholder="1" />
+            <input [(ngModel)]="count" matInput type="number" min="1" placeholder="1" />
           </mat-form-field>
         }
 
@@ -86,22 +89,22 @@
         @if (systemType === 'Battery') {
           <mat-form-field class="w-full">
             <mat-label>Efficiency (%)</mat-label>
-            <input matInput type="number" [(ngModel)]="efficiency" min="0" max="100" placeholder="90" />
+            <input [(ngModel)]="efficiency" matInput type="number" min="0" max="100" placeholder="90" />
           </mat-form-field>
 
           <mat-form-field class="w-full">
             <mat-label>Power Capacity (kW)</mat-label>
-            <input matInput type="number" [(ngModel)]="powerCapacity" placeholder="20" />
+            <input [(ngModel)]="powerCapacity" matInput type="number" placeholder="20" />
           </mat-form-field>
 
           <mat-form-field class="w-full">
             <mat-label>Energy Capacity (kWh)</mat-label>
-            <input matInput type="number" [(ngModel)]="energyCapacity" placeholder="80" />
+            <input [(ngModel)]="energyCapacity" matInput type="number" placeholder="80" />
           </mat-form-field>
 
           <mat-form-field class="w-full">
             <mat-label>Voltage (V)</mat-label>
-            <input matInput type="number" [(ngModel)]="voltage" placeholder="480" />
+            <input [(ngModel)]="voltage" matInput type="number" placeholder="480" />
           </mat-form-field>
         }
       </div>

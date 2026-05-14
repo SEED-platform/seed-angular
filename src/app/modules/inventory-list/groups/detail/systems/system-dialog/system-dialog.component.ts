@@ -79,22 +79,26 @@ export class SystemDialogComponent {
     }
 
     const systemId = this._data.system?.id
-    const obs = this.action === 'create'
-      ? this._groupsService.createSystem(this._data.orgId, this._data.groupId, payload)
-      : this._groupsService.updateSystem(this._data.orgId, this._data.groupId, systemId, payload)
+    const obs
+      = this.action === 'create'
+        ? this._groupsService.createSystem(this._data.orgId, this._data.groupId, payload)
+        : this._groupsService.updateSystem(this._data.orgId, this._data.groupId, systemId, payload)
 
-    obs.pipe(
-      finalize(() => {
-        this._dialogRef.close(true)
-      }),
-    ).subscribe()
+    obs
+      .pipe(
+        finalize(() => {
+          this._dialogRef.close(true)
+        }),
+      )
+      .subscribe()
   }
 
   deleteSystem() {
     if (this.submitted) return
     this.submitted = true
     const systemId = this._data.system?.id
-    this._groupsService.deleteSystem(this._data.orgId, this._data.groupId, systemId)
+    this._groupsService
+      .deleteSystem(this._data.orgId, this._data.groupId, systemId)
       .pipe(
         finalize(() => {
           this._dialogRef.close(true)

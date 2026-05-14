@@ -59,58 +59,93 @@ export class GroupSystemsComponent implements OnDestroy, OnInit {
 
   createSystem() {
     const data: SystemDialogData = { action: 'create', orgId: this.orgId, groupId: this.groupId }
-    this._dialog.open(SystemDialogComponent, { data, width: '500px' })
+    this._dialog
+      .open(SystemDialogComponent, { data, width: '500px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 
   editSystem(system: GroupSystem) {
     const data: SystemDialogData = { action: 'edit', orgId: this.orgId, groupId: this.groupId, system }
-    this._dialog.open(SystemDialogComponent, { data, width: '500px' })
+    this._dialog
+      .open(SystemDialogComponent, { data, width: '500px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 
   deleteSystem(system: GroupSystem) {
     const data: SystemDialogData = { action: 'delete', orgId: this.orgId, groupId: this.groupId, system }
-    this._dialog.open(SystemDialogComponent, { data, width: '400px' })
+    this._dialog
+      .open(SystemDialogComponent, { data, width: '400px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 
   createService(system: GroupSystem) {
     const data: ServiceDialogData = {
-      action: 'create', orgId: this.orgId, groupId: this.groupId,
-      systemId: system.id, systemName: system.name,
+      action: 'create',
+      orgId: this.orgId,
+      groupId: this.groupId,
+      systemId: system.id,
+      systemName: system.name,
     }
-    this._dialog.open(ServiceDialogComponent, { data, width: '450px' })
+    this._dialog
+      .open(ServiceDialogComponent, { data, width: '450px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 
   editService(system: GroupSystem, service: GroupService) {
     const data: ServiceDialogData = {
-      action: 'edit', orgId: this.orgId, groupId: this.groupId,
-      systemId: system.id, systemName: system.name, service,
+      action: 'edit',
+      orgId: this.orgId,
+      groupId: this.groupId,
+      systemId: system.id,
+      systemName: system.name,
+      service,
     }
-    this._dialog.open(ServiceDialogComponent, { data, width: '450px' })
+    this._dialog
+      .open(ServiceDialogComponent, { data, width: '450px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 
   deleteService(system: GroupSystem, service: GroupService) {
     const data: ServiceDialogData = {
-      action: 'delete', orgId: this.orgId, groupId: this.groupId,
-      systemId: system.id, systemName: system.name, service,
+      action: 'delete',
+      orgId: this.orgId,
+      groupId: this.groupId,
+      systemId: system.id,
+      systemName: system.name,
+      service,
     }
-    this._dialog.open(ServiceDialogComponent, { data, width: '400px' })
+    this._dialog
+      .open(ServiceDialogComponent, { data, width: '400px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.loadSystems()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadSystems()),
+      )
       .subscribe()
   }
 

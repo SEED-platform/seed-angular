@@ -6,7 +6,24 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
 import { OrganizationService } from '../organization'
-import type { GroupDashboard, GroupDashboardResponse, GroupMeter, GroupMetersResponse, GroupMeterUsageResponse, GroupPropertiesResponse, GroupProperty, GroupSankeyEntry, GroupSankeyResponse, GroupService, GroupSystem, InventoryGroup, InventoryGroupResponse, InventoryGroupsResponse, MeterInterval, SystemsByTypeResponse } from './groups.types'
+import type {
+  GroupDashboard,
+  GroupDashboardResponse,
+  GroupMeter,
+  GroupMetersResponse,
+  GroupMeterUsageResponse,
+  GroupPropertiesResponse,
+  GroupProperty,
+  GroupSankeyEntry,
+  GroupSankeyResponse,
+  GroupService,
+  GroupSystem,
+  InventoryGroup,
+  InventoryGroupResponse,
+  InventoryGroupsResponse,
+  MeterInterval,
+  SystemsByTypeResponse,
+} from './groups.types'
 
 @Injectable({ providedIn: 'root' })
 export class GroupsService {
@@ -281,7 +298,13 @@ export class GroupsService {
     )
   }
 
-  updateService(orgId: number, groupId: number, systemId: number, serviceId: number, serviceData: Partial<GroupService>): Observable<GroupService> {
+  updateService(
+    orgId: number,
+    groupId: number,
+    systemId: number,
+    serviceId: number,
+    serviceData: Partial<GroupService>,
+  ): Observable<GroupService> {
     const url = `/api/v3/inventory_groups/${groupId}/systems/${systemId}/services/${serviceId}/?organization_id=${orgId}`
     return this._httpClient.put<GroupService>(url, serviceData).pipe(
       tap(() => {
@@ -307,7 +330,8 @@ export class GroupsService {
 
   getServiceDetail(orgId: number, groupId: number, systemId: number, serviceId: number) {
     const url = `/api/v3/inventory_groups/${groupId}/systems/${systemId}/services/${serviceId}/?organization_id=${orgId}`
-    return this._httpClient.get<{
+    return this._httpClient
+      .get<{
       id: number;
       system_name: string;
       name: string;
@@ -324,14 +348,20 @@ export class GroupsService {
         meter_type: string;
         has_meter_data: boolean;
       }[];
-    }>(url).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error fetching service detail')
-      }),
-    )
+    }>(url)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error fetching service detail')
+        }),
+      )
   }
 
-  updateMeter(orgId: number, groupId: number, meterId: number, data: { alias?: string; connection_config?: Record<string, unknown> }): Observable<unknown> {
+  updateMeter(
+    orgId: number,
+    groupId: number,
+    meterId: number,
+    data: { alias?: string; connection_config?: Record<string, unknown> },
+  ): Observable<unknown> {
     const url = `/api/v3/inventory_groups/${groupId}/meters/${meterId}/?organization_id=${orgId}`
     return this._httpClient.put(url, data).pipe(
       tap(() => {

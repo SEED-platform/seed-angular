@@ -130,12 +130,13 @@ export class EditMeterDialogComponent implements OnInit {
       payload.alias = this.alias
     }
 
-    this._groupsService.updateMeter(this._data.orgId, this._data.groupId, this._data.meter.id, payload)
-      .subscribe({
-        next: () => this._dialogRef.close(true),
-        error: () => {
-          this.submitted = false
-        },
-      })
+    this._groupsService.updateMeter(this._data.orgId, this._data.groupId, this._data.meter.id, payload).subscribe({
+      next: () => {
+        this._dialogRef.close(true)
+      },
+      error: () => {
+        this.submitted = false
+      },
+    })
   }
 }

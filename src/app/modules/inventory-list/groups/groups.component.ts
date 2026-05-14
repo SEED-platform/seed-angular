@@ -79,7 +79,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
     ]
   }
 
-  nameRenderer = ({ data, value }: { data: InventoryGroup; value: string }) => {
+  nameRenderer = ({ value }: { data: InventoryGroup; value: string }) => {
     return `<span class="underline text-primary dark:text-primary-500 cursor-pointer" data-action="navigate">${value}</span>`
   }
 

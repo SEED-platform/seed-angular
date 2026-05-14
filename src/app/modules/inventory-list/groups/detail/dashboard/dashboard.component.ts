@@ -2,8 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { catchError, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import { of } from 'rxjs'
+import { catchError, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupDashboard, GroupSankeyEntry, OrgCycle } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
@@ -53,10 +52,9 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
     return this._groupsService.getDashboard(this.orgId, this.groupId, this.cycleId).pipe(
       tap((data) => {
         this.dashboard = data
-        this.meterTypes = [
-          ...Object.keys(data?.importing_total ?? {}),
-          ...Object.keys(data?.exporting_total ?? {}),
-        ].filter((v, i, a) => a.indexOf(v) === i)
+        this.meterTypes = [...Object.keys(data?.importing_total ?? {}), ...Object.keys(data?.exporting_total ?? {})].filter(
+          (v, i, a) => a.indexOf(v) === i,
+        )
         if (this.meterTypes.length && !this.meterType) {
           this.meterType = this.meterTypes[0]
         }
@@ -72,9 +70,9 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
 
   changeCycle(cycleId: number) {
     this.cycleId = cycleId
-    this.loadDashboard().pipe(
-      switchMap(() => this.loadSankey()),
-    ).subscribe()
+    this.loadDashboard()
+      .pipe(switchMap(() => this.loadSankey()))
+      .subscribe()
   }
 
   loadSankey() {

@@ -1,7 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
@@ -10,12 +10,12 @@ import type { GroupMeter, MeterInterval } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
-import { EditMeterDialogComponent } from './dialogs/edit-meter-dialog.component'
-import type { EditMeterDialogData } from './dialogs/edit-meter-dialog.component'
-import { DeleteMeterDialogComponent } from './dialogs/delete-meter-dialog.component'
 import type { DeleteMeterDialogData } from './dialogs/delete-meter-dialog.component'
-import { UploadReadingsDialogComponent } from './dialogs/upload-readings-dialog.component'
+import { DeleteMeterDialogComponent } from './dialogs/delete-meter-dialog.component'
+import type { EditMeterDialogData } from './dialogs/edit-meter-dialog.component'
+import { EditMeterDialogComponent } from './dialogs/edit-meter-dialog.component'
 import type { UploadReadingsDialogData } from './dialogs/upload-readings-dialog.component'
+import { UploadReadingsDialogComponent } from './dialogs/upload-readings-dialog.component'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -123,25 +123,24 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
 
   loadReadings() {
     this.loadingReadings = true
-    this._groupsService.getMeterUsage(this.orgId, this.groupId, this.interval)
-      .subscribe({
-        next: (data) => {
-          this.readings = data.readings
-          this.readingColumnDefs = data.column_defs.map((col) => ({
-            headerName: col.headerName ?? col.field,
-            field: col.field,
-            flex: 1,
-            sortable: true,
-            filter: true,
-          }))
-          this.loadingReadings = false
-        },
-        error: () => {
-          this.readings = []
-          this.readingColumnDefs = []
-          this.loadingReadings = false
-        },
-      })
+    this._groupsService.getMeterUsage(this.orgId, this.groupId, this.interval).subscribe({
+      next: (data) => {
+        this.readings = data.readings
+        this.readingColumnDefs = data.column_defs.map((col) => ({
+          headerName: col.headerName ?? col.field,
+          field: col.field,
+          flex: 1,
+          sortable: true,
+          filter: true,
+        }))
+        this.loadingReadings = false
+      },
+      error: () => {
+        this.readings = []
+        this.readingColumnDefs = []
+        this.loadingReadings = false
+      },
+    })
   }
 
   changeInterval(interval: MeterInterval) {
@@ -167,12 +166,12 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
         break
       case 'navigate-property':
         if (meter.view_id) {
-          this._router.navigate(['/', this.inventoryType, meter.view_id, 'meters'])
+          void this._router.navigate(['/', this.inventoryType, meter.view_id, 'meters'])
         }
         break
       case 'navigate-connection':
         if (meter.service_group) {
-          this._router.navigate(['/', this.inventoryType, 'groups', meter.service_group, 'systems'])
+          void this._router.navigate(['/', this.inventoryType, 'groups', meter.service_group, 'systems'])
         }
         break
     }
@@ -180,38 +179,50 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
 
   editMeter(meter: GroupMeter) {
     const data: EditMeterDialogData = { orgId: this.orgId, groupId: this.groupId, meter }
-    this._dialog.open(EditMeterDialogComponent, { data, width: '500px' })
+    this._dialog
+      .open(EditMeterDialogComponent, { data, width: '500px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.refreshMeters()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._refreshMeters()),
+      )
       .subscribe()
   }
 
   deleteMeter(meter: GroupMeter) {
     const data: DeleteMeterDialogData = { orgId: this.orgId, groupId: this.groupId, meter }
-    this._dialog.open(DeleteMeterDialogComponent, { data, width: '400px' })
+    this._dialog
+      .open(DeleteMeterDialogComponent, { data, width: '400px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.refreshMeters()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._refreshMeters()),
+      )
       .subscribe()
   }
 
   addReadings(meter: GroupMeter) {
     const data: UploadReadingsDialogData = { orgId: this.orgId, groupId: this.groupId, meter }
-    this._dialog.open(UploadReadingsDialogComponent, { data, width: '500px' })
+    this._dialog
+      .open(UploadReadingsDialogComponent, { data, width: '500px' })
       .afterClosed()
-      .pipe(filter(Boolean), switchMap(() => this.refreshMeters()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._refreshMeters()),
+      )
       .subscribe()
-  }
-
-  private refreshMeters() {
-    return this._groupsService.getMeters(this.orgId, this.groupId).pipe(
-      tap((data) => {
-        this.meters = data
-      }),
-    )
   }
 
   ngOnDestroy() {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  private _refreshMeters() {
+    return this._groupsService.getMeters(this.orgId, this.groupId).pipe(
+      tap((data) => {
+        this.meters = data
+      }),
+    )
   }
 }

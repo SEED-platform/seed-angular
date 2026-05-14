@@ -12,16 +12,16 @@
   } @else if (properties.length === 0) {
     <div class="text-secondary text-sm">
       No properties in this group. Properties can be added from the
-      <a routerLink="/properties" class="text-primary underline">Inventory → Properties</a> page.
+      <a class="text-primary underline" routerLink="/properties">Inventory → Properties</a> page.
     </div>
   } @else {
     <ag-grid-angular
       class="ag-theme-material"
-      style="height: 600px; width: 100%;"
       [rowData]="properties"
       [columnDefs]="columnDefs"
       [defaultColDef]="defaultColDef"
       (rowClicked)="onRowClicked($event)"
+      style="height: 600px; width: 100%"
     ></ag-grid-angular>
   }
 </div>

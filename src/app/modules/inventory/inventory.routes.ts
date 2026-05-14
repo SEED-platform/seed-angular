@@ -19,8 +19,8 @@ import { GroupDetailLayoutComponent } from '../inventory-list/groups/detail/grou
 import { GroupMapComponent } from '../inventory-list/groups/detail/map/map.component'
 import { GroupMetersComponent } from '../inventory-list/groups/detail/meters/meters.component'
 import { GroupPropertiesComponent } from '../inventory-list/groups/detail/properties/properties.component'
-import { GroupSystemsComponent } from '../inventory-list/groups/detail/systems/systems.component'
 import { ServiceDetailComponent } from '../inventory-list/groups/detail/systems/service-detail/service-detail.component'
+import { GroupSystemsComponent } from '../inventory-list/groups/detail/systems/systems.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
 import type { InventoryType } from './inventory.types'
 

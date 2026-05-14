@@ -3,17 +3,20 @@
     <div class="mb-4 text-xl font-medium">{{ title }}</div>
 
     @if (action === 'delete') {
-      <p class="text-sm">Are you sure you want to delete the service <strong>{{ serviceName }}</strong>?</p>
+      <p class="text-sm">
+        Are you sure you want to delete the service <strong>{{ serviceName }}</strong
+        >?
+      </p>
     } @else {
       <div class="flex flex-col gap-4">
         <mat-form-field class="w-full">
           <mat-label>Service Name</mat-label>
-          <input matInput [(ngModel)]="serviceName" autocomplete="off" />
+          <input [(ngModel)]="serviceName" matInput autocomplete="off" />
         </mat-form-field>
 
         <mat-form-field class="w-full">
           <mat-label>Emission Factor</mat-label>
-          <input matInput type="number" [(ngModel)]="emissionFactor" min="0" step="0.1" />
+          <input [(ngModel)]="emissionFactor" matInput type="number" min="0" step="0.1" />
         </mat-form-field>
       </div>
     }

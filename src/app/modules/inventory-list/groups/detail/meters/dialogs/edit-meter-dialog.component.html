@@ -6,7 +6,7 @@
       <!-- Alias -->
       <mat-form-field class="w-full">
         <mat-label>Alias</mat-label>
-        <input matInput [(ngModel)]="alias" autocomplete="off" />
+        <input [(ngModel)]="alias" matInput autocomplete="off" />
       </mat-form-field>
 
       <mat-divider></mat-divider>
@@ -34,9 +34,11 @@
         <mat-form-field class="w-full">
           <mat-label>
             Meter Usage
-            <mat-icon class="ml-1 text-sm" matTooltip="Is the meter using a service, or offering a service?" matTooltipPosition="right">info</mat-icon>
+            <mat-icon class="ml-1 text-sm" matTooltip="Is the meter using a service, or offering a service?" matTooltipPosition="right"
+              >info</mat-icon
+            >
           </mat-label>
-          <mat-select [(ngModel)]="use" (ngModelChange)="onUseSelected()" [disabled]="isPropertyMeter">
+          <mat-select [(ngModel)]="use" [disabled]="isPropertyMeter" (ngModelChange)="onUseSelected()">
             @for (option of useOptions; track option.value) {
               <mat-option [value]="option.value">{{ option.display }}</mat-option>
             }
@@ -47,7 +49,7 @@
         @if (use) {
           <mat-form-field class="w-full">
             <mat-label>System</mat-label>
-            <mat-select [(ngModel)]="selectedSystemId" (ngModelChange)="onSystemSelected()" [disabled]="use === 'offering'">
+            <mat-select [(ngModel)]="selectedSystemId" [disabled]="use === 'offering'" (ngModelChange)="onSystemSelected()">
               @for (system of systemOptions; track system.id) {
                 <mat-option [value]="system.id">{{ system.name }}</mat-option>
               }

@@ -30,12 +30,13 @@ export class DeleteMeterDialogComponent {
     if (this.submitted) return
     this.submitted = true
 
-    this._groupsService.deleteMeter(this._data.orgId, this._data.groupId, this._data.meter.id)
-      .subscribe({
-        next: () => this._dialogRef.close(true),
-        error: () => {
-          this.submitted = false
-        },
-      })
+    this._groupsService.deleteMeter(this._data.orgId, this._data.groupId, this._data.meter.id).subscribe({
+      next: () => {
+        this._dialogRef.close(true)
+      },
+      error: () => {
+        this.submitted = false
+      },
+    })
   }
 }

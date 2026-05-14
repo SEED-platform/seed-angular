@@ -28,11 +28,11 @@
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
       <div class="rounded-lg border p-4">
         <div class="text-secondary text-xs font-medium uppercase">Gross Floor Area</div>
-        <div class="mt-1 text-2xl font-bold">{{ (dashboard['Gross Floor Area'] ?? 0) | number }}</div>
+        <div class="mt-1 text-2xl font-bold">{{ dashboard['Gross Floor Area'] ?? 0 | number }}</div>
       </div>
       <div class="rounded-lg border p-4">
         <div class="text-secondary text-xs font-medium uppercase">Site EUI</div>
-        <div class="mt-1 text-2xl font-bold">{{ (dashboard['Site EUI'] ?? 0) | number }}</div>
+        <div class="mt-1 text-2xl font-bold">{{ dashboard['Site EUI'] ?? 0 | number }}</div>
       </div>
       <div class="rounded-lg border p-4">
         <div class="text-secondary text-xs font-medium uppercase">Views Count</div>

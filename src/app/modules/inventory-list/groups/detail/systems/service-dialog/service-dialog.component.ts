@@ -43,22 +43,26 @@ export class ServiceDialogComponent {
     }
 
     const serviceId = this._data.service?.id
-    const obs = this.action === 'create'
-      ? this._groupsService.createService(this._data.orgId, this._data.groupId, this._data.systemId, payload)
-      : this._groupsService.updateService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId, payload)
+    const obs
+      = this.action === 'create'
+        ? this._groupsService.createService(this._data.orgId, this._data.groupId, this._data.systemId, payload)
+        : this._groupsService.updateService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId, payload)
 
-    obs.pipe(
-      finalize(() => {
-        this._dialogRef.close(true)
-      }),
-    ).subscribe()
+    obs
+      .pipe(
+        finalize(() => {
+          this._dialogRef.close(true)
+        }),
+      )
+      .subscribe()
   }
 
   deleteService() {
     if (this.submitted) return
     this.submitted = true
     const serviceId = this._data.service?.id
-    this._groupsService.deleteService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId)
+    this._groupsService
+      .deleteService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId)
       .pipe(
         finalize(() => {
           this._dialogRef.close(true)
