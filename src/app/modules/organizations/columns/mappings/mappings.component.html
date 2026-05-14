@@ -25,12 +25,7 @@
   <button [disabled]="profileReadOnly() || changesToSave" (click)="rename()" mat-icon-button matTooltip="Rename Profile">
     <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
   </button>
-  <button
-    [disabled]="profileReadOnly() || changesToSave"
-    (click)="delete()"
-    mat-icon-button
-    matTooltip="Delete This Profile"
-  >
+  <button [disabled]="profileReadOnly() || changesToSave" (click)="delete()" mat-icon-button matTooltip="Delete This Profile">
     <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
   </button>
   <button (click)="copy_profile()" mat-icon-button matTooltip="Copy This Profile">
@@ -43,20 +38,10 @@
     <mat-icon class="scale-75 fill-green-700" svgIcon="fa-solid:download"></mat-icon>
   </button>
   @if (selectedProfile && mappablePropertyColumns && mappableTaxlotColumns) {
-    <button
-      [disabled]="profileReadOnly()"
-      (click)="copy()"
-      mat-icon-button
-      matTooltip="Copy Data File Headers directly to SEED Headers"
-    >
+    <button [disabled]="profileReadOnly()" (click)="copy()" mat-icon-button matTooltip="Copy Data File Headers directly to SEED Headers">
       <mat-icon class="scale-75 fill-blue-400" svgIcon="fa-solid:file-import"></mat-icon>
     </button>
-    <button
-      [disabled]="profileReadOnly()"
-      (click)="suggest()"
-      mat-icon-button
-      matTooltip="Populate SEED Headers with Best Known Matches"
-    >
+    <button [disabled]="profileReadOnly()" (click)="suggest()" mat-icon-button matTooltip="Populate SEED Headers with Best Known Matches">
       <mat-icon class="scale-75 fill-blue-400" svgIcon="fa-solid:clipboard-check"></mat-icon>
     </button>
   }

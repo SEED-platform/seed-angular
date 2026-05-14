@@ -6,7 +6,13 @@ import { catchError, map, ReplaySubject, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { UserService } from '../user'
-import type { FilterGroup, FilterGroupInventoryType, FilterGroupResponse, FilterGroupsResponse, FilterGroupUpsertPayload } from './filter-group.types'
+import type {
+  FilterGroup,
+  FilterGroupInventoryType,
+  FilterGroupResponse,
+  FilterGroupsResponse,
+  FilterGroupUpsertPayload,
+} from './filter-group.types'
 
 @Injectable({ providedIn: 'root' })
 export class FilterGroupService {

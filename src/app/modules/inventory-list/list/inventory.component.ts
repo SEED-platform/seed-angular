@@ -18,14 +18,28 @@ import type {
   Profile,
   State,
 } from 'app/modules/inventory'
-import { ActionsComponent, ConfigSelectorComponent, FilterGroupSelectorComponent, FilterSortChipsComponent, InventoryGridComponent } from './grid'
+import {
+  ActionsComponent,
+  ConfigSelectorComponent,
+  FilterGroupSelectorComponent,
+  FilterSortChipsComponent,
+  InventoryGridComponent,
+} from './grid'
 import type { LabelSelections } from './grid/filter-group/filter-group-selector.component'
 
 @Component({
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [ActionsComponent, ConfigSelectorComponent, FilterGroupSelectorComponent, FilterSortChipsComponent, InventoryGridComponent, PageComponent, SharedImports],
+  imports: [
+    ActionsComponent,
+    ConfigSelectorComponent,
+    FilterGroupSelectorComponent,
+    FilterSortChipsComponent,
+    InventoryGridComponent,
+    PageComponent,
+    SharedImports,
+  ],
 })
 export class InventoryComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
@@ -85,7 +99,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
         switchMap((orgId) => this.getDependencies(orgId)),
         map((results) => this.setDependencies(results)),
         switchMap((profile_id) => this.getProfile(profile_id)),
-        tap(() => { this._fetchAppliedLabels() }),
+        tap(() => {
+          this._fetchAppliedLabels()
+        }),
         switchMap(() => this.loadInventory()),
         tap(() => {
           this.setFilterSorts()
@@ -367,17 +383,23 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   get filterGroupInventoryType() {
-    return this.type === 'taxlots' ? 'Tax Lot' as const : 'Property' as const
+    return this.type === 'taxlots' ? ('Tax Lot' as const) : ('Property' as const)
   }
 
   onFilterGroupApplied(fg: { query_dict?: Record<string, unknown> } | null): void {
     // Sync filter group's query_dict into userSettings so loadInventory uses consistent filters
     if (fg?.query_dict) {
-      this.userSettings = { ...this.userSettings, filters: { ...this.userSettings.filters, [this.type]: fg.query_dict as Record<string, Record<string, unknown>> } }
+      this.userSettings = {
+        ...this.userSettings,
+        filters: { ...this.userSettings.filters, [this.type]: fg.query_dict as Record<string, Record<string, unknown>> },
+      }
     } else {
       // When deselecting a filter group, preserve whatever filters the grid currently has
       const currentGridFilters = this.gridApi?.getFilterModel() ?? {}
-      this.userSettings = { ...this.userSettings, filters: { ...this.userSettings.filters, [this.type]: currentGridFilters as Record<string, Record<string, unknown>> } }
+      this.userSettings = {
+        ...this.userSettings,
+        filters: { ...this.userSettings.filters, [this.type]: currentGridFilters as Record<string, Record<string, unknown>> },
+      }
     }
     this.page = 1
     // Don't call loadInventory here — labelSelectionsChanged always fires right after
