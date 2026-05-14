@@ -286,9 +286,12 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
 
   private _getLabelList(operator: 'and' | 'or' | 'exclude'): number[] {
     switch (operator) {
-      case 'and': return this.andLabels
-      case 'or': return this.orLabels
-      case 'exclude': return this.excludeLabels
+      case 'and':
+        return this.andLabels
+      case 'or':
+        return this.orLabels
+      case 'exclude':
+        return this.excludeLabels
     }
   }
 

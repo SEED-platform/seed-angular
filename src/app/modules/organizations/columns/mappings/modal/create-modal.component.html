@@ -51,9 +51,9 @@
             <mat-label>File Header {{ i + 1 }}</mat-label>
             <input formControlName="from_field" matInput placeholder="File Header {{ i + 1 }}" />
           </mat-form-field>
-          <a class="flex flex-0" (click)="removeMapping(i)" mat-stroked-button matTooltip="Remove">
-            <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-          </a>
+          <button class="flex flex-0" (click)="removeMapping(i)" mat-icon-button matTooltip="Remove">
+            <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+          </button>
         </div>
       }
     </div>
@@ -64,7 +64,7 @@
   <div class="flex flex-1">
     <mat-dialog-actions>
       <button (click)="addMapping()" mat-stroked-button matTooltip="Add File Header">
-        <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:circle-plus"></mat-icon><span class="ml-2">Add Row</span>
+        <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon><span class="ml-2">Add Row</span>
       </button>
     </mat-dialog-actions>
   </div>

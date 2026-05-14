@@ -27,11 +27,6 @@
             @if (selectedReport) {
               <div class="flex items-center gap-2 rounded bg-primary-200 px-3 py-1.5 dark:bg-primary-700">
                 <span class="flex-1 truncate">{{ selectedReport.name }}</span>
-                @if (auth.requires_member) {
-                  <button class="!size-6 !min-w-0" (click)="clickDelete(selectedReport)" mat-icon-button>
-                    <mat-icon class="!text-base" fontIcon="close" />
-                  </button>
-                }
               </div>
             }
 
@@ -42,11 +37,6 @@
                     <a class="text-default flex-1 truncate no-underline" [routerLink]="['/insights/custom-reports', report.id]">
                       {{ report.name }}
                     </a>
-                    @if (auth.requires_member) {
-                      <button class="!size-6 !min-w-0" (click)="clickDelete(report); $event.stopPropagation()" mat-icon-button>
-                        <mat-icon class="!text-base" fontIcon="close" />
-                      </button>
-                    }
                   </div>
                 }
               }
@@ -268,13 +258,13 @@
                 <div class="text-secondary font-semibold">Actions</div>
 
                 @if (!editing && selectedReport) {
-                  <div class="flex gap-2">
-                    <a class="mr-2" (click)="clickEdit()" mat-stroked-button>
-                      <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
-                    </a>
-                    <a (click)="clickDelete(selectedReport)" mat-stroked-button color="warn">
-                      <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-                    </a>
+                  <div class="flex gap-1">
+                    <button (click)="clickEdit()" mat-icon-button matTooltip="Edit">
+                      <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil" />
+                    </button>
+                    <button (click)="clickDelete(selectedReport)" mat-icon-button matTooltip="Delete">
+                      <mat-icon class="scale-75 text-red-500" svgIcon="fa-solid:trash" />
+                    </button>
                   </div>
                 }
 

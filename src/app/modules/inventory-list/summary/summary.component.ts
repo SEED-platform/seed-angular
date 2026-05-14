@@ -40,6 +40,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   totalRecords: string
   totalExtraData: string
+  totalSqft: string
 
   ngOnInit() {
     this.initPage().pipe(takeUntil(this._unsubscribeAll$)).subscribe()
@@ -66,6 +67,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
       tap((summary) => {
         this.totalRecords = summary.total_records.toLocaleString()
         this.totalExtraData = summary.number_extra_data_fields.toLocaleString()
+        this.totalSqft = (summary.total_sqft ?? 0).toLocaleString()
         this.summary = summary
       }),
       catchError(() => {

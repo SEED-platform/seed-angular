@@ -24,9 +24,12 @@ export class FilterGroupModalComponent {
 
   get title(): string {
     switch (this.data.action) {
-      case 'new': return 'New Filter Group'
-      case 'rename': return 'Rename Filter Group'
-      case 'delete': return 'Delete Filter Group'
+      case 'new':
+        return 'New Filter Group'
+      case 'rename':
+        return 'Rename Filter Group'
+      case 'delete':
+        return 'Delete Filter Group'
     }
   }
 

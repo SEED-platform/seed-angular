@@ -17,15 +17,15 @@
       }
     </mat-select>
     <!-- Profile Controls -->
-    <a class="flex" [disabled]="!profile" (click)="applyProfile()" matTooltip="Apply Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:check"></mat-icon>
-    </a>
-    <a class="flex" [disabled]="!profile" (click)="saveProfile()" matTooltip="Save Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:floppy-disk"></mat-icon>
-    </a>
-    <a class="flex" (click)="createProfile()" matTooltip="Create Profile" mat-stroked-button>
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
-    </a>
+    <button [disabled]="!profile" (click)="applyProfile()" matTooltip="Apply Profile" mat-icon-button>
+      <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:check"></mat-icon>
+    </button>
+    <button [disabled]="!profile" (click)="saveProfile()" matTooltip="Save Profile" mat-icon-button>
+      <mat-icon class="scale-75 fill-green-700" svgIcon="fa-solid:floppy-disk"></mat-icon>
+    </button>
+    <button (click)="createProfile()" matTooltip="Create Profile" mat-icon-button>
+      <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus"></mat-icon>
+    </button>
   </div>
 </div>
 

@@ -11,9 +11,9 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a (click)="removeExcluded(c)" mat-stroked-button color="warn">
-              <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-            </a>
+            <button (click)="removeExcluded(c)" mat-icon-button>
+              <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+            </button>
           </div>
         </li>
       }
@@ -29,7 +29,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button [disabled]="addExcludeForm.invalid || addExcludeForm.pending" mat-flat-button color="accent">
+          <button [disabled]="addExcludeForm.invalid || addExcludeForm.pending" mat-stroked-button>
             <span class="">Exclude Column</span>
           </button>
         </div>
@@ -48,9 +48,9 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a (click)="removeEmpty(c)" mat-stroked-button color="warn">
-              <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-            </a>
+            <button (click)="removeEmpty(c)" mat-icon-button>
+              <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+            </button>
           </div>
         </li>
       }
@@ -66,7 +66,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button [disabled]="addEmptyForm.invalid || addEmptyForm.pending" mat-flat-button color="accent">
+          <button [disabled]="addEmptyForm.invalid || addEmptyForm.pending" mat-stroked-button>
             <span class="">Recognize Column as Empty</span>
           </button>
         </div>
@@ -86,9 +86,9 @@
         <li class="space-between align-items-center my-4 flex w-1/2 flex-row border-b-2 py-2">
           <div class="flex self-center">{{ c.display_name }}</div>
           <div class="ml-auto flex justify-self-end">
-            <a (click)="removeMergeProtected(c)" mat-stroked-button color="warn">
-              <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-            </a>
+            <button (click)="removeMergeProtected(c)" mat-icon-button>
+              <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+            </button>
           </div>
         </li>
       }
@@ -104,7 +104,7 @@
           </mat-select>
         </mat-form-field>
         <div>
-          <button [disabled]="addMergeProtectedForm.invalid || addMergeProtectedForm.pending" mat-flat-button color="accent">
+          <button [disabled]="addMergeProtectedForm.invalid || addMergeProtectedForm.pending" mat-stroked-button>
             <span class="">Add Merge Protection</span>
           </button>
         </div>
@@ -117,7 +117,7 @@
   <button (click)="save()" mat-flat-button color="primary">
     <span class="">Save Changes</span>
   </button>
-  <button (click)="cancel()" mat-flat-button color="accent">
+  <button (click)="cancel()" mat-stroked-button>
     <span class="">Cancel</span>
   </button>
 </div>

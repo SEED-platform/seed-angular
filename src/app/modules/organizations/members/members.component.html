@@ -30,12 +30,12 @@
       <ng-container matColumnDef="actions">
         <th class="select-none" *matHeaderCellDef mat-header-cell>Actions</th>
         <td class="w-50 whitespace-nowrap text-right" *matCellDef="let member" mat-cell>
-          <a class="mr-2" (click)="editMember(member)" mat-stroked-button>
-            <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
-          </a>
-          <a (click)="deleteMember(member)" mat-stroked-button color="warn">
-            <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-          </a>
+          <button class="mr-2" (click)="editMember(member)" mat-icon-button>
+            <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
+          </button>
+          <button (click)="deleteMember(member)" mat-icon-button>
+            <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+          </button>
         </td>
       </ng-container>
 
