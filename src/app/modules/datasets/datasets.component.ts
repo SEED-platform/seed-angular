@@ -102,8 +102,8 @@ export class DatasetsComponent implements OnDestroy, OnInit {
         <span class="material-icons text-base">add</span>
         <span class="text-sm">Meter Data</span>
       </span>
-      <span class="material-icons cursor-pointer text-secondary my-auto" title="Rename Dataset" data-action="rename">edit</span>
-      <span class="material-icons cursor-pointer text-secondary my-auto" title="Delete Dataset" data-action="delete">clear</span>
+      <span class="material-icons cursor-pointer text-cyan-600 my-auto" title="Rename Dataset" data-action="rename">edit</span>
+      <span class="material-icons cursor-pointer text-red-500 my-auto" title="Delete Dataset" data-action="delete">delete</span>
       </div>
     `
   }

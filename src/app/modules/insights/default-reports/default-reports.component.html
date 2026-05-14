@@ -23,7 +23,7 @@
             title="Save"
             aria-label="Save"
           >
-            <mat-icon class="scale-75" svgIcon="fa-solid:floppy-disk"></mat-icon>
+            <mat-icon class="scale-75 text-green-600" svgIcon="fa-solid:floppy-disk"></mat-icon>
           </button>
           <button
             [disabled]="!currentConfig || currentConfig.id === null"
@@ -32,7 +32,7 @@
             title="Rename"
             aria-label="Rename"
           >
-            <mat-icon class="scale-75" svgIcon="fa-solid:pen"></mat-icon>
+            <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
           </button>
           <button
             [disabled]="!currentConfig || currentConfig.id === null"
@@ -44,7 +44,7 @@
             <mat-icon class="scale-75 text-red-500" svgIcon="fa-solid:trash"></mat-icon>
           </button>
           <button (click)="newConfig()" mat-icon-button title="New" aria-label="New">
-            <mat-icon class="scale-75" svgIcon="fa-solid:plus"></mat-icon>
+            <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus"></mat-icon>
           </button>
         </div>
       }

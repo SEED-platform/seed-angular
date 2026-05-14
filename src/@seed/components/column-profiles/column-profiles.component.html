@@ -13,24 +13,23 @@
         }
       </mat-select>
     </div>
-    <a class="flex" (click)="openProfileModal('create')" mat-stroked-button matTooltip="Create New Profile">
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:folder-plus"></mat-icon>
-    </a>
-    <a class="flex" [disabled]="!currentProfile" (click)="openProfileModal('rename')" mat-stroked-button matTooltip="Rename this Profile">
-      <mat-icon class="fill-primary-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
-    </a>
-    <a class="flex" [disabled]="!currentProfile" (click)="openDeleteModal()" mat-stroked-button matTooltip="Delete this Profile">
-      <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-    </a>
-    <a
-      class="flex"
+    <button (click)="openProfileModal('create')" mat-icon-button matTooltip="Create New Profile">
+      <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus"></mat-icon>
+    </button>
+    <button [disabled]="!currentProfile" (click)="openProfileModal('rename')" mat-icon-button matTooltip="Rename this Profile">
+      <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
+    </button>
+    <button [disabled]="!currentProfile" (click)="openDeleteModal()" mat-icon-button matTooltip="Delete this Profile">
+      <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+    </button>
+    <button
       [disabled]="!currentProfile"
       (click)="openProfileModal('create', currentProfile.columns)"
-      mat-stroked-button
+      mat-icon-button
       matTooltip="Copy This Profile"
     >
-      <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
-    </a>
+      <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:copy"></mat-icon>
+    </button>
   </div>
 
   @if (rowData.length) {

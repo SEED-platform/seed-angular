@@ -249,6 +249,26 @@
   @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
 }
 
+// Fix Material button color theming (M2 color attribute removed in AM v21)
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button {
+  &[color='primary']:not(:disabled) {
+    @apply bg-primary text-white hover:bg-primary-800 #{'!important'};
+  }
+
+  &[color='primary']:disabled {
+    @apply bg-primary/40 text-white/70 cursor-not-allowed #{'!important'};
+  }
+
+  &[color='warn']:not(:disabled) {
+    @apply bg-warn text-white hover:bg-warn-800 #{'!important'};
+  }
+
+  &[color='warn']:disabled {
+    @apply bg-warn/40 text-white/70 cursor-not-allowed #{'!important'};
+  }
+}
+
 .menu-compact {
   padding: 0.5rem;
   max-height: 60vh;

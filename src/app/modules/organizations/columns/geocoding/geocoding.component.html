@@ -17,9 +17,9 @@
         <div>{{ column.display_name }}</div>
       </div>
       <div class="ml-auto flex">
-        <a (click)="delete(column)" mat-stroked-button
-          ><mat-icon class="icon-size-4" svgIcon="fa-solid:x" matTooltip="Remove from geocoding"></mat-icon
-        ></a>
+        <button (click)="delete(column)" mat-icon-button
+          ><mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash" matTooltip="Remove from geocoding"></mat-icon
+        ></button>
       </div>
     </div>
   }
@@ -36,7 +36,7 @@
     </mat-select>
   </mat-form-field>
   <div>
-    <button [disabled]="addForm.invalid || addForm.pending" mat-flat-button color="accent">
+    <button [disabled]="addForm.invalid || addForm.pending" mat-stroked-button>
       <span class="">Add Geocoding Column</span>
     </button>
   </div>
