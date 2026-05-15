@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { catchError, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { catchError, filter, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupDashboard, GroupSankeyEntry, OrgCycle } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
@@ -33,6 +33,7 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
     this._organizationService.currentOrganization$
       .pipe(
         takeUntil(this._unsubscribeAll$),
+        filter((org) => Boolean(org?.org_id)),
         take(1),
         tap(({ org_id }) => {
           this.orgId = org_id

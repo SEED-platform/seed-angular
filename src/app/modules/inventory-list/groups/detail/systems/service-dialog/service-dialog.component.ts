@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { finalize } from 'rxjs'
 import { GroupsService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { ServiceDialogData } from '../dialog-types'
@@ -48,26 +47,27 @@ export class ServiceDialogComponent {
         ? this._groupsService.createService(this._data.orgId, this._data.groupId, this._data.systemId, payload)
         : this._groupsService.updateService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId, payload)
 
-    obs
-      .pipe(
-        finalize(() => {
-          this._dialogRef.close(true)
-        }),
-      )
-      .subscribe()
+    obs.subscribe({
+      next: () => {
+        this._dialogRef.close(true)
+      },
+      error: () => {
+        this.submitted = false
+      },
+    })
   }
 
   deleteService() {
     if (this.submitted) return
     this.submitted = true
     const serviceId = this._data.service?.id
-    this._groupsService
-      .deleteService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId)
-      .pipe(
-        finalize(() => {
-          this._dialogRef.close(true)
-        }),
-      )
-      .subscribe()
+    this._groupsService.deleteService(this._data.orgId, this._data.groupId, this._data.systemId, serviceId).subscribe({
+      next: () => {
+        this._dialogRef.close(true)
+      },
+      error: () => {
+        this.submitted = false
+      },
+    })
   }
 }
