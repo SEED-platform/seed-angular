@@ -91,7 +91,7 @@ export class GroupsService {
         return data
       }),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, 'Error updating group')
+        return this._errorService.handleError(error, 'Error creating group')
       }),
     )
   }
