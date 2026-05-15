@@ -33,8 +33,17 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
 
   private _dialog = inject(MatDialog)
 
+  private _getInventoryType(): string {
+    return (
+      [...this._route.pathFromRoot]
+        .reverse()
+        .map(route => route.snapshot.paramMap.get('type'))
+        .find((type): type is string => !!type) ?? 'properties'
+    )
+  }
+
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
-  inventoryType = this._route.parent?.parent?.parent?.snapshot?.url?.[0]?.path ?? 'properties'
+  inventoryType = this._getInventoryType()
   orgId: number
   meters: GroupMeter[] = []
   readings: Record<string, unknown>[] = []
