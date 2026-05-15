@@ -34,13 +34,17 @@ export class ServiceDetailComponent implements OnDestroy, OnInit {
 
     // Walk up to find groupId and type from parent routes using pathFromRoot
     for (const route of this._route.pathFromRoot) {
-      const gid = route.snapshot.paramMap.get('groupId')
-      if (gid) {
-        this.groupId = parseInt(gid)
+      if (!this.groupId) {
+        const gid = route.snapshot.paramMap.get('groupId')
+        if (gid) {
+          this.groupId = parseInt(gid)
+        }
       }
-      const type = route.snapshot.paramMap.get('type')
-      if (type) {
-        this.inventoryType = type as InventoryType
+      if (!this.inventoryType) {
+        const type = route.snapshot.paramMap.get('type')
+        if (type) {
+          this.inventoryType = type as InventoryType
+        }
       }
     }
 
