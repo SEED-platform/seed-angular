@@ -17,6 +17,7 @@ import type {
   GroupSankeyEntry,
   GroupSankeyResponse,
   GroupService,
+  GroupServiceDetail,
   GroupSystem,
   InventoryGroup,
   InventoryGroupResponse,
@@ -331,30 +332,11 @@ export class GroupsService {
 
   getServiceDetail(orgId: number, groupId: number, systemId: number, serviceId: number) {
     const url = `/api/v3/inventory_groups/${groupId}/systems/${systemId}/services/${serviceId}/?organization_id=${orgId}`
-    return this._httpClient
-      .get<{
-      id: number;
-      system_name: string;
-      name: string;
-      service_meters: {
-        in: { meter_id: number; meter_alias: string; has_meter_data: boolean }[];
-        out: { meter_id: number; meter_alias: string; has_meter_data: boolean }[];
-      };
-      properties: {
-        property_id: number;
-        property_view_id: number;
-        property_display_name: string;
-        meter_id: number;
-        meter_alias: string;
-        meter_type: string;
-        has_meter_data: boolean;
-      }[];
-    }>(url)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          return this._errorService.handleError(error, 'Error fetching service detail')
-        }),
-      )
+    return this._httpClient.get<GroupServiceDetail>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching service detail')
+      }),
+    )
   }
 
   updateMeter(

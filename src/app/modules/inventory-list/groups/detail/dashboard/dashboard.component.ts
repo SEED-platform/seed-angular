@@ -77,7 +77,10 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
   }
 
   loadSankey() {
-    if (!this.meterType) return this._groupsService.getSankeyData(this.orgId, this.groupId, this.cycleId, '')
+    if (!this.meterType) {
+      this.sankeyData = []
+      return of([])
+    }
     return this._groupsService.getSankeyData(this.orgId, this.groupId, this.cycleId, this.meterType).pipe(
       tap((data) => {
         this.sankeyData = data

@@ -2,9 +2,11 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import type { GroupServiceDetail } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-service-detail',
@@ -22,29 +24,25 @@ export class ServiceDetailComponent implements OnDestroy, OnInit {
   systemId: number
   serviceId: number
   orgId: number
-  inventoryType: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  service: any = null
+  inventoryType: InventoryType
+  service: GroupServiceDetail | null = null
   loading = true
 
   ngOnInit() {
     this.systemId = parseInt(this._route.snapshot.paramMap.get('systemId'))
     this.serviceId = parseInt(this._route.snapshot.paramMap.get('serviceId'))
 
-    // Walk up to find groupId from parent routes
-    let route = this._route.parent
-    while (route) {
+    // Walk up to find groupId and type from parent routes using pathFromRoot
+    for (const route of this._route.pathFromRoot) {
       const gid = route.snapshot.paramMap.get('groupId')
       if (gid) {
         this.groupId = parseInt(gid)
-        break
       }
-      route = route.parent
+      const type = route.snapshot.paramMap.get('type')
+      if (type) {
+        this.inventoryType = type as InventoryType
+      }
     }
-
-    // Get inventory type from URL
-    const urlParts = this._router.url.split('/')
-    this.inventoryType = urlParts.find((p) => p === 'properties' || p === 'taxlots') ?? 'properties'
 
     this._organizationService.currentOrganization$
       .pipe(

@@ -139,3 +139,22 @@ export type GroupMeter = {
 }
 
 export type MeterInterval = 'Exact' | 'Month' | 'Year'
+
+export type GroupServiceDetail = {
+  id: number;
+  system_name: string;
+  name: string;
+  service_meters: {
+    in: { meter_id: number; meter_alias: string; has_meter_data: boolean }[];
+    out: { meter_id: number; meter_alias: string; has_meter_data: boolean }[];
+  };
+  properties: {
+    property_id: number;
+    property_view_id: number;
+    property_display_name: string;
+    meter_id: number;
+    meter_alias: string;
+    meter_type: string;
+    has_meter_data: boolean;
+  }[];
+}
