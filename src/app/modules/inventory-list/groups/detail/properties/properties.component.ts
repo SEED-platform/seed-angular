@@ -66,8 +66,8 @@ export class GroupPropertiesComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  onRowClicked(event: { data: GroupProperty }) {
-    void this._router.navigate(['/properties', event.data.property_id])
+  onRowClicked(event: { data: GroupProperty & { property_view_id: number } }) {
+    void this._router.navigate(['/properties', event.data.property_view_id])
   }
 
   ngOnDestroy() {
