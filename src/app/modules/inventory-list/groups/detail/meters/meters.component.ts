@@ -30,17 +30,7 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
-
   private _dialog = inject(MatDialog)
-
-  private _getInventoryType(): string {
-    return (
-      [...this._route.pathFromRoot]
-        .reverse()
-        .map(route => route.snapshot.paramMap.get('type'))
-        .find((type): type is string => !!type) ?? 'properties'
-    )
-  }
 
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
   inventoryType = this._getInventoryType()
@@ -225,6 +215,15 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
   ngOnDestroy() {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  private _getInventoryType(): string {
+    return (
+      [...this._route.pathFromRoot]
+        .reverse()
+        .map((route) => route.snapshot.paramMap.get('type'))
+        .find((type): type is string => !!type) ?? 'properties'
+    )
   }
 
   private _refreshMeters() {
