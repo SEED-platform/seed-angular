@@ -33,7 +33,7 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
     this._organizationService.currentOrganization$
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        filter((org) => Boolean(org?.org_id)),
+        filter((org) => org?.org_id != null),
         take(1),
         tap(({ org_id }) => {
           this.orgId = org_id
