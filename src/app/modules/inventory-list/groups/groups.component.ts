@@ -151,7 +151,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
       .pipe(
         filter(Boolean),
         tap(() => {
-          this._groupsService.list(this.orgId)
+          this.initPage()
         }),
       )
       .subscribe()
