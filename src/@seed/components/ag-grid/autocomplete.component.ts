@@ -24,12 +24,9 @@ export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterV
     this.inputCtrl.setValue(params.value as string)
     this.filteredOptions = [...this.options]
     this.inputCtrl.valueChanges.subscribe((value) => {
-      // autocomplete
       this.filteredOptions = this.options.filter((option) => {
         return option.toLowerCase().startsWith(value.toLowerCase())
       })
-      // update after each keystroke
-      this.params.node.setDataValue(this.params.column.getId(), value)
     })
   }
 
