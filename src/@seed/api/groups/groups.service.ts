@@ -21,7 +21,6 @@ import type {
   GroupSystem,
   InventoryGroup,
   InventoryGroupResponse,
-  InventoryGroupsResponse,
   MeterInterval,
   SystemsByTypeResponse,
 } from './groups.types'
@@ -39,10 +38,10 @@ export class GroupsService {
   list(orgId: number) {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
     this._httpClient
-      .get<InventoryGroupsResponse>(url)
+      .get<InventoryGroup[]>(url)
       .pipe(
         take(1),
-        map(({ data }) => {
+        map((data) => {
           const groups = Array.isArray(data) ? data : []
           this._groups.next(groups)
           return groups
@@ -59,12 +58,13 @@ export class GroupsService {
     const url = `/api/v3/inventory_groups/filter/?organization_id=${orgId}&inventory_type=${type}`
     const body = { selected: inventoryIds }
     this._httpClient
-      .post<InventoryGroupsResponse>(url, body)
+      .post<InventoryGroup[]>(url, body)
       .pipe(
         take(1),
-        map(({ data }) => {
-          this._groups.next(data)
-          return data
+        map((data) => {
+          const groups = Array.isArray(data) ? data : []
+          this._groups.next(groups)
+          return groups
         }),
         catchError((error: HttpErrorResponse) => {
           return this._errorService.handleError(error, 'Error fetching groups for inventory')
@@ -75,8 +75,8 @@ export class GroupsService {
 
   fetchGroups(orgId: number): Observable<InventoryGroup[]> {
     const url = `/api/v3/inventory_groups/?organization_id=${orgId}`
-    return this._httpClient.get<InventoryGroupsResponse>(url).pipe(
-      map(({ data }) => (Array.isArray(data) ? data : [])),
+    return this._httpClient.get<InventoryGroup[]>(url).pipe(
+      map((data) => (Array.isArray(data) ? data : [])),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching groups')
       }),
