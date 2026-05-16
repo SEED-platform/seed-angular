@@ -75,7 +75,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   profileId: number
   profileId$ = new BehaviorSubject<number>(null)
   propertyProfiles: Profile[]
-  refreshInventory$ = new Subject<void>()
+  refreshInventory$ = new Subject<number | null>()
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
   selectedStateIds: number[] = []
@@ -136,11 +136,29 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     this._organizationService.orgUserSettings$.pipe(tap((settings) => (this.userSettings = settings))).subscribe()
 
-    this.refreshInventory$.pipe(switchMap(() => this.refreshInventory())).subscribe()
+    this.refreshInventory$.pipe(switchMap((profileId) => this.refreshInventory(profileId))).subscribe()
   }
 
-  refreshInventory() {
-    return this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory()))
+  onRefreshInventory(profileId: number | null) {
+    this.refreshInventory$.next(profileId)
+  }
+
+  refreshInventory(newProfileId?: number | null) {
+    return this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true).pipe(
+      tap((profiles) => {
+        this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
+        this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
+      }),
+      switchMap(() => {
+        const targetId = newProfileId ?? this.profileId
+        if (targetId) {
+          return this.getProfile(targetId)
+        }
+        return of(null)
+      }),
+      switchMap(() => this.updateOrgUserSettings()),
+      switchMap(() => this.loadInventory()),
+    )
   }
 
   /*
@@ -326,7 +344,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onPageChange(page: number) {
     this.page = page
-    this.refreshInventory$.next()
+    this.refreshInventory$.next(null)
   }
 
   setFilters() {
@@ -418,7 +436,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
-    this.refreshInventory$.next()
+    this.refreshInventory$.next(null)
   }
 
   ngOnDestroy(): void {

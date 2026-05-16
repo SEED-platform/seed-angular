@@ -23,7 +23,7 @@
         [selectedStateIds]="selectedStateIds"
         [selectedViewIds]="selectedViewIds"
         [type]="type"
-        (refreshInventory)="refreshInventory$.next()"
+        (refreshInventory)="onRefreshInventory($event)"
         (selectedAll)="onSelectAll($event)"
       ></seed-inventory-grid-actions>
 

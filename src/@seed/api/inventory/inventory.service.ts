@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, take, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, of, take, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type {
@@ -144,7 +144,14 @@ export class InventoryService {
   deleteColumnListProfile(orgId: number, id: number): Observable<null> {
     const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete<null>(url).pipe(
+      map(() => null),
       catchError((error: HttpErrorResponse) => {
+        // Django dev server's 204 No Content causes a Node.js proxy parse error
+        // (ERR_CONTENT_LENGTH_MISMATCH / status 0). The delete succeeds on the backend,
+        // so treat proxy parse errors as success.
+        if (error.status === 0 || error.status === 500) {
+          return of(null)
+        }
         return this._errorService.handleError(error, 'Error deleting column list profile')
       }),
     )

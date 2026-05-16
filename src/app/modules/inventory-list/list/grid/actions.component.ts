@@ -44,7 +44,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() selectedStateIds: number[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
-  @Output() refreshInventory = new EventEmitter<null>()
+  @Output() refreshInventory = new EventEmitter<number | null>()
   @Output() selectedAll = new EventEmitter<number[]>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
@@ -267,8 +267,8 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
       .afterClosed()
       .pipe(
         filter(Boolean),
-        tap(() => {
-          this.refreshInventory.emit()
+        tap((result) => {
+          this.refreshInventory.emit(typeof result === 'number' ? result : null)
         }),
       )
       .subscribe()
