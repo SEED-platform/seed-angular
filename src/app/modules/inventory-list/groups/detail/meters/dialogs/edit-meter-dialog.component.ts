@@ -14,6 +14,7 @@ export type EditMeterDialogData = {
     alias: string;
     connection_type: string;
     property_id: number | null;
+    property_display_field: string | null;
     system_id: number | null;
     service_id: number | null;
     config: GroupMeterConfig;
@@ -30,6 +31,7 @@ export class EditMeterDialogComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditMeterDialogComponent>)
   private _groupsService = inject(GroupsService)
 
+  meter = this._data.meter
   alias = this._data.meter.alias ?? ''
   direction: 'imported' | 'exported' = this._data.meter.config?.direction ?? 'imported'
   connection: 'outside' | 'service' = this._data.meter.config?.connection ?? 'outside'

@@ -1,3 +1,4 @@
+import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -8,21 +9,24 @@ import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupProperty } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
+import { ConfigService } from '@seed/services'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
 @Component({
   selector: 'seed-group-properties',
   templateUrl: './properties.component.html',
-  imports: [AgGridAngular, PageComponent, RouterLink],
+  imports: [AgGridAngular, AsyncPipe, PageComponent, RouterLink],
 })
 export class GroupPropertiesComponent implements OnDestroy, OnInit {
+  private _configService = inject(ConfigService)
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
   private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
+  gridTheme$ = this._configService.gridTheme$
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
   orgId: number
   properties: GroupProperty[] = []

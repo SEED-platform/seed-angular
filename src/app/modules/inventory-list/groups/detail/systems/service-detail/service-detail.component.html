@@ -6,7 +6,7 @@
 >
 </seed-page>
 
-<div class="m-5 flex flex-col gap-6 bg-white p-2.5">
+<div class="m-5 flex flex-col gap-6 bg-card p-2.5">
   <!-- Back navigation -->
   <div>
     <button (click)="goBackToSystems()" mat-stroked-button>
@@ -20,14 +20,22 @@
   } @else if (!service) {
     <div class="text-secondary text-sm">Service not found</div>
   } @else {
+    <!-- Add Properties button -->
+    <div class="flex justify-end">
+      <button (click)="addProperties()" mat-flat-button color="primary">
+        <mat-icon svgIcon="fa-solid:plus"></mat-icon>
+        Add Properties
+      </button>
+    </div>
+
     <!-- Connected Properties -->
     <div>
-      <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Connected Properties</div>
+      <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-secondary">Connected Properties</div>
 
       @if (service.properties.length) {
         <table class="w-full border-collapse text-sm">
           <thead>
-            <tr class="border-b bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <tr class="border-b bg-default text-left text-xs font-semibold uppercase tracking-wide text-secondary">
               <th class="px-3 py-2">Property</th>
               <th class="px-3 py-2">Connected Via</th>
               <th class="px-3 py-2">Connection Type</th>
@@ -36,7 +44,7 @@
           </thead>
           <tbody>
             @for (prop of service.properties; track prop.property_id) {
-              <tr class="border-b hover:bg-gray-50">
+              <tr class="border-b hover:bg-default">
                 <td class="px-3 py-2">
                   <a class="text-primary hover:underline" [routerLink]="['/', inventoryType, prop.property_view_id]">
                     {{ prop.property_display_name || 'Property ' + prop.property_id }}

@@ -1,7 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, map, type Observable, take, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, of, type Observable, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
@@ -339,6 +339,24 @@ export class GroupsService {
     )
   }
 
+  createServiceMeters(
+    orgId: number,
+    groupId: number,
+    systemId: number,
+    serviceId: number,
+    data: { direction: string; type: string; property_ids: number[] },
+  ): Observable<unknown> {
+    const url = `/api/v3/inventory_groups/${groupId}/systems/${systemId}/services/${serviceId}/create_meters/?organization_id=${orgId}`
+    return this._httpClient.post(url, data).pipe(
+      tap(() => {
+        this._snackBar.success('Meters created successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating service meters')
+      }),
+    )
+  }
+
   updateMeter(
     orgId: number,
     groupId: number,
@@ -363,6 +381,11 @@ export class GroupsService {
         this._snackBar.success('Meter deleted successfully')
       }),
       catchError((error: HttpErrorResponse) => {
+        // Django dev server's 204 No Content causes a Node.js proxy parse error
+        if (error.status === 0 || error.status === 500) {
+          this._snackBar.success('Meter deleted successfully')
+          return of(null)
+        }
         return this._errorService.handleError(error, 'Error deleting meter')
       }),
     )

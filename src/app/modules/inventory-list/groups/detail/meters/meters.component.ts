@@ -1,3 +1,4 @@
+import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
@@ -10,6 +11,9 @@ import type { GroupMeter, MeterInterval } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { ConfigService } from '@seed/services'
+import type { CreateMeterDialogData } from './dialogs/create-meter-dialog.component'
+import { CreateMeterDialogComponent } from './dialogs/create-meter-dialog.component'
 import type { DeleteMeterDialogData } from './dialogs/delete-meter-dialog.component'
 import { DeleteMeterDialogComponent } from './dialogs/delete-meter-dialog.component'
 import type { EditMeterDialogData } from './dialogs/edit-meter-dialog.component'
@@ -22,9 +26,10 @@ ModuleRegistry.registerModules([AllCommunityModule])
 @Component({
   selector: 'seed-group-meters',
   templateUrl: './meters.component.html',
-  imports: [AgGridAngular, MaterialImports, PageComponent],
+  imports: [AgGridAngular, AsyncPipe, MaterialImports, PageComponent],
 })
 export class GroupMetersComponent implements OnDestroy, OnInit {
+  private _configService = inject(ConfigService)
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
@@ -32,6 +37,7 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _dialog = inject(MatDialog)
 
+  gridTheme$ = this._configService.gridTheme$
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
   inventoryType = this._getInventoryType()
   orgId: number
@@ -49,8 +55,6 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
     { headerName: 'Type', field: 'type', flex: 1 },
     { headerName: 'Alias', field: 'alias', flex: 1 },
     { headerName: 'Source', field: 'source', width: 130 },
-    { headerName: 'Source ID', field: 'source_id', width: 120 },
-    { headerName: 'Scenario ID', field: 'scenario_id', width: 110 },
     { headerName: 'Connection Type', field: 'connection_type', width: 150 },
     {
       headerName: 'Property',
@@ -72,7 +76,6 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
       },
     },
     { headerName: 'Virtual', field: 'is_virtual', width: 90 },
-    { headerName: 'Scenario', field: 'scenario_name', width: 130 },
     {
       headerName: 'Actions',
       field: 'actions',
@@ -174,6 +177,18 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
         }
         break
     }
+  }
+
+  createMeter() {
+    const data: CreateMeterDialogData = { orgId: this.orgId, groupId: this.groupId }
+    this._dialog
+      .open(CreateMeterDialogComponent, { data, width: '500px' })
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this._refreshMeters()),
+      )
+      .subscribe()
   }
 
   editMeter(meter: GroupMeter) {

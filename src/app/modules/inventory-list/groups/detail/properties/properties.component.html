@@ -16,10 +16,10 @@
     </div>
   } @else {
     <ag-grid-angular
-      class="ag-theme-material"
       [rowData]="properties"
       [columnDefs]="columnDefs"
       [defaultColDef]="defaultColDef"
+      [theme]="gridTheme$ | async"
       (rowClicked)="onRowClicked($event)"
       style="height: 600px; width: 100%"
     ></ag-grid-angular>

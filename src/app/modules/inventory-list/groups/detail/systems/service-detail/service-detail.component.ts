@@ -1,5 +1,6 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupServiceDetail } from '@seed/api'
@@ -7,6 +8,8 @@ import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import type { AddPropertiesDialogData } from './dialogs/add-properties-dialog.component'
+import { AddPropertiesDialogComponent } from './dialogs/add-properties-dialog.component'
 
 @Component({
   selector: 'seed-service-detail',
@@ -14,6 +17,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
   imports: [MaterialImports, PageComponent, RouterLink],
 })
 export class ServiceDetailComponent implements OnDestroy, OnInit {
+  private _dialog = inject(MatDialog)
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
@@ -69,6 +73,23 @@ export class ServiceDetailComponent implements OnDestroy, OnInit {
         this.loading = false
       }),
     )
+  }
+
+  addProperties() {
+    const data: AddPropertiesDialogData = {
+      orgId: this.orgId,
+      groupId: this.groupId,
+      systemId: this.systemId,
+      serviceId: this.serviceId,
+    }
+    this._dialog
+      .open(AddPropertiesDialogComponent, { data, width: '500px' })
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.loadService()),
+      )
+      .subscribe()
   }
 
   goBackToSystems() {

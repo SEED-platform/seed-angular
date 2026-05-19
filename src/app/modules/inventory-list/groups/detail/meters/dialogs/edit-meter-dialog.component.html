@@ -3,6 +3,14 @@
     <div class="mb-4 text-xl font-medium">Configure Meter Details</div>
 
     <div class="flex flex-col gap-4">
+      <!-- Property (read-only) -->
+      @if (meter.property_display_field) {
+        <mat-form-field class="w-full">
+          <mat-label>Property</mat-label>
+          <input matInput [value]="meter.property_display_field" disabled />
+        </mat-form-field>
+      }
+
       <!-- Alias -->
       <mat-form-field class="w-full">
         <mat-label>Alias</mat-label>

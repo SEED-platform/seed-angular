@@ -6,7 +6,7 @@
 >
 </seed-page>
 
-<div class="m-5 flex flex-col gap-6 bg-white p-2.5">
+<div class="m-5 flex flex-col gap-6 bg-card p-2.5">
   <!-- Add System Button -->
   <div>
     <button (click)="createSystem()" mat-flat-button color="primary">
@@ -22,12 +22,12 @@
   } @else {
     @for (typeKey of systemTypeKeys; track typeKey) {
       <div>
-        <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">{{ typeKey }}</div>
+        <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-secondary">{{ typeKey }}</div>
 
         <!-- Systems Table -->
         <table class="w-full border-collapse text-sm">
           <thead>
-            <tr class="border-b bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <tr class="border-b bg-default text-left text-xs font-semibold uppercase tracking-wide text-secondary">
               <th class="w-8 px-1 py-2"></th>
               <th class="px-3 py-2">Name</th>
               @if (getBaseType(typeKey) === 'DES') {
@@ -57,7 +57,7 @@
           <tbody>
             @for (system of systemsByType[typeKey]; track system.id) {
               <!-- System row -->
-              <tr class="border-b hover:bg-gray-50">
+              <tr class="border-b hover:bg-default">
                 <td class="w-8 px-1 py-2 text-center">
                   @if (system.services?.length) {
                     <button class="scale-75" (click)="toggleServices(system.id)" mat-icon-button matTooltip="Toggle Services">
@@ -112,7 +112,7 @@
               <!-- Services expandable row -->
               @if (expandedSystems.has(system.id) && system.services?.length) {
                 <tr>
-                  <td class="bg-gray-50 px-6 py-3" [attr.colspan]="getColspan(typeKey)">
+                  <td class="bg-default px-6 py-3" [attr.colspan]="getColspan(typeKey)">
                     <table class="w-full border-collapse text-sm">
                       <thead>
                         <tr class="border-b text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
@@ -123,7 +123,7 @@
                       </thead>
                       <tbody>
                         @for (service of system.services; track service.id) {
-                          <tr class="border-b hover:bg-white">
+                          <tr class="border-b hover:bg-default">
                             <td class="px-3 py-2">{{ service.name }}</td>
                             <td class="px-3 py-2">{{ service.emission_factor ?? '—' }}</td>
                             <td class="px-3 py-2 text-right">
