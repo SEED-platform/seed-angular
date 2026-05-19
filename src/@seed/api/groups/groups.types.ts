@@ -140,6 +140,14 @@ export type GroupMeter = {
 
 export type MeterInterval = 'Exact' | 'Month' | 'Year'
 
+export type MeterReadingDetail = {
+  start_time: string;
+  end_time: string;
+  reading: number | null;
+  source_unit: string | null;
+  conversion_factor: number;
+}
+
 export type GroupServiceDetail = {
   id: number;
   system_name: string;

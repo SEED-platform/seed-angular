@@ -1,7 +1,7 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
-import { BehaviorSubject, catchError, map, of, type Observable, take, tap } from 'rxjs'
+import { BehaviorSubject, catchError, map, type Observable, of, take, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType } from 'app/modules/inventory'
@@ -22,6 +22,7 @@ import type {
   InventoryGroup,
   InventoryGroupResponse,
   MeterInterval,
+  MeterReadingDetail,
   SystemsByTypeResponse,
 } from './groups.types'
 
@@ -215,6 +216,24 @@ export class GroupsService {
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching meter usage')
       }),
+    )
+  }
+
+  getMeterReadings(orgId: number, meterId: number): Observable<MeterReadingDetail[]> {
+    const url = `/api/v4/meters/${meterId}/readings/?organization_id=${orgId}`
+    return this._httpClient.get<{ status: string; data: MeterReadingDetail[]; count: number }>(url).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching meter readings')
+      }),
+    )
+  }
+
+  getMeterReadingsCount(orgId: number, meterId: number): Observable<number> {
+    const url = `/api/v4/meters/${meterId}/readings/count/?organization_id=${orgId}`
+    return this._httpClient.get<{ status: string; data: { count: number } }>(url).pipe(
+      map(({ data }) => data.count),
+      catchError(() => of(0)),
     )
   }
 

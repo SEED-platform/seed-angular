@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupMeter, MeterInterval } from '@seed/api'
@@ -18,6 +18,8 @@ import type { DeleteMeterDialogData } from './dialogs/delete-meter-dialog.compon
 import { DeleteMeterDialogComponent } from './dialogs/delete-meter-dialog.component'
 import type { EditMeterDialogData } from './dialogs/edit-meter-dialog.component'
 import { EditMeterDialogComponent } from './dialogs/edit-meter-dialog.component'
+import type { MeterReadingsDialogData } from './dialogs/meter-readings-dialog.component'
+import { MeterReadingsDialogComponent } from './dialogs/meter-readings-dialog.component'
 import type { UploadReadingsDialogData } from './dialogs/upload-readings-dialog.component'
 import { UploadReadingsDialogComponent } from './dialogs/upload-readings-dialog.component'
 
@@ -42,6 +44,9 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
   inventoryType = this._getInventoryType()
   orgId: number
   meters: GroupMeter[] = []
+  meterGridApi: GridApi
+  allReadings: Record<string, unknown>[] = []
+  allReadingColumnDefs: ColDef[] = []
   readings: Record<string, unknown>[] = []
   readingColumnDefs: ColDef[] = []
   selectedMeter: GroupMeter | null = null
@@ -79,11 +84,14 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
     {
       headerName: 'Actions',
       field: 'actions',
-      width: 150,
+      width: 180,
       sortable: false,
       filter: false,
       cellRenderer: () => {
         return `<div class="flex items-center gap-1 h-full">
+          <button data-action="view-readings" class="cursor-pointer border-none bg-transparent p-1" title="View Readings">
+            <span class="material-icons text-primary-600" style="font-size:18px">bar_chart</span>
+          </button>
           <button data-action="edit" class="cursor-pointer border-none bg-transparent p-1" title="Edit Meter Connection">
             <span class="material-icons text-cyan-600" style="font-size:18px">edit</span>
           </button>
@@ -102,6 +110,36 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
     sortable: true,
     filter: true,
     resizable: true,
+  }
+
+  meterGridOptions = {
+    rowSelection: {
+      mode: 'multiRow' as const,
+      checkboxes: true,
+      headerCheckbox: true,
+    },
+  }
+
+  onMeterGridReady(event: GridReadyEvent) {
+    this.meterGridApi = event.api
+    // Select all meters by default
+    this.meterGridApi.selectAll()
+  }
+
+  onMeterSelectionChanged(_event: SelectionChangedEvent) {
+    this.applyMeterFilter()
+  }
+
+  applyMeterFilter() {
+    const selectedMeters = this.meterGridApi?.getSelectedRows() as GroupMeter[] ?? []
+    const timeColumns = ['start_time', 'end_time', 'month', 'year']
+    const meterLabels = selectedMeters.map((m) => this._getMeterLabel(m))
+
+    const selectedColumns = new Set([...timeColumns, ...meterLabels])
+    this.readingColumnDefs = this.allReadingColumnDefs.filter((col) => selectedColumns.has(col.field))
+    this.readings = this.allReadings.filter((reading) =>
+      meterLabels.some((label) => label in reading),
+    )
   }
 
   ngOnInit() {
@@ -127,8 +165,8 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
     this.loadingReadings = true
     this._groupsService.getMeterUsage(this.orgId, this.groupId, this.interval).subscribe({
       next: (data) => {
-        this.readings = data.readings
-        this.readingColumnDefs = data.column_defs.map((col) => ({
+        this.allReadings = data.readings
+        this.allReadingColumnDefs = data.column_defs.map((col) => ({
           headerName: col.headerName ?? col.field,
           field: col.field,
           flex: 1,
@@ -136,8 +174,11 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
           filter: true,
         }))
         this.loadingReadings = false
+        this.applyMeterFilter()
       },
       error: () => {
+        this.allReadings = []
+        this.allReadingColumnDefs = []
         this.readings = []
         this.readingColumnDefs = []
         this.loadingReadings = false
@@ -175,6 +216,9 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
         if (meter.service_group) {
           void this._router.navigate(['/', this.inventoryType, 'groups', meter.service_group, 'systems'])
         }
+        break
+      case 'view-readings':
+        this.viewMeterReadings(meter)
         break
     }
   }
@@ -227,6 +271,11 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
+  viewMeterReadings(meter: GroupMeter) {
+    const data: MeterReadingsDialogData = { orgId: this.orgId, meter }
+    this._dialog.open(MeterReadingsDialogComponent, { data, width: '700px' })
+  }
+
   ngOnDestroy() {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
@@ -241,10 +290,17 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
     )
   }
 
+  private _getMeterLabel(meter: GroupMeter): string {
+    const source = meter.source ?? 'None'
+    const sourceId = meter.source_id ?? 'None'
+    return `${meter.type} - ${source} - ${sourceId}`
+  }
+
   private _refreshMeters() {
     return this._groupsService.getMeters(this.orgId, this.groupId).pipe(
       tap((data) => {
         this.meters = data
+        this.loadReadings()
       }),
     )
   }

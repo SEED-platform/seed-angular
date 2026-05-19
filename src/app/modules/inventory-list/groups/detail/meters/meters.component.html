@@ -21,10 +21,13 @@
     <div class="text-secondary text-sm">No meters in this group</div>
   } @else {
     <ag-grid-angular
-      
-      [theme]="gridTheme$ | async" [rowData]="meters"
+      [theme]="gridTheme$ | async"
+      [rowData]="meters"
       [columnDefs]="meterColumnDefs"
       [defaultColDef]="defaultColDef"
+      [gridOptions]="meterGridOptions"
+      (gridReady)="onMeterGridReady($event)"
+      (selectionChanged)="onMeterSelectionChanged($event)"
       (cellClicked)="onMeterCellClicked($event)"
       style="height: 400px; width: 100%"
     ></ag-grid-angular>
@@ -50,8 +53,8 @@
     <div class="text-secondary text-sm">Loading readings...</div>
   } @else if (readings.length) {
     <ag-grid-angular
-      
-      [theme]="gridTheme$ | async" [rowData]="readings"
+      [theme]="gridTheme$ | async"
+      [rowData]="readings"
       [columnDefs]="readingColumnDefs"
       [defaultColDef]="defaultColDef"
       style="height: 400px; width: 100%"
