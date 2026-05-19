@@ -37,6 +37,7 @@ import {
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
   @Input() gridApi: GridApi
+  @Input() groupMode = false
   @Input() inventory: Record<string, unknown>[]
   @Input() orgId: number
   @Input() profile: Profile
