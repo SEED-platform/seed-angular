@@ -344,7 +344,7 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
     this.scatterChart.update()
     this.barChart.data.labels = []
     this.barChart.data.datasets[0].data = []
-    ;(this.barChart.data.datasets[0].backgroundColor as string[]) = []
+    ;(this.barChart.data.datasets[0] as { backgroundColor?: unknown }).backgroundColor = []
     this.barChart.update()
   }
 
@@ -480,7 +480,7 @@ export class DefaultReportsComponent implements OnInit, OnDestroy {
           this.barChart.options.scales.y.max = undefined
           this.barChart.data.labels = data.chart_data.map((d: AggregatedChartPoint) => d.y as string)
           this.barChart.data.datasets[0].data = data.chart_data.map((d: AggregatedChartPoint) => d.x as number)
-          ;(this.barChart.data.datasets[0].backgroundColor as string[]) = data.chart_data.map(
+          ;(this.barChart.data.datasets[0] as { backgroundColor?: unknown }).backgroundColor = data.chart_data.map(
             (d: AggregatedChartPoint) => colorMap.get(d.yr_e) ?? '#458cc8',
           )
           this.barChart.update()

@@ -102,19 +102,38 @@
         </div>
 
         @if (sankeyData.length) {
+          <!-- Sankey Diagram -->
           <div class="rounded-lg border p-4">
             <div class="mb-2 text-sm font-semibold">Energy Flow</div>
-            @for (entry of sankeyData; track $index) {
-              @if (entry.flow) {
-                <div class="flex items-center gap-2 py-1 text-sm">
-                  <span class="font-medium">{{ entry.from }}</span>
-                  <mat-icon class="text-secondary" svgIcon="fa-solid:arrow-right"></mat-icon>
-                  <span class="font-medium">{{ entry.to }}</span>
-                  <span class="text-secondary ml-auto">{{ entry.flow | number }}</span>
-                </div>
-              }
-            }
+            <div class="h-[480px]">
+              <canvas #sankeyCanvas></canvas>
+            </div>
           </div>
+
+          <!-- Troubleshooting Table -->
+          <mat-expansion-panel class="mat-elevation-z0 rounded-lg border">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="text-sm font-semibold">Troubleshooting Data</mat-panel-title>
+            </mat-expansion-panel-header>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="px-3 py-2 text-left font-semibold">From</th>
+                  <th class="px-3 py-2 text-left font-semibold">To</th>
+                  <th class="px-3 py-2 text-right font-semibold">Flow</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of sankeyData; track $index) {
+                  <tr class="border-b last:border-0">
+                    <td class="px-3 py-1.5">{{ entry.from }}</td>
+                    <td class="px-3 py-1.5">{{ entry.to }}</td>
+                    <td class="px-3 py-1.5 text-right">{{ entry.flow | number: '1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </mat-expansion-panel>
         } @else {
           <div class="text-secondary text-sm">No energy flow data for this type and cycle</div>
         }
