@@ -129,7 +129,7 @@ export class MapComponent implements OnDestroy, OnInit {
         this.cycle = this.cycles.find((c) => c.cycle_id === this.currentUser.settings.cycleId) ?? this.cycles[0]
         this.displayFieldKey = this.type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
       }),
-      switchMap(() => this._columnService.propertyColumns$.pipe(take(1))),
+      switchMap(() => (this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$).pipe(take(1))),
       tap((columns) => {
         // Resolve the org display field (e.g., "Nick Name") to the column metadata
         const displayFieldCol = columns.find((c) => c.display_name === this.displayFieldKey || c.column_name === this.displayFieldKey)
@@ -140,8 +140,12 @@ export class MapComponent implements OnDestroy, OnInit {
         // Store all column IDs so we can request extra data columns via shown_column_ids
         this._allColumnIds = columns.map((c) => c.id)
 
-        const footprintCol = columns.find((c) => c.column_name === 'property_footprint')
-        this._footprintColumnName = footprintCol?.name ?? null
+        if (this.type === 'properties') {
+          const footprintCol = columns.find((c) => c.column_name === 'property_footprint')
+          this._footprintColumnName = footprintCol?.name ?? null
+        } else {
+          this._footprintColumnName = null
+        }
       }),
       switchMap(() => this.getLabels()),
     )
