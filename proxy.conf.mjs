@@ -13,6 +13,12 @@ export default {
       proxyReq.setHeader('origin', target)
       proxyReq.setHeader('referer', `${target}/`)
     },
+    onProxyRes: (proxyRes) => {
+      // Fix http-proxy mangling 204 No Content responses
+      if (proxyRes.statusCode === 204) {
+        proxyRes.headers['content-length'] = '0'
+      }
+    },
   },
   '/media/': {
     target: process.env.SEED_HOST ?? 'http://127.0.0.1:8000',

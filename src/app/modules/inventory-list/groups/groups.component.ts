@@ -3,7 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -26,6 +26,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
+  private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   columnDefs: ColDef[] = []
@@ -78,22 +79,22 @@ export class GroupsComponent implements OnDestroy, OnInit {
     ]
   }
 
-  nameRenderer = ({ data, value }: { data: InventoryGroup; value: string }) => {
-    return `<a href="/properties/groups/${data.id}" class="underline text-primary dark:text-primary-500">${value}</a>`
+  nameRenderer = ({ value }: { data: InventoryGroup; value: string }) => {
+    return `<span class="underline text-primary dark:text-primary-500 cursor-pointer" data-action="navigate">${value}</span>`
   }
 
   actionRenderer = () => {
     return `
-      <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons cursor-pointer text-secondary" data-action="edit">edit</span>
-        <span class="material-icons cursor-pointer text-secondary" data-action="delete">clear</span>
+      <div class="flex gap-2 mt-2 align-center">
+        <span class="material-icons cursor-pointer text-cyan-600" title="Edit" data-action="edit">edit</span>
+        <span class="material-icons cursor-pointer text-red-700" title="Delete" data-action="delete">delete</span>
       </div>
     `
   }
 
   setRowData() {
     this.rowData = []
-    for (const group of this.groups) {
+    for (const group of this.groups ?? []) {
       const row = {
         id: group.id,
         name: group.name,
@@ -115,13 +116,13 @@ export class GroupsComponent implements OnDestroy, OnInit {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    if (event.colDef.field !== 'actions') return
-
     const target = event.event.target as HTMLElement
-    const action = target.getAttribute('data-action')
+    const action = target.closest('[data-action]')?.getAttribute('data-action')
     const { id, name } = event.data as { id: number; name: string }
 
-    if (action === 'edit') {
+    if (action === 'navigate') {
+      void this._router.navigate([`/${this.type}/groups`, id])
+    } else if (action === 'edit') {
       this.editGroup(id)
     } else if (action === 'delete') {
       this.openDeleteModal(id, name)

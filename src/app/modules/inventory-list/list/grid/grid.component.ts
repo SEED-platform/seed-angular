@@ -10,6 +10,7 @@ import { ConfigService } from '@seed/services'
 import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
+import { IconHeaderComponent } from './icon-header.component'
 
 @Component({
   selector: 'seed-inventory-grid',
@@ -115,10 +116,10 @@ export class InventoryGridComponent implements OnChanges {
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 82, 'merge'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 78, 'bolt', 'meters'),
-      this.buildShortcutColumn('notes_count', 'Notes', 71, 'mode_comment', 'notes'),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 79, 'G'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', 44, 'merge'),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 44, 'bolt', 'meters'),
+      this.buildShortcutColumn('notes_count', 'Notes', 44, 'mode_comment', 'notes'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', 44, 'workspaces'),
       this.buildLabelsCell(),
     ]
     return shortcutColumns
@@ -140,11 +141,14 @@ export class InventoryGridComponent implements OnChanges {
     return {
       field,
       headerName,
+      headerTooltip: headerName,
+      headerComponent: IconHeaderComponent,
+      headerComponentParams: { icon, tooltip: headerName },
+      width: maxWidth,
       maxWidth,
       filter: false,
       sortable: false,
       suppressMovable: true,
-      headerClass: 'white-space-normal',
       cellClass: 'overflow-hidden',
       cellRenderer: ({ value }) => this.actionRenderer(value, icon, action),
     }
@@ -155,21 +159,20 @@ export class InventoryGridComponent implements OnChanges {
     return {
       field,
       headerName: 'Info',
+      headerTooltip: 'Info',
+      headerComponent: IconHeaderComponent,
+      headerComponentParams: { icon: 'info', tooltip: 'Info' },
       filter: false,
       sortable: false,
-      resizable: false,
       suppressMovable: true,
-      maxWidth: 60,
+      width: 44,
+      maxWidth: 44,
       cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
     }
   }
 
   actionRenderer = (value, icon: string, action: string) => {
     if (!value) return ''
-    // Allow a single letter to be passed as an indicator (like G for groups)
-    if (icon.length === 1) {
-      return `<span class="font-bold text-lg">${icon}</span>`
-    }
 
     const cursorClass = action ? 'cursor-pointer' : ''
     return `

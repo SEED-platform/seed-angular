@@ -44,6 +44,7 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   updateCLP$ = new Subject<unknown>()
   updateOrgUserSettings$ = new Subject<void>()
   rowData: ProfileColumn[] = []
+  private _rowSelectedTimer: ReturnType<typeof setTimeout>
 
   gridOptions: GridOptions = {
     rowSelection: {
@@ -241,10 +242,15 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   }
 
   onRowSelected(event: RowSelectedEvent) {
-    if (event.source !== 'api') {
+    // Ignore programmatic selection and header checkbox intermediate events
+    if (event.source === 'api') return
+
+    // Defer to let AG Grid finish processing all row selections (e.g., header checkbox "select all")
+    if (this._rowSelectedTimer) clearTimeout(this._rowSelectedTimer)
+    this._rowSelectedTimer = setTimeout(() => {
       const selectedRows = new Set(this.gridApi.getSelectedRows().map((r: ProfileColumn) => r.id))
       this.setRowData(selectedRows)
-    }
+    }, 50)
   }
 
   selectProfile(event: MatSelectChange) {

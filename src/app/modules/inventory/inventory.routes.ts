@@ -14,6 +14,13 @@ import {
   UbidsComponent,
 } from '../inventory-detail'
 import { ColumnDetailProfilesComponent } from '../inventory-detail/column-detail-profiles/column-detail-profiles.component'
+import { GroupDashboardComponent } from '../inventory-list/groups/detail/dashboard/dashboard.component'
+import { GroupDetailLayoutComponent } from '../inventory-list/groups/detail/group-detail-layout.component'
+import { GroupMapComponent } from '../inventory-list/groups/detail/map/map.component'
+import { GroupMetersComponent } from '../inventory-list/groups/detail/meters/meters.component'
+import { GroupPropertiesComponent } from '../inventory-list/groups/detail/properties/properties.component'
+import { ServiceDetailComponent } from '../inventory-list/groups/detail/systems/service-detail/service-detail.component'
+import { GroupSystemsComponent } from '../inventory-list/groups/detail/systems/systems.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
 import type { InventoryType } from './inventory.types'
 
@@ -38,6 +45,20 @@ export default [
     path: 'groups',
     title: 'Groups',
     component: GroupsComponent,
+  },
+  {
+    path: 'groups/:groupId',
+    title: 'Group Detail',
+    component: GroupDetailLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', title: 'Dashboard', component: GroupDashboardComponent },
+      { path: 'properties', title: 'Properties', component: GroupPropertiesComponent },
+      { path: 'systems', title: 'Systems & Services', component: GroupSystemsComponent },
+      { path: 'systems/services/:systemId/:serviceId', title: 'Service Detail', component: ServiceDetailComponent },
+      { path: 'meters', title: 'Meters', component: GroupMetersComponent },
+      { path: 'map', title: 'Map', component: GroupMapComponent },
+    ],
   },
   {
     path: 'column-list-profiles',

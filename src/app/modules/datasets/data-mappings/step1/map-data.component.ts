@@ -209,18 +209,9 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   copyHeadersToSeed() {
-    const { suggested_column_mappings } = this.mappingSuggestions
-    const columns = this.getColumns()
-    const columnMap: Record<string, string> = columns.reduce(
-      (acc, { column_name, display_name }) => ({ ...acc, [column_name]: display_name }),
-      {},
-    )
-
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
       const fileHeader = node.data.from_field
-      const suggestedColumnName = suggested_column_mappings[fileHeader][1]
-      const displayName = columnMap[suggestedColumnName] ?? fileHeader
-      node.setDataValue('to_field_display_name', displayName)
+      node.setDataValue('to_field_display_name', fileHeader)
     })
   }
 
@@ -237,6 +228,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       node.setDataValue('to_field', mapping.to_field)
       node.setDataValue('from_units', mapping.from_units)
       node.setDataValue('to_table_name', toTableMap[mapping.to_table_name])
+      node.setDataValue('omit', mapping.is_omitted)
     })
   }
 

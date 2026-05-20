@@ -1,11 +1,11 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { Component, inject, Input, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, combineLatest, filter, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Label, OrganizationUserResponse, OrganizationUserSettings } from '@seed/api'
-import { ColumnService, CycleService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
+import { ColumnService, CycleService, GroupsService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { naturalSort } from '@seed/utils'
@@ -31,6 +31,7 @@ import type { LabelSelections } from './grid/filter-group/filter-group-selector.
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
+  host: { class: 'flex flex-col flex-auto min-h-0' },
   imports: [
     ActionsComponent,
     ConfigSelectorComponent,
@@ -45,13 +46,16 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _activatedRoute = inject(ActivatedRoute)
   private _columnService = inject(ColumnService)
   private _cycleService = inject(CycleService)
+  private _groupsService = inject(GroupsService)
   private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _labelService = inject(LabelService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
-  readonly type = this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
+  readonly type = this._resolveType()
+  @Input() groupId?: number
+  private _groupPropertyIds: number[] | null = null
   chunk = 100
   columns: Column[] = []
   columnDefs: ColDef[] = []
@@ -75,7 +79,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   profileId: number
   profileId$ = new BehaviorSubject<number>(null)
   propertyProfiles: Profile[]
-  refreshInventory$ = new Subject<void>()
+  refreshInventory$ = new Subject<number | null>()
   rowData: Record<string, unknown>[]
   selectedViewIds: number[] = []
   selectedStateIds: number[] = []
@@ -134,13 +138,41 @@ export class InventoryComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
-    this._organizationService.orgUserSettings$.pipe(tap((settings) => (this.userSettings = settings))).subscribe()
+    this._organizationService.orgUserSettings$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((settings) => (this.userSettings = settings)),
+      )
+      .subscribe()
 
-    this.refreshInventory$.pipe(switchMap(() => this.refreshInventory())).subscribe()
+    this.refreshInventory$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((profileId) => this.refreshInventory(profileId)),
+      )
+      .subscribe()
   }
 
-  refreshInventory() {
-    return this.updateOrgUserSettings().pipe(switchMap(() => this.loadInventory()))
+  onRefreshInventory(profileId: number | null) {
+    this.refreshInventory$.next(profileId)
+  }
+
+  refreshInventory(newProfileId?: number | null) {
+    return this._inventoryService.getColumnListProfiles('List View Profile', 'properties', true).pipe(
+      tap((profiles) => {
+        this.propertyProfiles = profiles.filter((p) => p.inventory_type === 0)
+        this.taxlotProfiles = profiles.filter((p) => p.inventory_type === 1)
+      }),
+      switchMap(() => {
+        const targetId = newProfileId ?? this.profileId
+        if (targetId) {
+          return this.getProfile(targetId)
+        }
+        return of(null)
+      }),
+      switchMap(() => this.updateOrgUserSettings()),
+      switchMap(() => this.loadInventory()),
+    )
   }
 
   /*
@@ -227,40 +259,52 @@ export class InventoryComponent implements OnDestroy, OnInit {
       return of(null)
     }
 
-    const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
-    const params = new URLSearchParams({
-      cycle: this.cycleId.toString(),
-      ids_only: 'false',
-      include_related: 'true',
-      organization_id: this.orgId.toString(),
-      page: this.page.toString(),
-      per_page: this.chunk.toString(),
-      inventory_type,
-    })
+    // If in group mode, fetch group property IDs first
+    const groupIds$ = this.groupId
+      ? this._groupsService.getProperties(this.orgId, this.groupId).pipe(
+          tap((props) => {
+            this._groupPropertyIds = props.map((p) => p.property_id)
+          }),
+        )
+      : of(null)
 
-    const { includeViewIds, excludeViewIds } = this._computeLabelViewIds()
-    const data: Record<string, unknown> = {
-      include_property_ids: null,
-      profile_id: this.profileId,
-      filters: this.filters,
-      sorts: this.sorts,
-    }
-    if (includeViewIds) {
-      data.include_view_ids = includeViewIds
-    }
-    if (excludeViewIds) {
-      data.exclude_view_ids = excludeViewIds
-    }
+    return groupIds$.pipe(
+      switchMap(() => {
+        const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
+        const params = new URLSearchParams({
+          cycle: this.cycleId.toString(),
+          ids_only: 'false',
+          include_related: 'true',
+          organization_id: this.orgId.toString(),
+          page: this.page.toString(),
+          per_page: this.chunk.toString(),
+          inventory_type,
+        })
 
-    return this._inventoryService.getAgInventory(params.toString(), data).pipe(
-      tap(({ pagination, results, column_defs }: AgFilterResponse) => {
-        this.pagination = pagination
-        this.inventory = results
+        const { includeViewIds, excludeViewIds } = this._computeLabelViewIds()
+        const data: Record<string, unknown> = {
+          include_property_ids: this._groupPropertyIds,
+          profile_id: this.profileId,
+          filters: this.filters,
+          sorts: this.sorts,
+        }
+        if (includeViewIds) {
+          data.include_view_ids = includeViewIds
+        }
+        if (excludeViewIds) {
+          data.exclude_view_ids = excludeViewIds
+        }
 
-        this.columnDefs = column_defs
-        this.rowData = results
+        return this._inventoryService.getAgInventory(params.toString(), data).pipe(
+          tap(({ pagination, results, column_defs }: AgFilterResponse) => {
+            this.pagination = pagination
+            this.inventory = results
+            this.columnDefs = column_defs
+            this.rowData = results
+          }),
+          map(() => null),
+        )
       }),
-      map(() => null),
     ) as Observable<null>
   }
 
@@ -326,7 +370,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onPageChange(page: number) {
     this.page = page
-    this.refreshInventory$.next()
+    this.refreshInventory$.next(null)
   }
 
   setFilters() {
@@ -418,7 +462,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
-    this.refreshInventory$.next()
+    this.refreshInventory$.next(null)
   }
 
   ngOnDestroy(): void {
@@ -501,5 +545,17 @@ export class InventoryComponent implements OnDestroy, OnInit {
         }),
       )
       .subscribe()
+  }
+
+  private _resolveType(): InventoryType {
+    // Check current route first, then walk up route tree (for group detail context)
+    return (
+      (this._activatedRoute.snapshot.paramMap.get('type') as InventoryType)
+      ?? ([...this._activatedRoute.pathFromRoot]
+        .reverse()
+        .map((route) => route.snapshot.paramMap.get('type'))
+        .find((type): type is string => !!type) as InventoryType)
+      ?? 'properties'
+    )
   }
 }

@@ -543,7 +543,7 @@ export class PropertyInsightsComponent implements OnDestroy, OnInit {
 
   setDatasetColor() {
     for (const ds of this.chart.data.datasets) {
-      ds.backgroundColor = this.colors[ds.label]
+      ;(ds as { backgroundColor?: string }).backgroundColor = this.colors[ds.label]
     }
   }
 
