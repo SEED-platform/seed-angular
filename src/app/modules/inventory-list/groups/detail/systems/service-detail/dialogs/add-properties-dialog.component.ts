@@ -6,7 +6,7 @@ import type { GroupProperty } from '@seed/api'
 import { GroupsService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
-export interface AddPropertiesDialogData {
+export type AddPropertiesDialogData = {
   orgId: number;
   groupId: number;
   systemId: number;
@@ -68,8 +68,8 @@ export class AddPropertiesDialogComponent implements OnInit {
   ]
 
   form = new FormGroup({
-    type: new FormControl<string>(null, Validators.required),
-    direction: new FormControl<string>('imported', Validators.required),
+    type: new FormControl(null, Validators.required),
+    direction: new FormControl('imported', Validators.required),
   })
 
   ngOnInit() {
@@ -100,9 +100,10 @@ export class AddPropertiesDialogComponent implements OnInit {
     this.submitted = true
     this.errorMessage = null
 
+    const formValue = this.form.value as { type: string | null; direction: string | null }
     const payload = {
-      type: this.form.value.type,
-      direction: this.form.value.direction,
+      type: formValue.type ?? '',
+      direction: formValue.direction ?? '',
       property_ids: this.selectedProperties.map((p) => p.property_id),
     }
 
@@ -112,9 +113,20 @@ export class AddPropertiesDialogComponent implements OnInit {
       next: () => {
         this._dialogRef.close(true)
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.submitted = false
-        this.errorMessage = err?.error?.errors ?? err?.error?.message ?? 'Failed to create meters'
+        this.errorMessage = 'Failed to create meters'
+        if (err !== null && typeof err === 'object') {
+          const error = err as Record<string, unknown>
+          if (error.error && typeof error.error === 'object') {
+            const errorDetail = error.error as Record<string, unknown>
+            if (typeof errorDetail.errors === 'string') {
+              this.errorMessage = errorDetail.errors
+            } else if (typeof errorDetail.message === 'string') {
+              this.errorMessage = errorDetail.message
+            }
+          }
+        }
       },
     })
   }

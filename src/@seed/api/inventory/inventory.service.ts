@@ -144,7 +144,7 @@ export class InventoryService {
   deleteColumnListProfile(orgId: number, id: number): Observable<null> {
     const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete<null>(url).pipe(
-      map(() => null),
+      map((): null => null),
       catchError((error: HttpErrorResponse) => {
         // Dev proxy may fail to parse 204 No Content (status 0). The delete succeeds server-side.
         if (error.status === 0) {

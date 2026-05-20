@@ -6,7 +6,7 @@ import type { GroupSystem, InventoryGroup } from '@seed/api'
 import { GroupsService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 
-export interface CreateMeterDialogData {
+export type CreateMeterDialogData = {
   orgId: number;
   groupId: number;
 }
@@ -59,9 +59,9 @@ export class CreateMeterDialogComponent implements OnInit {
   ]
 
   form = new FormGroup({
-    system_id: new FormControl<number>(null, Validators.required),
-    type: new FormControl<string>(null, Validators.required),
-    alias: new FormControl<string>('', Validators.required),
+    system_id: new FormControl(null, Validators.required),
+    type: new FormControl(null, Validators.required),
+    alias: new FormControl('', Validators.required),
   })
 
   ngOnInit() {
@@ -82,9 +82,20 @@ export class CreateMeterDialogComponent implements OnInit {
       next: () => {
         this._dialogRef.close(true)
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.submitted = false
-        this.errorMessage = err?.error?.errors ?? err?.error?.message ?? 'Failed to create meter'
+        this.errorMessage = 'Failed to create meter'
+        if (err !== null && typeof err === 'object') {
+          const error = err as Record<string, unknown>
+          if (error.error && typeof error.error === 'object') {
+            const errorDetail = error.error as Record<string, unknown>
+            if (typeof errorDetail.errors === 'string') {
+              this.errorMessage = errorDetail.errors
+            } else if (typeof errorDetail.message === 'string') {
+              this.errorMessage = errorDetail.message
+            }
+          }
+        }
       },
     })
   }

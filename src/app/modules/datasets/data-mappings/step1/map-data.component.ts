@@ -228,7 +228,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       node.setDataValue('to_field', mapping.to_field)
       node.setDataValue('from_units', mapping.from_units)
       node.setDataValue('to_table_name', toTableMap[mapping.to_table_name])
-      node.setDataValue('omit', !!mapping.is_omitted)
+      node.setDataValue('omit', mapping.is_omitted)
     })
   }
 
