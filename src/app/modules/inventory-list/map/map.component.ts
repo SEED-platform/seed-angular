@@ -366,14 +366,16 @@ export class MapComponent implements OnDestroy, OnInit {
     })
 
     const popupElement = document.getElementById('popup-element')
-    this.popupOverlay = new Overlay({
-      element: popupElement,
-      positioning: 'bottom-center',
-      stopEvent: true,
-      autoPan: true,
-      offset: [0, -10],
-    })
-    this.map.addOverlay(this.popupOverlay)
+    if (popupElement) {
+      this.popupOverlay = new Overlay({
+        element: popupElement,
+        positioning: 'bottom-center',
+        stopEvent: true,
+        autoPan: true,
+        offset: [0, -10],
+      })
+      this.map.addOverlay(this.popupOverlay)
+    }
 
     this.map.on('click', (event) => {
       const points: Feature[] = []
@@ -629,7 +631,7 @@ export class MapComponent implements OnDestroy, OnInit {
     // Resolve the display field value. The key might be exact, space-normalized, or absent (extra data fields).
     const displayValue = this._resolveDisplayValue(props)
     this.popupInfo = { displayValue: displayValue || `ID: ${viewId}`, viewId }
-    this.popupOverlay.setPosition(coordinates)
+    this.popupOverlay?.setPosition(coordinates)
   }
 
   zoomOnCluster(points: Feature[]) {
