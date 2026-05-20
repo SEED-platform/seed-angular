@@ -131,15 +131,13 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
   }
 
   applyMeterFilter() {
-    const selectedMeters = this.meterGridApi?.getSelectedRows() as GroupMeter[] ?? []
+    const selectedMeters = (this.meterGridApi?.getSelectedRows() as GroupMeter[]) ?? []
     const timeColumns = ['start_time', 'end_time', 'month', 'year']
     const meterLabels = selectedMeters.map((m) => this._getMeterLabel(m))
 
     const selectedColumns = new Set([...timeColumns, ...meterLabels])
     this.readingColumnDefs = this.allReadingColumnDefs.filter((col) => selectedColumns.has(col.field))
-    this.readings = this.allReadings.filter((reading) =>
-      meterLabels.some((label) => label in reading),
-    )
+    this.readings = this.allReadings.filter((reading) => meterLabels.some((label) => label in reading))
   }
 
   ngOnInit() {

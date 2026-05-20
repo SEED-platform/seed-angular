@@ -6,7 +6,7 @@
 >
 </seed-page>
 
-<div class="flex flex-col gap-6 bg-card p-2.5">
+<div class="bg-card flex flex-col gap-6 p-2.5">
   <!-- Add System Button -->
   <div>
     <button (click)="createSystem()" mat-flat-button color="primary">
@@ -22,12 +22,12 @@
   } @else {
     @for (typeKey of systemTypeKeys; track typeKey) {
       <div>
-        <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-secondary">{{ typeKey }}</div>
+        <div class="text-secondary mb-3 text-sm font-semibold uppercase tracking-wide">{{ typeKey }}</div>
 
         <!-- Systems Table -->
         <table class="w-full border-collapse text-sm">
           <thead>
-            <tr class="border-b bg-default text-left text-xs font-semibold uppercase tracking-wide text-secondary">
+            <tr class="text-secondary bg-default border-b text-left text-xs font-semibold uppercase tracking-wide">
               <th class="w-8 px-1 py-2"></th>
               <th class="px-3 py-2">Name</th>
               @if (getBaseType(typeKey) === 'DES') {

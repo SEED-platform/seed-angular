@@ -9,14 +9,7 @@ type IconHeaderParams = IHeaderParams & {
 
 @Component({
   selector: 'seed-icon-header',
-  template: `
-    <span
-      class="material-icons-outlined text-base"
-      [title]="tooltip"
-      [attr.aria-label]="tooltip"
-      role="img"
-    >{{ icon }}</span>
-  `,
+  template: ' <span class="material-icons-outlined text-base" [title]="tooltip" [attr.aria-label]="tooltip" role="img">{{ icon }}</span> ',
   styles: `
     :host {
       display: flex;

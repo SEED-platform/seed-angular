@@ -569,7 +569,8 @@ export class MapComponent implements OnDestroy, OnInit {
   pointsSource = (records = this.geocodedData) => new Cluster({ source: this.buildingSources(records), distance: 45 })
   propertyStyle = () => new Style({ stroke: new Stroke({ color: '#185189', width: 2 }) })
   taxlotStyle = () => new Style({ stroke: new Stroke({ color: '#10A0A0', width: 2 }) })
-  footprintStyle = () => new Style({ stroke: new Stroke({ color: '#1e3a5f', width: 2 }), fill: new Fill({ color: 'rgba(30, 58, 95, 0.2)' }) })
+  footprintStyle = () =>
+    new Style({ stroke: new Stroke({ color: '#1e3a5f', width: 2 }), fill: new Fill({ color: 'rgba(30, 58, 95, 0.2)' }) })
 
   footprintSource(records: State[]) {
     if (!this._footprintColumnName) return new VectorSource()

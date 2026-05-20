@@ -34,7 +34,7 @@
     @for (prop of selectedProperties; track prop.property_id) {
       <div class="flex items-center justify-between rounded border border-gray-200 px-3 py-1.5 text-sm">
         <span>{{ prop.property_display_name || 'Property ' + prop.property_id }}</span>
-        <button mat-icon-button class="scale-75" (click)="removeProperty(prop)" matTooltip="Remove">
+        <button class="scale-75" (click)="removeProperty(prop)" mat-icon-button matTooltip="Remove">
           <mat-icon class="text-red-600" svgIcon="fa-solid:xmark"></mat-icon>
         </button>
       </div>
@@ -61,13 +61,8 @@
 <mat-divider></mat-divider>
 
 <mat-dialog-actions class="flex justify-end gap-2 p-4">
-  <button mat-stroked-button (click)="dismiss()">Dismiss</button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="form.invalid || selectedProperties.length === 0 || submitted"
-    (click)="onSubmit()"
-  >
+  <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+  <button [disabled]="form.invalid || selectedProperties.length === 0 || submitted" (click)="onSubmit()" mat-raised-button color="primary">
     Create Meters
   </button>
 </mat-dialog-actions>

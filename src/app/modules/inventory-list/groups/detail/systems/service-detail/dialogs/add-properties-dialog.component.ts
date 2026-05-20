@@ -73,12 +73,15 @@ export class AddPropertiesDialogComponent implements OnInit {
   })
 
   ngOnInit() {
-    this._groupsService.getProperties(this.data.orgId, this.data.groupId).pipe(
-      tap((properties) => {
-        this.properties = properties
-        this.availableProperties = [...properties]
-      }),
-    ).subscribe()
+    this._groupsService
+      .getProperties(this.data.orgId, this.data.groupId)
+      .pipe(
+        tap((properties) => {
+          this.properties = properties
+          this.availableProperties = [...properties]
+        }),
+      )
+      .subscribe()
   }
 
   selectProperty(propertyId: number) {
@@ -107,28 +110,28 @@ export class AddPropertiesDialogComponent implements OnInit {
       property_ids: this.selectedProperties.map((p) => p.property_id),
     }
 
-    this._groupsService.createServiceMeters(
-      this.data.orgId, this.data.groupId, this.data.systemId, this.data.serviceId, payload,
-    ).subscribe({
-      next: () => {
-        this._dialogRef.close(true)
-      },
-      error: (err: unknown) => {
-        this.submitted = false
-        this.errorMessage = 'Failed to create meters'
-        if (err !== null && typeof err === 'object') {
-          const error = err as Record<string, unknown>
-          if (error.error && typeof error.error === 'object') {
-            const errorDetail = error.error as Record<string, unknown>
-            if (typeof errorDetail.errors === 'string') {
-              this.errorMessage = errorDetail.errors
-            } else if (typeof errorDetail.message === 'string') {
-              this.errorMessage = errorDetail.message
+    this._groupsService
+      .createServiceMeters(this.data.orgId, this.data.groupId, this.data.systemId, this.data.serviceId, payload)
+      .subscribe({
+        next: () => {
+          this._dialogRef.close(true)
+        },
+        error: (err: unknown) => {
+          this.submitted = false
+          this.errorMessage = 'Failed to create meters'
+          if (err !== null && typeof err === 'object') {
+            const error = err as Record<string, unknown>
+            if (error.error && typeof error.error === 'object') {
+              const errorDetail = error.error as Record<string, unknown>
+              if (typeof errorDetail.errors === 'string') {
+                this.errorMessage = errorDetail.errors
+              } else if (typeof errorDetail.message === 'string') {
+                this.errorMessage = errorDetail.message
+              }
             }
           }
-        }
-      },
-    })
+        },
+      })
   }
 
   dismiss() {

@@ -6,7 +6,7 @@
 >
 </seed-page>
 
-<div class="m-5 flex flex-col gap-6 bg-card p-2.5">
+<div class="bg-card m-5 flex flex-col gap-6 p-2.5">
   <!-- Back navigation -->
   <div>
     <button (click)="goBackToSystems()" mat-stroked-button>
@@ -30,12 +30,12 @@
 
     <!-- Connected Properties -->
     <div>
-      <div class="mb-3 text-sm font-semibold uppercase tracking-wide text-secondary">Connected Properties</div>
+      <div class="text-secondary mb-3 text-sm font-semibold uppercase tracking-wide">Connected Properties</div>
 
       @if (service.properties.length) {
         <table class="w-full border-collapse text-sm">
           <thead>
-            <tr class="border-b bg-default text-left text-xs font-semibold uppercase tracking-wide text-secondary">
+            <tr class="text-secondary bg-default border-b text-left text-xs font-semibold uppercase tracking-wide">
               <th class="px-3 py-2">Property</th>
               <th class="px-3 py-2">Connected Via</th>
               <th class="px-3 py-2">Connection Type</th>

@@ -550,11 +550,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _resolveType(): InventoryType {
     // Check current route first, then walk up route tree (for group detail context)
     return (
-      this._activatedRoute.snapshot.paramMap.get('type') as InventoryType
-      ?? [...this._activatedRoute.pathFromRoot]
+      (this._activatedRoute.snapshot.paramMap.get('type') as InventoryType)
+      ?? ([...this._activatedRoute.pathFromRoot]
         .reverse()
         .map((route) => route.snapshot.paramMap.get('type'))
-        .find((type): type is string => !!type) as InventoryType ?? 'properties'
+        .find((type): type is string => !!type) as InventoryType)
+      ?? 'properties'
     )
   }
 }

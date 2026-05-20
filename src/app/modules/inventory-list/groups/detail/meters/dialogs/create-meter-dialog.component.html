@@ -30,7 +30,7 @@
   <!-- Alias -->
   <mat-form-field class="w-full">
     <mat-label>Alias</mat-label>
-    <input matInput [formControl]="form.controls.alias" placeholder="Enter an identifying name" />
+    <input [formControl]="form.controls.alias" matInput placeholder="Enter an identifying name" />
     <mat-hint>Enter an identifying name for this meter</mat-hint>
   </mat-form-field>
 
@@ -42,6 +42,6 @@
 <mat-divider></mat-divider>
 
 <mat-dialog-actions class="flex justify-end gap-2 p-4">
-  <button mat-stroked-button (click)="dismiss()">Dismiss</button>
-  <button mat-raised-button color="primary" [disabled]="form.invalid || submitted" (click)="onSubmit()">Create</button>
+  <button (click)="dismiss()" mat-stroked-button>Dismiss</button>
+  <button [disabled]="form.invalid || submitted" (click)="onSubmit()" mat-raised-button color="primary">Create</button>
 </mat-dialog-actions>

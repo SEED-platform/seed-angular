@@ -65,11 +65,14 @@ export class CreateMeterDialogComponent implements OnInit {
   })
 
   ngOnInit() {
-    this._groupsService.get(this.data.orgId, this.data.groupId).pipe(
-      tap((group: InventoryGroup) => {
-        this.systems = group.systems ?? []
-      }),
-    ).subscribe()
+    this._groupsService
+      .get(this.data.orgId, this.data.groupId)
+      .pipe(
+        tap((group: InventoryGroup) => {
+          this.systems = group.systems ?? []
+        }),
+      )
+      .subscribe()
   }
 
   onSubmit() {

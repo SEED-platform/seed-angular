@@ -30,10 +30,10 @@ export type MeterReadingsDialogData = {
       } @else if (readings.length === 0) {
         <p class="text-secondary">No readings found for this meter.</p>
       } @else {
-        <p class="text-hint text-xs mb-2">{{ readings.length }} readings</p>
+        <p class="text-hint mb-2 text-xs">{{ readings.length }} readings</p>
         <div class="h-80">
           <ag-grid-angular
-            class="w-full h-full"
+            class="h-full w-full"
             [theme]="gridTheme$ | async"
             [rowData]="readings"
             [columnDefs]="columnDefs"
