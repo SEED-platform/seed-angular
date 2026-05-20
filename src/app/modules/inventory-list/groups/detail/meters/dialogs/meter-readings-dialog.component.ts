@@ -19,8 +19,12 @@ export type MeterReadingsDialogData = {
 @Component({
   selector: 'seed-meter-readings-dialog',
   template: `
-    <h2 mat-dialog-title>Readings: {{ data.meter.alias }}</h2>
-    <mat-dialog-content class="min-h-64">
+    <div class="ml-4 mt-4 flex gap-4" mat-dialog-title>
+      <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:chart-line"></mat-icon>
+      <div class="text-2xl font-medium leading-6">Readings: {{ data.meter.alias }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <mat-dialog-content class="m-4 min-h-64">
       @if (loading) {
         <p class="text-secondary">Loading readings...</p>
       } @else if (readings.length === 0) {
@@ -38,9 +42,9 @@ export type MeterReadingsDialogData = {
         </div>
       }
     </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close>Close</button>
-    </mat-dialog-actions>
+    <div class="flex items-center justify-end gap-2 bg-gray-50 px-6 py-4 dark:bg-black dark:bg-opacity-10">
+      <button mat-stroked-button mat-dialog-close>Close</button>
+    </div>
   `,
   imports: [AgGridAngular, AsyncPipe, MaterialImports],
 })
