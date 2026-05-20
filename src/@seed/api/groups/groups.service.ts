@@ -400,8 +400,8 @@ export class GroupsService {
         this._snackBar.success('Meter deleted successfully')
       }),
       catchError((error: HttpErrorResponse) => {
-        // Django dev server's 204 No Content causes a Node.js proxy parse error
-        if (error.status === 0 || error.status === 500) {
+        // Dev proxy may fail to parse 204 No Content (status 0). The delete succeeds server-side.
+        if (error.status === 0) {
           this._snackBar.success('Meter deleted successfully')
           return of(null)
         }

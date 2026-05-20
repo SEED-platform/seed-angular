@@ -146,10 +146,8 @@ export class InventoryService {
     return this._httpClient.delete<null>(url).pipe(
       map(() => null),
       catchError((error: HttpErrorResponse) => {
-        // Django dev server's 204 No Content causes a Node.js proxy parse error
-        // (ERR_CONTENT_LENGTH_MISMATCH / status 0). The delete succeeds on the backend,
-        // so treat proxy parse errors as success.
-        if (error.status === 0 || error.status === 500) {
+        // Dev proxy may fail to parse 204 No Content (status 0). The delete succeeds server-side.
+        if (error.status === 0) {
           return of(null)
         }
         return this._errorService.handleError(error, 'Error deleting column list profile')

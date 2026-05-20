@@ -235,8 +235,10 @@ export class MapComponent implements OnDestroy, OnInit {
       inventory_type,
     })
 
-    // Use shown_column_ids to include all columns (standard + extra data) so display field is available
-    if (this._allColumnIds.length) {
+    // Only include shown_column_ids when extra data fields are needed (display field or footprints).
+    // Without it, profile_id=null returns all standard fields which is sufficient for most cases.
+    // When extra data IS needed, we must pass all column IDs since shown_column_ids restricts standard fields too.
+    if (this.displayFieldIsExtraData && this._allColumnIds.length) {
       this.requestParams.set('shown_column_ids', this._allColumnIds.join(','))
     }
 
