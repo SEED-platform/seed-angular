@@ -85,6 +85,7 @@ export class UploadReadingsDialogComponent implements OnInit {
           this.uploadSucceeded = true
         }),
         catchError((error: { error?: { message?: string }; message?: string }) => {
+          this.uploadSucceeded = false
           const message = error?.error?.message || error?.message || 'Upload failed'
           return of({ message: `Failure: ${message}` })
         }),
