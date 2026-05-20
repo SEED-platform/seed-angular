@@ -138,9 +138,19 @@ export class InventoryComponent implements OnDestroy, OnInit {
       )
       .subscribe()
 
-    this._organizationService.orgUserSettings$.pipe(tap((settings) => (this.userSettings = settings))).subscribe()
+    this._organizationService.orgUserSettings$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((settings) => (this.userSettings = settings)),
+      )
+      .subscribe()
 
-    this.refreshInventory$.pipe(switchMap((profileId) => this.refreshInventory(profileId))).subscribe()
+    this.refreshInventory$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((profileId) => this.refreshInventory(profileId)),
+      )
+      .subscribe()
   }
 
   onRefreshInventory(profileId: number | null) {
