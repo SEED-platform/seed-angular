@@ -386,7 +386,8 @@ export class MapComponent implements OnDestroy, OnInit {
           this.layers.footprintLayer.zIndex,
           undefined,
         ]
-        if (!ignoredZIndexes.includes(layer.getProperties().zIndex as number)) {
+        const layerZIndex = layer?.getProperties()?.zIndex as unknown
+        if (typeof layerZIndex === 'number' && !ignoredZIndexes.includes(layerZIndex)) {
           points.push(...((feature.get('features') as Feature[]) ?? []))
         }
       })
