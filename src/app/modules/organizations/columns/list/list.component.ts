@@ -1,12 +1,13 @@
 import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, Organization } from '@seed/api'
 import { ColumnService, OrganizationService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
+import { RenameModalComponent } from './modal/rename-modal.component'
 
 @Component({
   selector: 'seed-organizations-columns-list-properties',
@@ -51,7 +52,25 @@ export class ListComponent implements OnDestroy {
   }
 
   rename(column: Column) {
-    console.log('Rename called for column: ', column)
+    const allColumnNames = this.columnTableDataSource.data.map((c) => c.column_name)
+    const dialogRef = this._dialog.open(RenameModalComponent, {
+      width: '40rem',
+      data: { column, allColumnNames },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        filter(Boolean),
+        switchMap(() => {
+          if (column.table_name === 'PropertyState') {
+            return this._columnService.getPropertyColumns(column.organization_id)
+          }
+          return this._columnService.getTaxLotColumns(column.organization_id)
+        }),
+      )
+      .subscribe()
   }
 
   buildColumnList() {

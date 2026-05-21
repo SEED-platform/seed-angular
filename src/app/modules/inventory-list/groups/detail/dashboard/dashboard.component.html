@@ -40,11 +40,15 @@
       </div>
       <div class="rounded-lg border p-4">
         <div class="text-secondary text-xs font-medium uppercase">Missing Site EUI</div>
-        <div class="mt-1 text-2xl font-bold text-warn">{{ dashboard['Views Missing Site EUI'] | number }}</div>
+        <div class="mt-1 text-2xl font-bold" [class.text-warn]="dashboard['Views Missing Site EUI']">
+          {{ dashboard['Views Missing Site EUI'] | number }}
+        </div>
       </div>
       <div class="rounded-lg border p-4">
         <div class="text-secondary text-xs font-medium uppercase">Missing Gross Floor Area</div>
-        <div class="mt-1 text-2xl font-bold text-warn">{{ dashboard['Views Missing Gross Floor Area'] | number }}</div>
+        <div class="mt-1 text-2xl font-bold" [class.text-warn]="dashboard['Views Missing Gross Floor Area']">
+          {{ dashboard['Views Missing Gross Floor Area'] | number }}
+        </div>
       </div>
     </div>
 

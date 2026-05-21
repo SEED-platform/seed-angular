@@ -13,6 +13,7 @@ import type {
   SetDefaultOrganizationResponse,
   UserAuth,
   UserAuthResponse,
+  UserBrief,
   UserUpdateRequest,
 } from '@seed/api'
 import { ErrorService } from '@seed/services'
@@ -162,6 +163,18 @@ export class UserService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error checking user authorization')
+      }),
+    )
+  }
+
+  /**
+   * Get all users (superuser endpoint)
+   */
+  getAllUsers(): Observable<UserBrief[]> {
+    return this._httpClient.get<{ users: UserBrief[] }>('/api/v3/users/').pipe(
+      map((response) => response.users),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching all users')
       }),
     )
   }

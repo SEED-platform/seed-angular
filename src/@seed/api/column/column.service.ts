@@ -6,7 +6,7 @@ import { catchError, map, ReplaySubject } from 'rxjs'
 import type { ProgressResponse } from '@seed/api'
 import { ErrorService } from '@seed/services/error/error.service'
 import { UserService } from '../user'
-import type { Column, ColumnsResponse } from './column.types'
+import type { Column, ColumnsResponse, RenameColumnResponse } from './column.types'
 
 @Injectable({ providedIn: 'root' })
 export class ColumnService {
@@ -83,6 +83,15 @@ export class ColumnService {
     return this._httpClient.delete<ProgressResponse>(url).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting column')
+      }),
+    )
+  }
+
+  renameColumn(orgId: number, columnId: number, newColumnName: string, overwrite: boolean): Observable<RenameColumnResponse> {
+    const url = `/api/v3/columns/${columnId}/rename/`
+    return this._httpClient.post<RenameColumnResponse>(url, { organization_id: orgId, new_column_name: newColumnName, overwrite }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error renaming column')
       }),
     )
   }

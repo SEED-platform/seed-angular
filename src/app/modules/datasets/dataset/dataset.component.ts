@@ -12,6 +12,8 @@ import { CycleService, DatasetService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
+import { DataUploadModalComponent } from '../data-upload/data-upload-modal.component'
+import { MeterDataUploadModalComponent } from '../data-upload/meter-upload-modal.component'
 
 @Component({
   selector: 'seed-dataset',
@@ -154,6 +156,30 @@ export class DatasetComponent implements OnDestroy, OnInit {
         switchMap(() => this._datasetService.deleteFile(this.orgId, importFile.id)),
         switchMap(() => this.getDataset()),
       )
+      .subscribe()
+  }
+
+  addDataFile() {
+    if (!this.cycles.length) return
+    this._dialog
+      .open(DataUploadModalComponent, {
+        width: '40rem',
+        data: { orgId: this.orgId, dataset: this.dataset, cycles: this.cycles },
+      })
+      .afterClosed()
+      .pipe(switchMap(() => this.getDataset()))
+      .subscribe()
+  }
+
+  addMeterData() {
+    if (!this.cycles.length) return
+    this._dialog
+      .open(MeterDataUploadModalComponent, {
+        width: '60rem',
+        data: { orgId: this.orgId, datasetId: this.dataset.id, cycleId: this.cycles[0].id, file: null },
+      })
+      .afterClosed()
+      .pipe(switchMap(() => this.getDataset()))
       .subscribe()
   }
 

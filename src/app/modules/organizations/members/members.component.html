@@ -31,10 +31,10 @@
         <th class="select-none" *matHeaderCellDef mat-header-cell>Actions</th>
         <td class="w-50 whitespace-nowrap text-right" *matCellDef="let member" mat-cell>
           <button class="mr-2" (click)="editMember(member)" mat-icon-button>
-            <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
+            <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:pencil"></mat-icon>
           </button>
           <button (click)="deleteMember(member)" mat-icon-button>
-            <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+            <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
           </button>
         </td>
       </ng-container>
