@@ -61,6 +61,8 @@ export class MatchingCriteriaComponent implements OnDestroy {
     this.matchingColumns = this.columns.filter((c) => c.is_matching_criteria)
     this.availableColumns = this.columns.filter((c) => !c.is_matching_criteria && !c.derived_column && !c.is_extra_data)
     this.pendingRemovals = []
+    this.rowDataPending = []
+    this.addForm.patchValue({ columnToAdd: null })
     this.initGrid()
   }
 
