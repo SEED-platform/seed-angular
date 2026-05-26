@@ -159,7 +159,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  addDataFile() {
+  addDataFile = () => {
     if (!this.dataset || !this.cycles.length) return
     this._dialog
       .open(DataUploadModalComponent, {
@@ -174,7 +174,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
       .subscribe()
   }
 
-  addMeterData() {
+  addMeterData = () => {
     if (!this.dataset || !this.cycles.length) return
     this._dialog
       .open(MeterDataUploadModalComponent, {
