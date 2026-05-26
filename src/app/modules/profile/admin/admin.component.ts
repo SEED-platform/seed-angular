@@ -242,6 +242,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   removeUserFromOrg(user: OrganizationUser): void {
+    const orgId = this.selectedRemoveOrgId
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '400px',
       data: { instance: user.email, model: 'User' },
@@ -249,7 +250,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        this._organizationService.deleteOrganizationUser(user.user_id, this.selectedRemoveOrgId).subscribe({
+        this._organizationService.deleteOrganizationUser(user.user_id, orgId).subscribe({
           complete: () => {
             this._snackBar.success(`User "${user.email}" removed from organization`)
             this.onRemoveOrgChange()
