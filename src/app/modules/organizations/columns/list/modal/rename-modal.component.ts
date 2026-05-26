@@ -29,6 +29,9 @@ export class RenameModalComponent {
 
   checkNameExists() {
     this.nameExists = this.data.allColumnNames.includes(this.newName)
+    if (!this.nameExists) {
+      this.overwritePreference = false
+    }
   }
 
   isValid(): boolean {
