@@ -160,26 +160,32 @@ export class DatasetComponent implements OnDestroy, OnInit {
   }
 
   addDataFile() {
-    if (!this.cycles.length) return
+    if (!this.dataset || !this.cycles.length) return
     this._dialog
       .open(DataUploadModalComponent, {
         width: '40rem',
         data: { orgId: this.orgId, dataset: this.dataset, cycles: this.cycles },
       })
       .afterClosed()
-      .pipe(switchMap(() => this.getDataset()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.getDataset()),
+      )
       .subscribe()
   }
 
   addMeterData() {
-    if (!this.cycles.length) return
+    if (!this.dataset || !this.cycles.length) return
     this._dialog
       .open(MeterDataUploadModalComponent, {
         width: '60rem',
         data: { orgId: this.orgId, datasetId: this.dataset.id, cycleId: this.cycles[0].id, file: null },
       })
       .afterClosed()
-      .pipe(switchMap(() => this.getDataset()))
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.getDataset()),
+      )
       .subscribe()
   }
 
