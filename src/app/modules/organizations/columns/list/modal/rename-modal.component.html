@@ -63,6 +63,6 @@
   </mat-dialog-content>
 
   <div class="flex justify-end" mat-dialog-actions>
-    <button (click)="close(true)" mat-raised-button color="primary">Done</button>
+    <button (click)="close(!!result?.success)" mat-raised-button color="primary">Done</button>
   </div>
 }
