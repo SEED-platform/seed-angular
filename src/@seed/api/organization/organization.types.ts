@@ -238,3 +238,26 @@ export type FilterByViewsResponse = {
   access_level_instance_ids: number[];
   status: string;
 }
+
+export type AdminOrganization = {
+  id: number;
+  name: string;
+  created: string;
+  number_of_users: number;
+  user_count?: number;
+  property_count?: number;
+  taxlot_count?: number;
+}
+
+export type AdminOrganizationsResponse = {
+  organizations: AdminOrganization[];
+}
+
+export type CreateOrganizationResponse = {
+  status: string;
+  organization: AdminOrganization;
+}
+
+export type AddUserToOrgResponse = {
+  status: string;
+}

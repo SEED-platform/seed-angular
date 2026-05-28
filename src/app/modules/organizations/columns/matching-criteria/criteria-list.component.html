@@ -8,7 +8,7 @@
     <div class="flex w-1/3">
       @if (canRemove(column)) {
         <button (click)="removeColumn(column)" mat-icon-button matTooltip="Remove Column From Matching Criteria">
-          <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+          <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
         </button>
       } @else {
         Locked

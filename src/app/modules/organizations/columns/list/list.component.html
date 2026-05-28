@@ -36,14 +36,14 @@
       <th class="select-none" *matHeaderCellDef mat-header-cell>Actions</th>
       <td class="w-50 py-2" *matCellDef="let c" mat-cell>
         <button class="mr-2" (click)="edit(c)" mat-icon-button>
-          <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil" matTooltip="Edit Column"></mat-icon>
+          <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:pencil" matTooltip="Edit Column"></mat-icon>
         </button>
         <button class="mr-2" (click)="rename(c)" mat-icon-button>
-          <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:copy" matTooltip="Rename Column"></mat-icon>
+          <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:copy" matTooltip="Rename Column"></mat-icon>
         </button>
         @if (c.is_extra_data) {
           <button (click)="delete(c)" mat-icon-button>
-            <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash" matTooltip="Delete Column"></mat-icon>
+            <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash" matTooltip="Delete Column"></mat-icon>
           </button>
         }
       </td>

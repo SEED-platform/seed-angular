@@ -195,6 +195,23 @@
     }
   }
 
+  .mat-mdc-table {
+    background: transparent;
+    color: theme('colors.gray.200');
+  }
+
+  .mat-mdc-header-cell {
+    color: theme('colors.gray.300');
+  }
+
+  .mat-mdc-cell {
+    color: theme('colors.gray.200');
+  }
+
+  .mat-mdc-paginator {
+    color: theme('colors.gray.300');
+  }
+
   .nw-editor {
     background-color: theme('colors.gray.800');
   }

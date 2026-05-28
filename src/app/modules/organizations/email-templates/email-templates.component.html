@@ -54,10 +54,10 @@
     </form>
     <!-- template actions -->
     <button [disabled]="!selectedTemplate" (click)="rename()" mat-icon-button matTooltip="Rename">
-      <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil"></mat-icon>
+      <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:pencil"></mat-icon>
     </button>
     <button [disabled]="!selectedTemplate" (click)="delete()" mat-icon-button matTooltip="Delete">
-      <mat-icon class="scale-75 fill-red-700" svgIcon="fa-solid:trash"></mat-icon>
+      <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
     </button>
     <button (click)="create()" mat-icon-button matTooltip="Create New">
       <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus"></mat-icon>
