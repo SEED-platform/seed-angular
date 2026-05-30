@@ -6,6 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, takeUntil } from 'rxjs'
 import type { AccessLevelsByDepth } from '@seed/api'
 import { OrganizationService } from '@seed/api'
+import { AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import { arraysEqual } from '@seed/utils'
@@ -15,7 +16,7 @@ import type { EditAccessLevelsData } from '..'
   selector: 'seed-edit-access-levels-dialog',
   templateUrl: './edit-access-levels-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
+  imports: [AlertComponent, CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
   private _data = inject(MAT_DIALOG_DATA) as EditAccessLevelsData

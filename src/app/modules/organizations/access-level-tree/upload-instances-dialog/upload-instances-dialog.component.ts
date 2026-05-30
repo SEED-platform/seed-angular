@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common'
+import type { HttpResponse } from '@angular/common/http'
 import { HttpEventType } from '@angular/common/http'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
@@ -6,6 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { filter, last, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { OrganizationService, ProgressService } from '@seed/api'
+import type { UploadAccessLevelInstancesResponse } from '@seed/api/organization/organization.types'
 import { AlertComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import type { UploadInstancesData } from '../access-level-tree.types'
@@ -51,11 +53,16 @@ export class UploadInstancesDialogComponent implements OnDestroy {
           }
         }),
         // Only proceed to the next step when the upload is complete
-        filter((event) => event.type === HttpEventType.Response),
+        filter((event): event is HttpResponse<UploadAccessLevelInstancesResponse> => event.type === HttpEventType.Response),
         switchMap((response) => {
+          const tempfile = response.body?.tempfile
+          if (!tempfile) {
+            const message = (response.body as Record<string, unknown>)?.message
+            throw new Error(typeof message === 'string' ? message : 'Upload failed: no tempfile returned')
+          }
           // Setup next progress message and initiate the saving process
           this.progress.unshift({ message: 'Saving access levels', value: 0 })
-          return this._organizationService.startSavingAccessLevelInstances(this._data.organizationId, response.body.tempfile)
+          return this._organizationService.startSavingAccessLevelInstances(this._data.organizationId, tempfile)
         }),
         switchMap((progress) => {
           return this._progressService.checkProgressLoop$(progress.progress_key).pipe(

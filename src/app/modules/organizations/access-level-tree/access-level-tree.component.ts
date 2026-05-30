@@ -28,6 +28,13 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
   templateUrl: './access-level-tree.component.html',
   imports: [CommonModule, ImageOverlayDirective, MaterialImports, PageComponent, SharedImports],
   encapsulation: ViewEncapsulation.None,
+  styles: `
+    seed-organizations-access-level-tree .mat-drawer-inner-container {
+      overflow-y: auto !important;
+      display: flex;
+      flex-direction: column;
+    }
+  `,
 })
 export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   private _matDialog = inject(MatDialog)
@@ -47,6 +54,8 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   drawerOpened = true
   helpOpened = false
   expanded = new Set<number>()
+  allExpanded = false
+  private _savedExpanded: Set<number> | null = null
 
   ngOnInit(): void {
     this._filterSubject$.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this._unsubscribeAll$)).subscribe((value) => {
@@ -91,6 +100,25 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     } else {
       this.expanded.add(id)
     }
+    this._updateAllExpandedState()
+  }
+
+  expandAll = (): void => {
+    this._addAllIds(this.filteredAccessLevelTree ?? this.accessLevelTree)
+    this.allExpanded = true
+  }
+
+  collapseAll = (): void => {
+    this.expanded.clear()
+    this.allExpanded = false
+  }
+
+  toggleExpandAll = (): void => {
+    if (this.allExpanded) {
+      this.collapseAll()
+    } else {
+      this.expandAll()
+    }
   }
 
   toggleHelp = () => {
@@ -105,6 +133,8 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
     this._matDialog.open(EditAccessLevelsDialogComponent, {
       autoFocus: false,
       disableClose: true,
+      panelClass: 'seed-dialog-panel',
+      width: '640px',
       data: {
         accessLevelNames: this.accessLevelNames,
         organizationId: this._organizationId,
@@ -183,7 +213,25 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
         .filter((instance) => instance.name.toLowerCase().includes(filter.toLowerCase()) || instance.children?.length > 0)
     }
 
-    this.filteredAccessLevelTree = filter ? filterTree(this.accessLevelTree) : undefined
+    if (filter) {
+      // Save expanded state before filtering (only on first filter keystroke)
+      if (!this._savedExpanded) {
+        this._savedExpanded = new Set(this.expanded)
+      }
+      this.filteredAccessLevelTree = filterTree(this.accessLevelTree)
+      // Expand all nodes with children in the filtered tree so matches are visible
+      this.expanded = new Set<number>()
+      this._addAllIds(this.filteredAccessLevelTree)
+      this._updateAllExpandedState()
+    } else {
+      this.filteredAccessLevelTree = undefined
+      // Restore previous expanded state
+      if (this._savedExpanded) {
+        this.expanded = this._savedExpanded
+        this._savedExpanded = null
+      }
+      this._updateAllExpandedState()
+    }
   }
 
   uploadInstances() {
@@ -201,6 +249,31 @@ export class AccessLevelTreeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  private _addAllIds(tree: AccessLevelInstance[]): void {
+    for (const instance of tree) {
+      if (instance.children?.length > 0) {
+        this.expanded.add(instance.id)
+        this._addAllIds(instance.children)
+      }
+    }
+  }
+
+  private _updateAllExpandedState(): void {
+    const tree = this.filteredAccessLevelTree ?? this.accessLevelTree
+    this.allExpanded = this._areAllExpanded(tree)
+  }
+
+  private _areAllExpanded(tree: AccessLevelInstance[]): boolean {
+    for (const instance of tree) {
+      if (instance.children?.length > 0) {
+        if (!this.expanded.has(instance.id) || !this._areAllExpanded(instance.children)) {
+          return false
+        }
+      }
+    }
+    return true
   }
 
   // When a filter is used, lookup the unfiltered instance to accurately get the child instances
