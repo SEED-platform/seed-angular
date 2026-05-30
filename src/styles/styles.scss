@@ -102,6 +102,22 @@
   user-select: text;
 }
 
+.access-level-header {
+  background-color: rgb(219 234 254) !important; // blue-100
+}
+
+.access-level-cell {
+  background-color: rgb(239 246 255) !important; // blue-50
+}
+
+.dark .access-level-header {
+  background-color: rgb(30 58 138 / 40%) !important; // blue-900/40
+}
+
+.dark .access-level-cell {
+  background-color: rgb(30 64 175 / 20%) !important; // blue-800/20
+}
+
 .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked:not(.mat-disabled) .mdc-switch__shadow {
   background-color: rgb(50 170 118);
 }

@@ -16,6 +16,7 @@
     <div class="relative m-2 flex items-start">
       <!-- Actions -->
       <seed-inventory-grid-actions
+        [accessLevelNames]="accessLevelNames"
         [cycleId]="cycleId"
         [gridApi]="gridApi"
         [groupMode]="!!groupId"
@@ -28,6 +29,7 @@
         [type]="type"
         (refreshInventory)="onRefreshInventory($event)"
         (selectedAll)="onSelectAll($event)"
+        (toggleAccessLevels)="onToggleAccessLevelInstances()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
@@ -71,6 +73,7 @@
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid
+      [accessLevelNames]="accessLevelNames"
       [columnDefs]="columnDefs"
       [currentUser]="currentUser"
       [inventoryType]="type"

@@ -18,6 +18,7 @@ import { IconHeaderComponent } from './icon-header.component'
   imports: [AgGridAngular, CommonModule, InventoryGridControlsComponent],
 })
 export class InventoryGridComponent implements OnChanges {
+  @Input() accessLevelNames: string[] = []
   @Input() columnDefs!: ColDef[]
   @Input() currentUser: CurrentUser
   @Input() inventoryType: string
@@ -104,13 +105,46 @@ export class InventoryGridComponent implements OnChanges {
     this.selectionChanged.emit()
   }
 
+  showAccessLevelInstances = true
+
   getColumnDefs() {
     const stateColumns = this.addHeaderMenu()
-
-    this.columnDefs = [
+    const groups: ColGroupDef[] = [
       { headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef,
-      { headerName: 'Details', children: stateColumns } as ColGroupDef,
     ]
+
+    const accessLevelCols = this.getAccessLevelColumns()
+    if (accessLevelCols.length) {
+      groups.push({ headerName: 'Access Level', children: accessLevelCols } as ColGroupDef)
+    }
+
+    groups.push({ headerName: 'Details', children: stateColumns } as ColGroupDef)
+    this.columnDefs = groups
+  }
+
+  getAccessLevelColumns(): ColDef[] {
+    if (!this.accessLevelNames?.length) return []
+    // Skip root level (index 0) — it's always the same for all instances
+    const names = this.accessLevelNames.slice(1)
+    return names.map((name) => ({
+      field: name,
+      headerName: name,
+      hide: !this.showAccessLevelInstances,
+      filter: true,
+      sortable: false,
+      resizable: true,
+      minWidth: 100,
+      headerClass: 'access-level-header',
+      cellClass: 'access-level-cell',
+    }))
+  }
+
+  toggleAccessLevelInstances() {
+    this.showAccessLevelInstances = !this.showAccessLevelInstances
+    if (this.gridApi) {
+      const names = (this.accessLevelNames ?? []).slice(1)
+      this.gridApi.setColumnsVisible(names, this.showAccessLevelInstances)
+    }
   }
 
   getShortcutColumns(): ColDef[] {

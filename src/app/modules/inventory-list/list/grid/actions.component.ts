@@ -35,6 +35,7 @@ import {
   imports: [MenuItemComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
+  @Input() accessLevelNames: string[] = []
   @Input() cycleId: number
   @Input() gridApi: GridApi
   @Input() groupMode = false
@@ -47,10 +48,12 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<number | null>()
   @Output() selectedAll = new EventEmitter<number[]>()
+  @Output() toggleAccessLevels = new EventEmitter<void>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
   hasSelection: boolean
+  showAccessLevelInstances = true
 
   ngOnInit(): void {
     return
@@ -72,6 +75,11 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
 
   tempAction() {
     console.log('temp action')
+  }
+
+  toggleAccessLevelInstances() {
+    this.showAccessLevelInstances = !this.showAccessLevelInstances
+    this.toggleAccessLevels.emit()
   }
 
   selectAll() {

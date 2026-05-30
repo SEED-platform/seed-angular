@@ -33,7 +33,7 @@
       @if (type === 'properties') {
         <seed-menu-item [disabled]="!hasSelection" (action)="openAliChangeModal()" label="Edit"> </seed-menu-item>
       }
-      <seed-menu-item class="text-secondary line-through" (action)="tempAction()" label="Hide"> </seed-menu-item>
+      <seed-menu-item class="text-secondary" (action)="toggleAccessLevelInstances()" [label]="showAccessLevelInstances ? 'Hide' : 'Show'"> </seed-menu-item>
     </div>
     <!-- Analyses -->
     @if (type === 'properties') {
