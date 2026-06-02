@@ -35,7 +35,6 @@ import {
   imports: [MenuItemComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
-  @Input() accessLevelNames: string[] = []
   @Input() cycleId: number
   @Input() gridApi: GridApi
   @Input() groupMode = false
