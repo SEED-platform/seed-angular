@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, Input, ViewEncapsulation } from '@angular/core'
+import { Component, inject, Input, ViewChild, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -55,7 +55,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   readonly tabs: InventoryType[] = ['properties', 'taxlots']
   readonly type = this._resolveType()
   @Input() groupId?: number
+  @ViewChild('grid') gridComponent: InventoryGridComponent
   private _groupPropertyIds: number[] | null = null
+  accessLevelNames: string[] = []
   chunk = 100
   columns: Column[] = []
   columnDefs: ColDef[] = []
@@ -121,6 +123,15 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   initStreams() {
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        tap((org) => {
+          this.accessLevelNames = org.access_level_names ?? []
+        }),
+      )
+      .subscribe()
+
     this.profileId$
       .pipe(
         filter(Boolean),
@@ -326,6 +337,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onGridReady(gridApi: GridApi) {
     this.gridApi = gridApi
+  }
+
+  onToggleAccessLevelInstances() {
+    this.gridComponent?.toggleAccessLevelInstances()
   }
 
   onSelectionChanged() {

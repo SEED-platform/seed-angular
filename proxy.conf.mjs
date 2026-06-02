@@ -15,8 +15,10 @@ export default {
     },
     onProxyRes: (proxyRes) => {
       // Fix http-proxy mangling 204 No Content responses
+      // Some Django endpoints send a JSON body with 204, which causes parse errors
       if (proxyRes.statusCode === 204) {
         proxyRes.headers['content-length'] = '0'
+        delete proxyRes.headers['content-type']
       }
     },
   },

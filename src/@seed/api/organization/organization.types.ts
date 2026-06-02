@@ -221,8 +221,9 @@ export type CanDeleteInstanceResponse = {
 }
 
 export type UploadAccessLevelInstancesResponse = {
-  status: 'success';
-  tempfile: string;
+  success: boolean;
+  tempfile?: string;
+  message?: string;
 }
 
 export type StartSavingAccessLevelInstancesRequest = {

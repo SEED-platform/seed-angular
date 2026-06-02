@@ -28,6 +28,7 @@
         [type]="type"
         (refreshInventory)="onRefreshInventory($event)"
         (selectedAll)="onSelectAll($event)"
+        (toggleAccessLevels)="onToggleAccessLevelInstances()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
@@ -71,6 +72,7 @@
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid
+      [accessLevelNames]="accessLevelNames"
       [columnDefs]="columnDefs"
       [currentUser]="currentUser"
       [inventoryType]="type"

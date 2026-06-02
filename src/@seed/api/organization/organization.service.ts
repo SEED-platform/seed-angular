@@ -218,12 +218,17 @@ export class OrganizationService {
 
   deleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
     const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/delete_instance/`
-    return this._httpClient.delete<null>(url).pipe(
+    return this._httpClient.delete(url).pipe(
       tap(() => {
-        // Update accessLevelTree
         this.getAccessLevelTree(organizationId).subscribe()
       }),
       catchError((error: HttpErrorResponse) => {
+        // The backend returns 204 with a JSON body, which violates HTTP spec and crashes
+        // the dev proxy parser. The delete still succeeds on the backend, so refresh the tree.
+        if (error.status === 0 || error.status === 204) {
+          this.getAccessLevelTree(organizationId).subscribe()
+          return of(null)
+        }
         return this._errorService.handleError(error, 'Failed to delete Access Level Instance')
       }),
     )

@@ -102,6 +102,22 @@
   user-select: text;
 }
 
+.access-level-header {
+  background-color: rgb(219 234 254) !important; // blue-100
+}
+
+.access-level-cell {
+  background-color: rgb(239 246 255) !important; // blue-50
+}
+
+.dark .access-level-header {
+  background-color: rgb(30 58 138 / 40%) !important; // blue-900/40
+}
+
+.dark .access-level-cell {
+  background-color: rgb(30 64 175 / 20%) !important; // blue-800/20
+}
+
 .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked:not(.mat-disabled) .mdc-switch__shadow {
   background-color: rgb(50 170 118);
 }
@@ -269,20 +285,69 @@
 // Fix Material button color theming (M2 color attribute removed in AM v21)
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button {
+  &.mat-primary:not(:disabled),
   &[color='primary']:not(:disabled) {
     @apply bg-primary text-white hover:bg-primary-800 #{'!important'};
   }
 
+  &.mat-primary:disabled,
   &[color='primary']:disabled {
     @apply bg-primary/40 text-white/70 cursor-not-allowed #{'!important'};
   }
 
+  &.mat-warn:not(:disabled),
   &[color='warn']:not(:disabled) {
     @apply bg-warn text-white hover:bg-warn-800 #{'!important'};
   }
 
+  &.mat-warn:disabled,
   &[color='warn']:disabled {
     @apply bg-warn/40 text-white/70 cursor-not-allowed #{'!important'};
+  }
+}
+
+.dark {
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button {
+    &.mat-primary:not(:disabled),
+    &[color='primary']:not(:disabled) {
+      background-color: #2196f3 !important;
+      color: #fff !important;
+
+      --mdc-filled-button-container-color: #2196f3;
+      --mdc-protected-button-container-color: #2196f3;
+      --mdc-filled-button-label-text-color: #fff;
+      --mdc-protected-button-label-text-color: #fff;
+
+      &:hover {
+        background-color: #74b0f5 !important;
+      }
+    }
+
+    &.mat-primary:disabled,
+    &[color='primary']:disabled {
+      background-color: rgba(#2196f3, 0.4) !important;
+      color: rgb(255 255 255 / 70%) !important;
+    }
+
+    &.mat-warn:not(:disabled),
+    &[color='warn']:not(:disabled) {
+      background-color: #ef4444 !important;
+      color: #fff !important;
+
+      --mdc-filled-button-container-color: #ef4444;
+      --mdc-protected-button-container-color: #ef4444;
+
+      &:hover {
+        background-color: #f87171 !important;
+      }
+    }
+
+    &.mat-warn:disabled,
+    &[color='warn']:disabled {
+      background-color: rgba(#ef4444, 0.4) !important;
+      color: rgb(255 255 255 / 70%) !important;
+    }
   }
 }
 
