@@ -313,6 +313,7 @@
     &[color='primary']:not(:disabled) {
       background-color: #2196f3 !important;
       color: #fff !important;
+
       --mdc-filled-button-container-color: #2196f3;
       --mdc-protected-button-container-color: #2196f3;
       --mdc-filled-button-label-text-color: #fff;
@@ -326,13 +327,14 @@
     &.mat-primary:disabled,
     &[color='primary']:disabled {
       background-color: rgba(#2196f3, 0.4) !important;
-      color: rgba(255, 255, 255, 0.7) !important;
+      color: rgb(255 255 255 / 70%) !important;
     }
 
     &.mat-warn:not(:disabled),
     &[color='warn']:not(:disabled) {
       background-color: #ef4444 !important;
       color: #fff !important;
+
       --mdc-filled-button-container-color: #ef4444;
       --mdc-protected-button-container-color: #ef4444;
 
@@ -344,7 +346,7 @@
     &.mat-warn:disabled,
     &[color='warn']:disabled {
       background-color: rgba(#ef4444, 0.4) !important;
-      color: rgba(255, 255, 255, 0.7) !important;
+      color: rgb(255 255 255 / 70%) !important;
     }
   }
 }

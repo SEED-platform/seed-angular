@@ -69,18 +69,19 @@
               } @else {
                 <!-- Root level header and instance -->
                 <div class="overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600">
-                  <div class="flex items-center justify-between bg-primary-600 px-4 py-2 text-sm font-semibold text-white dark:bg-primary-500">
+                  <div
+                    class="flex items-center justify-between bg-primary-600 px-4 py-2 text-sm font-semibold text-white dark:bg-primary-500"
+                  >
                     <span>{{ t('Level') }} 1: {{ accessLevelNames[0] }}</span>
-                    <button
-                      class="ml-2 rounded px-3 py-1 text-xs font-medium text-white hover:bg-white/20"
-                      (click)="toggleExpandAll()"
-                    >
+                    <button class="ml-2 rounded px-3 py-1 text-xs font-medium text-white hover:bg-white/20" (click)="toggleExpandAll()">
                       {{ allExpanded ? t('Collapse All') : t('Expand All') }}
                     </button>
                   </div>
                   @let rootTree = filteredAccessLevelTree ?? accessLevelTree;
                   @for (root of rootTree; track root.id) {
-                    <div class="flex items-center border-b border-gray-200 bg-gray-50 px-4 py-2 font-medium dark:border-gray-700 dark:bg-gray-800">
+                    <div
+                      class="flex items-center border-b border-gray-200 bg-gray-50 px-4 py-2 font-medium dark:border-gray-700 dark:bg-gray-800"
+                    >
                       <span class="flex-auto">{{ root.name }}</span>
                       @if (currentUser.is_ali_root) {
                         <button
@@ -95,9 +96,7 @@
                       }
                     </div>
                     @if (root.children?.length > 0) {
-                      <ng-container
-                        *ngTemplateOutlet="instanceTemplate; context: { $implicit: root.children, depth: 1 }"
-                      ></ng-container>
+                      <ng-container *ngTemplateOutlet="instanceTemplate; context: { $implicit: root.children, depth: 1 }"></ng-container>
                     }
                   }
                 </div>
@@ -144,7 +143,10 @@
         (keydown.space)="hasChildren && toggleExpand(instance.id); $event.preventDefault()"
       >
         @if (hasChildren) {
-          <mat-icon class="mr-2 h-3.5 min-h-3.5 w-3.5 min-w-3.5 text-gray-500" [svgIcon]="isExpanded ? 'fa-solid:chevron-down' : 'fa-solid:chevron-right'"></mat-icon>
+          <mat-icon
+            class="mr-2 h-3.5 min-h-3.5 w-3.5 min-w-3.5 text-gray-500"
+            [svgIcon]="isExpanded ? 'fa-solid:chevron-down' : 'fa-solid:chevron-right'"
+          ></mat-icon>
         } @else {
           <div class="mr-2 w-3.5"></div>
         }

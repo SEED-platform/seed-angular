@@ -4,9 +4,7 @@
     <mat-icon
       class="text-current icon-size-5"
       [ngClass]="
-        levelsRemoved && instancesToBeRemoved() > 0
-          ? 'text-warn-600 dark:text-warn-400'
-          : 'text-primary-600 dark:text-primary-400'
+        levelsRemoved && instancesToBeRemoved() > 0 ? 'text-warn-600 dark:text-warn-400' : 'text-primary-600 dark:text-primary-400'
       "
       svgIcon="fa-solid:pen-to-square"
     ></mat-icon>
@@ -19,7 +17,9 @@
       <div class="flex flex-col space-y-2" formArrayName="levels">
         @for (control of levels.controls; track $index) {
           <div class="flex items-center space-x-3">
-            <div class="text-hint flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+            <div
+              class="text-hint flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+            >
               {{ $index + 1 }}
             </div>
             <mat-form-field class="flex-auto" subscriptSizing="fixed">
@@ -30,7 +30,7 @@
               }
             </mat-form-field>
             @if (levels.length > 1 && !submitted) {
-              <button type="button" mat-icon-button (click)="removeLevel($index)">
+              <button (click)="removeLevel($index)" type="button" mat-icon-button>
                 <mat-icon class="icon-size-4" svgIcon="fa-solid:xmark"></mat-icon>
               </button>
             }
@@ -39,12 +39,7 @@
       </div>
     </form>
 
-    <button
-      [disabled]="submitted"
-      (click)="addLevel('')"
-      mat-stroked-button
-      type="button"
-    >
+    <button [disabled]="submitted" (click)="addLevel('')" mat-stroked-button type="button">
       <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
       <span class="ml-1">{{ t('Add Access Level') }}</span>
     </button>

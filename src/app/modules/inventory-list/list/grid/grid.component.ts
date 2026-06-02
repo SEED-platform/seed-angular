@@ -43,6 +43,7 @@ export class InventoryGridComponent implements OnChanges {
   gridApi!: GridApi
   darkMode: boolean
   gridTheme$ = this._configService.gridTheme$
+  showAccessLevelInstances = true
 
   theme: string
 
@@ -105,13 +106,9 @@ export class InventoryGridComponent implements OnChanges {
     this.selectionChanged.emit()
   }
 
-  showAccessLevelInstances = true
-
   getColumnDefs() {
     const stateColumns = this.addHeaderMenu()
-    const groups: ColGroupDef[] = [
-      { headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef,
-    ]
+    const groups: ColGroupDef[] = [{ headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef]
 
     const accessLevelCols = this.getAccessLevelColumns()
     if (accessLevelCols.length) {
