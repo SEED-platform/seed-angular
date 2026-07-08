@@ -48,11 +48,11 @@ const STAT_COLUMN_CONFIGS: StatColumnConfig[] = [
   { key: 'p95', label: 'P95' },
   { key: 'max', label: 'Max' },
   { key: 'stddev', label: 'Std Dev' },
-  { key: 'sum', label: 'Sum' }, 
+  { key: 'sum', label: 'Sum' },
   { key: 'mode', label: 'Mode' },
   { key: 'distinct_count', label: 'Distinct Count' },
   { key: 'unique_count', label: 'Unique Count' },
-  { key: 'uniqueness_ratio', label: 'Uniqueness Ratio' }, 
+  { key: 'uniqueness_ratio', label: 'Uniqueness Ratio' },
 ]
 
 @Component({
@@ -195,9 +195,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
     }
 
     const requestColumns
-      = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length
-        ? 'all'
-        : this.selectedColumnNames
+      = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length ? 'all' : this.selectedColumnNames
 
     return this._propertyService.columnSummary(this.orgId, this.selectedCycleIds, requestColumns).pipe(
       tap((summary) => {
@@ -270,7 +268,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
     const target = event.target as HTMLElement | null
 
-    const headerCell = target?.closest('.ag-header-cell') as HTMLElement | null
+    const headerCell = target?.closest('.ag-header-cell')
     const headerColId = headerCell?.getAttribute('col-id') ?? ''
     if (headerColId && this._isStatKey(headerColId)) {
       event.preventDefault()
@@ -283,7 +281,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return
     }
 
-    const rowElement = target?.closest('.ag-row') as HTMLElement | null
+    const rowElement = target?.closest('.ag-row')
     const rowIndexAttr = rowElement?.getAttribute('row-index')
     if (!rowIndexAttr) {
       this.closeContextMenu()
@@ -517,9 +515,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   }
 
   applyDisplayedRows() {
-    this.rowData = this.selectedRowsOnly
-      ? this.fullRowData.filter((row) => this.selectedRowIds.has(row.row_id))
-      : this.fullRowData
+    this.rowData = this.selectedRowsOnly ? this.fullRowData.filter((row) => this.selectedRowIds.has(row.row_id)) : this.fullRowData
 
     if (this.gridApi) {
       this.gridApi.setGridOption('rowData', this.rowData)
@@ -545,9 +541,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
     const visible = names.slice(0, maxNames)
     const hiddenCount = names.length - visible.length
 
-    return hiddenCount > 0
-      ? `${visible.join(', ')} +${hiddenCount}`
-      : visible.join(', ')
+    return hiddenCount > 0 ? `${visible.join(', ')} +${hiddenCount}` : visible.join(', ')
   }
 
   getSelectedRowCount(): number {
@@ -585,13 +579,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return []
     }
 
-    return [
-      ...new Set(
-        this.fullRowData
-          .filter((row) => this.selectedRowIds.has(row.row_id))
-          .map((row) => row.column_name),
-      ),
-    ]
+    return [...new Set(this.fullRowData.filter((row) => this.selectedRowIds.has(row.row_id)).map((row) => row.column_name))]
   }
 
   selectCycles(cycleIds: number[]) {
@@ -650,9 +638,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   toggleCycleSelection(cycleId: number, checked: boolean) {
     const source = this.cyclePickerOpen ? this.pendingCycleIds : this.selectedCycleIds
-    const next = checked
-      ? [...new Set([...source, cycleId])]
-      : source.filter((id) => id !== cycleId)
+    const next = checked ? [...new Set([...source, cycleId])] : source.filter((id) => id !== cycleId)
 
     if (this.cyclePickerOpen) {
       this.pendingCycleIds = next
@@ -670,7 +656,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
     }
 
     this.selectedColumnNames = allColumns
-    this.persistSummarySettings().pipe(switchMap(() => this.loadSummary())).subscribe()
+    this.persistSummarySettings()
+      .pipe(switchMap(() => this.loadSummary()))
+      .subscribe()
   }
 
   toggleColumnPicker() {
@@ -690,7 +678,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
     this.columnPickerOpen = false
     if (changed) {
       this.selectedColumnNames = [...this.pendingColumnNames]
-      this.persistSummarySettings().pipe(switchMap(() => this.loadSummary())).subscribe()
+      this.persistSummarySettings()
+        .pipe(switchMap(() => this.loadSummary()))
+        .subscribe()
     }
   }
 
@@ -717,7 +707,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
     }
 
     this.selectedColumnNames = [...next]
-    this.persistSummarySettings().pipe(switchMap(() => this.loadSummary())).subscribe()
+    this.persistSummarySettings()
+      .pipe(switchMap(() => this.loadSummary()))
+      .subscribe()
   }
 
   clearAllColumns() {
@@ -727,7 +719,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
     }
 
     this.selectedColumnNames = []
-    this.persistSummarySettings().pipe(switchMap(() => this.loadSummary())).subscribe()
+    this.persistSummarySettings()
+      .pipe(switchMap(() => this.loadSummary()))
+      .subscribe()
   }
 
   isColumnSelected(columnName: string): boolean {
@@ -737,9 +731,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   toggleColumnSelection(columnName: string, checked: boolean) {
     const source = this.columnPickerOpen ? this.pendingColumnNames : this.selectedColumnNames
-    const next = checked
-      ? [...new Set([...source, columnName])]
-      : source.filter((name) => name !== columnName)
+    const next = checked ? [...new Set([...source, columnName])] : source.filter((name) => name !== columnName)
 
     if (this.columnPickerOpen) {
       this.pendingColumnNames = next
@@ -776,9 +768,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return baseColumns
     }
 
-    return baseColumns.filter((column) =>
-      (column.display_name || column.column_name).toLowerCase().includes(search)
-      || column.column_name.toLowerCase().includes(search),
+    return baseColumns.filter(
+      (column) =>
+        (column.display_name || column.column_name).toLowerCase().includes(search) || column.column_name.toLowerCase().includes(search),
     )
   }
 
@@ -835,9 +827,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
 
   toggleStatSelection(statKey: StatKey, checked: boolean) {
     const source = this.statPickerOpen ? this.pendingStatKeys : this.selectedStatKeys
-    const next = checked
-      ? [...new Set([...source, statKey])]
-      : source.filter((key) => key !== statKey)
+    const next = checked ? [...new Set([...source, statKey])] : source.filter((key) => key !== statKey)
 
     if (this.statPickerOpen) {
       this.pendingStatKeys = next
@@ -850,8 +840,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   selectStatColumns(statKeys: StatKey[]) {
     this.selectedStatKeys = statKeys ?? []
     this.setColumnDefs()
-    this.persistSummarySettings()
-      .subscribe()
+    this.persistSummarySettings().subscribe()
   }
 
   persistSummarySettings() {
@@ -1017,7 +1006,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   }
 
   private _parseFilterExpression(input: string): { operator: '>' | '>=' | '<' | '<=' | '!=' | '=' | null; value: string } {
-    const match = input.match(/^\s*(>=|<=|!=|>|<|=)\s*(.*)$/)
+    const match = /^\s*(>=|<=|!=|>|<|=)\s*(.*)$/.exec(input)
     if (!match) {
       return { operator: null, value: input.trim() }
     }

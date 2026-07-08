@@ -11,9 +11,9 @@
       <div class="relative w-60">
         <button
           class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
-          type="button"
           [title]="'Selected cycles: ' + getCyclePickerLabel(999)"
           (click)="toggleCyclePicker()"
+          type="button"
         >
           {{ getCyclePickerLabel() }}
         </button>
@@ -24,19 +24,47 @@
               @for (cycle of cycles; track cycle.cycle_id) {
                 <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
                   <input
-                    type="checkbox"
                     [checked]="isCycleSelected(cycle.cycle_id)"
                     (change)="toggleCycleSelection(cycle.cycle_id, $any($event.target).checked)"
+                    type="checkbox"
                   />
                   <span>{{ cycle.name }}</span>
                 </label>
               }
             </div>
             <div class="mt-2 grid grid-cols-2 gap-2">
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every cycle" (click)="selectAllCycles()">Select all</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected cycles" (click)="clearAllCycles()">Clear all</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Discard changes and close the picker" (click)="cancelCyclePicker()">Cancel</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Apply cycle selections and close the picker" (click)="closeCyclePicker()">Done</button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="selectAllCycles()"
+                type="button"
+                title="Select every cycle"
+              >
+                Select all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="clearAllCycles()"
+                type="button"
+                title="Clear all selected cycles"
+              >
+                Clear all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="cancelCyclePicker()"
+                type="button"
+                title="Discard changes and close the picker"
+              >
+                Cancel
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="closeCyclePicker()"
+                type="button"
+                title="Apply cycle selections and close the picker"
+              >
+                Done
+              </button>
             </div>
           </div>
         }
@@ -47,9 +75,9 @@
       <div class="relative w-96">
         <button
           class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
+          (click)="toggleColumnPicker()"
           type="button"
           title="Open or close the column picker. Changes apply when you close the picker."
-          (click)="toggleColumnPicker()"
         >
           {{ selectedColumnNames.length }} columns selected
         </button>
@@ -58,25 +86,25 @@
             <div class="mb-2 text-xs text-gray-600">Selections are applied when you click Done.</div>
             <label class="mb-2 flex items-center gap-2 text-xs text-gray-700">
               <input
-                type="checkbox"
                 [checked]="columnPickerShowSelectedOnly"
                 (change)="setColumnPickerShowSelectedOnly($any($event.target).checked)"
+                type="checkbox"
               />
               <span title="Show only currently selected columns in this list">Show selected only</span>
             </label>
             <input
               class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500"
-              placeholder="Type to find a column"
               [value]="columnSearchTerm"
               (input)="setColumnSearchTerm($any($event.target).value)"
+              placeholder="Type to find a column"
             />
             <div class="mt-2 max-h-56 overflow-auto rounded border border-gray-300 bg-white">
               @for (column of filteredAvailableColumns(); track column.column_name) {
                 <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
                   <input
-                    type="checkbox"
                     [checked]="isColumnSelected(column.column_name)"
                     (change)="toggleColumnSelection(column.column_name, $any($event.target).checked)"
+                    type="checkbox"
                   />
                   <span>{{ column.display_name || column.column_name }}</span>
                 </label>
@@ -86,22 +114,43 @@
               }
             </div>
             <div class="mt-2 grid grid-cols-3 gap-2">
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every available column" (click)="selectAllColumns()">Select all</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Add all currently filtered columns to your selection" (click)="selectFilteredColumns()">Add filtered</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected columns" (click)="clearAllColumns()">Clear all</button>
               <button
                 class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="selectAllColumns()"
+                type="button"
+                title="Select every available column"
+              >
+                Select all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="selectFilteredColumns()"
+                type="button"
+                title="Add all currently filtered columns to your selection"
+              >
+                Add filtered
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="clearAllColumns()"
+                type="button"
+                title="Clear all selected columns"
+              >
+                Clear all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="cancelColumnPicker()"
                 type="button"
                 title="Discard changes and close the picker"
-                (click)="cancelColumnPicker()"
               >
                 Cancel
               </button>
               <button
                 class="col-span-2 rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="closeColumnPicker()"
                 type="button"
                 title="Apply column selections and close the picker"
-                (click)="closeColumnPicker()"
               >
                 Done
               </button>
@@ -115,9 +164,9 @@
       <div class="relative w-72">
         <button
           class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
+          (click)="toggleStatPicker()"
           type="button"
           title="Open or close the stats picker. Changes apply when you close the picker."
-          (click)="toggleStatPicker()"
         >
           {{ selectedStatKeys.length }} stats selected
         </button>
@@ -128,19 +177,47 @@
               @for (stat of availableStatColumns; track stat.key) {
                 <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
                   <input
-                    type="checkbox"
                     [checked]="isStatSelected(stat.key)"
                     (change)="toggleStatSelection(stat.key, $any($event.target).checked)"
+                    type="checkbox"
                   />
                   <span>{{ stat.label }}</span>
                 </label>
               }
             </div>
             <div class="mt-2 grid grid-cols-2 gap-2">
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every statistic column" (click)="selectAllStats()">Select all</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected statistics" (click)="clearAllStats()">Clear all</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Discard changes and close the picker" (click)="cancelStatPicker()">Cancel</button>
-              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Apply statistic selections and close the picker" (click)="closeStatPicker()">Done</button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="selectAllStats()"
+                type="button"
+                title="Select every statistic column"
+              >
+                Select all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="clearAllStats()"
+                type="button"
+                title="Clear all selected statistics"
+              >
+                Clear all
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="cancelStatPicker()"
+                type="button"
+                title="Discard changes and close the picker"
+              >
+                Cancel
+              </button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                (click)="closeStatPicker()"
+                type="button"
+                title="Apply statistic selections and close the picker"
+              >
+                Done
+              </button>
             </div>
           </div>
         }
@@ -165,9 +242,9 @@
     <div class="mx-5 mt-3 flex items-center gap-2 text-sm">
       <button
         class="rounded border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900"
+        (click)="exportSummaryCsv()"
         type="button"
         title="Export the current grid view to CSV"
-        (click)="exportSummaryCsv()"
       >
         Export CSV
       </button>
@@ -196,18 +273,38 @@
           (click)="$event.stopPropagation()"
         >
           @if (contextMenuMode === 'field') {
-            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Show only this field and hide all others" (click)="showOnlyContextColumn()">
+            <button
+              class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100"
+              (click)="showOnlyContextColumn()"
+              type="button"
+              title="Show only this field and hide all others"
+            >
               Show only this field
             </button>
-            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Hide this field from the summary" (click)="hideContextColumn()">
+            <button
+              class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100"
+              (click)="hideContextColumn()"
+              type="button"
+              title="Hide this field from the summary"
+            >
               Hide this field
             </button>
-            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Show all fields again" (click)="unhideAllContextColumns()">
+            <button
+              class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100"
+              (click)="unhideAllContextColumns()"
+              type="button"
+              title="Show all fields again"
+            >
               Unhide all fields
             </button>
           }
           @if (contextMenuMode === 'stat') {
-            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Hide this statistic column" (click)="hideContextStatistic()">
+            <button
+              class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100"
+              (click)="hideContextStatistic()"
+              type="button"
+              title="Hide this statistic column"
+            >
               Hide this statistic
             </button>
           }
