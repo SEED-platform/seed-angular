@@ -7,17 +7,144 @@
   <div class="h-full-page flex flex-col gap-2">
     <div class="m-5 flex gap-4">
       <!-- CYCLE SELECT -->
-      <mat-label class="text-secondary mr-4 mt-3 text-sm">Cycle</mat-label>
-      <mat-select
-        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
-        [value]="cycleId"
-        (selectionChange)="selectCycle($event.value)"
-        placeholder="(no cycles)"
-      >
-        @for (cycle of cycles; track cycle.cycle_id) {
-          <mat-option [value]="cycle.cycle_id">{{ cycle.name }}</mat-option>
+      <mat-label class="text-secondary mr-2 mt-3 text-sm">Cycles</mat-label>
+      <div class="relative w-60">
+        <button
+          class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
+          type="button"
+          [title]="'Selected cycles: ' + getCyclePickerLabel(999)"
+          (click)="toggleCyclePicker()"
+        >
+          {{ getCyclePickerLabel() }}
+        </button>
+        @if (cyclePickerOpen) {
+          <div class="absolute left-0 right-0 z-40 mt-1 rounded border border-gray-300 bg-white p-2 shadow-lg">
+            <div class="mb-2 text-xs text-gray-600">Selections are applied when you click Done.</div>
+            <div class="max-h-56 overflow-auto rounded border border-gray-300 bg-white">
+              @for (cycle of cycles; track cycle.cycle_id) {
+                <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    [checked]="isCycleSelected(cycle.cycle_id)"
+                    (change)="toggleCycleSelection(cycle.cycle_id, $any($event.target).checked)"
+                  />
+                  <span>{{ cycle.name }}</span>
+                </label>
+              }
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every cycle" (click)="selectAllCycles()">Select all</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected cycles" (click)="clearAllCycles()">Clear all</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Discard changes and close the picker" (click)="cancelCyclePicker()">Cancel</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Apply cycle selections and close the picker" (click)="closeCyclePicker()">Done</button>
+            </div>
+          </div>
         }
-      </mat-select>
+      </div>
+
+      <!-- COLUMN SELECT -->
+      <mat-label class="text-secondary mr-2 mt-3 text-sm">Columns</mat-label>
+      <div class="relative w-96">
+        <button
+          class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
+          type="button"
+          title="Open or close the column picker. Changes apply when you close the picker."
+          (click)="toggleColumnPicker()"
+        >
+          {{ selectedColumnNames.length }} columns selected
+        </button>
+        @if (columnPickerOpen) {
+          <div class="absolute left-0 right-0 z-40 mt-1 rounded border border-gray-300 bg-white p-2 shadow-lg">
+            <div class="mb-2 text-xs text-gray-600">Selections are applied when you click Done.</div>
+            <label class="mb-2 flex items-center gap-2 text-xs text-gray-700">
+              <input
+                type="checkbox"
+                [checked]="columnPickerShowSelectedOnly"
+                (change)="setColumnPickerShowSelectedOnly($any($event.target).checked)"
+              />
+              <span title="Show only currently selected columns in this list">Show selected only</span>
+            </label>
+            <input
+              class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500"
+              placeholder="Type to find a column"
+              [value]="columnSearchTerm"
+              (input)="setColumnSearchTerm($any($event.target).value)"
+            />
+            <div class="mt-2 max-h-56 overflow-auto rounded border border-gray-300 bg-white">
+              @for (column of filteredAvailableColumns(); track column.column_name) {
+                <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    [checked]="isColumnSelected(column.column_name)"
+                    (change)="toggleColumnSelection(column.column_name, $any($event.target).checked)"
+                  />
+                  <span>{{ column.display_name || column.column_name }}</span>
+                </label>
+              }
+              @if (!filteredAvailableColumns().length) {
+                <div class="px-3 py-2 text-sm text-gray-500">No columns match your search.</div>
+              }
+            </div>
+            <div class="mt-2 grid grid-cols-3 gap-2">
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every available column" (click)="selectAllColumns()">Select all</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Add all currently filtered columns to your selection" (click)="selectFilteredColumns()">Add filtered</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected columns" (click)="clearAllColumns()">Clear all</button>
+              <button
+                class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                type="button"
+                title="Discard changes and close the picker"
+                (click)="cancelColumnPicker()"
+              >
+                Cancel
+              </button>
+              <button
+                class="col-span-2 rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900"
+                type="button"
+                title="Apply column selections and close the picker"
+                (click)="closeColumnPicker()"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- STAT SELECT -->
+      <mat-label class="text-secondary mr-2 mt-3 text-sm">Stats</mat-label>
+      <div class="relative w-72">
+        <button
+          class="h-10 w-full rounded border border-gray-300 bg-white px-3 text-left text-sm text-gray-900"
+          type="button"
+          title="Open or close the stats picker. Changes apply when you close the picker."
+          (click)="toggleStatPicker()"
+        >
+          {{ selectedStatKeys.length }} stats selected
+        </button>
+        @if (statPickerOpen) {
+          <div class="absolute left-0 right-0 z-40 mt-1 rounded border border-gray-300 bg-white p-2 shadow-lg">
+            <div class="mb-2 text-xs text-gray-600">Selections are applied when you click Done.</div>
+            <div class="max-h-56 overflow-auto rounded border border-gray-300 bg-white">
+              @for (stat of availableStatColumns; track stat.key) {
+                <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-gray-900 hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    [checked]="isStatSelected(stat.key)"
+                    (change)="toggleStatSelection(stat.key, $any($event.target).checked)"
+                  />
+                  <span>{{ stat.label }}</span>
+                </label>
+              }
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Select every statistic column" (click)="selectAllStats()">Select all</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Clear all selected statistics" (click)="clearAllStats()">Clear all</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Discard changes and close the picker" (click)="cancelStatPicker()">Cancel</button>
+              <button class="rounded border border-gray-300 bg-white px-2 py-1 text-xs text-gray-900" type="button" title="Apply statistic selections and close the picker" (click)="closeStatPicker()">Done</button>
+            </div>
+          </div>
+        }
+      </div>
 
       <!-- SUMMARY STATS -->
       @if (summary) {
@@ -30,14 +157,22 @@
             <div class="text-secondary ml-4 w-40">Extra Data Fields:</div>
             <div>{{ totalExtraData }}</div>
           </div>
-          <div class="flex">
-            <div class="text-secondary ml-4 w-40">Total Square Feet:</div>
-            <div>{{ totalSqft }}</div>
-          </div>
         </div>
       }
     </div>
     <mat-divider></mat-divider>
+
+    <div class="mx-5 mt-3 flex items-center gap-2 text-sm">
+      <button
+        class="rounded border border-gray-300 bg-white px-3 py-1 text-xs text-gray-900"
+        type="button"
+        title="Export the current grid view to CSV"
+        (click)="exportSummaryCsv()"
+      >
+        Export CSV
+      </button>
+      <span class="text-secondary ml-2">{{ getRowDisplayLabel() }}</span>
+    </div>
 
     <!-- INDIVIDUAL STATS -->
     @if (rowData.length) {
@@ -46,10 +181,38 @@
         [columnDefs]="columnDefs"
         [defaultColDef]="defaultColDef"
         [rowData]="rowData"
+        [suppressContextMenu]="suppressContextMenu"
         [theme]="gridTheme$ | async"
         (gridReady)="onGridReady($event)"
+        (contextmenu)="onGridNativeContextMenu($event)"
         style="width: 100%; height: 100%"
       ></ag-grid-angular>
+
+      @if (contextMenuVisible) {
+        <div
+          class="fixed z-50 min-w-44 rounded border border-gray-300 bg-white py-1 text-sm text-gray-900 shadow-lg"
+          [style.left.px]="contextMenuX"
+          [style.top.px]="contextMenuY"
+          (click)="$event.stopPropagation()"
+        >
+          @if (contextMenuMode === 'field') {
+            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Show only this field and hide all others" (click)="showOnlyContextColumn()">
+              Show only this field
+            </button>
+            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Hide this field from the summary" (click)="hideContextColumn()">
+              Hide this field
+            </button>
+            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Show all fields again" (click)="unhideAllContextColumns()">
+              Unhide all fields
+            </button>
+          }
+          @if (contextMenuMode === 'stat') {
+            <button class="block w-full bg-white px-3 py-1 text-left text-gray-900 hover:bg-gray-100" type="button" title="Hide this statistic column" (click)="hideContextStatistic()">
+              Hide this statistic
+            </button>
+          }
+        </div>
+      }
 
       <div class="ml-4 text-sm italic text-gray-500">
         <span class="mr-4"><span class="material-icons align-middle ml-1 text-md text-gray-500">emergency</span>Extra Data Column</span>
