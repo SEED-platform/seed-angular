@@ -978,7 +978,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return true
     }
 
-    const valueNumber = Number(value)
+    const valueNumber = typeof value === 'number' ? value : typeof value === 'string' && value.trim() !== '' ? Number(value) : NaN
     const filterNumber = Number(parsed.value)
     const bothNumeric = Number.isFinite(valueNumber) && Number.isFinite(filterNumber)
 
