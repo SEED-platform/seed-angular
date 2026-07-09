@@ -3,7 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, HostListener, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridReadyEvent, TextMatcherParams } from 'ag-grid-community'
 import { catchError, EMPTY, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api/column'
 import { ColumnService } from '@seed/api/column'
@@ -58,6 +58,25 @@ const STAT_COLUMN_CONFIGS: StatColumnConfig[] = [
 @Component({
   selector: 'seed-inventory-list-summary',
   templateUrl: './summary.component.html',
+  styles: [
+    `
+      :host ::ng-deep .summary-grid .ag-row {
+        cursor: pointer;
+      }
+
+      :host ::ng-deep .summary-grid .ag-row.ag-row-selected {
+        background-color: rgb(219 234 254);
+      }
+
+      :host ::ng-deep .summary-grid .ag-row.ag-row-selected .ag-cell {
+        background-color: transparent;
+      }
+
+      :host-context(.dark) ::ng-deep .summary-grid .ag-row.ag-row-selected {
+        background-color: rgb(30 64 175 / 0.35);
+      }
+    `,
+  ],
   imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class SummaryComponent implements OnDestroy, OnInit {
@@ -82,11 +101,17 @@ export class SummaryComponent implements OnDestroy, OnInit {
     resizable: true,
     filterParams: {
       suppressAndOrCondition: true,
-      textMatcher: (params: any) => this._matchesFilterExpression(params),
+      textMatcher: (params: TextMatcherParams) => this._matchesFilterExpression(params),
     },
   }
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
+  rowSelection = {
+    mode: 'multiRow' as const,
+    checkboxes: false,
+    headerCheckbox: false,
+    enableClickSelection: true,
+  }
   suppressContextMenu = true
   orgId: number
   fullRowData: SummaryGridRow[] = []
@@ -194,8 +219,9 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return EMPTY
     }
 
-    const requestColumns
-      = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length ? 'all' : this.selectedColumnNames
+    const requestColumns = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length
+      ? 'all'
+      : this.selectedColumnNames
 
     return this._propertyService.columnSummary(this.orgId, this.selectedCycleIds, requestColumns).pipe(
       tap((summary) => {
@@ -241,9 +267,30 @@ export class SummaryComponent implements OnDestroy, OnInit {
   columnRenderer = (params: CellRendererParams) => {
     const value = params.value
     const { cycle_name, is_extra_data } = params.data
-    const marker = !is_extra_data ? '' : ' <span class="material-icons align-middle ml-1 mb-2 text-secondary text-xs">emergency</span>'
-    const cycleLabel = this.selectedCycleIds.length > 1 ? `<div class="text-secondary text-xs">Cycle ${cycle_name}</div>` : ''
-    return `${value}${marker}${cycleLabel}`
+    if (!is_extra_data && this.selectedCycleIds.length <= 1) return value
+
+    const container = document.createElement('div')
+
+    const valueText = document.createTextNode(value)
+    container.append(valueText)
+
+    if (is_extra_data) {
+      container.append(document.createTextNode(' '))
+
+      const marker = document.createElement('span')
+      marker.className = 'material-icons align-middle ml-1 mb-2 text-secondary text-xs'
+      marker.textContent = 'emergency'
+      container.append(marker)
+    }
+
+    if (this.selectedCycleIds.length > 1) {
+      const cycleLabel = document.createElement('div')
+      cycleLabel.className = 'text-secondary text-xs'
+      cycleLabel.textContent = `Cycle ${cycle_name}`
+      container.append(cycleLabel)
+    }
+
+    return container
   }
 
   onGridReady(agGrid: GridReadyEvent) {
@@ -961,10 +1008,14 @@ export class SummaryComponent implements OnDestroy, OnInit {
     return left.every((item) => rightSet.has(item))
   }
 
-  private _matchesFilterExpression(params: any): boolean {
-    const rawFilterText = String(params?.filterText ?? '').trim()
-    const value = params?.value
-    const valueText = value == null ? '' : String(value)
+  private _matchesFilterExpression(params: TextMatcherParams): boolean {
+    const rawFilterText = (params.filterText ?? '').trim()
+    const value: unknown = params.value as unknown
+    const valueText = typeof value === 'string'
+      ? value
+      : typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
+        ? String(value)
+        : ''
     const normalizedValue = valueText.toLowerCase()
 
     if (!rawFilterText) {

@@ -254,13 +254,15 @@
     <!-- INDIVIDUAL STATS -->
     @if (rowData.length) {
       <ag-grid-angular
-        class="filter-border"
+        class="filter-border summary-grid"
         [columnDefs]="columnDefs"
         [defaultColDef]="defaultColDef"
         [rowData]="rowData"
+        [rowSelection]="rowSelection"
         [suppressContextMenu]="suppressContextMenu"
         [theme]="gridTheme$ | async"
         (gridReady)="onGridReady($event)"
+        (selectionChanged)="onSelectionChanged()"
         (contextmenu)="onGridNativeContextMenu($event)"
         style="width: 100%; height: 100%"
       ></ag-grid-angular>
