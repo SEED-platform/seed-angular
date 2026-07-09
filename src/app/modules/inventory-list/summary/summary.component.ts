@@ -107,7 +107,7 @@ export class SummaryComponent implements OnDestroy, OnInit {
   columnSearchTerm = ''
   selectedCycleIds: number[] = []
   selectedStatKeys: StatKey[] = ['non_null_count']
-  summary: PropertyColumnSummaryResponse
+  summary?: PropertyColumnSummaryResponse
   type = this._route.snapshot.paramMap.get('type') as InventoryType
   totalRecords = '0'
   totalExtraData = '0'
