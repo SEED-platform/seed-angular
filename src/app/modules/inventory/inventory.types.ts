@@ -255,6 +255,24 @@ export type UpdateInventoryResponse = {
   view_id: number;
 }
 
+export type InventoryFormCreateState = {
+  [key: string]: unknown;
+  extra_data: Record<string, unknown>;
+}
+
+export type InventoryFormCreateData = {
+  access_level_instance: number;
+  cycle: number;
+  state: InventoryFormCreateState;
+}
+
+export type FormCreateResponse = {
+  status?: string;
+  state?: State;
+  // null when the record is a duplicate/merge
+  view_id: number | null;
+}
+
 export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text/plain' | 'application/octet-stream'
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
 
