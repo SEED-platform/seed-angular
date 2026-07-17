@@ -2,6 +2,7 @@ import type { Routes } from '@angular/router'
 import {
   CustomReportsComponent,
   DefaultReportsComponent,
+  FacilitiesPlanComponent,
   PortfolioSummaryComponent,
   ProgramOverviewComponent,
   PropertyInsightsComponent,
@@ -47,5 +48,10 @@ export default [
     path: 'portfolio-summary',
     title: 'Portfolio Summary',
     component: PortfolioSummaryComponent,
+  },
+  {
+    path: 'facilities-plan',
+    title: 'Facilities Plan',
+    component: FacilitiesPlanComponent,
   },
 ] satisfies Routes
