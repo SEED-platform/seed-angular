@@ -74,7 +74,7 @@
     }
   }
 
-  /* Style scrollbars on platforms other than MacOS and iOS */
+  /* Style scrollbars on platforms other than macOS and iOS */
   @media only screen and (width >= 960px) {
     body:not(.os-mac) {
       ::-webkit-scrollbar {
