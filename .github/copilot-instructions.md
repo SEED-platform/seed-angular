@@ -1,0 +1,132 @@
+# SEED Angular — Copilot Instructions
+
+Angular frontend for the SEED Platform™ (Standard Energy Efficiency Data), paired with a Django
+backend (in the parent `seed` repo). Built with Angular (standalone components, no NgModules),
+Angular Material, TailwindCSS, RxJS, and Transloco for i18n.
+
+## Setup & commands
+
+Package manager is **pnpm** (enforced by a `preinstall` script that fails under npm/yarn). Node
+>=24, pnpm >=10.
+
+- Install: `pnpm i`
+- Dev server (Angular hot reload, proxies `/api/` and `/media/` to Django): `pnpm start`
+  - Proxy target is `SEED_HOST` env var (default `http://127.0.0.1:8000`), configured in
+    `proxy.conf.mjs`. Set it in a `.env` file (see `.env.example`).
+- Dev server through Django: `pnpm watch` — rebuilds on save, output goes to
+  `../../collected_static/ng-app`; Django serves it at `/ng-app/`. Use `pnpm build` for a one-shot
+  build instead of a watcher.
+- Build: `pnpm build`
+- Lint everything: `pnpm lint` (runs eslint + prettier check + stylelint in parallel)
+  - `pnpm eslint` / `pnpm eslint:fix` — `ng lint` (TypeScript + Angular templates)
+  - `pnpm prettier` / `pnpm prettier:fix` — checks/formats `src/**/*.html` only
+  - `pnpm stylelint` / `pnpm stylelint:fix` — checks `src/**/*.scss`
+  - `pnpm lint:fix` runs all three `:fix` variants
+- Spell check: `pnpm cspell "**/*"`. Spelling is *also* checked per-file as part of `pnpm eslint`
+  (via `@cspell/eslint-plugin`), so lint failures can be spelling issues. Add legitimate
+  domain-specific words to `.spelling.dic`, not inline ignore comments.
+- Tests: `pnpm test` (`ng test`, Karma + Jasmine). **No `*.spec.ts` files currently exist in
+  `src/`** — the test runner and config are wired up but unused. To run a single spec once one
+  exists: `ng test --include='**/some.component.spec.ts'`.
+- Update translations from Lokalise: `pnpm update-translations` (needs `.env` with
+  `LOKALISE_TOKEN`; see `transloco.config.ts` for the `public/i18n/` translations path).
+- CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
+  `main`. There is no test step in CI today.
+
+## Architecture
+
+- `src/@seed/` is a self-contained framework layer (derived from the Fuse Angular admin
+  template): `animations`, `components` (UI kit), `directives`, `guards`, `materials` (barrel
+  re-exporting Angular Material modules as `MaterialImports`), `pipes`, `routing`, `services`,
+  `styles`/`tailwind` (theming), `validators`, and its own mock-api interceptor framework. All
+  backend HTTP access lives in `src/@seed/api/<resource>/` (e.g. `organization`, `property`,
+  `cycle`, `column`, `dataset`, `salesforce`...), one folder per REST resource with
+  `<resource>.service.ts` + `<resource>.types.ts`.
+- **Backend API versions:** the Django backend (main `seed` repo) exposes both `/api/v3/` and
+  `/api/v4/` (`seed/api/v3/`, `seed/api/v4/`, wired in `seed/api/base/urls.py`). The overwhelming
+  majority of endpoints this app calls are v3 — reuse the existing v3 endpoint for a resource
+  whenever one already exists (the legacy AngularJS app at `seed/static/seed/` is calling the same
+  v3 endpoints and is a good reference for the request/response shape). Only call/introduce a
+  `/api/v4/` endpoint when the feature genuinely needs a new backend endpoint that has no v3
+  equivalent (see the handful of existing `/api/v4/` calls in `organization.service.ts`,
+  `analysis.service.ts`, `groups.service.ts`, `inventory.service.ts` for precedent) — don't default
+  to v4 just because it's newer, and never add a new v3 endpoint.
+- `src/app/` is the actual application: `core/` (auth, icons, navigation, snack-bar, transloco
+  wiring), `layout/`, `modules/` (feature areas — `inventory`, `inventory-list`,
+  `inventory-detail`, `organizations`, `datasets`, `data-quality`, `analyses`, `insights`,
+  `profile`, `auth`, `main`, `api`, `column-list-profile`, `data`), and an app-specific
+  `mock-api/`.
+- No TS path aliases are configured — `tsconfig.json` just sets `baseUrl: "./src"`, so
+  `@seed/...` and `app/...` imports resolve because those directories are literally named `@seed`
+  and `app` under `src/`. Avoid deep relative (`../../..`) imports across that boundary.
+- Routing is fully lazy: each feature exports a default `Routes` array
+  (`<feature>.routes.ts`, e.g. `organizations.routes.ts`) loaded via
+  `loadChildren: () => import('app/modules/<feature>/<feature>.routes')` (see `app.routes.ts`).
+  Polymorphic paths (e.g. inventory `properties`/`taxlots`, org `data-quality`/`derived-columns`
+  sub-types) use custom `UrlSegment` matcher functions instead of static path strings.
+- `app.config.ts` wires: Transloco, a custom `TitleStrategy` (appends "- SEED Platform™"), a
+  Luxon-based Material `DateAdapter`, `provideAuth()`, `provideIcons()`, and `provideSEED(...)`
+  (defined in `src/@seed/seed.provider.ts`), which registers SEED-wide providers (confirmation
+  dialogs, loading/media/platform/splash-screen services, HTTP interceptors) and optionally the
+  mock-API HTTP interceptor for local dev without a live Django backend.
+
+## Migrating legacy pages
+
+This app is actively replacing a legacy AngularJS 1.x frontend (`seed/static/seed/` in the main
+`seed` repo, of which this repo is a git submodule). If asked to port a page/feature from that
+app, see `MIGRATION.md` in this repo's root for the playbook and a tracked checklist of what's
+left.
+
+## Key conventions
+
+Full guidelines are in `DEVELOPER.md` — highlights that are easy to miss:
+
+- Standalone components only. `@Component({ imports: [...] })`, separate `.html`/`.scss` files,
+  kebab-case selectors prefixed with `seed`, `auth`, or `layout` (enforced by eslint).
+- Use `type`, never `interface`, for shapes; never use `any`.
+- Inject dependencies with `inject()` at the field level, not constructor params. Private fields
+  are prefixed `_` (e.g. `private _cycleService = inject(CycleService)`) — enforced by eslint
+  naming-convention rule.
+- Services hold state in a private `ReplaySubject`/`BehaviorSubject` and expose a public
+  `<name>$` `Observable` property. Any observable-holding variable gets a `$` suffix.
+- Unsubscribe pattern: `private readonly _unsubscribeAll$ = new Subject<void>()`, pipe with
+  `takeUntil(this._unsubscribeAll$)`, call `.next()`/`.complete()` in `ngOnDestroy`. `HttpClient`
+  requests complete on their own and don't need this.
+- Consume Angular Material via the `MaterialImports` barrel from `@seed/materials` rather than
+  importing individual Material modules directly.
+- Every user-facing string needs a Transloco translation key (see `public/i18n/`).
+- Import order/sorting and single-quote/no-semicolon style are eslint/prettier-enforced — run
+  `pnpm lint:fix` rather than hand-formatting.
+- **Prefer readability over clever code.** Favor small, single-purpose methods/getters and early
+  returns over dense one-liners, deep ternary chains, or clever RxJS chaining. Move non-trivial
+  logic out of templates and into the component class rather than inlining it in the HTML. This is
+  also why the app avoids `lodash`/large utility libs (see `DEVELOPER.md`) — plain, explicit code
+  is preferred over "clever" abstractions.
+
+### CSS & UI (TailwindCSS + Angular Material)
+
+- TailwindCSS utility-first, mobile-first; components must support both light and dark themes.
+  Avoid broad/global SCSS — scope styles to the component.
+- **Colors:** never hardcode hex/rgb colors in templates or SCSS. Use the semantic utilities the
+  theme plugin generates from `tailwind.config.ts` (`text-primary-{50-900}`, `bg-card`,
+  `text-secondary`, etc. — see `src/@seed/tailwind/plugins/theming.ts`), which already adapt
+  between light/dark; add a `dark:` variant only for a one-off value the theme doesn't cover. On
+  Angular Material components, express intent with `color="primary"`/`"accent"`/`"warn"` instead
+  of custom background/text colors. If you must reference a `--seed-*` CSS variable directly in
+  SCSS, use the `rgb(var(--seed-*-rgb) / <alpha>)` form — the comma `rgba(var(...), a)` form is
+  blocked by stylelint.
+- **Buttons:** pick the Material button variant that matches intent — `mat-flat-button` for a
+  primary action, `mat-stroked-button` for secondary/cancel, `mat-icon-button` for icon-only,
+  `mat-raised-button` for a destructive/`warn` action (see any `modal/*.component.html` for the
+  pattern) — and let Material's own padding stand; don't add custom `padding`/`px-*`/`py-*` to
+  resize a button. For a page's primary (and optional secondary) action button, don't hand-roll
+  one at all — pass `action`/`actionIcon`/`actionText` (and `action2*`) into
+  `<seed-page [config]="...">`, which renders it consistently (see
+  `organizations/cycles/cycles.component.html`).
+- **Icon sizing:** size `mat-icon` with the custom `icon-size-*` scale (e.g. `icon-size-4`,
+  `icon-size-5` — defined in `src/@seed/tailwind/plugins/icon-size.ts`), not raw `w-*`/`h-*`
+  classes.
+- **Spacing:** prefer flex/grid `gap-*` utilities for space between sibling elements over
+  `space-x-*`/`space-y-*` or manual `mr-*`/`ml-*` on individual children — `gap-*` is the dominant
+  pattern in this codebase by a wide margin. Reach for the extended spacing scale in
+  `tailwind.config.ts` (`theme.extend.spacing`) instead of arbitrary-value classes like `p-[13px]`.
