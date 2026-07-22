@@ -3,8 +3,10 @@
 A repeatable recipe for porting a legacy AngularJS form/screen from
 [`SEED-platform/seed`](https://github.com/SEED-platform/seed) into this Angular v19 app.
 
-> Read [`DEVELOPER.md`](../DEVELOPER.md) first for the general coding standards. This guide is
-> the form-specific layer on top of it. Follow it so every agent produces consistent output.
+> Read [`DEVELOPER.md`](../DEVELOPER.md) first for the general coding standards, and
+> [`MIGRATION.md`](../MIGRATION.md) for the page/route-level migration playbook and checklist.
+> This guide is the form-specific layer on top of both. Follow it so every agent produces
+> consistent output.
 
 ---
 
