@@ -80,7 +80,13 @@ the legacy route for something you just migrated.
 7. **Follow this repo's conventions** (standalone components with an `imports` array, `inject()`
    for DI, `_`-prefixed private fields, `$`-suffixed observables, `MaterialImports` barrel,
    `takeUntil(this._unsubscribeAll$)` cleanup) — see `DEVELOPER.md` for the full list.
-8. **Validate** with `pnpm lint` and `pnpm build` before considering the port done.
+8. **Validate.** Run `pnpm lint` and `pnpm build` — but they only catch type/compile errors, not
+   runtime bugs. Also actually load the page against a live backend with real seeded data and
+   click through the behavior you ported (not just render it) using Playwright before considering
+   the port done — see [`docs/local-testing.md`](docs/local-testing.md) for how to stand up a
+   throwaway backend + test data in this environment. Skipping this step is how a migration ships
+   with, e.g., a drag-and-drop that silently no-ops or a tab switch that updates the URL but not
+   the page.
 9. **Do not delete or edit the legacy AngularJS code** as part of a migration PR unless explicitly
    asked to — the legacy route keeps serving production traffic under `/app/` until a separate
    decision is made to retire it.
