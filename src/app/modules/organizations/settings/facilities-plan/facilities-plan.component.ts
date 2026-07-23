@@ -29,7 +29,7 @@ export class FacilitiesPlanSettingsComponent implements OnDestroy, OnInit {
 
   form = new FormGroup({
     name: new FormControl('', Validators.required),
-    energy_running_sum_percentage: new FormControl(0.8, [Validators.required, Validators.min(0), Validators.max(1)]),
+    energy_running_sum_percentage: new FormControl(80, [Validators.required, Validators.min(0), Validators.max(100)]),
     compliance_cycle_year_column: new FormControl<number | null>(null),
     include_in_total_denominator_column: new FormControl<number | null>(null),
     exclude_from_plan_column: new FormControl<number | null>(null),
@@ -90,7 +90,7 @@ export class FacilitiesPlanSettingsComponent implements OnDestroy, OnInit {
     this.isCreating = true
     this.form.reset({
       name: 'New Facilities Plan',
-      energy_running_sum_percentage: 0.8,
+      energy_running_sum_percentage: 80,
       compliance_cycle_year_column: null,
       include_in_total_denominator_column: null,
       exclude_from_plan_column: null,
