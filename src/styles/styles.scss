@@ -245,6 +245,10 @@
   height: calc(100vh - 265px)
 }
 
+.fp-in-plan {
+  @apply bg-green-100 dark:bg-green-900/40 #{'!important'};
+}
+
 .filter-border {
   .ag-floating-filter-input {
     outline: 1px solid #cecece;
