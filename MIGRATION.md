@@ -5,7 +5,9 @@ This document is the playbook for porting a page/feature from the legacy Angular
 Angular app, plus a tracked checklist of what's left.
 
 For general coding conventions of *this* app, see `DEVELOPER.md` and `.github/copilot-instructions.md`.
-This document only covers the migration process itself.
+This document covers the page/route-level migration process; once you're inside a page and
+building the actual form, see `docs/porting-forms.md` for the form-specific recipe (canonical
+components, validation/save flow, Transloco + Lokalise workflow).
 
 ## Why two frontends exist right now
 

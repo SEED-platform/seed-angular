@@ -29,7 +29,8 @@ Package manager is **pnpm** (enforced by a `preinstall` script that fails under 
   `src/`** — the test runner and config are wired up but unused. To run a single spec once one
   exists: `ng test --include='**/some.component.spec.ts'`.
 - Update translations from Lokalise: `pnpm update-translations` (needs `.env` with
-  `LOKALISE_TOKEN`; see `transloco.config.ts` for the `public/i18n/` translations path).
+  `LOKALISE_TOKEN`; see `transloco.config.ts` for the `public/i18n/` translations path). **Lokalise
+  is the source of truth** — this command only *pulls*, it never pushes new keys.
 - CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
   `main`. There is no test step in CI today.
 
@@ -63,19 +64,31 @@ Package manager is **pnpm** (enforced by a `preinstall` script that fails under 
   (`<feature>.routes.ts`, e.g. `organizations.routes.ts`) loaded via
   `loadChildren: () => import('app/modules/<feature>/<feature>.routes')` (see `app.routes.ts`).
   Polymorphic paths (e.g. inventory `properties`/`taxlots`, org `data-quality`/`derived-columns`
-  sub-types) use custom `UrlSegment` matcher functions instead of static path strings.
+  sub-types) use custom `UrlSegment` matcher functions instead of static path strings. Place new
+  sibling routes **before** dynamic `:id` routes so they aren't swallowed by the id matcher, and
+  add a matching entry to `src/app/core/navigation/navigation.service.ts`.
 - `app.config.ts` wires: Transloco, a custom `TitleStrategy` (appends "- SEED Platform™"), a
   Luxon-based Material `DateAdapter`, `provideAuth()`, `provideIcons()`, and `provideSEED(...)`
   (defined in `src/@seed/seed.provider.ts`), which registers SEED-wide providers (confirmation
   dialogs, loading/media/platform/splash-screen services, HTTP interceptors) and optionally the
   mock-API HTTP interceptor for local dev without a live Django backend.
 
-## Migrating legacy pages
+## Migrating legacy pages and forms
 
 This app is actively replacing a legacy AngularJS 1.x frontend (`seed/static/seed/` in the main
-`seed` repo, of which this repo is a git submodule). If asked to port a page/feature from that
-app, see `MIGRATION.md` in this repo's root for the playbook and a tracked checklist of what's
-left.
+`seed` repo, of which this repo is a git submodule), often by several agents in parallel. Do
+**not** re-derive conventions from scratch each time — follow the docs below and copy the
+canonical examples they reference.
+
+- **[`MIGRATION.md`](../MIGRATION.md)** — the page/route-level playbook (finding the legacy route,
+  converting the template, reusing translations) and the tracked checklist of what's left to port.
+- **[`docs/porting-forms.md`](../docs/porting-forms.md)** — the form-specific recipe once you're
+  inside a page: canonical full-page/modal form components to copy, the reusable service
+  integration points (`CycleService`, `ColumnService`, `SnackBarService`, `ErrorService`, ...),
+  the validation/confirm/save flow, and the Transloco + Lokalise workflow.
+
+Both docs assume the conventions below and in `DEVELOPER.md`; don't reimplement backend logic —
+the API usually already exists in `SEED-platform/seed`.
 
 ## Key conventions
 
@@ -130,3 +143,12 @@ Full guidelines are in `DEVELOPER.md` — highlights that are easy to miss:
   `space-x-*`/`space-y-*` or manual `mr-*`/`ml-*` on individual children — `gap-*` is the dominant
   pattern in this codebase by a wide margin. Reach for the extended spacing scale in
   `tailwind.config.ts` (`theme.extend.spacing`) instead of arbitrary-value classes like `p-[13px]`.
+
+## Definition of done
+
+```bash
+pnpm lint      # eslint + prettier + stylelint (use pnpm lint:fix to auto-fix)
+pnpm build     # AoT build + template typecheck
+```
+
+Both must pass for the files you touched.
