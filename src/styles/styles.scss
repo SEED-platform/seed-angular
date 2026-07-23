@@ -246,11 +246,7 @@
 }
 
 .fp-in-plan {
-  background-color: rgb(220 252 231) !important; // green-100
-}
-
-.dark .fp-in-plan {
-  background-color: rgb(20 83 45 / 40%) !important; // green-900/40
+  @apply bg-green-100 dark:bg-green-900/40 #{'!important'};
 }
 
 .filter-border {
