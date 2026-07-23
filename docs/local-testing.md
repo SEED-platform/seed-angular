@@ -155,33 +155,42 @@ in the PR description (not just described in prose):
   mid-drag or right after a state-changing action (a row just paired/unpaired, a validation error
   showing, a save confirmation) — not just more of the same static view.
 
-GitHub PR bodies can't have local files attached via `gh`/the API the way the web UI's drag-and-drop
-does, so commit the PNGs to the branch under `.github/pr-screenshots/<feature-slug>/` (this is a
-meta/review folder, not part of the shipped app — feel free to prune it after merge) and reference
-them with the **raw.githubusercontent.com** form pinned to the commit SHA (stable even if the
-branch is later deleted), not a branch name:
+GitHub's real drag-and-drop "attach a file" feature (the one that produces
+`github.com/user-attachments/...` URLs) is a private, browser-session-only upload endpoint — there's
+no public API or `gh` command for it, and a `gh`-authenticated CLI session doesn't carry over to a
+logged-in browser session, so it can't be scripted. **Gists don't work either** — `gh gist create`
+(and the Gist API generally) only accepts text files: uploading a `.png` fails with
+`binary file not supported`. Don't commit the PNGs to the repo/branch tree either — that pollutes
+the feature's git history with binary review artifacts forever.
+
+Instead, host them as **assets on a dedicated, clearly-labeled prerelease** (`gh release
+create`/`upload` is a real public API, and release assets live outside any branch's tree — they
+don't touch the repo's source history at all):
 
 ```bash
-git add .github/pr-screenshots/<feature-slug>
-git commit -m "Add PR screenshots for <feature>"
-git push
-sha=$(git rev-parse HEAD)
+gh release create pr-<number>-screenshots \
+  --title "PR #<number> review screenshots (not a version release)" \
+  --notes "Temporary asset host for screenshots referenced in PR #<number>. Not a software release — safe to delete once the PR merges/closes." \
+  --prerelease \
+  --target <branch-tip-sha> \
+  overview.png drag-pair.png
 ```
 
 ```markdown
-![Pairing page](https://raw.githubusercontent.com/<owner>/<repo>/<sha>/.github/pr-screenshots/<feature-slug>/overview.png)
-![Drag-and-drop pairing in action](https://raw.githubusercontent.com/<owner>/<repo>/<sha>/.github/pr-screenshots/<feature-slug>/drag-pair.png)
+![Pairing page](https://github.com/<owner>/<repo>/releases/download/pr-<number>-screenshots/overview.png)
+![Drag-and-drop pairing in action](https://github.com/<owner>/<repo>/releases/download/pr-<number>-screenshots/drag-pair.png)
 ```
 
 Update the PR body with `gh pr edit <number> --body-file <file>` (write the full new body to a
-temp file first — `--body-file` replaces the whole description, it doesn't append).
+temp file first — `--body-file` replaces the whole description, it doesn't append). Delete the
+prerelease (`gh release delete pr-<number>-screenshots --cleanup-tag`) once the PR is merged or
+closed.
 
 ## 5. Clean up
 
 The `.env` override, seed-data scripts, and any exploratory screenshots you didn't select for the
-PR are throwaway verification infrastructure — none of that belongs in the branch. (The
-screenshots you *did* commit under `.github/pr-screenshots/` in step 4 are the one deliberate
-exception.)
+PR are throwaway verification infrastructure — none of it belongs in the branch, and (per step 4)
+the ones you did select don't either; they live on the prerelease, not in git history.
 
 ```bash
 rm .env  # restore whatever proxy config you had (or none)

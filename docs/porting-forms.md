@@ -290,5 +290,6 @@ how to stand up a throwaway backend + test data in this environment.
 - [ ] `pnpm lint` and `pnpm build` pass
 - [ ] Live-tested against a real backend with seeded data via Playwright (see
       `docs/local-testing.md`) — not just rendered, actually clicked through
-- [ ] Screenshots (overview + notable new interaction) committed under `.github/pr-screenshots/`
-      and embedded in the PR description via raw.githubusercontent.com links
+- [ ] Screenshots (overview + notable new interaction) hosted on a `pr-<number>-screenshots`
+      prerelease and embedded in the PR description (see `docs/local-testing.md`) — not committed
+      to the repo
