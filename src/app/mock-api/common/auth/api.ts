@@ -1,9 +1,7 @@
 import { inject, Injectable } from '@angular/core'
-import type { WordArray } from 'crypto-es/lib/core'
-import { Utf8 } from 'crypto-es/lib/core'
-import { Base64 } from 'crypto-es/lib/enc-base64'
-import { HmacSHA256 } from 'crypto-es/lib/sha256'
-import type { CurrentUser } from '@seed/api/user'
+import type { WordArray } from 'crypto-es'
+import { Base64, HmacSHA256, Utf8 } from 'crypto-es'
+import type { CurrentUser } from '@seed/api'
 import { MockApiService } from '@seed/mock-api'
 import { user as userData } from 'app/mock-api/common/user/data'
 
@@ -42,7 +40,7 @@ export class AuthMockApi {
     this._mockApiService.onPost('api/auth/sign-in', 1500).reply(({ request }) => {
       // Sign in successful
       const body = request.body as Record<string, string>
-      if (body.email === 'alex.swindler@nrel.gov' && body.password === 'password') {
+      if (body.email === 'alex.swindler@nlr.gov' && body.password === 'password') {
         return [
           200,
           {

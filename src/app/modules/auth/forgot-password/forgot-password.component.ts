@@ -2,15 +2,12 @@ import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { AuthService } from 'app/core/auth/auth.service'
 
 @Component({
@@ -18,16 +15,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './forgot-password.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
 })
 export class AuthForgotPasswordComponent implements OnInit {
   private _authService = inject(AuthService)

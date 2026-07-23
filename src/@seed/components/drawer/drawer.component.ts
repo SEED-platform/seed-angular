@@ -65,7 +65,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   @HostListener('mouseenter')
-  private _onMouseenter(): void {
+  handleMouseEnter(): void {
     // Enable the animations
     this._enableAnimations()
 
@@ -74,7 +74,7 @@ export class DrawerComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   @HostListener('mouseleave')
-  private _onMouseleave(): void {
+  handleMouseLeave(): void {
     // Enable the animations
     this._enableAnimations()
 

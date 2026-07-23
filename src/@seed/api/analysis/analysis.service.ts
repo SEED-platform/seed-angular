@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable, Subscription } from 'rxjs'
 import { BehaviorSubject, catchError, interval, map, Subject, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import type { FullProgressResponse } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import type {
   AnalysesMessage,
   Analysis,
+  AnalysisCreateData,
   AnalysisResponse,
   AnalysisServiceType,
   AnalysisSummary,
@@ -17,7 +19,6 @@ import type {
   AnalysisViews,
   ListAnalysesResponse,
   ListMessagesResponse,
-  OriginalView,
   PropertyAnalysesResponse,
   View,
 } from './analysis.types'
@@ -33,7 +34,8 @@ export class AnalysisService {
   private _analysis = new BehaviorSubject<Analysis>(null)
   private _views = new BehaviorSubject<View[]>([])
   private _view = new BehaviorSubject<View>(null)
-  private _originalViews = new BehaviorSubject<OriginalView[]>([])
+  private _originalView = new BehaviorSubject<number>(null)
+  private _originalViews = new BehaviorSubject<Record<number, number>>(null)
   private _messages = new BehaviorSubject<AnalysesMessage[]>([])
   private readonly _unsubscribeAll$ = new Subject<void>()
   orgId: number
@@ -41,6 +43,7 @@ export class AnalysisService {
   analysis$ = this._analysis.asObservable()
   views$ = this._views.asObservable()
   view$ = this._view.asObservable()
+  originalView$ = this._originalView.asObservable()
   originalViews$ = this._originalViews.asObservable()
   messages$ = this._messages.asObservable()
   pollingStatuses?: Subscription
@@ -143,12 +146,12 @@ export class AnalysisService {
   }
 
   // get analysis view
-  getAnalysisView(orgId: number, analysisId: number, viewId: number): Observable<View> {
+  getAnalysisView(orgId: number, analysisId: number, viewId: number): Observable<AnalysisView> {
     const url = `/api/v3/analyses/${analysisId}/views/${viewId}/?organization_id=${orgId}`
     return this._httpClient.get<AnalysisView>(url).pipe(
-      map((response) => response.view),
-      tap((view) => {
+      tap(({ view, original_view }) => {
         this._view.next(view)
+        this._originalView.next(original_view)
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error fetching analysis view')
@@ -166,6 +169,22 @@ export class AnalysisService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting analysis')
+      }),
+    )
+  }
+
+  create(orgId: number, data: AnalysisCreateData): Observable<FullProgressResponse> {
+    const url = `/api/v3/analyses/?organization_id=${orgId}&start_analysis=true`
+    return this._httpClient.post<FullProgressResponse>(url, data).pipe(
+      tap((response) => {
+        if (response.status === 'error') {
+          return this._errorService.handleError(response.errors as HttpErrorResponse, 'Error creating analysis')
+        }
+        this._snackBar.success('Running Analysis')
+        this.getAnalyses(orgId)
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating analysis')
       }),
     )
   }
@@ -240,6 +259,8 @@ export class AnalysisService {
       EUI: "The EUI analysis will sum the property's meter readings for the last twelve months to calculate the energy use per square footage per year. If there are missing meter readings, then the analysis will return a less that 100% coverage to alert the user that there is a missing meter reading.",
       'Element Statistics':
         "The Element Statistics analysis looks through a property's element data (if any) to count the number of elements of type 'D.D.C. Control Panel'. It also generates the aggregated (average) condition index values for scope 1 emission elements and saves those quantities to the property.",
+      'HVAC Metrics':
+        'The HVAC Metrics analysis calculates HVAC-related metrics for the property based on floor area and available meter data.',
     }
     return descriptionMap[analysis.service] ?? 'No description available for this analysis.'
   }

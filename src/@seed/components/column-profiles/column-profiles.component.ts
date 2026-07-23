@@ -1,23 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatSelectChange } from '@angular/material/select'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatTooltipModule } from '@angular/material/tooltip'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridOptions, GridReadyEvent, RowSelectedEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import type { Column, CurrentUser } from '@seed/api'
+import { ColumnService, InventoryService, OrganizationService, UserService } from '@seed/api'
+import { DeleteModalComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
@@ -27,18 +19,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-column-profiles',
   templateUrl: './column-profiles.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    PageComponent,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
-    MatSidenavModule,
-    MatTooltipModule,
-    ModalComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class ColumnProfilesComponent implements OnDestroy, OnInit {
   @Input() profileType: 'list' | 'detail'
@@ -63,6 +44,7 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   updateCLP$ = new Subject<unknown>()
   updateOrgUserSettings$ = new Subject<void>()
   rowData: ProfileColumn[] = []
+  private _rowSelectedTimer: ReturnType<typeof setTimeout>
 
   gridOptions: GridOptions = {
     rowSelection: {
@@ -181,14 +163,24 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
     // add icon to extra data and derived columns
     const iconName = derived_column ? 'link' : is_extra_data ? 'emergency' : null
     const textSize = derived_column ? 'text-sm' : 'text-xs'
-    return `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>`
+
+    const container = document.createElement('div')
+    container.append(document.createTextNode(value))
+    container.append(document.createTextNode(' '))
+
+    const icon = document.createElement('span')
+    icon.className = `material-icons align-middle ml-1 mb-2 text-secondary ${textSize}`
+    icon.textContent = iconName
+    container.append(icon)
+
+    return container
   }
 
   // pinRenderer = () => {
   //   return `
   //     <span
   //       style="opacity: 0.4"
-  //       class="material-icons-outlined action-icon cursor-pointer"
+  //       class="material-icons-outlined  cursor-pointer"
   //     >
   //       push_pin
   //     </span>
@@ -260,10 +252,15 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
   }
 
   onRowSelected(event: RowSelectedEvent) {
-    if (event.source !== 'api') {
+    // Ignore programmatic selection and header checkbox intermediate events
+    if (event.source === 'api') return
+
+    // Defer to let AG Grid finish processing all row selections (e.g., header checkbox "select all")
+    if (this._rowSelectedTimer) clearTimeout(this._rowSelectedTimer)
+    this._rowSelectedTimer = setTimeout(() => {
       const selectedRows = new Set(this.gridApi.getSelectedRows().map((r: ProfileColumn) => r.id))
       this.setRowData(selectedRows)
-    }
+    }, 50)
   }
 
   selectProfile(event: MatSelectChange) {

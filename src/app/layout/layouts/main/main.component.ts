@@ -1,13 +1,12 @@
 import { CdkScrollable } from '@angular/cdk/scrolling'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router'
 import { filter, Subject, takeUntil, tap } from 'rxjs'
-import { VersionService } from '@seed/api/version'
+import { VersionService } from '@seed/api'
 import type { NavigationItem } from '@seed/components'
 import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { MediaWatcherService } from '@seed/services'
 import { NavigationService } from 'app/core/navigation/navigation.service'
 import { OrganizationSelectorComponent } from 'app/layout/common/organization-selector/organization-selector.component'
@@ -20,8 +19,7 @@ import { type InventoryType } from 'app/modules/inventory/inventory.types'
   encapsulation: ViewEncapsulation.None,
   imports: [
     CdkScrollable,
-    MatButtonModule,
-    MatIconModule,
+    MaterialImports,
     OrganizationSelectorComponent,
     RouterLink,
     RouterOutlet,

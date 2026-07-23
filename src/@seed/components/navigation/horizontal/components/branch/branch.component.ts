@@ -10,16 +10,14 @@ import {
   input,
   viewChild,
 } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatMenu } from '@angular/material/menu'
-import { MatMenuModule } from '@angular/material/menu'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { Subject, takeUntil } from 'rxjs'
 import { HorizontalNavigationBasicItemComponent } from '@seed/components/navigation/horizontal/components/basic/basic.component'
 import { HorizontalNavigationDividerItemComponent } from '@seed/components/navigation/horizontal/components/divider/divider.component'
 import type { HorizontalNavigationComponent } from '@seed/components/navigation/horizontal/horizontal.component'
 import { SeedNavigationService } from '@seed/components/navigation/navigation.service'
 import type { NavigationItem } from '@seed/components/navigation/navigation.types'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-horizontal-navigation-branch-item',
@@ -30,9 +28,7 @@ import type { NavigationItem } from '@seed/components/navigation/navigation.type
     HorizontalNavigationBasicItemComponent,
     forwardRef(() => HorizontalNavigationBranchItemComponent),
     HorizontalNavigationDividerItemComponent,
-    MatIconModule,
-    MatMenuModule,
-    MatTooltipModule,
+    MaterialImports,
   ],
 })
 export class HorizontalNavigationBranchItemComponent implements OnInit, OnDestroy {

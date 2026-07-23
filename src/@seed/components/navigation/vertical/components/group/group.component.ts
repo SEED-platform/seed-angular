@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import { Subject, takeUntil } from 'rxjs'
 import type { NavigationItem, VerticalNavigationComponent } from '@seed/components'
 import {
@@ -11,6 +10,7 @@ import {
   VerticalNavigationDividerItemComponent,
   VerticalNavigationSpacerItemComponent,
 } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-vertical-navigation-group-item',
@@ -18,7 +18,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    MatIconModule,
+    MaterialImports,
     VerticalNavigationBasicItemComponent,
     VerticalNavigationCollapsibleItemComponent,
     VerticalNavigationDividerItemComponent,

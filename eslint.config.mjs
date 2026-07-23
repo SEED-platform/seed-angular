@@ -99,6 +99,8 @@ export default tseslint.config(
       '@typescript-eslint/no-for-in-array': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
+      // Enable later
+      '@typescript-eslint/no-useless-default-assignment': 'off',
       '@typescript-eslint/no-use-before-define': 'error',
       '@typescript-eslint/prefer-for-of': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', {
@@ -156,6 +158,30 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    // Angular 20.2+ marks the entire legacy trigger-based animation DSL as deprecated.
+    // Keep the deprecation rule active project-wide, but don't block lint on the files
+    // that intentionally encapsulate the existing animation layer until a full
+    // animate.enter/animate.leave migration is scheduled.
+    files: [
+      'src/@seed/animations/**/*.ts',
+      'src/@seed/components/drawer/drawer.component.ts',
+      'src/@seed/components/navigation/vertical/vertical.component.ts',
+      'src/app/app.config.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-deprecated': 'off',
+    },
+  },
+  {
+    // chroma-js exposes `contrast` at runtime, but its published typings still model the
+    // API around the default export. Keep the readable call site and suppress only this
+    // false-positive import rule for the helper.
+    files: ['src/@seed/tailwind/utils/generate-contrasts.ts'],
+    rules: {
+      'import/no-named-as-default-member': 'off',
     },
   },
   {

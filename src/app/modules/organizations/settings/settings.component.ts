@@ -1,19 +1,18 @@
 import type { AfterViewInit } from '@angular/core'
 import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
 import type { MatDrawer } from '@angular/material/sidenav'
-import { MatSidenavModule } from '@angular/material/sidenav'
 import { RouterOutlet } from '@angular/router'
 import type { NavigationItem } from '@seed/components'
 import { DrawerService, VerticalNavigationComponent } from '@seed/components'
 import { ScrollResetDirective } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-organizations',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [MatIconModule, MatSidenavModule, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
+  imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class SettingsComponent implements AfterViewInit {
   @ViewChild('drawer') drawer!: MatDrawer

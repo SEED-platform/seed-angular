@@ -45,9 +45,9 @@
         </mat-form-field>
 
         @if (parameters.controls.length > 1) {
-          <a class="mt-7" (click)="deleteParameter($index)" mat-stroked-button color="warn">
-            <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-          </a>
+          <button class="mt-7" (click)="deleteParameter($index)" mat-icon-button>
+            <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
+          </button>
         }
       </div>
     }
@@ -57,7 +57,7 @@
     }
 
     <a (click)="addParameter()" mat-flat-button color="primary">
-      <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+      <mat-icon class="fill-white icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
       <span class="ml-2">Add Parameter</span>
     </a>
 

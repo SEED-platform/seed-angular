@@ -1,12 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIcon } from '@angular/material/icon'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { AgGridAngular } from 'ag-grid-angular'
 import type {
   CellClassParams,
@@ -19,14 +14,13 @@ import type {
   IRowNode,
   ValueFormatterParams,
 } from 'ag-grid-community'
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { saveAs } from 'file-saver'
 import { combineLatest, filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { type Column, MappableColumnService } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile/'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { ColumnMappingProfileService, MappableColumnService } from '@seed/api'
 import { DeleteModalComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { type ComponentCanDeactivate } from '@seed/guards/pending-changes.guard'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
 import { ActionButtonsComponent } from './action-buttons.component'
@@ -34,8 +28,6 @@ import { CopyModalComponent } from './modal/copy-modal.component'
 import { CreateModalComponent } from './modal/create-modal.component'
 import { EditModalComponent } from './modal/edit-modal.component'
 import { RenameModalComponent } from './modal/rename-modal.component'
-
-ModuleRegistry.registerModules([AllCommunityModule])
 
 type DataType = {
   id: string;
@@ -51,17 +43,7 @@ type RenderMapping = ColumnMapping & {
   selector: 'seed-organizations-column-mappings',
   templateUrl: './mappings.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    AgGridAngular,
-    CommonModule,
-    SharedImports,
-    MatButtonModule,
-    MatIcon,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatSelectModule,
-    MatTooltipModule,
-  ],
+  imports: [AgGridAngular, CommonModule, SharedImports, MaterialImports, ReactiveFormsModule],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -97,7 +79,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     { id: 'gal/year', value: 'gal/year', type: 'water_use' },
     { id: 'L/year', value: 'L/year', type: 'water_use' },
   ]
-  columnDefs: ColDef[] | ColGroupDef[] = [
+  columnDefs: (ColDef<RenderMapping> | ColGroupDef<RenderMapping>)[] = [
     {
       headerName: 'SEED',
       children: [
@@ -107,7 +89,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
           field: 'to_table_name',
           editable: false,
           valueFormatter: (params: ValueFormatterParams) => {
-            return (params.value as string).slice(0, -5)
+            return (params.value as string)?.slice(0, -5)
           },
         },
         {
@@ -150,7 +132,6 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
         },
         {
           headerName: 'Actions',
-          field: 'actions',
           cellRendererSelector: (_params) => {
             if (this.profileReadOnly()) {
               return undefined
@@ -171,8 +152,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       ],
     },
   ]
-  rowData = []
-  gridOptions: GridOptions = {
+  rowData: RenderMapping[] = []
+  gridOptions: GridOptions<RenderMapping> = {
     columnDefs: this.columnDefs,
     pagination: false,
     suppressCellFocus: true,
@@ -277,8 +258,8 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     return count
   }
 
-  selectProfile(profileId = undefined) {
-    if (!profileId) {
+  selectProfile(profileId?: number) {
+    if (profileId === undefined) {
       profileId = this.selectedProfileForm.get('selectedProfile').value
     }
     if (profileId !== this.selectedProfile.id) {
@@ -334,10 +315,12 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     return mappings
   }
 
-  onCellDoubleClicked(event: CellDoubleClickedEvent) {
-    if (!this.profileReadOnly()) {
-      this.editMapping(event.data as ColumnMapping, event.node)
+  onCellDoubleClicked(event: CellDoubleClickedEvent<RenderMapping>): void {
+    if (this.profileReadOnly() || !event.data) {
+      return
     }
+
+    this.editMapping(event.data, event.node)
   }
 
   deleteMapping(_mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {
@@ -345,7 +328,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     this.changesToSave = true
   }
 
-  editMapping(mapping: ColumnMapping, node: IRowNode): void {
+  editMapping(mapping: ColumnMapping, node: IRowNode<RenderMapping>): void {
     const dialogRef = this._dialog.open(EditModalComponent, {
       width: '80rem',
       data: {
@@ -477,7 +460,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       .export(this.orgId, this.selectedProfile.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((blob) => {
-        saveAs(blob, filename) // eslint-disable-line @typescript-eslint/no-unsafe-call
+        this._downloadBlob(blob, filename)
       })
   }
 
@@ -521,7 +504,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
     this.selectedProfileForm.get('selectedProfile').enable()
   }
 
-  buildMappingFromRowNode(rowNode: IRowNode<ColumnMapping>) {
+  buildMappingFromRowNode(rowNode: IRowNode<RenderMapping>): ColumnMapping {
     return {
       to_field: rowNode.data.to_field,
       from_field: rowNode.data.from_field,
@@ -530,5 +513,14 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       is_omitted: rowNode.data.is_omitted,
       from_field_value: rowNode.data.from_field_value,
     } as ColumnMapping
+  }
+
+  private _downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
   }
 }

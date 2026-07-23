@@ -1,34 +1,16 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile } from '@seed/api/column_mapping_profile'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 
 @Component({
   selector: 'seed-column-mappings-edit-modal',
   templateUrl: './edit-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
-    ReactiveFormsModule,
-    SeedHeaderAutocompleteComponent,
-  ],
+  imports: [MaterialImports, ReactiveFormsModule, SeedHeaderAutocompleteComponent],
 })
 export class EditModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditModalComponent>)
@@ -40,10 +22,10 @@ export class EditModalComponent implements OnInit {
   from_fields: string[]
   form = new FormGroup({
     is_omitted: new FormControl<boolean | null>(null),
-    to_table_name: new FormControl<string>('', [Validators.required]),
-    to_field: new FormControl<string>('', []),
-    from_field: new FormControl<string>('', []),
-    from_units: new FormControl<string>(''),
+    to_table_name: new FormControl('', [Validators.required]),
+    to_field: new FormControl('', []),
+    from_field: new FormControl('', []),
+    from_units: new FormControl(''),
   })
   data = inject(MAT_DIALOG_DATA) as { mapping: ColumnMapping; org_id: number; columns: Column[]; profile: ColumnMappingProfile }
 

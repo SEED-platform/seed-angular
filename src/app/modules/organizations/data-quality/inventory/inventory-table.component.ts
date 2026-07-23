@@ -2,21 +2,16 @@ import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import type { MatDialogRef } from '@angular/material/dialog'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
-import { MatTooltipModule } from '@angular/material/tooltip'
+import { MatDialog } from '@angular/material/dialog'
+import { MatPaginator } from '@angular/material/paginator'
+import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute } from '@angular/router'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { ColumnService } from '@seed/api/column'
-import { DataQualityService, type Rule } from '@seed/api/data-quality'
-import { LabelService } from '@seed/api/label'
-import { OrganizationService } from '@seed/api/organization'
+import type { Rule } from '@seed/api'
+import { ColumnService, DataQualityService, LabelService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import type { InventoryTypeGoal } from 'app/modules/inventory/inventory.types'
 import { DataQualityUtils } from '../data-quality.utils'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -24,18 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-data-quality-inventory-table',
   templateUrl: './inventory-table.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    LabelComponent,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatPaginatorModule,
-    MatSlideToggleModule,
-    MatTableModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, FormsModule, LabelComponent, MaterialImports],
 })
 export class DataQualityInventoryTableComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
   @Input() currentRules: Rule[]

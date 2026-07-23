@@ -1,18 +1,16 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { type MatSelect, MatSelectModule } from '@angular/material/select'
-import { MatTableModule } from '@angular/material/table'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { type MatSelect } from '@angular/material/select'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import type { Label } from '@seed/api/label'
-import type { AccessLevelInstance, Organization } from '@seed/api/organization'
+import { filter, take, tap } from 'rxjs'
+import type { AccessLevelInstance, Label, Organization } from '@seed/api'
 import { LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
+import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import { ModalComponent } from '../../column-list-profile/modal/modal.component'
 import { MapComponent } from './map.component'
@@ -20,19 +18,7 @@ import { MapComponent } from './map.component'
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    LabelComponent,
-    MapComponent,
-    MatButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatTableModule,
-    MatSelectModule,
-    ModalComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports],
 })
 export class HeaderComponent implements OnInit {
   @Input() currentProfile: Profile
@@ -125,9 +111,9 @@ export class HeaderComponent implements OnInit {
     {
       name: 'Run Analysis',
       action: () => {
-        this.tempAction()
+        this.openRunAnalysisModal()
       },
-      disabled: true,
+      disabled: false,
     },
     {
       name: 'Update with Audit Template',
@@ -217,9 +203,37 @@ export class HeaderComponent implements OnInit {
       },
     })
 
-    dialogRef.afterClosed().subscribe((message) => {
-      if (message === 'refresh') this.refreshDetail.emit()
+    dialogRef
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(Boolean),
+        tap(() => {
+          this.refreshDetail.emit()
+        }),
+      )
+      .subscribe()
+  }
+
+  openRunAnalysisModal() {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.org.id,
+        viewIds: [this.selectedView.id],
+      },
     })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        take(1),
+        filter(Boolean),
+        tap(() => {
+          this.refreshDetail.emit()
+        }),
+      )
+      .subscribe()
   }
 
   trackByFn(_index: number, { id }: AccessLevelInstance) {

@@ -1,30 +1,17 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject, takeUntil } from 'rxjs'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { Organization } from '@seed/api'
+import { OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-organizations-settings-options',
   templateUrl: './options.component.html',
-  imports: [
-    MatButtonModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSlideToggleModule,
-    PageComponent,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class OptionsComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)

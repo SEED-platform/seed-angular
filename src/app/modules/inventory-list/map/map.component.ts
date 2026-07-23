@@ -1,13 +1,8 @@
-/* eslint-disable @cspell/spellchecker */
+import { NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatIconModule } from '@angular/material/icon'
+import { Component, inject, Input } from '@angular/core'
 import type { ProgressBarMode } from '@angular/material/progress-bar'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTooltipModule } from '@angular/material/tooltip'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { type Feature, Overlay } from 'ol'
 import { defaults as defaultControls } from 'ol/control'
 import { buffer } from 'ol/extent'
@@ -28,15 +23,11 @@ import Style from 'ol/style/Style'
 import Text from 'ol/style/Text'
 import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
-import { filter, finalize, last, map, mergeMap, range, scan, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
-import type { Label, LabelOperator } from '@seed/api/label'
-import { LabelService } from '@seed/api/label'
-import type { OrgCycle } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import { filter, finalize, last, map, mergeMap, of, range, scan, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import type { CurrentUser, Label, LabelOperator, OrgCycle } from '@seed/api'
+import { ColumnService, GroupsService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { MapService } from '@seed/services/map'
 import type { FilterResponse, InventoryType, InventoryTypeGoal, State } from 'app/modules/inventory/inventory.types'
 import { LabelsComponent } from './labels.component'
@@ -46,26 +37,25 @@ type Layer = VectorLayer | TileLayer
 @Component({
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
-  imports: [
-    LabelsComponent,
-    MatCheckboxModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatTooltipModule,
-    NotFoundComponent,
-    PageComponent,
-    ProgressBarComponent,
-  ],
+  imports: [NgTemplateOutlet, LabelsComponent, MaterialImports, NotFoundComponent, PageComponent, ProgressBarComponent],
+  host: { class: 'flex flex-col flex-auto min-h-0' },
 })
 export class MapComponent implements OnDestroy, OnInit {
+  private _columnService = inject(ColumnService)
+  private _groupsService = inject(GroupsService)
   private _inventoryService = inject(InventoryService)
   private _labelService = inject(LabelService)
   private _mapService = inject(MapService)
   private _organizationService = inject(OrganizationService)
+  private _router = inject(Router)
   private _userService = inject(UserService)
   private _route = inject(ActivatedRoute)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _groupPropertyIds: number[] | null = null
+  private _footprintColumnName: string | null = null
+  private _allColumnIds: number[] = []
+
+  @Input() groupId?: number
 
   baseLayer: TileLayer
   censusTractLayer: VectorLayer
@@ -76,12 +66,14 @@ export class MapComponent implements OnDestroy, OnInit {
   cycle$ = new Subject<void>()
   data: State[] = []
   defaultField: 'property_display_field' | 'taxlot_display_field'
+  displayFieldColumnName: string
+  displayFieldIsExtraData = false
+  displayFieldKey: string
   filteredRecords = 0
+  footprintLayer: VectorLayer
   geocodedData: State[] = []
   geocodedProperties: State[]
   geocodedTaxlots: State[]
-  group: { views_list: number[] } // FUTURE: HANDLE GROUPS
-  groupId: number // FUTURE: HANDLE GROUPS
   hexBinColor = [75, 0, 130]
   hexBinLayer: VectorLayer
   hexBinMaxOpacity = 0.8
@@ -94,14 +86,8 @@ export class MapComponent implements OnDestroy, OnInit {
   map: Map
   orgId: number
   pointsLayer: VectorLayer
-  popupOverlay = new Overlay({
-    element: document.getElementById('popup-element'),
-    positioning: 'bottom-center',
-    stopEvent: false,
-    autoPan: true,
-    // autoPanMargin: 75, ?????????? dne?
-    offset: [0, -10],
-  })
+  popupInfo: { displayValue: string; viewId: number } | null = null
+  popupOverlay: Overlay
   progress = { current: 0, total: 0, percent: 0, chunk: 0 }
   propertyBBLayer: VectorLayer
   propertyCentroidLayer: VectorLayer
@@ -114,11 +100,15 @@ export class MapComponent implements OnDestroy, OnInit {
   type = this._route.snapshot.paramMap.get('type') as InventoryTypeGoal
 
   ngOnInit(): void {
+    if (this.groupId) {
+      this.type = 'properties'
+    }
     this.defaultField = this.type === 'properties' ? 'property_display_field' : 'taxlot_display_field'
     this.getDependencies()
       .pipe(
         takeUntil(this._unsubscribeAll$),
         filter(() => !!this.cycle),
+        switchMap(() => this._fetchGroupPropertyIds()),
         switchMap(() => this.initMap()),
         tap(() => {
           this.initStreams()
@@ -137,6 +127,25 @@ export class MapComponent implements OnDestroy, OnInit {
         this.orgId = org.id
         this.cycles = org.cycles
         this.cycle = this.cycles.find((c) => c.cycle_id === this.currentUser.settings.cycleId) ?? this.cycles[0]
+        this.displayFieldKey = this.type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
+      }),
+      switchMap(() => (this.type === 'taxlots' ? this._columnService.taxLotColumns$ : this._columnService.propertyColumns$).pipe(take(1))),
+      tap((columns) => {
+        // Resolve the org display field (e.g., "Nick Name") to the column metadata
+        const displayFieldCol = columns.find((c) => c.display_name === this.displayFieldKey || c.column_name === this.displayFieldKey)
+        this.displayFieldKey = displayFieldCol?.name ?? this.displayFieldKey
+        this.displayFieldColumnName = displayFieldCol?.column_name ?? this.displayFieldKey
+        this.displayFieldIsExtraData = displayFieldCol?.is_extra_data ?? false
+
+        // Store all column IDs so we can request extra data columns via shown_column_ids
+        this._allColumnIds = columns.map((c) => c.id)
+
+        if (this.type === 'properties') {
+          const footprintCol = columns.find((c) => c.column_name === 'property_footprint')
+          this._footprintColumnName = footprintCol?.name ?? null
+        } else {
+          this._footprintColumnName = null
+        }
       }),
       switchMap(() => this.getLabels()),
     )
@@ -214,7 +223,7 @@ export class MapComponent implements OnDestroy, OnInit {
 
   fetchRecords(totalPages: number) {
     const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
-    const include_property_ids = this.type === 'goal' ? this.group?.views_list : []
+    const include_property_ids = this._groupPropertyIds ?? []
 
     this.requestParams = new URLSearchParams({
       cycle: this.cycle.cycle_id.toString(),
@@ -226,9 +235,15 @@ export class MapComponent implements OnDestroy, OnInit {
       inventory_type,
     })
 
+    // Only include shown_column_ids when extra data fields are needed (display field or footprints).
+    // Without it, profile_id=null returns all standard fields which is sufficient for most cases.
+    // When extra data IS needed, we must pass all column IDs since shown_column_ids restricts standard fields too.
+    if (this.displayFieldIsExtraData && this._allColumnIds.length) {
+      this.requestParams.set('shown_column_ids', this._allColumnIds.join(','))
+    }
+
     this.requestData = {
       include_property_ids,
-      profile_id: null,
       filters: null,
       sorts: null,
     }
@@ -267,6 +282,7 @@ export class MapComponent implements OnDestroy, OnInit {
       taxlotBBLayer: { zIndex: 5, visible: this.type !== 'properties' },
       taxlotCentroidLayer: { zIndex: 6, visible: this.type !== 'properties' },
       pointsLayer: { zIndex: 7, visible: true },
+      footprintLayer: { zIndex: 8, visible: !!this._footprintColumnName },
     }
 
     this.baseLayer = new TileLayer({ source: new OSM(), zIndex: this.layers.baseLayer.zIndex })
@@ -303,6 +319,12 @@ export class MapComponent implements OnDestroy, OnInit {
       source: this.centroidSource(this.geocodedTaxlots),
       zIndex: this.layers.taxlotCentroidLayer.zIndex,
       style: this.taxlotStyle(),
+    })
+
+    this.footprintLayer = new VectorLayer({
+      source: this.footprintSource(this.data),
+      zIndex: this.layers.footprintLayer.zIndex,
+      style: this.footprintStyle(),
     })
 
     this.censusTractLayer = new VectorLayer({
@@ -344,25 +366,42 @@ export class MapComponent implements OnDestroy, OnInit {
     this.map.on('moveend', async () => {
       this.censusTractLayer.setSource(await this.censusTractSource())
     })
-    this.map.addOverlay(this.popupOverlay)
+
+    const popupElement = document.getElementById('popup-element')
+    if (popupElement) {
+      this.popupOverlay = new Overlay({
+        element: popupElement,
+        positioning: 'bottom-center',
+        stopEvent: true,
+        autoPan: true,
+        offset: [0, -10],
+      })
+      this.map.addOverlay(this.popupOverlay)
+    }
+
     this.map.on('click', (event) => {
-      const element = this.popupOverlay.getElement()
       const points: Feature[] = []
 
       this.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-        // disregard hexBin/census clicks
-        if (
-          ![this.layers.hexBinLayer.zIndex, this.layers.censusTractLayer.zIndex, undefined].includes(layer.getProperties().zIndex as number)
-        ) {
+        // disregard hexBin/census/footprint clicks
+        const ignoredZIndexes = [
+          this.layers.hexBinLayer.zIndex,
+          this.layers.censusTractLayer.zIndex,
+          this.layers.footprintLayer.zIndex,
+          undefined,
+        ]
+        const layerZIndex = layer?.getProperties()?.zIndex as number | undefined
+        if (!ignoredZIndexes.includes(layerZIndex)) {
           points.push(...((feature.get('features') as Feature[]) ?? []))
         }
       })
 
       if (!points.length) {
-        console.log('jquery needs migrating: "$(element).popover("destroy")"')
+        this.dismissPopup()
       } else if (points.length === 1) {
-        this.showPointInfo(points[0], element)
+        this.showPointInfo(points[0])
       } else {
+        this.dismissPopup()
         this.zoomOnCluster(points)
       }
     })
@@ -530,6 +569,30 @@ export class MapComponent implements OnDestroy, OnInit {
   pointsSource = (records = this.geocodedData) => new Cluster({ source: this.buildingSources(records), distance: 45 })
   propertyStyle = () => new Style({ stroke: new Stroke({ color: '#185189', width: 2 }) })
   taxlotStyle = () => new Style({ stroke: new Stroke({ color: '#10A0A0', width: 2 }) })
+  footprintStyle = () =>
+    new Style({ stroke: new Stroke({ color: '#1e3a5f', width: 2 }), fill: new Fill({ color: 'rgba(30, 58, 95, 0.2)' }) })
+
+  footprintSource(records: State[]) {
+    if (!this._footprintColumnName) return new VectorSource()
+    const features = records.reduce((acc: Feature[], record) => {
+      const wkt = record[this._footprintColumnName] as string | undefined
+      if (wkt) {
+        try {
+          const feature = new WKT().readFeature(wkt, {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857',
+          })
+          feature.setProperties(record)
+          acc.push(feature)
+        } catch (e) {
+          console.error(`Failed to process footprint for id ${record.id}:`, e)
+        }
+      }
+      return acc
+    }, [])
+
+    return new VectorSource({ features })
+  }
 
   layerVisible(zIndex: number) {
     const layers = this.map.getLayers().getArray()
@@ -553,23 +616,25 @@ export class MapComponent implements OnDestroy, OnInit {
     this.highlightDACs = !this.highlightDACs
   }
 
-  detailPageIcon(pointInfo: { property_view_id?: number; taxlot_view_id?: number }) {
-    const iconHtml = '<i class="ui-grid-icon-info-circled"></i>'
-
-    if (this.type === 'properties') {
-      return `<a href="#/properties/${pointInfo.property_view_id}">${iconHtml}</a>`
-    }
-    return `<a href="#/taxlots/${pointInfo.taxlot_view_id}">${iconHtml}</a>`
+  navigateToDetail(viewId: number) {
+    const typePath = this.type === 'taxlots' ? 'taxlots' : 'properties'
+    void this._router.navigate(['/', typePath, viewId])
   }
 
-  // DEVELOPER NOTE: popover element needs to be developed
-  showPointInfo(point, element) {
-    // const popInfo = point.getProperties();
-    // const defaultKey = Object.keys(popInfo).find((key) => key.startsWith(this.defaultField))
-    // const coordinates = point.getGeometry().getCoordinates()
-    // const content = `${popInfo[defaultKey]} ${this.detailPageIcon(popInfo)}`
-    // this.popupOverlay.setPosition(coordinates)
-    console.log('TODO: need to develop a popover element', point, element)
+  dismissPopup() {
+    this.popupInfo = null
+    this.popupOverlay?.setPosition(undefined)
+  }
+
+  showPointInfo(point: Feature) {
+    const props = point.getProperties() as Record<string, unknown>
+    const viewId = (this.type === 'taxlots' ? props.taxlot_view_id : props.property_view_id) as number
+    const coordinates = (point.getGeometry() as unknown as { getCoordinates: () => number[] }).getCoordinates()
+
+    // Resolve the display field value. The key might be exact, space-normalized, or absent (extra data fields).
+    const displayValue = this._resolveDisplayValue(props)
+    this.popupInfo = { displayValue: displayValue || `ID: ${viewId}`, viewId }
+    this.popupOverlay?.setPosition(coordinates)
   }
 
   zoomOnCluster(points: Feature[]) {
@@ -598,9 +663,9 @@ export class MapComponent implements OnDestroy, OnInit {
   }
 
   rerenderPoints(records: State[]) {
-    console.log('rerenderPoints', records)
     this.filteredRecords = records.length
     this.pointsLayer.setSource(this.pointsSource(records))
+    this.footprintLayer.setSource(this.footprintSource(records))
     if (this.type === 'properties') {
       this.hexBinLayer.setSource(this.hexBinSource(records))
       this.propertyBBLayer.setSource(this.boundingBoxSource(records))
@@ -648,5 +713,57 @@ export class MapComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  private _fetchGroupPropertyIds() {
+    if (!this.groupId) {
+      return of(undefined)
+    }
+    return this._groupsService.getProperties(this.orgId, this.groupId).pipe(
+      tap((props) => {
+        this._groupPropertyIds = props.map((p) => p.property_id)
+      }),
+    )
+  }
+
+  private _resolveDisplayValue(props: Record<string, unknown>): string {
+    if (!this.displayFieldKey) return ''
+
+    // For extra data fields, look in the nested extra_data object
+    if (this.displayFieldIsExtraData) {
+      const extraData = props.extra_data as Record<string, unknown> | undefined
+      if (extraData) {
+        // Try column_name (e.g., "Nick Name") which is how extra_data keys are stored
+        const val = extraData[this.displayFieldColumnName]
+        if (val !== undefined) return this._toDisplayString(val)
+      }
+    }
+
+    // Try top-level exact match
+    if (props[this.displayFieldKey] !== undefined) {
+      return this._toDisplayString(props[this.displayFieldKey])
+    }
+
+    // Try with spaces replaced by underscores (API normalizes spaces)
+    const normalized = this.displayFieldKey.replace(/ /g, '_')
+    if (props[normalized] !== undefined) {
+      return this._toDisplayString(props[normalized])
+    }
+
+    // Display field not found — try common fallbacks
+    const fallbacks = ['property_name', 'address_line_1', 'pm_property_id', 'custom_id_1']
+    for (const fallback of fallbacks) {
+      const key = Object.keys(props).find((k) => k.startsWith(fallback))
+      if (key) {
+        const val = this._toDisplayString(props[key])
+        if (val) return val
+      }
+    }
+
+    return ''
+  }
+
+  private _toDisplayString(value: unknown): string {
+    return typeof value === 'string' || typeof value === 'number' ? String(value) : ''
   }
 }

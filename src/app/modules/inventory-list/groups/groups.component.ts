@@ -3,15 +3,13 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { ActivatedRoute, Router } from '@angular/router'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { GroupsService } from '@seed/api/groups/groups.service'
-import type { InventoryGroup } from '@seed/api/groups/groups.types'
-import { OrganizationService } from '@seed/api/organization'
+import type { InventoryGroup } from '@seed/api'
+import { GroupsService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
@@ -20,7 +18,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, FormModalComponent, MatIconModule, NotFoundComponent, PageComponent],
+  imports: [AgGridAngular, CommonModule, NotFoundComponent, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {
   private _configService = inject(ConfigService)
@@ -28,6 +26,7 @@ export class GroupsComponent implements OnDestroy, OnInit {
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
+  private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   columnDefs: ColDef[] = []
@@ -80,22 +79,22 @@ export class GroupsComponent implements OnDestroy, OnInit {
     ]
   }
 
-  nameRenderer = ({ data, value }: { data: InventoryGroup; value: string }) => {
-    return `<a href="/properties/groups/${data.id}" class="underline text-primary dark:text-primary-500">${value}</a>`
+  nameRenderer = ({ value }: { data: InventoryGroup; value: string }) => {
+    return `<span class="underline text-primary dark:text-primary-500 cursor-pointer" data-action="navigate">${value}</span>`
   }
 
   actionRenderer = () => {
     return `
-      <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="edit">edit</span>
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="delete">clear</span>
+      <div class="flex gap-2 mt-2 align-center">
+        <span class="material-icons cursor-pointer text-cyan-600" title="Edit" data-action="edit">edit</span>
+        <span class="material-icons cursor-pointer text-red-700" title="Delete" data-action="delete">delete</span>
       </div>
     `
   }
 
   setRowData() {
     this.rowData = []
-    for (const group of this.groups) {
+    for (const group of this.groups ?? []) {
       const row = {
         id: group.id,
         name: group.name,
@@ -117,13 +116,13 @@ export class GroupsComponent implements OnDestroy, OnInit {
   }
 
   onCellClicked(event: CellClickedEvent) {
-    if (event.colDef.field !== 'actions') return
-
     const target = event.event.target as HTMLElement
-    const action = target.getAttribute('data-action')
+    const action = target.closest('[data-action]')?.getAttribute('data-action')
     const { id, name } = event.data as { id: number; name: string }
 
-    if (action === 'edit') {
+    if (action === 'navigate') {
+      void this._router.navigate([`/${this.type}/groups`, id])
+    } else if (action === 'edit') {
       this.editGroup(id)
     } else if (action === 'delete') {
       this.openDeleteModal(id, name)

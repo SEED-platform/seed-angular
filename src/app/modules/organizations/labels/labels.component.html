@@ -23,12 +23,12 @@
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell>Actions</th>
         <td class="w-50" *matCellDef="let label" mat-cell>
-          <a (click)="edit(label)" mat-stroked-button>
-            <mat-icon class="icon-size-4" svgIcon="fa-solid:pencil"></mat-icon>
-          </a>
-          <a (click)="delete(label)" mat-stroked-button color="warn">
-            <mat-icon class="icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-          </a>
+          <button (click)="edit(label)" mat-icon-button>
+            <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:pencil"></mat-icon>
+          </button>
+          <button (click)="delete(label)" mat-icon-button>
+            <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
+          </button>
         </td>
       </ng-container>
       <thead>

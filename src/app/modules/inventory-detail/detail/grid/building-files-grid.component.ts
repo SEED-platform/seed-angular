@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-building-files-grid',
   templateUrl: './building-files-grid.component.html',
-  imports: [AgGridAngular, AgGridModule, CommonModule, MatIconModule],
+  imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class BuildingFilesGridComponent implements OnInit {
   @Input() view: ViewResponse
@@ -39,10 +39,7 @@ export class BuildingFilesGridComponent implements OnInit {
   setColumnDefs() {
     this.columnDefs = [
       { field: 'file_type', headerName: 'File Type' },
-      {
-        field: 'filename',
-        headerName: 'File Name',
-      },
+      { field: 'filename', headerName: 'File Name' },
       { field: 'created', headerName: 'Created' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionRenderer },
     ]
@@ -51,7 +48,7 @@ export class BuildingFilesGridComponent implements OnInit {
   actionRenderer = () => {
     return `
       <div class="flex gap-2 mt-2 align-center"">
-        <span class="material-icons action-icon cursor-pointer text-secondary" data-action="download">cloud_download</span>
+        <span class="material-icons cursor-pointer text-secondary" data-action="download">cloud_download</span>
       </div>
     `
   }
@@ -71,7 +68,6 @@ export class BuildingFilesGridComponent implements OnInit {
   downloadDocument(data: unknown) {
     const { file, filename } = data as { file: string; filename: string }
 
-    console.log('Developer Note: Downloads will fail until frontend and backend are on the same server')
     const a = document.createElement('a')
     const url = file
     a.href = url

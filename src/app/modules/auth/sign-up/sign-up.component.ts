@@ -2,17 +2,12 @@ import type { OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { Router, RouterLink } from '@angular/router'
 import { take } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { type SEEDConfig, TermsService } from '@seed/services'
 import { ConfigService } from '@seed/services/config'
 import { AuthService } from 'app/core/auth/auth.service'
@@ -22,18 +17,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-up.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [
-    AlertComponent,
-    FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    RouterLink,
-  ],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
 })
 export class AuthSignUpComponent implements OnInit {
   private _authService = inject(AuthService)

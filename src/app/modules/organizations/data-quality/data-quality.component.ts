@@ -1,19 +1,14 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
-import { MatTableModule } from '@angular/material/table'
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { combineLatest, map, Subject, takeUntil, tap } from 'rxjs'
-import { ColumnService } from '@seed/api/column'
-import type { Rule } from '@seed/api/data-quality'
-import { DataQualityService } from '@seed/api/data-quality'
-import { OrganizationService } from '@seed/api/organization'
+import type { Rule } from '@seed/api'
+import { ColumnService, DataQualityService, OrganizationService } from '@seed/api'
 import { InventoryTabComponent, PageComponent, TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import type { InventoryTypeGoal } from 'app/modules/inventory/inventory.types'
 import { DataQualityGoalTableComponent } from './goal/goal-table.component'
@@ -28,11 +23,7 @@ import { FormModalComponent } from './inventory/modal/form-modal.component'
     DataQualityInventoryTableComponent,
     FormsModule,
     InventoryTabComponent,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatTableModule,
+    MaterialImports,
     PageComponent,
     SharedImports,
     TableContainerComponent,

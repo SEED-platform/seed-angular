@@ -1,28 +1,34 @@
-<seed-page
-  [config]="{
-    title: pageTitle,
-    titleIcon: 'fa-solid:building',
-    tabs: ['properties', 'taxlots'],
-  }"
->
-</seed-page>
+@if (!groupId) {
+  <seed-page
+    [config]="{
+      title: pageTitle,
+      titleIcon: 'fa-solid:building',
+      tabs: ['properties', 'taxlots'],
+    }"
+  >
+  </seed-page>
+}
 
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <!-- Main -->
   <div class="z-1 -mt-px flex-auto border-t pt-2">
     <!-- GRID CONFIG -->
-    <div class="m-2 flex">
+    <div class="relative m-2 flex items-start">
       <!-- Actions -->
       <seed-inventory-grid-actions
         [cycleId]="cycleId"
         [gridApi]="gridApi"
+        [groupMode]="!!groupId"
         [inventory]="inventory"
         [orgId]="orgId"
         [profile]="profile"
         [profiles]="profiles"
+        [selectedStateIds]="selectedStateIds"
         [selectedViewIds]="selectedViewIds"
         [type]="type"
-        (refreshInventory)="refreshInventory$.next()"
+        (refreshInventory)="onRefreshInventory($event)"
+        (selectedAll)="onSelectAll($event)"
+        (toggleAccessLevels)="onToggleAccessLevelInstances()"
       ></seed-inventory-grid-actions>
 
       <!-- Cycles -->
@@ -37,13 +43,27 @@
         label="Profile"
       >
       </seed-inventory-grid-config-selector>
+
+      <!-- Filter Groups -->
+      @if (gridApi) {
+        <seed-filter-group-selector
+          [currentUser]="currentUser"
+          [gridApi]="gridApi"
+          [inventoryType]="filterGroupInventoryType"
+          [labels]="labels"
+          [orgId]="orgId"
+          (filterGroupApplied)="onFilterGroupApplied($event)"
+          (labelSelectionsChanged)="onLabelSelectionsChanged($event)"
+        ></seed-filter-group-selector>
+      }
     </div>
 
     <!-- Filter and Sort chips -->
     @if (gridApi && columnDefs) {
       <seed-inventory-filter-sort-chips
-        [gridApi]="gridApi"
+        [columns]="columns"
         [columnDefs]="columnDefs"
+        [gridApi]="gridApi"
         [type]="type"
         [userSettings]="userSettings"
       ></seed-inventory-filter-sort-chips>
@@ -52,18 +72,22 @@
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid
+      [accessLevelNames]="accessLevelNames"
       [columnDefs]="columnDefs"
+      [currentUser]="currentUser"
       [inventoryType]="type"
       [labelMap]="labelMap"
+      [orgId]="orgId"
+      [orgUserId]="orgUserId"
       [pagination]="pagination"
       [rowData]="rowData"
       [selectedViewIds]="selectedViewIds"
       [type]="type"
+      [userSettings]="userSettings"
       (pageChange)="onPageChange($event)"
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"
       (selectionChanged)="onSelectionChanged()"
-      (gridReset)="onGridReset()"
     ></seed-inventory-grid>
   </div>
 </div>

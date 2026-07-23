@@ -1,15 +1,10 @@
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressBar } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { EMPTY, finalize, switchMap, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { InventoryService } from '@seed/api/inventory'
+import type { Column } from '@seed/api'
+import { InventoryService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, ProfileModalMode } from 'app/modules/inventory/inventory.types'
@@ -17,17 +12,7 @@ import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, Pro
 @Component({
   selector: 'seed-column-list-profile-modal',
   templateUrl: './modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressBar,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class ModalComponent {
   private _dialogRef = inject(MatDialogRef<ModalComponent>)
@@ -49,7 +34,7 @@ export class ModalComponent {
   existingNames = this.data.profiles?.map((p) => p.name).filter((name) => name !== this.data.profile?.name) ?? []
 
   form = new FormGroup({
-    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
   })
 
   errorMessage = false

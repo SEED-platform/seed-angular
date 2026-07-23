@@ -4,10 +4,10 @@ import { BehaviorSubject } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
 export class LoadingService {
-  private _auto$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true)
+  private _auto$ = new BehaviorSubject(true)
   private _mode$: BehaviorSubject<'determinate' | 'indeterminate'> = new BehaviorSubject<'determinate' | 'indeterminate'>('indeterminate')
-  private _progress$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(0)
-  private _show$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
+  private _progress$ = new BehaviorSubject(0)
+  private _show$ = new BehaviorSubject(false)
   private _urlMap: Map<string, boolean> = new Map<string, boolean>()
 
   /**

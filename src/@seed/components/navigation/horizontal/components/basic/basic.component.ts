@@ -1,22 +1,20 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
-import { MatMenuModule } from '@angular/material/menu'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import type { IsActiveMatchOptions } from '@angular/router'
 import { RouterLink, RouterLinkActive } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { HorizontalNavigationComponent } from '@seed/components/navigation/horizontal/horizontal.component'
 import { SeedNavigationService } from '@seed/components/navigation/navigation.service'
 import type { NavigationItem } from '@seed/components/navigation/navigation.types'
+import { MaterialImports } from '@seed/materials'
 import { exactMatchOptions, subsetMatchOptions } from '@seed/utils'
 
 @Component({
   selector: 'seed-horizontal-navigation-basic-item',
   templateUrl: './basic.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, MatMenuModule, MatTooltipModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, MaterialImports, RouterLink, RouterLinkActive],
 })
 export class HorizontalNavigationBasicItemComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

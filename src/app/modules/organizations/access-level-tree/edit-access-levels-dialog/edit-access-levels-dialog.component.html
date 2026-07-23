@@ -1,96 +1,85 @@
-<div class="relative flex h-full w-full flex-col" *transloco="let t">
+<div *transloco="let t">
   @let levelsRemoved = isLevelRemoved();
-  <div class="flex flex-auto flex-col items-center p-8 pb-6 sm:flex-row sm:items-start">
-    <div
-      class="flex h-10 w-10 flex-0 items-center justify-center rounded-full sm:mr-4"
+  <div class="mt-4 flex gap-4" mat-dialog-title>
+    <mat-icon
+      class="text-current icon-size-5"
       [ngClass]="
-        levelsRemoved && instancesToBeRemoved() > 0
-          ? 'bg-warn-100 text-warn-600 dark:bg-warn-600 dark:text-warn-50'
-          : 'bg-primary-100 text-primary-600 dark:bg-primary-600 dark:text-primary-50'
+        levelsRemoved && instancesToBeRemoved() > 0 ? 'text-warn-600 dark:text-warn-400' : 'text-primary-600 dark:text-primary-400'
       "
-    >
-      <mat-icon class="text-current icon-size-5" svgIcon="fa-solid:pen-to-square"></mat-icon>
-    </div>
+      svgIcon="fa-solid:pen-to-square"
+    ></mat-icon>
+    <div class="text-2xl font-medium leading-6">{{ t('Edit Access Levels') }}</div>
+  </div>
+  <mat-divider class="mb-4"></mat-divider>
 
-    <div class="mt-4 flex w-full flex-col items-center space-y-3 text-left sm:mt-0 sm:items-start">
-      <div class="text-xl font-medium leading-6">{{ t('Edit Access Levels') }}</div>
-      <div class="flex w-full flex-auto flex-col">
-        <form class="w-full" [formGroup]="form">
-          <div class="mt-2 flex max-h-160 flex-col space-y-1 overflow-y-auto sm:-mr-8 sm:mt-4 sm:pr-16" formArrayName="levels">
-            @for (control of levels.controls; track $index) {
-              <div class="flex space-x-3">
-                <div class="text-hint flex h-10 w-10 select-none items-center justify-center rounded-full bg-gray-100">
-                  {{ $index + 1 }}
-                </div>
-                <mat-form-field class="seed-mat-rounded seed-mat-dense flex-auto" subscriptSizing="fixed">
-                  <mat-icon class="icon-size-5" svgIcon="fa-solid:folder-tree" matPrefix></mat-icon>
-                  <input class="text-ellipsis" [formControlName]="$index" [readonly]="submitted" matInput autocomplete="off" />
-                  @if (control.hasError('duplicate')) {
-                    <mat-error>{{ t('Name must be unique') }}</mat-error>
-                  }
-                  @if (levels.length > 1) {
-                    <mat-icon
-                      class="icon-size-4"
-                      [ngClass]="{ 'cursor-pointer dark:hover:text-secondary hover:text-gray-500': !submitted }"
-                      (click)="$event.stopPropagation(); !submitted && removeLevel($index)"
-                      svgIcon="fa-solid:xmark"
-                      matSuffix
-                    ></mat-icon>
-                  }
-                </mat-form-field>
-              </div>
+  <mat-dialog-content class="flex flex-col gap-4">
+    <form class="w-full" [formGroup]="form">
+      <div class="flex flex-col space-y-2" formArrayName="levels">
+        @for (control of levels.controls; track $index) {
+          <div class="flex items-center space-x-3">
+            <div
+              class="text-hint flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+            >
+              {{ $index + 1 }}
+            </div>
+            <mat-form-field class="flex-auto" subscriptSizing="fixed">
+              <mat-label>{{ t('Level') }} {{ $index + 1 }}</mat-label>
+              <input [formControlName]="$index" [readonly]="submitted" matInput autocomplete="off" />
+              @if (control.hasError('duplicate')) {
+                <mat-error>{{ t('Name must be unique') }}</mat-error>
+              }
+            </mat-form-field>
+            @if (levels.length > 1 && !submitted) {
+              <button (click)="removeLevel($index)" type="button" mat-icon-button>
+                <mat-icon class="icon-size-4" svgIcon="fa-solid:xmark"></mat-icon>
+              </button>
             }
           </div>
-        </form>
-        <div class="flex items-center">
-          <mat-icon class="text-hint -ml-0.5 icon-size-5" svgIcon="fa-solid:plus"></mat-icon>
-          <input
-            class="ml-1.5 w-full px-1 py-0.5"
-            #newLevelInput
-            [placeholder]="t('Add level')"
-            [disabled]="submitted"
-            (keydown.enter)="newLevelInput.value.trim() !== '' && addLevel(newLevelInput.value); newLevelInput.value = ''"
-          />
-        </div>
-        @if (levelsRemoved) {
-          @let instancesRemoved = instancesToBeRemoved();
-          @if (instancesRemoved > 0) {
-            <div class="prose mt-4 text-warn">
-              {{ t('Deleting Access Levels will delete all data associated with that level:') }}
-              <ul class="my-0">
-                @if (instancesRemoved === 1) {
-                  <li>
-                    {{ instancesRemoved }}
-                    {{ t('access level instance will be removed, including all properties attached to that instance') }}
-                  </li>
-                } @else {
-                  <li>
-                    {{ instancesRemoved }}
-                    {{ t('access level instances will be removed, including all properties attached to those instances') }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
         }
       </div>
-    </div>
-  </div>
+    </form>
 
-  <div class="flex items-center justify-center space-x-3 bg-gray-50 px-6 py-4 sm:justify-end dark:bg-black dark:bg-opacity-10">
-    <button class="w-24" [disabled]="submitted" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
+    <button [disabled]="submitted" (click)="addLevel('')" mat-stroked-button type="button">
+      <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+      <span class="ml-1">{{ t('Add Access Level') }}</span>
+    </button>
+
+    @if (levelsRemoved) {
+      @let instancesRemoved = instancesToBeRemoved();
+      @if (instancesRemoved > 0) {
+        <seed-alert type="warning">
+          {{ t('Deleting Access Levels will delete all data associated with that level:') }}
+          <ul class="my-0 list-disc pl-4">
+            @if (instancesRemoved === 1) {
+              <li>
+                {{ instancesRemoved }}
+                {{ t('access level instance will be removed, including all properties attached to that instance') }}
+              </li>
+            } @else {
+              <li>
+                {{ instancesRemoved }}
+                {{ t('access level instances will be removed, including all properties attached to those instances') }}
+              </li>
+            }
+          </ul>
+        </seed-alert>
+      }
+    }
+
+    @if (submitted) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+  </mat-dialog-content>
+
+  <div class="flex justify-end pb-4" mat-dialog-actions>
+    <button [disabled]="submitted" mat-stroked-button matDialogClose="canceled">{{ t('Cancel') }}</button>
     <button
-      class="flex w-24 items-center justify-center"
       [color]="levelsRemoved && instancesToBeRemoved() > 0 ? 'warn' : 'primary'"
       [disabled]="submitted || !isValid()"
       (click)="updateAccessLevels()"
-      mat-flat-button
+      mat-raised-button
     >
-      @if (!submitted) {
-        {{ t('Save') }}
-      } @else {
-        <mat-progress-spinner [diameter]="24" mode="indeterminate"></mat-progress-spinner>
-      }
+      {{ t('Save') }}
     </button>
   </div>
 </div>

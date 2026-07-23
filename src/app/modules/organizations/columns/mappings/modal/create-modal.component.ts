@@ -1,34 +1,18 @@
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { map } from 'rxjs'
-import { type Column } from '@seed/api/column'
-import { type ColumnMapping, type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api/column_mapping_profile'
+import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
+import { ColumnMappingProfileService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.component'
 
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
-  imports: [
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    SharedImports,
-    SeedHeaderAutocompleteComponent,
-  ],
+  imports: [MaterialImports, ReactiveFormsModule, SharedImports, SeedHeaderAutocompleteComponent],
 })
 export class CreateModalComponent implements OnInit {
   private _columnMappingProfileService = inject(ColumnMappingProfileService)
@@ -37,7 +21,7 @@ export class CreateModalComponent implements OnInit {
   inProgress = false
   profile: ColumnMappingProfile
   form = new FormGroup({
-    name: new FormControl<string>('', [Validators.required]),
+    name: new FormControl('', [Validators.required]),
     mappings: new FormArray([]),
   })
   columns: Column[]
@@ -86,10 +70,10 @@ export class CreateModalComponent implements OnInit {
 
   addMapping() {
     const mapping = new FormGroup({
-      to_table_name: new FormControl<string>('PropertyState', [Validators.required]),
-      to_field: new FormControl<string>('', []),
-      from_field: new FormControl<string>('', [Validators.required]),
-      from_units: new FormControl<string>(''),
+      to_table_name: new FormControl('PropertyState', [Validators.required]),
+      to_field: new FormControl('', []),
+      from_field: new FormControl('', [Validators.required]),
+      from_units: new FormControl(''),
     })
     mapping.get('from_units').disable()
     mapping.get('to_field').valueChanges.subscribe((val) => {

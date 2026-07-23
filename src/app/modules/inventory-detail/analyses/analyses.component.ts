@@ -1,47 +1,35 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, inject } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
-import { AgGridAngular } from 'ag-grid-angular'
 import type { Observable } from 'rxjs'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Analysis } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
-import { InventoryService } from '@seed/api/inventory'
-import { OrganizationService } from '@seed/api/organization'
-import { UserService } from '@seed/api/user'
+import { filter, ReplaySubject, switchMap, takeUntil, tap } from 'rxjs'
+import type { Analysis, CurrentUser, Cycle } from '@seed/api'
+import { AnalysisService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { AnalysisRunModalComponent } from 'app/modules/inventory/actions/analysis-run-modal.component'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
-  imports: [
-    AnalysesGridComponent,
-    AgGridAngular,
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    NotFoundComponent,
-    PageComponent,
-    SharedImports,
-  ],
+  imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent, SharedImports],
 })
-export class AnalysesComponent implements OnInit {
+export class AnalysesComponent implements OnInit, OnDestroy {
   private _analysisService = inject(AnalysisService)
   private _cycleService = inject(CycleService)
   private _userService = inject(UserService)
   private _organizationService = inject(OrganizationService)
   private _inventoryService = inject(InventoryService)
   private _route = inject(ActivatedRoute)
-  private readonly _unsubscribeAll$ = new Subject<void>()
+  private _dialog = inject(MatDialog)
+  private _cdr = inject(ChangeDetectorRef)
+  private readonly _unsubscribeAll$ = new ReplaySubject<void>(1)
   analyses: Analysis[] = []
   cycles: Cycle[] = []
+  currentUser: CurrentUser
   orgId: number
   viewDisplayField$: Observable<string>
   viewId: number
@@ -56,6 +44,10 @@ export class AnalysesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user) => {
+      this.currentUser = user
+    })
+
     this.getParams()
       .pipe(
         switchMap(() => this._userService.currentOrganizationId$),
@@ -67,8 +59,12 @@ export class AnalysesComponent implements OnInit {
           this.cycles = cycles
         }),
         tap(() => {
-          this.watchAnalyses()
+          // Defer to avoid ExpressionChangedAfterItHasBeenCheckedError in LoadingBarComponent
+          setTimeout(() => {
+            this.watchAnalyses()
+          })
         }),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
   }
@@ -94,6 +90,7 @@ export class AnalysesComponent implements OnInit {
       }),
       tap((analyses) => {
         this.analyses = analyses
+        this._cdr.markForCheck()
       }),
     )
   }
@@ -107,7 +104,27 @@ export class AnalysesComponent implements OnInit {
       .subscribe()
   }
 
-  createAnalysis() {
-    console.log('Create Analysis')
+  createAnalysis = () => {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewIds: [this.viewId] },
+    })
+
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.getAnalyses()),
+      )
+      .subscribe()
+  }
+
+  get isViewer() {
+    return this.currentUser?.org_role === 'viewer'
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }

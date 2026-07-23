@@ -1,15 +1,10 @@
-import { CommonModule } from '@angular/common'
 import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
 import { MatPaginator } from '@angular/material/paginator'
-import { MatSelectModule } from '@angular/material/select'
-import { MatTableModule } from '@angular/material/table'
 import { map, takeUntil } from 'rxjs'
 import { TableContainerComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { DataTypesComponent } from './data-types.component'
 
@@ -17,18 +12,7 @@ import { DataTypesComponent } from './data-types.component'
   selector: 'seed-organizations-column-data-types-properties',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    CommonModule,
-    SharedImports,
-    TableContainerComponent,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatPaginator,
-    MatSelectModule,
-    MatTableModule,
-    ReactiveFormsModule,
-  ],
+  imports: [SharedImports, TableContainerComponent, MaterialImports, MatPaginator, ReactiveFormsModule],
 })
 export class DataTypesPropertiesComponent extends DataTypesComponent implements AfterViewInit, OnInit {
   type = 'PropertyState'

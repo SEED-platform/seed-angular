@@ -13,8 +13,9 @@ import type {
   SetDefaultOrganizationResponse,
   UserAuth,
   UserAuthResponse,
+  UserBrief,
   UserUpdateRequest,
-} from '@seed/api/user'
+} from '@seed/api'
 import { ErrorService } from '@seed/services'
 import { type OrganizationUserSettings } from '../organization'
 
@@ -166,6 +167,18 @@ export class UserService {
     )
   }
 
+  /**
+   * Get all users (superuser endpoint)
+   */
+  getAllUsers(): Observable<UserBrief[]> {
+    return this._httpClient.get<{ users: UserBrief[] }>('/api/v3/users/').pipe(
+      map((response) => response.users),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching all users')
+      }),
+    )
+  }
+
   // applies defaults to an org users settings
   checkUserSettings(userSettings: OrganizationUserSettings) {
     userSettings ??= {}
@@ -194,5 +207,13 @@ export class UserService {
     userSettings.sorts ??= {}
     userSettings.sorts.properties ??= []
     userSettings.sorts.taxlots ??= []
+
+    userSettings.pins ??= {}
+    userSettings.pins.properties ??= { left: [], right: [] }
+    userSettings.pins.taxlots ??= { left: [], right: [] }
+
+    userSettings.insights ??= {}
+    userSettings.insights.propertyInsights ??= {}
+    userSettings.insights.propertyInsights.datasetVisibility ??= ['compliant', 'non-compliant', 'unknown', 'whisker']
   }
 }

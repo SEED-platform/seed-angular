@@ -1,9 +1,5 @@
 import type { ColDef, ValueGetterParams } from 'ag-grid-community'
-import type { Column } from '@seed/api/column'
-import type { Cycle } from '@seed/api/cycle'
-import type { Label } from '@seed/api/label'
-import type { Scenario } from '@seed/api/scenario'
-import type { CurrentUser } from '@seed/api/user'
+import type { Column, CurrentUser, Cycle, Label, Scenario } from '@seed/api'
 
 export type InventoryDisplayType = 'Property' | 'Tax Lot'
 export type InventoryStateType = 'PropertyState' | 'TaxLotState'
@@ -92,20 +88,20 @@ export type AgFilterResponse = {
 
 export type AgFilterModel = Record<string, AgFilter>
 
-export type FilterType =
-  | 'contains'
-  | 'notContains'
-  | 'equals'
-  | 'notEqual'
-  | 'startsWith'
-  | 'endsWith'
-  | 'blank'
-  | 'notBlank'
-  | 'greaterThan'
-  | 'greaterThanOrEqual'
-  | 'lessThan'
-  | 'lessThanOrEqual'
-  | 'between'
+export type FilterType
+  = | 'contains'
+    | 'notContains'
+    | 'equals'
+    | 'notEqual'
+    | 'startsWith'
+    | 'endsWith'
+    | 'blank'
+    | 'notBlank'
+    | 'greaterThan'
+    | 'greaterThanOrEqual'
+    | 'lessThan'
+    | 'lessThanOrEqual'
+    | 'between'
 
 export type AgFilter = {
   filterType?: string;
@@ -123,7 +119,7 @@ export type FilterSortChip = {
   original: string;
 }
 
-export type InventoryDependencies = [CurrentUser, Cycle[], Label[], Profile[]]
+export type InventoryDependencies = [Column[], CurrentUser, Cycle[], Label[], Profile[]]
 
 type AccessLevelInstance = {
   id: number;
@@ -243,8 +239,12 @@ export type State = {
   files: BuildingFile[];
   labels: number[];
   measures: Record<string, unknown>[];
+  property_state_id?: number;
+  property_view_id?: number;
   related?: State[];
   scenarios: Scenario[];
+  taxlot_state_id?: number;
+  taxlot_view_id?: number;
 }
 
 export type UpdateInventoryResponse = {
@@ -259,3 +259,12 @@ export type PropertyDocumentType = 'application/pdf' | 'application/dxf' | 'text
 export type PropertyDocumentExtension = 'PDF' | 'DXF' | 'IDF' | 'OSM'
 
 export type CrossCyclesResponse = Record<string, Record<string, unknown>[]>
+
+export type InventoryExportData = {
+  export_type: 'csv' | 'xlsx' | 'geojson';
+  filename: string;
+  ids: number[];
+  include_meter_readings: boolean;
+  include_notes: boolean;
+  profile_id: number;
+}

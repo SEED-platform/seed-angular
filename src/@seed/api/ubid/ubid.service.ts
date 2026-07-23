@@ -7,7 +7,7 @@ import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, InventoryTypeSingular } from 'app/modules/inventory/inventory.types'
 import { UserService } from '../user'
-import type { Ubid, UbidDetails, UbidResponse, ValidateUbidResponse } from './ubid.types'
+import type { DecodeResults, Ubid, UbidDetails, UbidResponse, ValidateUbidResponse } from './ubid.types'
 
 @Injectable({ providedIn: 'root' })
 export class UbidService {
@@ -88,6 +88,56 @@ export class UbidService {
       map(({ data }) => data.valid),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error validating UBID')
+      }),
+    )
+  }
+
+  decodeResults(orgId: number, viewIds: number[], type: InventoryType): Observable<DecodeResults> {
+    const url = `/api/v3/ubid/decode_results/?organization_id=${orgId}`
+    const data = {
+      property_view_ids: type === 'properties' ? viewIds : [],
+      taxlot_view_ids: type === 'taxlots' ? viewIds : [],
+    }
+    return this._httpClient.post<DecodeResults>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching UBID decode results')
+      }),
+    )
+  }
+
+  decodeByIds(orgId: number, viewIds: number[], type: InventoryType): Observable<{ status: string }> {
+    const url = `/api/v3/ubid/decode_by_ids/?organization_id=${orgId}`
+    const data = {
+      property_view_ids: type === 'properties' ? viewIds : [],
+      taxlot_view_ids: type === 'taxlots' ? viewIds : [],
+    }
+    return this._httpClient.post<{ status: string }>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error decoding UBIDs by ID')
+      }),
+    )
+  }
+
+  compareUbids(orgId: number, ubid1: string, ubid2: string): Observable<number> {
+    const url = `/api/v3/ubid/get_jaccard_index/?organization_id=${orgId}`
+    return this._httpClient.post<{ status: string; data: number }>(url, { ubid1, ubid2 }).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error comparing UBIDs')
+      }),
+    )
+  }
+
+  getUbidModelsByView(orgId: number, viewId: number, type: InventoryType): Observable<Ubid[]> {
+    const url = `/api/v3/ubid/ubids_by_view/?organization_id=${orgId}`
+    const data = {
+      view_id: viewId,
+      type: type === 'taxlots' ? 'taxlot' : 'property',
+    }
+    return this._httpClient.post<{ status: string; data: Ubid[] }>(url, data).pipe(
+      map(({ data }) => data),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching UBID models')
       }),
     )
   }

@@ -1,19 +1,15 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
-import { MatStepperModule } from '@angular/material/stepper'
-import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { catchError, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { ProgressResponse } from '@seed/api/progress'
-import { SensorService } from '@seed/api/sensor'
+import type { ProgressResponse } from '@seed/api'
+import { SensorService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { ProgressBarObj, SensorReadingPreview } from '@seed/services/uploader'
 import { UploaderService } from '@seed/services/uploader'
@@ -22,18 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-detail-sensor-readings-upload',
   templateUrl: './sensor-readings-upload.component.html',
-  imports: [
-    AgGridAngular,
-    AgGridModule,
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatIconModule,
-    MatStepperModule,
-    MatProgressBarModule,
-    ProgressBarComponent,
-  ],
+  imports: [AgGridAngular, CommonModule, MaterialImports, ProgressBarComponent],
 })
 export class SensorReadingsUploadModalComponent implements OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper
@@ -151,8 +136,6 @@ export class SensorReadingsUploadModalComponent implements OnDestroy {
         switchMap((data) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: data.progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

@@ -1,92 +1,91 @@
-import type { OnDestroy } from '@angular/core'
+import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { type MatSelect, MatSelectModule } from '@angular/material/select'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api/inventory'
-import { DeleteModalComponent } from '@seed/components'
+import { InventoryService } from '@seed/api'
+import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
-import type { InventoryType, Profile } from '../../../inventory/inventory.types'
-import { MoreActionsModalComponent } from '../modal'
+import { DQCStartModalComponent } from 'app/modules/data-quality'
+import {
+  AliChangeModalComponent,
+  AnalysisRunModalComponent,
+  ExportModalComponent,
+  GroupsModalComponent,
+  LabelsModalComponent,
+  UbidModalComponent,
+} from 'app/modules/inventory/actions'
+import type { InventoryType, Profile } from '../../../inventory'
+import {
+  EmailModalComponent,
+  FempExportModalComponent,
+  GeocodeModalComponent,
+  MergeModalComponent,
+  RefreshMetadataModalComponent,
+  UbidCompareComponent,
+  UbidDecodeComponent,
+  UpdateDerivedDataComponent,
+} from '../actions'
 
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [DeleteModalComponent, MatFormFieldModule, MatSelectModule],
+  imports: [MenuItemComponent, MaterialImports],
 })
-export class ActionsComponent implements OnDestroy {
+export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
   @Input() gridApi: GridApi
+  @Input() groupMode = false
   @Input() inventory: Record<string, unknown>[]
   @Input() orgId: number
   @Input() profile: Profile
   @Input() profiles: Profile[]
+  @Input() selectedStateIds: number[]
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
-  @Output() refreshInventory = new EventEmitter<null>()
+  @Output() refreshInventory = new EventEmitter<number | null>()
+  @Output() selectedAll = new EventEmitter<number[]>()
+  @Output() toggleAccessLevels = new EventEmitter<void>()
   private _inventoryService = inject(InventoryService)
   private _dialog = inject(MatDialog)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  hasSelection: boolean
+  showAccessLevelInstances = true
 
-  get actions() {
-    return [
-      {
-        name: 'Select All',
-        action: () => {
-          this.selectAll()
-        },
-        disabled: false,
-      },
-      {
-        name: 'Select None',
-        action: () => {
-          this.deselectAll()
-        },
-        disabled: false,
-      },
-      {
-        name: 'Only Show Populated Columns',
-        action: () => {
-          this.openShowPopulatedColumnsModal()
-        },
-        disabled: !this.inventory,
-      },
-      { name: 'Delete', action: this.deletePropertyStates, disabled: !this.selectedViewIds.length },
-      { name: 'Merge', action: this.tempAction, disabled: !this.selectedViewIds.length },
-      {
-        name: 'More...',
-        action: () => {
-          this.openMoreActionsModal()
-        },
-        disabled: !this.selectedViewIds.length,
-      },
-    ]
+  ngOnInit(): void {
+    return
+  }
+
+  baseData() {
+    return {
+      orgId: this.orgId,
+      type: this.type,
+      viewIds: this.selectedViewIds,
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.selectedViewIds) {
+      this.hasSelection = this.selectedViewIds.length > 0
+    }
   }
 
   tempAction() {
     console.log('temp action')
   }
 
-  openMoreActionsModal() {
-    this._dialog.open(MoreActionsModalComponent, {
-      width: '40rem',
-      autoFocus: false,
-      data: { viewIds: this.selectedViewIds, orgId: this.orgId },
-    })
-  }
-
-  onAction(action: () => void, select: MatSelect) {
-    action()
-    select.value = null
+  toggleAccessLevelInstances() {
+    this.showAccessLevelInstances = !this.showAccessLevelInstances
+    this.toggleAccessLevels.emit()
   }
 
   selectAll() {
     this.gridApi.selectAll()
     const inventory_type = this.type === 'taxlots' ? 'taxlot' : 'property'
     const params = new URLSearchParams({
-      cycle: this.cycleId.toString(),
+      cycle: this.cycleId?.toString(),
       ids_only: 'true',
       include_related: 'true',
       organization_id: this.orgId.toString(),
@@ -95,6 +94,7 @@ export class ActionsComponent implements OnDestroy {
     const paramString = params.toString()
     this._inventoryService.getAgInventory(paramString, {}).subscribe(({ results }: { results: number[] }) => {
       this.selectedViewIds = results
+      this.selectedAll.emit(this.selectedViewIds)
     })
   }
 
@@ -102,10 +102,11 @@ export class ActionsComponent implements OnDestroy {
     this.gridApi.deselectAll()
   }
 
-  deletePropertyStates = () => {
+  deleteStates = () => {
+    const displayType = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
     const dialogRef = this._dialog.open(DeleteModalComponent, {
       width: '40rem',
-      data: { model: `${this.selectedViewIds.length} Property States`, instance: '' },
+      data: { model: `${this.selectedViewIds.length} ${displayType} States`, instance: '' },
     })
 
     dialogRef
@@ -113,12 +114,32 @@ export class ActionsComponent implements OnDestroy {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         filter(Boolean),
-        switchMap(() => this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })),
+        switchMap(() => {
+          return this.type === 'taxlots'
+            ? this._inventoryService.deleteTaxlotStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+            : this._inventoryService.deletePropertyStates({ orgId: this.orgId, viewIds: this.selectedViewIds })
+        }),
         tap(() => {
           this.refreshInventory.emit()
         }),
       )
       .subscribe()
+  }
+
+  openExportModal() {
+    const dialogRef = this._dialog.open(ExportModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openMergeModal() {
+    const dialogRef = this._dialog.open(MergeModalComponent, {
+      width: '50rem',
+      data: { ...this.baseData(), cycleId: this.cycleId, profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
   }
 
   openShowPopulatedColumnsModal() {
@@ -137,11 +158,128 @@ export class ActionsComponent implements OnDestroy {
       },
     })
 
-    dialogRef.afterClosed().subscribe((id) => {
-      if (id) {
-        this.refreshInventory.emit()
-      }
+    this.afterClosed(dialogRef)
+  }
+
+  openAliChangeModal() {
+    const dialogRef = this._dialog.open(AliChangeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
     })
+    this.afterClosed(dialogRef)
+  }
+
+  openAnalysisRunModal() {
+    const dialogRef = this._dialog.open(AnalysisRunModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openDataQualityCheck() {
+    const dialogRef = this._dialog.open(DQCStartModalComponent, {
+      width: '40rem',
+      disableClose: true,
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openDerivedDataUpdateModal() {
+    const dialogRef = this._dialog.open(UpdateDerivedDataComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openGroupsModal() {
+    const dialogRef = this._dialog.open(GroupsModalComponent, {
+      width: '50rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openLabelsModal() {
+    const dialogRef = this._dialog.open(LabelsModalComponent, {
+      width: '50rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openRefreshMetadataModal() {
+    const dialogRef = this._dialog.open(RefreshMetadataModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openEmailModal() {
+    const dialogRef = this._dialog.open(EmailModalComponent, {
+      width: '40rem',
+      data: {
+        orgId: this.orgId,
+        stateIds: this.selectedStateIds,
+        type: this.type,
+      },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openFempExportModal() {
+    const dialogRef = this._dialog.open(FempExportModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openGeocodeModal() {
+    const dialogRef = this._dialog.open(GeocodeModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidModal() {
+    const dialogRef = this._dialog.open(UbidModalComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidCompareModal() {
+    const dialogRef = this._dialog.open(UbidCompareComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openUbidDecodeModal() {
+    const dialogRef = this._dialog.open(UbidDecodeComponent, {
+      width: '40rem',
+      data: this.baseData(),
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  afterClosed(dialogRef: MatDialogRef<unknown>) {
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        tap((result) => {
+          this.refreshInventory.emit(typeof result === 'number' ? result : null)
+        }),
+      )
+      .subscribe()
   }
 
   ngOnDestroy(): void {

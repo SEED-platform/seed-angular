@@ -25,3 +25,9 @@ export type ValidateUbidResponse = {
     ubid: string;
   };
 }
+
+export type DecodeResults = {
+  ubid_not_decoded: number;
+  ubid_successfully_decoded: number;
+  ubid_unpopulated: number;
+}

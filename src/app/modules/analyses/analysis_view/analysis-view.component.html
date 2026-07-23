@@ -21,7 +21,7 @@
       </div>
       <div class="flex gap-4">
         <span class="text-secondary w-20">Property </span>
-        <a class="text-primary dark:text-primary-400" [routerLink]="['/properties/', view.property]">
+        <a class="text-primary dark:text-primary-400" [routerLink]="['/properties/', propertyViewId]">
           <span class="mr-1 text-lg">{{ viewDisplayField$ | async }}</span>
           <span class="material-icons text-secondary text-sm">open_in_new</span>
         </a>

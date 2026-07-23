@@ -1,37 +1,18 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatOptionModule } from '@angular/material/core'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, takeUntil, tap } from 'rxjs'
-import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, OrganizationUser } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import type { CreateUserRequest, UserRole } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, CreateUserRequest, OrganizationUser, UserRole } from '@seed/api'
+import { OrganizationService, UserService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatOptionModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -46,9 +27,9 @@ export class FormModalComponent implements OnDestroy, OnInit {
   accessLevelInstances: AccessLevelsByDepth[keyof AccessLevelsByDepth] = []
   roles = ['owner', 'member', 'viewer']
   form = new FormGroup({
-    first_name: new FormControl<string | null>('', Validators.required),
-    last_name: new FormControl<string | null>('', Validators.required),
-    email: new FormControl<string | null>('', [Validators.required, Validators.email]),
+    first_name: new FormControl('', Validators.required),
+    last_name: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
     access_level: new FormControl<string | null>(null, Validators.required),
     access_level_instance_id: new FormControl<number | null>(null, Validators.required),
     role: new FormControl<UserRole | null>('member', Validators.required),

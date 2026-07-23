@@ -2,17 +2,12 @@ import { DatePipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core'
-import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
+import { MAT_DATE_FORMATS } from '@angular/material/core'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
+import type { Cycle } from '@seed/api'
+import { CycleService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 
 // configure the datepicker to display 01/01/2000 instead of January 1, 2000
@@ -32,18 +27,7 @@ export const MY_DATE_FORMATS = {
   selector: 'seed-cycles-form-modal',
   templateUrl: './form-modal.component.html',
   providers: [DatePipe, { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }],
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatNativeDateModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)
@@ -54,7 +38,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
   create = true
   data = inject(MAT_DIALOG_DATA) as { cycle: Cycle | null; orgId: number; existingNames: string[] }
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
+    name: new FormControl('', [
       Validators.required,
       SEEDValidators.uniqueValue(this.data.existingNames.filter((name) => name !== this.data.cycle?.name)),
     ]),

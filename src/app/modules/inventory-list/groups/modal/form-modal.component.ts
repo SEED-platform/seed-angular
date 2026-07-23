@@ -1,35 +1,17 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDivider } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { GroupsService } from '@seed/api/groups/groups.service'
-import type { InventoryGroup } from '@seed/api/groups/groups.types'
-import { type AccessLevelInstancesByDepth, type AccessLevelsByDepth, OrganizationService } from '@seed/api/organization'
+import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, InventoryGroup } from '@seed/api'
+import { GroupsService, OrganizationService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 
 @Component({
   selector: 'seed-inventory-list-groups-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDivider,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -51,7 +33,7 @@ export class FormModalComponent implements OnDestroy, OnInit {
 
   existingNames = this.data.groups?.map((g) => g.name).filter((name) => name !== this.data.group?.name) ?? []
   form = new FormGroup({
-    name: new FormControl<string | null>('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
+    name: new FormControl('', [Validators.required, SEEDValidators.uniqueValue(this.existingNames)]),
     access_level: new FormControl<string | null>(null),
     access_level_instance: new FormControl<number | null>(null, Validators.required),
   })
@@ -109,15 +91,25 @@ export class FormModalComponent implements OnDestroy, OnInit {
       access_level_instance: this.form.value.access_level_instance,
     }
 
-    this._groupsService.create(this.data.orgId, data as InventoryGroup).subscribe(({ id }) => {
-      this._dialogRef.close(id)
+    this._groupsService.create(this.data.orgId, data as InventoryGroup).subscribe({
+      next: (group) => {
+        this._dialogRef.close(group?.id ?? true)
+      },
+      error: () => {
+        this._dialogRef.close(false)
+      },
     })
   }
 
   onEdit() {
     const data = { ...this.data.group, name: this.form.value.name }
-    this._groupsService.update(this.data.orgId, this.data.id, data).subscribe(({ id }) => {
-      this._dialogRef.close(id)
+    this._groupsService.update(this.data.orgId, this.data.id, data).subscribe({
+      next: (group) => {
+        this._dialogRef.close(group?.id ?? true)
+      },
+      error: () => {
+        this._dialogRef.close(false)
+      },
     })
   }
 

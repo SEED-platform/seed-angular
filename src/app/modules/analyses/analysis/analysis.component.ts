@@ -2,29 +2,23 @@ import type { KeyValue } from '@angular/common'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { combineLatest, filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { AnalysesMessage, Analysis, AnalysisOutputFile, View } from '@seed/api/analysis'
-import { AnalysisService } from '@seed/api/analysis'
-import { type Cycle, CycleService } from '@seed/api/cycle'
-import { OrganizationService } from '@seed/api/organization'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { AnalysesMessage, Analysis, AnalysisOutputFile, CurrentUser, Cycle, View } from '@seed/api'
+import { AnalysisService, CycleService, OrganizationService, UserService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials/material.module'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-analyses-analysis',
   templateUrl: './analysis.component.html',
-  imports: [AgGridAngular, CommonModule, MatButtonModule, MatDividerModule, MatIconModule, PageComponent, RouterLink, SharedImports],
+  imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent, SharedImports],
 })
 export class AnalysisComponent implements OnDestroy, OnInit {
   private _route = inject(ActivatedRoute)
@@ -48,6 +42,7 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   gridTheme$ = this._configService.gridTheme$
   gridHeight = 0
   messages: AnalysesMessage[]
+  originalViews: Record<number, number>
   orgId: number
   views: View[] = []
   gridViews: (View & { messages?: string[] })[] = []
@@ -81,14 +76,20 @@ export class AnalysisComponent implements OnDestroy, OnInit {
     this._analysisService.getAnalysisViews(this.orgId, this.analysisId)
     this._analysisService.getMessages(this.orgId, this.analysisId)
 
-    combineLatest([this._analysisService.analysis$, this._analysisService.views$, this._analysisService.messages$])
+    combineLatest([
+      this._analysisService.analysis$,
+      this._analysisService.views$,
+      this._analysisService.messages$,
+      this._analysisService.originalViews$,
+    ])
       .pipe(
         filter(([analysis, views]) => !!analysis && views.length && analysis.id === this.analysisId),
         takeUntil(this._unsubscribeAll$),
-        tap(([analysis, views, messages]) => {
+        tap(([analysis, views, messages, originalViews]) => {
           this.analysis = analysis
           this.views = views
           this.messages = messages
+          this.originalViews = originalViews
           this.analysisDescription = this._analysisService.getAnalysisDescription(analysis)
           this.formatViews()
           this.setColumnDefs()
@@ -133,8 +134,13 @@ export class AnalysisComponent implements OnDestroy, OnInit {
   }
 
   statusRenderer = ({ value }: { value: string }) => {
-    const bgColor = value === 'Completed' ? 'bg-green-900 text-white' : value === 'Failed' ? 'bg-red-900 text-white' : ''
-    return `<div class="overflow-hidden ${bgColor} px-2">${value}</div>`
+    const style
+      = value === 'Completed'
+        ? 'background-color: #198754; color: white;'
+        : value === 'Failed'
+          ? 'background-color: #dc3545; color: white;'
+          : ''
+    return `<div class="overflow-hidden px-2" style="${style}">${value}</div>`
   }
 
   getCycle(params: { value: number[] }): string {
@@ -216,10 +222,12 @@ export class AnalysisComponent implements OnDestroy, OnInit {
 
     const target = event.event.target as HTMLElement
     const action = target.getAttribute('data-action')
-    const { id, output_files, property } = event.data as View
+    const { id, output_files } = event.data as View
 
     if (action === 'viewProperty') {
-      void this._router.navigate([`/properties/${property}`])
+      // map viewId to propertyViewId
+      const propertyViewId: number = this.originalViews[id]
+      void this._router.navigate([`/properties/${propertyViewId}`])
     } else if (action === 'viewResults') {
       void this._router.navigate([`/analyses/${this.analysisId}/views/${id}`])
       // this.viewResults(id)

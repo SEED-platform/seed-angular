@@ -14,3 +14,16 @@ export type ProgressResponse = {
   total_records?: number;
   completed_records?: number;
 }
+
+export type FullProgressResponse = {
+  progress?: ProgressResponse;
+  progress_key?: string;
+  status?: string;
+  errors?: unknown;
+  message?: string;
+}
+
+export type SubProgressResponse = {
+  progress_data: ProgressResponse;
+  sub_progress_data: ProgressResponse;
+}

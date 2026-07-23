@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core'
-import { MatIconModule } from '@angular/material/icon'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-not-found',
   templateUrl: './not-found.component.html',
-  imports: [MatIconModule],
+  imports: [MaterialImports],
 })
 export class NotFoundComponent {
   @Input() message: string

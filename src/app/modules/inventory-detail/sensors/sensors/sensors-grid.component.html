@@ -12,9 +12,9 @@
         [rowData]="sensors"
         [theme]="gridTheme$ | async"
         [style.height.px]="gridHeight"
+        [style.width]="'100%'"
         [style.--ag-spacing.px]="6"
         (gridReady)="onGridReady($event)"
-        style.width="100%"
       ></ag-grid-angular>
     </div>
   </div>

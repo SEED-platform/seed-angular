@@ -1,19 +1,11 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatOptionModule } from '@angular/material/core'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil, tap } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import type { DerivedColumn } from '@seed/api/derived-column'
-import { DerivedColumnService } from '@seed/api/derived-column'
+import type { Column, DerivedColumn } from '@seed/api'
+import { ColumnService, DerivedColumnService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { SEEDValidators } from '@seed/validators'
 import type { InventoryDisplayType } from 'app/modules/inventory/inventory.types'
@@ -22,18 +14,7 @@ import { DerivedColumnsValidator } from '../derived-columns.validator'
 @Component({
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatOptionModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -52,13 +33,13 @@ export class FormModalComponent implements OnDestroy, OnInit {
     existingNames: string[];
   }
   form = new FormGroup({
-    name: new FormControl<string | null>('', [
+    name: new FormControl('', [
       Validators.required,
       SEEDValidators.uniqueValue(this.data.existingNames.filter((dc) => dc !== this.data.derivedColumn?.name)),
     ]),
-    inventory_type: new FormControl<string | null>(this.data.inventoryType, Validators.required),
+    inventory_type: new FormControl(this.data.inventoryType, Validators.required),
     parameters: new FormArray([this.newParameter('param_a', null)]),
-    expression: new FormControl<string | null>('$param_a / 100', Validators.required),
+    expression: new FormControl('$param_a / 100', Validators.required),
   })
   update = Boolean(this.data.derivedColumn)
 
@@ -133,8 +114,8 @@ export class FormModalComponent implements OnDestroy, OnInit {
    */
   newParameter(name: string | null = null, sourceColumn: number | null = null) {
     const group = new FormGroup({
-      parameter_name: new FormControl<string | null>(name, this._derivedColumnValidator.inExpression()),
-      source_column: new FormControl<number | null>(sourceColumn, Validators.required),
+      parameter_name: new FormControl(name, this._derivedColumnValidator.inExpression()),
+      source_column: new FormControl(sourceColumn, Validators.required),
     })
     group.get('parameter_name')?.markAsTouched()
     group.get('parameter_name')?.updateValueAndValidity()

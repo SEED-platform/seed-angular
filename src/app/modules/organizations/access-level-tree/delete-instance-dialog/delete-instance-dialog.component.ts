@@ -1,19 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { DeleteInstanceData } from '..'
 
 @Component({
   selector: 'seed-delete-instance-dialog',
   templateUrl: './delete-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, MatButtonModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, SharedImports],
+  imports: [CommonModule, MaterialImports, SharedImports],
 })
 export class DeleteInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as DeleteInstanceData

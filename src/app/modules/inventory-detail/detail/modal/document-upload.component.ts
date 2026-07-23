@@ -1,15 +1,13 @@
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { InventoryService } from '@seed/api/inventory'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { InventoryService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import type { PropertyDocumentExtension, PropertyDocumentType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-detail-document-upload',
   templateUrl: './document-upload.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatDividerModule, MatIconModule],
+  imports: [MaterialImports],
 })
 export class DocumentUploadModalComponent {
   private _dialogRef = inject(MatDialogRef<DocumentUploadModalComponent>)

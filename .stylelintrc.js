@@ -3,6 +3,15 @@ module.exports = {
   rules: {
     // Fix later
     'no-descending-specificity': null,
+    // Theme RGB tokens are emitted as space-separated channels so we can use
+    // the modern `rgb(var(--seed-*-rgb) / alpha)` form consistently.
+    'color-function-alias-notation': 'without-alpha',
+    'declaration-property-value-disallowed-list': {
+      '/.*/': [
+        /rgba\(var\(--seed-[^)]+-rgb\),/,
+        /rgb\(var\(--seed-[^)]+-rgb\),/,
+      ]
+    },
     'scss/at-rule-no-unknown': [
       true,
       {

@@ -3,11 +3,11 @@
   <p>Changes made to profiles must be saved - or discarded - before switching to another profile.</p>
 </div>
 
-<div class="flex flex-row">
+<div class="flex flex-row gap-2">
   <button class="flex" [disabled]="!changesToSave" (click)="save()" mat-flat-button color="primary">
     <span class="">Save Changes</span>
   </button>
-  <button class="flex" [disabled]="!changesToSave" (click)="cancel()" mat-flat-button color="accent">
+  <button class="flex" [disabled]="!changesToSave" (click)="cancel()" mat-stroked-button>
     <span class="">Discard Changes</span>
   </button>
 </div>
@@ -22,47 +22,28 @@
       </mat-select>
     </mat-form-field>
   </form>
-  <a class="flex" [disabled]="profileReadOnly() || changesToSave" (click)="rename()" mat-stroked-button matTooltip="Rename Profile">
-    <mat-icon class="fill-blue-700 icon-size-4" svgIcon="fa-solid:eraser"></mat-icon>
-  </a>
-  <a
-    class="flex"
-    [disabled]="profileReadOnly() || changesToSave"
-    (click)="delete()"
-    mat-stroked-button
-    mat-stroked-button
-    matTooltip="Delete This Profile"
-  >
-    <mat-icon class="fill-red-700 icon-size-4" svgIcon="fa-solid:x"></mat-icon>
-  </a>
-  <a class="flex" (click)="copy_profile()" mat-stroked-button matTooltip="Copy This Profile">
-    <mat-icon class="fill-cyan-600 icon-size-4" svgIcon="fa-solid:copy"></mat-icon>
-  </a>
-  <a class="flex" (click)="create_profile()" mat-stroked-button matTooltip="Create New Profile">
-    <mat-icon class="fill-gray-700 icon-size-4 dark:fill-gray-200" svgIcon="fa-solid:folder-plus"></mat-icon>
-  </a>
-  <a class="flex" (click)="export()" mat-stroked-button matTooltip="Download as CSV">
-    <mat-icon class="fill-green-700 icon-size-4" svgIcon="fa-solid:download"></mat-icon>
-  </a>
+  <button [disabled]="profileReadOnly() || changesToSave" (click)="rename()" mat-icon-button matTooltip="Rename Profile">
+    <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:pencil"></mat-icon>
+  </button>
+  <button [disabled]="profileReadOnly() || changesToSave" (click)="delete()" mat-icon-button matTooltip="Delete This Profile">
+    <mat-icon class="scale-75 fill-red-700 dark:fill-red-400" svgIcon="fa-solid:trash"></mat-icon>
+  </button>
+  <button (click)="copy_profile()" mat-icon-button matTooltip="Copy This Profile">
+    <mat-icon class="scale-75 fill-cyan-600 dark:fill-cyan-400" svgIcon="fa-solid:copy"></mat-icon>
+  </button>
+  <button (click)="create_profile()" mat-icon-button matTooltip="Create New Profile">
+    <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus"></mat-icon>
+  </button>
+  <button (click)="export()" mat-icon-button matTooltip="Download as CSV">
+    <mat-icon class="scale-75 fill-green-700" svgIcon="fa-solid:download"></mat-icon>
+  </button>
   @if (selectedProfile && mappablePropertyColumns && mappableTaxlotColumns) {
-    <a
-      class="flex"
-      [disabled]="profileReadOnly()"
-      (click)="copy()"
-      mat-stroked-button
-      matTooltip="Copy Data File Headers directly to SEED Headers"
-    >
-      <mat-icon class="fill-blue-400 icon-size-4" svgIcon="fa-solid:file-import"></mat-icon>
-    </a>
-    <a
-      class="flex"
-      [disabled]="profileReadOnly()"
-      (click)="suggest()"
-      mat-stroked-button
-      matTooltip="Populate SEED Headers with Best Known Matches"
-    >
-      <mat-icon class="fill-blue-400 icon-size-4" svgIcon="fa-solid:clipboard-check"></mat-icon>
-    </a>
+    <button [disabled]="profileReadOnly()" (click)="copy()" mat-icon-button matTooltip="Copy Data File Headers directly to SEED Headers">
+      <mat-icon class="scale-75 fill-blue-400" svgIcon="fa-solid:file-import"></mat-icon>
+    </button>
+    <button [disabled]="profileReadOnly()" (click)="suggest()" mat-icon-button matTooltip="Populate SEED Headers with Best Known Matches">
+      <mat-icon class="scale-75 fill-blue-400" svgIcon="fa-solid:clipboard-check"></mat-icon>
+    </button>
   }
 </div>
 

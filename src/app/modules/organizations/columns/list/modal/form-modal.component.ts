@@ -1,41 +1,20 @@
-import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressBarModule } from '@angular/material/progress-bar'
-import { MatSelectModule } from '@angular/material/select'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { type Column, ColumnService } from '@seed/api/column'
-import { type Organization } from '@seed/api/organization'
-import type { ProgressResponse } from '@seed/api/progress'
+import type { Column, Organization, ProgressResponse } from '@seed/api'
+import { ColumnService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
-import { UploaderService } from '@seed/services/uploader/uploader.service'
-import type { ProgressBarObj } from '@seed/services/uploader/uploader.types'
+import { MaterialImports } from '@seed/materials'
+import type { ProgressBarObj } from '@seed/services'
+import { UploaderService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-labels-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    FormsModule,
-    MatInputModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -57,10 +36,10 @@ export class FormModalComponent implements OnDestroy, OnInit {
     progressLastChecked: null,
   }
   form = new FormGroup({
-    display_name: new FormControl<string | null>('', [Validators.required]),
+    display_name: new FormControl('', [Validators.required]),
     column_description: new FormControl<string | null>(null, [Validators.required]),
     organization_id: new FormControl<number | null>(null, [Validators.required]),
-    table_name: new FormControl<string | null>('', [Validators.required]),
+    table_name: new FormControl('', [Validators.required]),
     comstock_mapping: new FormControl<string | null>(null),
     id: new FormControl<number | null>(null),
   })
@@ -100,8 +79,6 @@ export class FormModalComponent implements OnDestroy, OnInit {
         switchMap(({ progress_key }) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
-            offset: 0,
-            multiplier: 1,
             successFn,
             failureFn,
             progressBarObj: this.progressBarObj,

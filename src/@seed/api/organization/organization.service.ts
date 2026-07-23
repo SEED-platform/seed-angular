@@ -15,11 +15,16 @@ import type {
   AccessLevelsByDepth,
   AccessLevelTree,
   AccessLevelTreeResponse,
+  AddUserToOrgResponse,
+  AdminOrganization,
+  AdminOrganizationsResponse,
   BriefOrganization,
   CanDeleteInstanceResponse,
   CreateAccessLevelInstanceRequest,
+  CreateOrganizationResponse,
   EditAccessLevelInstanceRequest,
   EditAccessLevelInstanceResponse,
+  FilterByViewsResponse,
   MatchingCriteriaColumnsResponse,
   Organization,
   OrganizationResponse,
@@ -27,6 +32,7 @@ import type {
   OrganizationsResponse,
   OrganizationUser,
   OrganizationUserResponse,
+  OrganizationUserSettings,
   OrganizationUsersResponse,
   StartSavingAccessLevelInstancesRequest,
   UpdateAccessLevelsRequest,
@@ -43,6 +49,7 @@ export class OrganizationService {
 
   private _organizations = new ReplaySubject<BriefOrganization[]>(1)
   private _currentOrganization = new ReplaySubject<Organization>(1)
+  private _orgUserSettings = new ReplaySubject<OrganizationUserSettings>(1)
   private _organizationUsers = new ReplaySubject<OrganizationUser[]>(1)
   private _accessLevelTree = new ReplaySubject<AccessLevelTree>(1)
   private _accessLevelInstancesByDepth = new ReplaySubject<AccessLevelsByDepth>(1)
@@ -50,6 +57,7 @@ export class OrganizationService {
 
   organizations$ = this._organizations.asObservable()
   currentOrganization$ = this._currentOrganization.asObservable()
+  orgUserSettings$ = this._orgUserSettings.asObservable()
   organizationUsers$ = this._organizationUsers.asObservable()
   accessLevelTree$ = this._accessLevelTree.asObservable()
   accessLevelInstancesByDepth$ = this._accessLevelInstancesByDepth.asObservable()
@@ -112,6 +120,9 @@ export class OrganizationService {
     const data = { settings }
     const url = `/api/v4/organization_users/${orgUserId}/?organization_id=${orgId}`
     return this._httpClient.put<OrganizationUserResponse>(url, data).pipe(
+      tap(({ data }) => {
+        this._orgUserSettings.next(data.settings)
+      }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating organization user')
       }),
@@ -184,6 +195,17 @@ export class OrganizationService {
     )
   }
 
+  filterAccessLevelsByViews(orgId: number, type: InventoryType, viewIds: number[]): Observable<number[]> {
+    const url = `/api/v3/organizations/${orgId}/access_levels/filter_by_views/`
+    const data = { inventory_type: type, view_ids: viewIds }
+    return this._httpClient.post<FilterByViewsResponse>(url, data).pipe(
+      map(({ access_level_instance_ids }) => access_level_instance_ids),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error filtering access levels by views')
+      }),
+    )
+  }
+
   canDeleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
     const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/can_delete_instance/`
     return this._httpClient.get<CanDeleteInstanceResponse>(url).pipe(
@@ -196,12 +218,17 @@ export class OrganizationService {
 
   deleteAccessLevelInstance(organizationId: number, accessLevelInstanceId: number) {
     const url = `/api/v3/organizations/${organizationId}/access_levels/${accessLevelInstanceId}/delete_instance/`
-    return this._httpClient.delete<null>(url).pipe(
+    return this._httpClient.delete(url).pipe(
       tap(() => {
-        // Update accessLevelTree
         this.getAccessLevelTree(organizationId).subscribe()
       }),
       catchError((error: HttpErrorResponse) => {
+        // The backend returns 204 with a JSON body, which violates HTTP spec and crashes
+        // the dev proxy parser. The delete still succeeds on the backend, so refresh the tree.
+        if (error.status === 0 || error.status === 204) {
+          this.getAccessLevelTree(organizationId).subscribe()
+          return of(null)
+        }
         return this._errorService.handleError(error, 'Failed to delete Access Level Instance')
       }),
     )
@@ -294,9 +321,56 @@ export class OrganizationService {
       switchMap((org: Organization) => this._inventoryService.getView(org.org_id, viewId, type).pipe(map((view) => ({ org, view })))),
       map(({ org, view }: { org: Organization; view: ViewResponse }) => {
         const displayFieldKey = type === 'taxlots' ? org.taxlot_display_field : org.property_display_field
-        const displayField = view.state[displayFieldKey] as string
+        // Check top-level state first, then extra_data (for extra data columns like "Nick Name")
+        const displayField = (view.state[displayFieldKey] ?? view.state.extra_data?.[displayFieldKey]) as string
         const defaultName = type === 'taxlots' ? `Tax Lot ${view.taxlot.id}` : `Property ${view.property.id}`
         return displayField || defaultName
+      }),
+    )
+  }
+
+  getAllOrganizations(): Observable<AdminOrganization[]> {
+    const url = '/api/v3/organizations/'
+    return this._httpClient.get<AdminOrganizationsResponse>(url).pipe(
+      map(({ organizations }) => organizations.toSorted((a, b) => naturalSort(a.name, b.name))),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching all organizations')
+      }),
+    )
+  }
+
+  createOrganization(userId: number, organizationName: string): Observable<CreateOrganizationResponse> {
+    const url = '/api/v3/organizations/'
+    return this._httpClient.post<CreateOrganizationResponse>(url, { user_id: userId, organization_name: organizationName }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error creating organization')
+      }),
+    )
+  }
+
+  deleteOrganization(orgId: number): Observable<unknown> {
+    const url = `/api/v3/organizations/${orgId}/`
+    return this._httpClient.delete(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting organization')
+      }),
+    )
+  }
+
+  deleteOrganizationInventory(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/organizations/${orgId}/inventory/`
+    return this._httpClient.delete<ProgressResponse>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting organization inventory')
+      }),
+    )
+  }
+
+  addUserToOrganization(orgId: number, userId: number): Observable<AddUserToOrgResponse> {
+    const url = `/api/v3/organizations/${orgId}/users/${userId}/add/`
+    return this._httpClient.put<AddUserToOrgResponse>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error adding user to organization')
       }),
     )
   }

@@ -1,31 +1,19 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DOCUMENT, inject } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
 import { Subject, takeUntil } from 'rxjs'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { CurrentUser } from '@seed/api'
+import { UserService } from '@seed/api'
 import { ClipboardComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
-import { SnackBarService } from '../../../core/snack-bar/snack-bar.service'
+import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-profile-developer',
   templateUrl: './developer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ClipboardComponent,
-    FormsModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [ClipboardComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileDeveloperComponent implements OnInit, OnDestroy {
   private _changeDetectorRef = inject(ChangeDetectorRef)

@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http'
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
-import { BehaviorSubject, catchError, map, tap, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, map, of, take, tap, throwError } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type {
@@ -12,6 +12,7 @@ import type {
   GenericView,
   GenericViewsResponse,
   InventoryDisplayType,
+  InventoryExportData,
   InventoryType,
   InventoryTypeGoal,
   NewProfileData,
@@ -22,6 +23,7 @@ import type {
   UpdateInventoryResponse,
   ViewResponse,
 } from 'app/modules/inventory/inventory.types'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 
 @Injectable({ providedIn: 'root' })
@@ -142,7 +144,12 @@ export class InventoryService {
   deleteColumnListProfile(orgId: number, id: number): Observable<null> {
     const url = `/api/v3/column_list_profiles/${id}/?organization_id=${orgId}`
     return this._httpClient.delete<null>(url).pipe(
+      map((): null => null),
       catchError((error: HttpErrorResponse) => {
+        // Dev proxy may fail to parse 204 No Content (status 0). The delete succeeds server-side.
+        if (error.status === 0) {
+          return of(null)
+        }
         return this._errorService.handleError(error, 'Error deleting column list profile')
       }),
     )
@@ -158,6 +165,20 @@ export class InventoryService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error deleting property states')
+      }),
+    )
+  }
+
+  deleteTaxlotStates({ orgId, viewIds }: DeleteParams): Observable<object> {
+    const url = '/api/v3/taxlots/batch_delete/'
+    const data = { taxlot_view_ids: viewIds }
+    const options = { params: { organization_id: orgId }, body: data }
+    return this._httpClient.delete(url, options).pipe(
+      tap(() => {
+        this._snackBar.success('Tax lot states deleted')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error deleting tax lot states')
       }),
     )
   }
@@ -307,6 +328,98 @@ export class InventoryService {
       // }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error fetching ${inventoryType}`)
+      }),
+    )
+  }
+
+  movePropertiesToAccessLevelInstance(orgId: number, aliId: number, viewIds: number[]): Observable<unknown> {
+    const url = `/api/v3/properties/move_properties_to/?organization_id=${orgId}`
+    const data = { property_view_ids: viewIds, access_level_instance_id: aliId }
+    return this._httpClient.post(url, data).pipe(
+      tap(() => {
+        this._snackBar.success('Properties moved successfully')
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error moving properties')
+      }),
+    )
+  }
+
+  updateDerivedData(orgId: number, propertyViewIds: number[], taxlotViewIds: number[]): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/update_derived_data/'
+    const data = {
+      organization_id: orgId,
+      property_view_ids: propertyViewIds,
+      taxlot_view_ids: taxlotViewIds,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating derived data')
+      }),
+    )
+  }
+
+  startInventoryExport(orgId: number, data: InventoryExportData): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting export')
+      }),
+    )
+  }
+
+  startRefreshMetadata(orgId: number): Observable<ProgressResponse> {
+    const url = `/api/v3/tax_lot_properties/start_set_update_to_now/?organization_id=${orgId}`
+    return this._httpClient.get<ProgressResponse>(url).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error starting metadata refresh')
+      }),
+    )
+  }
+
+  refreshMetadata(orgId: number, propertyViews: number[], taxlotViews: number[], progressKey: string): Observable<ProgressResponse> {
+    const url = '/api/v3/tax_lot_properties/set_update_to_now/'
+    const data = {
+      organization_id: orgId,
+      property_views: propertyViews,
+      taxlot_views: taxlotViews,
+      progress_key: progressKey,
+    }
+    return this._httpClient.post<ProgressResponse>(url, data).pipe(
+      take(1),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error refreshing metadata')
+      }),
+    )
+  }
+
+  propertiesMetersExist(orgId: number, propertyViewIds: number[]): Observable<boolean> {
+    const url = `/api/v3/properties/meters_exist/?organization_id=${orgId}`
+    return this._httpClient.post<boolean>(url, { property_view_ids: propertyViewIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error checking if meters exist for properties')
+      }),
+    )
+  }
+
+  evaluationExportToCts(orgId: number, viewIds: number[], filename: string): Observable<Blob> {
+    const url = `/api/v3/properties/evaluation_export_to_cts/?organization_id=${orgId}`
+    return this._httpClient.post(url, { filename, property_view_ids: viewIds }, { responseType: 'arraybuffer' }).pipe(
+      map((response) => new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting to CTS')
+      }),
+    )
+  }
+
+  facilityBpsExportToCts(orgId: number, viewIds: number[], filename: string): Observable<Blob> {
+    const url = `/api/v3/properties/facility_bps_export_to_cts/?organization_id=${orgId}`
+    return this._httpClient.post(url, { filename, property_view_ids: viewIds }, { responseType: 'arraybuffer' }).pipe(
+      map((response) => new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting to CTS')
       }),
     )
   }

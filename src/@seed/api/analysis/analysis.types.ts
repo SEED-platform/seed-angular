@@ -25,7 +25,23 @@ export type Analysis = {
   _finished_with_tasks: boolean; // used to determine if an analysis has no currently running tasks
 }
 
-export type AnalysisServiceType = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation'
+export type AnalysisCreateData = {
+  name: string;
+  service: AnalysisServiceType;
+  configuration: Record<string, unknown>;
+  property_view_ids: number[];
+  access_level_instance_id: number;
+}
+
+export type AnalysisServiceType
+  = | 'BSyncr'
+    | 'BETTER'
+    | 'EUI'
+    | 'CO2'
+    | 'EEEJ'
+    | 'Element Statistics'
+    | 'Building Upgrade Recommendation'
+    | 'HVAC Metrics'
 
 // Analysis by View type
 export type View = {
@@ -47,14 +63,11 @@ export type AnalysisOutputFile = {
   id: number;
 }
 
-// OriginalView is an array of key values where the key is a string and the value is a number
-export type OriginalView = Record<string, number>
-
 export type ListAnalysesResponse = {
   status: 'success';
   analyses: Analysis[];
   views: View[];
-  original_views: OriginalView[];
+  original_views: Record<number, number>;
 }
 
 export type AnalysisResponse = {
@@ -75,13 +88,13 @@ export type AnalysesViews = {
 export type AnalysisViews = {
   status: 'success';
   views: View[];
-  original_views: OriginalView[];
+  original_views: Record<number, number>;
 }
 
 export type AnalysisView = {
   status: 'success';
   view: View;
-  original_view: OriginalView;
+  original_view: number;
 }
 
 export type AnalysesMessage = {
@@ -103,6 +116,7 @@ export type AnalysisSummary = {
   number_extra_data_fields: number;
   status: string;
   total_records: number;
+  total_sqft: number;
 }
 
 export type AnalysisSummaryStats = {
@@ -111,3 +125,27 @@ export type AnalysisSummaryStats = {
   display_name: string;
   is_extra_data: boolean;
 }
+
+export type SavingsTarget = 'AGGRESSIVE' | 'CONSERVATIVE' | 'NOMINAL'
+export type SelectMetersType = 'all' | 'date_range' | 'select_cycle'
+export type BenchmarkDataType = 'DEFAULT' | 'GENERATE'
+
+export type BETTERConfig = {
+  benchmark_data_type: BenchmarkDataType;
+  cycle_id: number;
+  enable_pvwatts: boolean;
+  meter: { start_date: string; end_date: string };
+  min_model_r_squared: number;
+  preprocess_meters: boolean;
+  portfolio_analysis: boolean;
+  savings_target: SavingsTarget;
+  select_meters: SelectMetersType;
+}
+
+export type AnalysisConfig = BETTERConfig | Record<string, unknown>
+
+export type BSyncrModelTypes
+  = | 'Simple Linear Regression'
+    | 'Three bsyncrOptionsParameter Linear Model Cooling'
+    | 'Three Parameter Linear Model Heating'
+    | 'Four Parameter Linear Model'

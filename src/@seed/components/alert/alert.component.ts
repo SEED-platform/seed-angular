@@ -11,10 +11,9 @@ import {
   output,
   ViewEncapsulation,
 } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIconModule } from '@angular/material/icon'
 import { filter, Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
+import { MaterialImports } from '@seed/materials'
 import { randomId } from '@seed/utils'
 import { AlertService } from './alert.service'
 import type { AlertAppearance, AlertType } from './alert.types'
@@ -27,7 +26,7 @@ import type { AlertAppearance, AlertType } from './alert.types'
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: Animations,
   exportAs: 'seedAlert',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MaterialImports],
 })
 export class AlertComponent implements OnInit, OnDestroy {
   private _alertService = inject(AlertService)

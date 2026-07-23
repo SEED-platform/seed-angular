@@ -14,6 +14,11 @@ export default [
     component: CustomReportsComponent,
   },
   {
+    path: 'custom-reports/:id',
+    title: 'Custom Reports',
+    component: CustomReportsComponent,
+  },
+  {
     path: 'default-reports',
     title: 'Default Reports',
     component: DefaultReportsComponent,
@@ -24,7 +29,17 @@ export default [
     component: ProgramOverviewComponent,
   },
   {
+    path: 'program-overview/:id',
+    title: 'Program Overview',
+    component: ProgramOverviewComponent,
+  },
+  {
     path: 'property-insights',
+    title: 'Property Insights',
+    component: PropertyInsightsComponent,
+  },
+  {
+    path: 'property-insights/:id',
     title: 'Property Insights',
     component: PropertyInsightsComponent,
   },

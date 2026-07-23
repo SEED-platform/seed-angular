@@ -1,33 +1,17 @@
-import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatTableModule } from '@angular/material/table'
-import type { Column } from '@seed/api/column'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import type { Column } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-edit-state',
   templateUrl: './edit-state.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatTableModule,
-    ReactiveFormsModule,
-  ],
+  imports: [MaterialImports, ReactiveFormsModule],
 })
 export class EditStateModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<EditStateModalComponent>)

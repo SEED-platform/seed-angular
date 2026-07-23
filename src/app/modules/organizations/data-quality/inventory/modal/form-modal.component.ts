@@ -1,42 +1,19 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatOptionModule } from '@angular/material/core'
-import { MatDatepickerModule } from '@angular/material/datepicker'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { combineLatest, distinctUntilChanged, type Observable, Subject, takeUntil } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { type DataQualityFormGroup, DataQualityService, type Rule } from '@seed/api/data-quality'
-import { type Label, LabelService } from '@seed/api/label'
+import type { Column, DataQualityFormGroup, Label, Rule } from '@seed/api'
+import { DataQualityService, LabelService } from '@seed/api'
 import { LabelComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { CONDITIONS, DATATYPES_BY_CONDITION, SEVERITIES, UNITS } from '../../constants'
 import { DataQualityValidator } from '../../data-quality.validator'
 
 @Component({
   selector: 'seed-organizations-members-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatOptionModule,
-    MatSelectModule,
-    MatSlideToggleModule,
-    LabelComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, LabelComponent, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnDestroy, OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -67,22 +44,22 @@ export class FormModalComponent implements OnDestroy, OnInit {
   form: DataQualityFormGroup = new FormGroup(
     {
       condition: new FormControl<'exclude' | 'include' | 'not_null' | 'range' | 'required' | null>(null, Validators.required),
-      cross_cycle: new FormControl<boolean>(false), // unused
+      cross_cycle: new FormControl(false), // unused
       data_type: new FormControl<number | null>(null, Validators.required),
-      enabled: new FormControl<boolean>(true),
+      enabled: new FormControl(true),
       field: new FormControl<string | null>(null, Validators.required),
-      for_derived_column: new FormControl<boolean>(false), // unused
+      for_derived_column: new FormControl(false), // unused
       id: new FormControl<number | null>(null), // hidden
       max: new FormControl<number | null>(null),
       min: new FormControl<number | null>(null),
-      not_null: new FormControl<boolean>(false),
-      required: new FormControl<boolean>(false),
+      not_null: new FormControl(false),
+      required: new FormControl(false),
       rule_type: new FormControl<number | null>(null),
       severity: new FormControl<number | null>(null, Validators.required),
       status_label: new FormControl<number | null>(null),
       table_name: new FormControl<'PropertyState' | 'TaxLotState' | 'Goal' | null>(this.data.tableName), // unused
       text_match: new FormControl<string | null>(null),
-      units: new FormControl<string>(''),
+      units: new FormControl(''),
     },
     {
       validators: [

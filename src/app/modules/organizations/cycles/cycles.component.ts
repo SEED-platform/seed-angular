@@ -1,20 +1,19 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatDialog, MatDialogModule } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatTableDataSource, MatTableModule } from '@angular/material/table'
+import { MatDialog } from '@angular/material/dialog'
+import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil } from 'rxjs'
-import type { Cycle } from '@seed/api/cycle'
-import { CycleService } from '@seed/api/cycle/cycle.service'
+import type { Cycle } from '@seed/api'
+import { CycleService } from '@seed/api'
 import { PageComponent, TableContainerComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { DeleteModalComponent } from './modal/delete-modal.component'
 import { FormModalComponent } from './modal/form-modal.component'
 
 @Component({
   selector: 'seed-organizations-cycles',
   templateUrl: './cycles.component.html',
-  imports: [MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, PageComponent, TableContainerComponent],
+  imports: [MaterialImports, PageComponent, TableContainerComponent],
 })
 export class CyclesComponent implements OnDestroy, OnInit {
   private _cycleService = inject(CycleService)

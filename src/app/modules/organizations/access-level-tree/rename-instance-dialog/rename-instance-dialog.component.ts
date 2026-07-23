@@ -2,33 +2,18 @@ import { A11yModule } from '@angular/cdk/a11y'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { ValidationErrors, ValidatorFn } from '@angular/forms'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize } from 'rxjs'
-import { OrganizationService } from '@seed/api/organization'
+import { OrganizationService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { RenameInstanceData } from '..'
 
 @Component({
   selector: 'seed-rename-instance-dialog',
   templateUrl: './rename-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    A11yModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [A11yModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class RenameInstanceDialogComponent {
   private _data = inject(MAT_DIALOG_DATA) as RenameInstanceData
@@ -38,7 +23,7 @@ export class RenameInstanceDialogComponent {
   private _siblingInstanceNames = new Set<string>()
   originalName = this._data.instance.name
   hasChildren = this._data.instance.children?.length > 0
-  nameValidator = new FormControl('', this._siblingNameValidator())
+  nameValidator = new FormControl(this._data.instance.name, this._siblingNameValidator())
   submitted = false
 
   constructor() {

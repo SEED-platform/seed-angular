@@ -1,17 +1,12 @@
+import { provideZoneChangeDetection } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
-import {
-  ClientSideRowModelModule,
-  ColumnAutoSizeModule,
-  EventApiModule,
-  ModuleRegistry,
-  PaginationModule,
-  ValidationModule,
-} from 'ag-grid-community'
 import { AppComponent } from 'app/app.component'
 import { appConfig } from 'app/app.config'
+import 'app/ag-grid-modules'
+import 'app/chartjs-setup'
 
-ModuleRegistry.registerModules([ClientSideRowModelModule, ColumnAutoSizeModule, EventApiModule, PaginationModule, ValidationModule])
-
-bootstrapApplication(AppComponent, appConfig).catch((err: unknown) => {
-  console.error(err)
-})
+bootstrapApplication(AppComponent, { ...appConfig, providers: [provideZoneChangeDetection(), ...appConfig.providers] }).catch(
+  (err: unknown) => {
+    console.error(err)
+  },
+)

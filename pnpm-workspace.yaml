@@ -1,6 +1,15 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@scarf/scarf': true
+  core-js: true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
 onlyBuiltDependencies:
   - '@parcel/watcher'
+  - '@scarf/scarf'
   - core-js
   - esbuild
   - lmdb
   - msgpackr-extract
+  - unrs-resolver

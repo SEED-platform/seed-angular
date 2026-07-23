@@ -1,6 +1,4 @@
-import type { UserRole } from '@seed/api/user'
-import type { Column } from '../column'
-import type { LabelOperator } from '../label'
+import type { Column, LabelOperator, UserRole } from '@seed/api'
 
 export type OrgCycle = {
   name: string;
@@ -110,6 +108,8 @@ export type OrganizationUserSettings = {
   profile?: UserSettingsProfiles;
   crossCycles?: UserSettingsCrossCycles;
   labels?: UserLabelSettings;
+  pins?: UserPinSettings;
+  insights?: InsightsUserSettings;
 }
 
 type UserSettingsFilters = {
@@ -132,7 +132,34 @@ type UserSettingsCrossCycles = {
   taxlots?: number[];
 }
 
+type UserPinSettings = {
+  properties?: {
+    left: string[];
+    right: string[];
+  };
+  taxlots?: {
+    left: string[];
+    right: string[];
+  };
+}
+
 type UserLabelSettings = { ids: number[]; operator: LabelOperator }
+
+export type InsightDatasetVisibility = 'compliant' | 'non-compliant' | 'unknown' | 'whisker'
+
+export type PropertyInsightsUserSettings = {
+  programId?: number | null;
+  cycleId?: number | null;
+  metricType?: 0 | 1 | null;
+  xAxisColumnId?: number | null;
+  accessLevel?: string | null;
+  accessLevelInstanceId?: number | null;
+  datasetVisibility?: InsightDatasetVisibility[];
+}
+
+export type InsightsUserSettings = {
+  propertyInsights?: PropertyInsightsUserSettings;
+}
 
 export type OrganizationUsersResponse = {
   users: OrganizationUser[];
@@ -194,8 +221,9 @@ export type CanDeleteInstanceResponse = {
 }
 
 export type UploadAccessLevelInstancesResponse = {
-  status: 'success';
-  tempfile: string;
+  success: boolean;
+  tempfile?: string;
+  message?: string;
 }
 
 export type StartSavingAccessLevelInstancesRequest = {
@@ -205,4 +233,32 @@ export type StartSavingAccessLevelInstancesRequest = {
 export type MatchingCriteriaColumnsResponse = {
   PropertyState: string[];
   TaxLotState: string[];
+}
+
+export type FilterByViewsResponse = {
+  access_level_instance_ids: number[];
+  status: string;
+}
+
+export type AdminOrganization = {
+  id: number;
+  name: string;
+  created: string;
+  number_of_users: number;
+  user_count?: number;
+  property_count?: number;
+  taxlot_count?: number;
+}
+
+export type AdminOrganizationsResponse = {
+  organizations: AdminOrganization[];
+}
+
+export type CreateOrganizationResponse = {
+  status: string;
+  organization: AdminOrganization;
+}
+
+export type AddUserToOrgResponse = {
+  status: string;
 }

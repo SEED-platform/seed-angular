@@ -2,32 +2,19 @@ import type { OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import type { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatCheckboxModule } from '@angular/material/checkbox'
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogRef } from '@angular/material/dialog'
-import { MatDividerModule } from '@angular/material/divider'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { Observable } from 'rxjs'
 import { catchError, map, of, tap } from 'rxjs'
-import type { Ubid, UbidDetails } from '@seed/api/ubid'
-import { UbidService } from '@seed/api/ubid'
+import type { Ubid, UbidDetails } from '@seed/api'
+import { UbidService } from '@seed/api'
+import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-ubids-form-modal',
   templateUrl: './form-modal.component.html',
-  imports: [
-    FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatDialogActions,
-    MatIconModule,
-    MatInputModule,
-    ReactiveFormsModule,
-  ],
+  imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class FormModalComponent implements OnInit {
   private _dialogRef = inject(MatDialogRef<FormModalComponent>)
@@ -49,7 +36,7 @@ export class FormModalComponent implements OnInit {
         validators: [Validators.required, SEEDValidators.uniqueValue(this.data.existingUbids)],
         asyncValidators: [this.validUbid(this.data.orgId)],
       }),
-      preferred: new FormControl<boolean | null>(false, Validators.required),
+      preferred: new FormControl(false, Validators.required),
     })
     if (this.data.ubid) {
       setTimeout(() => {
@@ -71,8 +58,7 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .update(this.data.orgId, this.data.viewId, this.data.ubid.id, ubidDetails, this.data.type)
         .pipe(
-          tap((response) => {
-            console.log('response', response)
+          tap(() => {
             this.close(preferred)
           }),
         )
@@ -83,8 +69,7 @@ export class FormModalComponent implements OnInit {
       this._ubidService
         .create(this.data.orgId, this.data.viewId, ubidDetails, this.data.type)
         .pipe(
-          tap((response) => {
-            console.log('response', response)
+          tap(() => {
             this.close(preferred)
           }),
         )

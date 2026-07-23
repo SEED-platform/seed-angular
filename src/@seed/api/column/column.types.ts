@@ -42,6 +42,11 @@ export type ColumnsResponse = {
   columns: Column[];
 }
 
+export type RenameColumnResponse = {
+  success: boolean;
+  message: string;
+}
+
 export type GenericColumn = {
   [key: string]: unknown;
   display_name: string;

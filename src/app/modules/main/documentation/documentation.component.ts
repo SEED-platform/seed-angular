@@ -1,21 +1,12 @@
 import { Component, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatExpansionModule } from '@angular/material/expansion'
-import { MatIconModule } from '@angular/material/icon'
 import { InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-documentation',
   templateUrl: './documentation.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    InnerHTMLExternalLinksDirective,
-    InnerHTMLImageOverlayDirective,
-    MatButtonModule,
-    MatIconModule,
-    MatExpansionModule,
-    SharedImports,
-  ],
+  imports: [InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, MaterialImports, SharedImports],
 })
 export class DocumentationComponent {
   readonly faq: { category: string; faqs: { question: string; answer: string }[] }[] = [
@@ -34,7 +25,7 @@ export class DocumentationComponent {
                 <ul>
                   <li><a href="https://neep.org/solutions-low-carbon-states-and-communities/beam-building-energy-analysis-manager">Building Energy Analysis Manager (BEAM)</a></li>
                   <li><a href="https://www.aceee.org/files/proceedings/2018/assets/attachments/0194_0286_000247.pdf">The BayREN Integrated Commercial Retrofits (BRICR) Project</a> and <a href="https://www.energy.gov/sites/prod/files/2018/05/f52/24293_Hooper_050318-900.pdf">BRICR Presentation</a></li>
-                  <li><a href="https://www.energy.gov/eere/buildings/energy-data-vault">The Energy Data Vault (EDV) Project</a></li>
+                  <li><a href="https://www.energy.gov/cmei/buildings/energy-data-vault">The Energy Data Vault (EDV) Project</a></li>
                 </ul>
               </li>
             </ul>`,
@@ -148,11 +139,11 @@ export class DocumentationComponent {
           answer: `
             <p>You can find more information about organizations contributing to SEED Platform development below:</p>
             <ul>
-              <li><a href="https://www.energy.gov/eere/buildings/seed-platform-collaborative">SEED Platform Collaborative</a></li>
+              <li><a href="https://www.energy.gov/cmei/buildings/seed-platform-collaborative">SEED Platform Collaborative</a></li>
               <li><a href="https://github.com/SEED-platform/seed/blob/develop/AUTHORS.md">SEED Platform Contributing Developers</a></li>
               <li><a href="https://seed-platform.org/technical_ally/">SEED Technical Allies</a></li>
               <li><a href="https://www.energy.gov/sites/prod/files/2018/05/f52/24293_Hooper_050318-900.pdf">BayREN Integrated Commercial Retrofits (BRICR)</a></li>
-              <li><a href="https://www.energy.gov/eere/buildings/energy-data-vault">Energy Data Vault (EDV)</a></li>
+              <li><a href="https://www.energy.gov/cmei/buildings/energy-data-vault">Energy Data Vault (EDV)</a></li>
             </ul>`,
         },
       ],

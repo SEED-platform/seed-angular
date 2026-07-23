@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatMenuModule } from '@angular/material/menu'
 import type { LangDefinition } from '@jsverse/transloco'
 import { TranslocoService } from '@jsverse/transloco'
 import { Subject, takeUntil } from 'rxjs'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-languages',
@@ -13,7 +12,7 @@ import { Subject, takeUntil } from 'rxjs'
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'languages',
-  imports: [CommonModule, MatButtonModule, MatMenuModule],
+  imports: [CommonModule, MaterialImports],
 })
 export class LanguagesComponent implements OnInit, OnDestroy {
   private _translocoService = inject(TranslocoService)

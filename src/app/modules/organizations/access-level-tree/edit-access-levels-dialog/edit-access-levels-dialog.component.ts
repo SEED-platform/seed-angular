@@ -2,16 +2,13 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, takeUntil } from 'rxjs'
-import type { AccessLevelsByDepth } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
+import type { AccessLevelsByDepth } from '@seed/api'
+import { OrganizationService } from '@seed/api'
+import { AlertComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import { arraysEqual } from '@seed/utils'
 import type { EditAccessLevelsData } from '..'
 
@@ -19,18 +16,7 @@ import type { EditAccessLevelsData } from '..'
   selector: 'seed-edit-access-levels-dialog',
   templateUrl: './edit-access-levels-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    SharedImports,
-  ],
+  imports: [AlertComponent, CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {
   private _data = inject(MAT_DIALOG_DATA) as EditAccessLevelsData

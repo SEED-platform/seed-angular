@@ -2,18 +2,12 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
 import { MatDialog } from '@angular/material/dialog'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSelectModule } from '@angular/material/select'
-import { MatSidenavModule } from '@angular/material/sidenav'
-import { MatTooltipModule } from '@angular/material/tooltip'
 import { NgxWigModule } from 'ngx-wig'
 import { filter, map, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { type EmailTemplate, PostOfficeService } from '@seed/api/postoffice'
-import { UserService } from '@seed/api/user'
-import { DeleteModalComponent, PageComponent } from '@seed/components'
+import { type EmailTemplate, PostOfficeService, UserService } from '@seed/api'
+import { DeleteModalComponent, NotFoundComponent, PageComponent } from '@seed/components'
+import { MaterialImports } from '@seed/materials'
 import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { FormModalComponent } from './modal/form-modal.component'
@@ -21,18 +15,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-email-templates',
   templateUrl: './email-templates.component.html',
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatSidenavModule,
-    MatSelectModule,
-    MatTooltipModule,
-    NgxWigModule,
-    PageComponent,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, MaterialImports, NgxWigModule, NotFoundComponent, PageComponent, ReactiveFormsModule],
 })
 export class EmailTemplatesComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -48,8 +31,8 @@ export class EmailTemplatesComponent implements OnDestroy, OnInit {
     selectedTemplate: new FormControl<number | null>(null),
   })
   templateForm = new FormGroup({
-    subject: new FormControl<string>('', [Validators.required]),
-    html_content: new FormControl<string>('', [Validators.required]),
+    subject: new FormControl('', [Validators.required]),
+    html_content: new FormControl('', [Validators.required]),
   })
 
   ngOnInit(): void {

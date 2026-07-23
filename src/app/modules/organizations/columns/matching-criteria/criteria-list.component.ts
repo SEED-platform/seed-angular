@@ -1,14 +1,13 @@
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core'
-import { MatButtonModule } from '@angular/material/button'
-import { MatIcon } from '@angular/material/icon'
-import { type Column } from '@seed/api/column'
+import { type Column } from '@seed/api'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-matching-criteria-list',
   templateUrl: './criteria-list.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [SharedImports, MatButtonModule, MatIcon],
+  imports: [SharedImports, MaterialImports],
 })
 export class CriteriaListComponent {
   @Input() columns: Column[]

@@ -23,6 +23,11 @@ export type CurrentUser = {
   settings: OrganizationUserSettings;
 }
 
+export type UserBrief = {
+  user_id: number;
+  email: string;
+}
+
 export type UserUpdateRequest = {
   first_name: string;
   last_name: string;
