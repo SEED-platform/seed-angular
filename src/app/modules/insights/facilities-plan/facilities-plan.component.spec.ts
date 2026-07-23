@@ -55,7 +55,7 @@ const mockPlan: FacilitiesPlan = {
   id: 10,
   organization: 1,
   name: 'Test Plan',
-  energy_running_sum_percentage: 80,
+  energy_running_sum_percentage: 0.8,
   compliance_cycle_year_column: null,
   include_in_total_denominator_column: null,
   exclude_from_plan_column: null,
@@ -87,7 +87,7 @@ const mockProperties: FacilitiesPlanRunProperty[] = [
     total_energy_usage: 500,
     percentage_of_total_energy_usage: 25,
     rank: 1,
-    running_percentage: 25,
+    running_percentage: 0.25,
     running_square_footage: 1000,
   },
   {
@@ -95,7 +95,7 @@ const mockProperties: FacilitiesPlanRunProperty[] = [
     total_energy_usage: 300,
     percentage_of_total_energy_usage: 15,
     rank: 2,
-    running_percentage: 40,
+    running_percentage: 0.4,
     running_square_footage: 800,
   },
 ]
@@ -280,7 +280,7 @@ describe('FacilitiesPlanComponent', () => {
     const rule = () => component.gridOptions.rowClassRules['fp-in-plan'] as (p: RowClassParams<FacilitiesPlanRunProperty>) => boolean
 
     beforeEach(() => {
-      component.facilitiesPlans = [mockPlan] // energy_running_sum_percentage: 80
+      component.facilitiesPlans = [mockPlan] // energy_running_sum_percentage: 0.8
     })
 
     it('should return false when currentRun is null', () => {
@@ -305,24 +305,24 @@ describe('FacilitiesPlanComponent', () => {
 
     it('should return true when running_percentage is within the plan threshold', () => {
       component.currentRun = mockRunAfterCalculate // run_at set
-      // running_percentage(40) <= energy_running_sum_percentage(80) → in plan
-      expect(rule()(makeParams(40))).toBeTrue()
+      // running_percentage(0.4) <= energy_running_sum_percentage(0.8) → in plan
+      expect(rule()(makeParams(0.4))).toBeTrue()
     })
 
     it('should return true when running_percentage equals the threshold exactly', () => {
       component.currentRun = mockRunAfterCalculate
-      expect(rule()(makeParams(80))).toBeTrue()
+      expect(rule()(makeParams(0.8))).toBeTrue()
     })
 
     it('should return false when running_percentage exceeds the plan threshold', () => {
       component.currentRun = mockRunAfterCalculate
-      // running_percentage(90) > energy_running_sum_percentage(80) → outside plan
-      expect(rule()(makeParams(90))).toBeFalse()
+      // running_percentage(0.9) > energy_running_sum_percentage(0.8) → outside plan
+      expect(rule()(makeParams(0.9))).toBeFalse()
     })
 
     it('should return false when the plan is not found', () => {
       component.currentRun = { ...mockRunAfterCalculate, facilities_plan: 999 } // no plan with id 999
-      expect(rule()(makeParams(40))).toBeFalse()
+      expect(rule()(makeParams(0.4))).toBeFalse()
     })
   })
 
