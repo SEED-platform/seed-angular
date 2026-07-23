@@ -95,12 +95,6 @@ against this app's route files. Update this table as pages move between columns.
 - [ ] **Personal two-factor setup** (`/profile/two_factor_profile`, `two_factor_profile_controller`)
       — user's own 2FA device enrollment. (Org-level two-factor *policy* settings are already
       migrated to `organizations/settings/two-factor`; this is the separate personal setup flow.)
-- [ ] **Pairing workflow** (`/data/pairing/:importfile_id/{properties|taxlots}`,
-      `pairing_controller`) — the property/tax-lot pairing UI after an import. The dataset page
-      (`modules/datasets/dataset/dataset.component.ts`) already has a "Data Pairing" button, but it
-      currently only `console.log`s — the workflow itself isn't built.
-- [ ] **Pairing settings** (`/data/pairing/:importfile_id/{type}/settings`, `pairing_settings_controller`)
-      — companion settings page for the above.
 - [ ] **Salesforce login callback** (`/salesforce_login`, `salesforce_login_controller`) — the
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
@@ -134,10 +128,9 @@ route. Notes from that pass:
   already-migrated page (`goal_service`→`data-quality/goal`, `two_factor_service`→personal 2FA
   above, `compliance_metric_service`→`insights/config/program-config.component.ts`,
   `map_service`'s EEEJ/disadvantaged-tract filter→`inventory-list/map/map.component.ts`,
-  `property_measure_service`→`inventory-detail/detail` scenarios grid) or a page already on the
-  list above (`facilities_plan_service`/`facilities_plan_run_service`/`service_service`/
-  `system_service`→Facilities Plan; `pairing_service`→Pairing workflow, though the API service
-  itself already exists in `@seed/api/pairing`, only the UI is missing).
+  `property_measure_service`→`inventory-detail/detail` scenarios grid, `pairing_service`→Pairing
+  workflow) or a page already on the list above (`facilities_plan_service`/
+  `facilities_plan_run_service`/`service_service`/`system_service`→Facilities Plan).
 - **Dead/unused in the legacy app** — not referenced by any legacy controller, so don't bother
   porting them: `element_service`, `uniformat_service`, `event_service`.
 - **Cross-cutting utilities, not features** — no dedicated page to port, these are legacy
@@ -147,18 +140,19 @@ route. Notes from that pass:
 
 ### Won't migrate
 
-Nothing has been decided against yet — this is a placeholder. If the team decides a legacy
-page/feature will be deprecated instead of ported (rather than just not-yet-done), move its line
-here from "Not yet migrated" with a one-line reason (e.g. superseded by feature X, unused,
-backend-only), so agents don't keep re-proposing work on it.
-
-_(none yet)_
+- **Pairing settings** (`/data/pairing/:importfile_id/{type}/settings`,
+  `pairing_settings_controller`) — the standalone column order/visibility page for the pairing
+  grids, backed by its own `localStorage` config. Superseded: the ported `pairing` workflow
+  (`modules/datasets/pairing/pairing.component.ts`) reuses the existing List View Profile column
+  selector already used by the Properties/Tax Lots list pages instead of building a second,
+  parallel column-config mechanism for one page.
 
 ### Already migrated (for reference — don't re-port these)
 
 Everything else in `seed.js`'s state table has a corresponding route in this app, including:
 `home`→dashboard, `profile`/`security`/`developer`/`admin`→`profile/*`, `analyses`/`analysis`/
-`analysis_run`→`analyses/*`, `mapping`/`dataset_list`/`dataset_detail`→`datasets/*`, `about`/
+`analysis_run`→`analyses/*`, `mapping`/`dataset_list`/`dataset_detail`→`datasets/*`,
+`pairing`→`datasets/pairing/:id/:type`, `about`/
 `contact`/`api_docs`, the full `organization_*` settings family (settings, access-level-tree,
 column settings/mappings, data-quality incl. goals, cycles, labels, members, email-templates,
 derived-columns — the derived column *editor* is now a modal rather than its own route), and the
