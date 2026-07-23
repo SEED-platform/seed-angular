@@ -255,7 +255,7 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
         suppressMovable: true,
         cellRenderer: ({ value }: { value: number }) =>
           value
-            ? '<div class="flex mt-2 align-center"><span class="material-icons-outlined cursor-pointer" title="Go to property detail" data-action="detail">info</span></div>'
+            ? '<div class="flex mt-2 align-center"><span class="material-icons-outlined cursor-pointer" data-action="detail">info</span></div>'
             : '',
       },
       {
