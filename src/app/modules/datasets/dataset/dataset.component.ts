@@ -139,7 +139,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
     } else if (action === 'dataMapping') {
       void this._router.navigate(['/data/mappings/', importFile.id])
     } else if (action === 'dataPairing') {
-      console.log('data pairing', importFile)
+      void this._router.navigate(['/data/pairing', importFile.id, 'properties'])
     }
   }
 

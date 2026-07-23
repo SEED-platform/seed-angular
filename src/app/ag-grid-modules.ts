@@ -1,3 +1,34 @@
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
+import {
+  CellStyleModule,
+  CheckboxEditorModule,
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  CustomEditorModule,
+  EventApiModule,
+  ModuleRegistry,
+  PaginationModule,
+  RenderApiModule,
+  RowApiModule,
+  RowDragModule,
+  RowStyleModule,
+  SelectEditorModule,
+  TextEditorModule,
+  ValidationModule,
+} from 'ag-grid-community'
 
-ModuleRegistry.registerModules([AllCommunityModule])
+ModuleRegistry.registerModules([
+  CellStyleModule,
+  CheckboxEditorModule,
+  ClientSideRowModelModule,
+  ColumnAutoSizeModule,
+  CustomEditorModule,
+  EventApiModule,
+  PaginationModule,
+  RenderApiModule,
+  RowApiModule,
+  RowDragModule,
+  RowStyleModule,
+  SelectEditorModule,
+  TextEditorModule,
+  ValidationModule,
+])
