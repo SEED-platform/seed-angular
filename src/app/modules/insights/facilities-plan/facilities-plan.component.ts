@@ -3,6 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, RowClassParams } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, filter, finalize, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
@@ -35,6 +36,7 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _router = inject(Router)
+  private _translocoService = inject(TranslocoService)
   private _facilitiesPlanService = inject(FacilitiesPlanService)
   private _facilitiesPlanRunService = inject(FacilitiesPlanRunService)
   private _userService = inject(UserService)
@@ -278,10 +280,34 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
               }
             : {}),
         })),
-      { headerName: 'Total Energy Usage', field: 'total_energy_usage', sortable: false, filter: false, floatingFilter: false },
-      { headerName: '% of Total Energy', field: 'percentage_of_total_energy_usage', sortable: false, filter: false, floatingFilter: false },
-      { headerName: 'Running %', field: 'running_percentage', sortable: false, filter: false, floatingFilter: false },
-      { headerName: 'Running Sq Ft', field: 'running_square_footage', sortable: false, filter: false, floatingFilter: false },
+      {
+        headerName: this._translocoService.translate('Total Energy Usage'),
+        field: 'total_energy_usage',
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+      },
+      {
+        headerName: this._translocoService.translate('% of Total Energy'),
+        field: 'percentage_of_total_energy_usage',
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+      },
+      {
+        headerName: this._translocoService.translate('Running %'),
+        field: 'running_percentage',
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+      },
+      {
+        headerName: this._translocoService.translate('Running Sq Ft'),
+        field: 'running_square_footage',
+        sortable: false,
+        filter: false,
+        floatingFilter: false,
+      },
     ]
 
     if (run.columns?.compliance_cycle_year_column) {
