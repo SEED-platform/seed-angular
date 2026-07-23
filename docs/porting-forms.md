@@ -20,8 +20,10 @@ A repeatable recipe for porting a legacy AngularJS form/screen from
    ```
 2. **Confirm the backend exists.** In almost all cases the API already exists in
    `SEED-platform/seed`. Do **not** reimplement backend logic — just call it.
-3. **Pick the shape:** a **full-page form** (its own route) or a **modal form** (dialog).
-   Use the matching canonical example below.
+3. **Pick the shape:** a **full-page form** (its own route), a **modal form** (dialog), or — if
+   the legacy page isn't really a form (no single record + save action, e.g. a dual-grid
+   drag-and-drop workspace) — the closest **interactive workspace** example instead. Use the
+   matching canonical example below.
 4. **Plan mode first** for non-trivial ports: list files to add/change, the component
    structure, validation, and the save flow — then implement.
 
@@ -38,6 +40,22 @@ A repeatable recipe for porting a legacy AngularJS form/screen from
 | Page shell | `PageComponent` (`seed-page`) from `@seed/components` |
 | Inline validation errors | `AlertComponent` (`seed-alert`) from `@seed/components` |
 | Access-level selectors | `src/app/modules/inventory/**/ali-change-modal.component.ts` |
+| Property/Tax Lot tab switcher on a page | `InventoryTabComponent` (`seed-page-inventory-tab`) from `@seed/components` |
+| Interactive dual-grid workspace (no form/save flow — drag rows between two `ag-grid` grids to associate them, custom cell-renderer chips with click-to-remove) | `src/app/modules/datasets/pairing/pairing.component.ts` / `.html` |
+
+**Cross-grid drag-and-drop (`ag-grid` Community, no Enterprise needed):** to let a user drag rows
+from one grid and drop them onto rows of a second grid (see `PairingComponent`), add a narrow
+`{ field: 'drag', rowDrag: true, pinned: 'left' }` column to the *source* grid, then once both
+grids are ready:
+```ts
+const dropZoneParams = targetGridApi.getRowDropZoneParams({
+  onDragStop: (params) => { /* params.node.data = dragged row, params.overNode?.data = target row */ },
+})
+sourceGridApi.addRowDropZone(dropZoneParams)
+```
+Don't set `rowDragManaged: true` if the dragged row should stay in the source grid after the drop
+(e.g. pairing a property that can still be re-paired) — that flag is for same-grid reordering and
+will otherwise remove the row from its source list.
 
 ---
 
@@ -249,6 +267,15 @@ Both must pass for the files you touched. Common gotchas:
 - **Member ordering / naming:** fields before methods, public before private, `_` prefix on privates.
 - Use **pnpm** (there is a `pnpm-lock.yaml`); Node 22+ works (repo prefers 24 — warning only).
 
+**Lint and build are not the finish line.** Neither one executes the component, so neither can
+catch a missing ag-grid module registration, a wrong assumption about a live API response's
+field names/shape, a route-param reactivity bug (Angular reuses component instances across
+sibling routes — see the Pairing migration's tab-switch bug), or a layout that only breaks with
+real data. Before considering the port done, actually run the page against a live backend with
+real seeded data (both populated and empty/edge-case data, not just the happy path) and click
+through the ported behavior with Playwright — see [`docs/local-testing.md`](local-testing.md) for
+how to stand up a throwaway backend + test data in this environment.
+
 ---
 
 ## 11. Checklist (copy into your PR description)
@@ -261,3 +288,8 @@ Both must pass for the files you touched. Common gotchas:
 - [ ] All strings via Transloco (`t('…')`)
 - [ ] Route added before `:id`; nav entry added; icon verified in sprite
 - [ ] `pnpm lint` and `pnpm build` pass
+- [ ] Live-tested against a real backend with seeded data via Playwright (see
+      `docs/local-testing.md`) — not just rendered, actually clicked through
+- [ ] Screenshots (overview + notable new interaction) hosted on a `pr-<number>-screenshots`
+      prerelease and embedded in the PR description (see `docs/local-testing.md`) — not committed
+      to the repo

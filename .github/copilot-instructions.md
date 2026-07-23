@@ -85,10 +85,20 @@ canonical examples they reference.
 - **[`docs/porting-forms.md`](../docs/porting-forms.md)** — the form-specific recipe once you're
   inside a page: canonical full-page/modal form components to copy, the reusable service
   integration points (`CycleService`, `ColumnService`, `SnackBarService`, `ErrorService`, ...),
-  the validation/confirm/save flow, and the Transloco + Lokalise workflow.
+  the validation/confirm/save flow, and the Transloco + Lokalise workflow. Not every legacy page
+  is a reactive-form CRUD screen, though — it also covers non-form interactive workspaces (e.g.
+  the dual-grid drag-and-drop `datasets/pairing` page), so check its canonical examples table for
+  the closest match before assuming a `FormGroup`/save-flow shape.
+- **[`docs/local-testing.md`](../docs/local-testing.md)** — how to actually run and click through
+  what you built: standing up a throwaway backend + seeded test data and driving it with the
+  Playwright MCP tools. Required before calling a migration done — see "Definition of done" below.
 
 Both docs assume the conventions below and in `DEVELOPER.md`; don't reimplement backend logic —
-the API usually already exists in `SEED-platform/seed`.
+the API usually already exists in `SEED-platform/seed`. When a legacy page's own settings/config
+mechanism (e.g. a bespoke `localStorage`-backed column picker) duplicates something this app
+already provides (e.g. the List View Profile selector), prefer reusing the existing mechanism
+over porting the legacy one 1:1 — record that decision in `MIGRATION.md`'s "Won't migrate" list
+with a one-line rationale (see the "Pairing settings" entry for precedent).
 
 ## Key conventions
 
@@ -151,4 +161,15 @@ pnpm lint      # eslint + prettier + stylelint (use pnpm lint:fix to auto-fix)
 pnpm build     # AoT build + template typecheck
 ```
 
-Both must pass for the files you touched.
+Both must pass for the files you touched. For anything interactive or backend-driven (a new page,
+form, grid, drag-and-drop, filter, etc.) that isn't a pure refactor/style change, lint + build are
+necessary but **not sufficient** — neither one runs the code, so neither can catch a missing
+ag-grid module registration, a wrong assumption about an API response's field names/shape, a
+route-param reactivity bug, or a layout that only breaks with real data. Actually load the page in
+a browser against a live backend with real seeded data and click through it with Playwright before
+calling the work done — see **[`docs/local-testing.md`](../docs/local-testing.md)** for how to
+stand up a throwaway backend + seed data in this environment and drive it with the Playwright MCP
+tools, including gotchas already discovered (docker-compose bind-mount conflicts, missing `faker`
+dependency, etc.) so you don't have to rediscover them. Publish a couple of `browser_take_screenshot`
+captures (the overall page, plus the notable new interaction) to the PR description as part of this
+— same doc covers how, since a reviewer shouldn't have to stand up a backend just to see it.
