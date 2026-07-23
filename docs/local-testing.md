@@ -11,9 +11,9 @@ workflow migration that lint/build both missed (module registration, field-name 
 unpinned column, and a route-param staleness bug) — see PR that migrated `datasets/pairing` for a
 worked example.
 
-This doc is the recipe for standing up a throwaway backend + test data in this environment and
-driving it with Playwright, plus the gotchas already discovered so you don't have to rediscover
-them.
+This doc is the recipe for standing up a throwaway backend + test data in this environment,
+driving it with Playwright, and publishing the resulting screenshots to the PR, plus the gotchas
+already discovered so you don't have to rediscover them.
 
 ## 1. Stand up an isolated backend
 
@@ -144,16 +144,50 @@ page — no manual cookie/token wrangling needed. With the Playwright MCP tools:
    and inspect the raw JSON — this is how the Pairing migration found that the API suffixes field
    names with a unique column id (`address_line_1_11`), which a snapshot alone wouldn't reveal.
 
-## 4. Clean up
+## 4. Put screenshots in the PR
 
-None of this — the `.env` override, seed-data scripts, screenshots — belongs in the feature
-branch/PR; it's throwaway verification infrastructure.
+A reviewer shouldn't have to stand up a backend themselves to see what a page looks like. Once the
+feature is working end-to-end, capture a small set of `browser_take_screenshot` PNGs and embed them
+in the PR description (not just described in prose):
+
+- One screenshot of the **overall new page/form** in a normal, populated state.
+- One or two screenshots **highlighting the new/notable interaction** specifically — e.g.
+  mid-drag or right after a state-changing action (a row just paired/unpaired, a validation error
+  showing, a save confirmation) — not just more of the same static view.
+
+GitHub PR bodies can't have local files attached via `gh`/the API the way the web UI's drag-and-drop
+does, so commit the PNGs to the branch under `.github/pr-screenshots/<feature-slug>/` (this is a
+meta/review folder, not part of the shipped app — feel free to prune it after merge) and reference
+them with the **raw.githubusercontent.com** form pinned to the commit SHA (stable even if the
+branch is later deleted), not a branch name:
+
+```bash
+git add .github/pr-screenshots/<feature-slug>
+git commit -m "Add PR screenshots for <feature>"
+git push
+sha=$(git rev-parse HEAD)
+```
+
+```markdown
+![Pairing page](https://raw.githubusercontent.com/<owner>/<repo>/<sha>/.github/pr-screenshots/<feature-slug>/overview.png)
+![Drag-and-drop pairing in action](https://raw.githubusercontent.com/<owner>/<repo>/<sha>/.github/pr-screenshots/<feature-slug>/drag-pair.png)
+```
+
+Update the PR body with `gh pr edit <number> --body-file <file>` (write the full new body to a
+temp file first — `--body-file` replaces the whole description, it doesn't append).
+
+## 5. Clean up
+
+The `.env` override, seed-data scripts, and any exploratory screenshots you didn't select for the
+PR are throwaway verification infrastructure — none of that belongs in the branch. (The
+screenshots you *did* commit under `.github/pr-screenshots/` in step 4 are the one deliberate
+exception.)
 
 ```bash
 rm .env  # restore whatever proxy config you had (or none)
 docker compose -p <project> -f /tmp/docker-compose.<name>.yml down
 docker volume rm <pgdata volume> <media volume>
-rm /tmp/docker-compose.<name>.yml  # and any scratch seed-data scripts
+rm /tmp/docker-compose.<name>.yml  # and any scratch seed-data scripts/unused screenshots
 ```
 
 Verify with `docker ps -a` / `docker volume ls` that nothing you created is still around,

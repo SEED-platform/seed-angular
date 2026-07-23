@@ -170,4 +170,6 @@ a browser against a live backend with real seeded data and click through it with
 calling the work done — see **[`docs/local-testing.md`](../docs/local-testing.md)** for how to
 stand up a throwaway backend + seed data in this environment and drive it with the Playwright MCP
 tools, including gotchas already discovered (docker-compose bind-mount conflicts, missing `faker`
-dependency, etc.) so you don't have to rediscover them.
+dependency, etc.) so you don't have to rediscover them. Publish a couple of `browser_take_screenshot`
+captures (the overall page, plus the notable new interaction) to the PR description as part of this
+— same doc covers how, since a reviewer shouldn't have to stand up a backend just to see it.
