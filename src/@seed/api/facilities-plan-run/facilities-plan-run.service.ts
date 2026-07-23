@@ -1,9 +1,9 @@
 import type { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import { HttpClient, HttpParams } from '@angular/common/http'
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, tap } from 'rxjs'
-import { ErrorService } from '@seed/services'
+import { ErrorService, SKIP_LOADING } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { UserService } from '../user'
 import type {
@@ -38,7 +38,7 @@ export class FacilitiesPlanRunService {
   list(): void {
     const url = `/api/v3/facilities_plan_runs/?organization_id=${this.orgId}`
     this._httpClient
-      .get<FacilitiesPlanRunsResponse>(url)
+      .get<FacilitiesPlanRunsResponse>(url, { context: new HttpContext().set(SKIP_LOADING, true) })
       .pipe(
         map(({ data }) => data),
         tap((runs) => {

@@ -2,8 +2,9 @@ import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
+import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { ColDef, GridApi, GridReadyEvent, RowClassParams } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, RowClassParams } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, filter, finalize, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type {
   Column,
@@ -33,6 +34,7 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
   private _columnService = inject(ColumnService)
   private _configService = inject(ConfigService)
   private _dialog = inject(MatDialog)
+  private _router = inject(Router)
   private _facilitiesPlanService = inject(FacilitiesPlanService)
   private _facilitiesPlanRunService = inject(FacilitiesPlanRunService)
   private _userService = inject(UserService)
@@ -64,14 +66,15 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
 
   readonly gridOptions = {
     rowClassRules: {
-      'bg-green-100 dark:bg-green-900': (params: RowClassParams<FacilitiesPlanRunProperty>) => {
+      'fp-in-plan': (params: RowClassParams<FacilitiesPlanRunProperty>) => {
         const run = this.currentRun
-        if (!run || params.data?.running_percentage == null) return false
+        if (!run?.run_at || params.data?.running_percentage == null) return false
         const plan = this.facilitiesPlans.find((p) => p.id === run.facilities_plan)
         return !!plan && params.data.running_percentage <= plan.energy_running_sum_percentage
       },
     },
     rowSelection: { mode: 'multiRow' as const, checkboxes: true, headerCheckbox: true },
+    selectionColumnDef: { pinned: 'left' as const, width: 44, maxWidth: 44 },
     onSelectionChanged: () => {
       const rows = this.gridApi?.getSelectedRows() ?? []
       this.selectedViewIds = rows.map((r) => (r as FacilitiesPlanRunProperty).property_view_id)
@@ -123,9 +126,18 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
 
   onGridReady(event: GridReadyEvent): void {
     this.gridApi = event.api
+    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
     if (this.rowData.length > 0) {
       this.gridApi.setGridOption('rowData', this.rowData)
     }
+  }
+
+  onCellClicked(event: CellClickedEvent): void {
+    if (event.colDef.field !== 'property_view_id') return
+    const target = event.event?.target as HTMLElement
+    if (target?.getAttribute('data-action') !== 'detail') return
+    const viewId = (event.data as FacilitiesPlanRunProperty).property_view_id
+    void this._router.navigate(['/properties', viewId])
   }
 
   onRunChange(runId: number): void {
@@ -236,12 +248,15 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
         headerName: '',
         field: 'property_view_id',
         width: 50,
-        pinned: 'left' as const,
+        maxWidth: 50,
         sortable: false,
         filter: false,
         floatingFilter: false,
-        cellRenderer: (params: { value: number }) =>
-          params.value ? `<a href="/properties/${params.value}" title="Go to Detail Page"><i class="fa-solid fa-circle-info"></i></a>` : '',
+        suppressMovable: true,
+        cellRenderer: ({ value }: { value: number }) =>
+          value
+            ? '<div class="flex mt-2 align-center"><span class="material-icons-outlined cursor-pointer" title="Go to property detail" data-action="detail">info</span></div>'
+            : '',
       },
       {
         headerName: run.property_display_field?.display_name || run.property_display_field?.column_name || 'Property',
@@ -252,6 +267,16 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
         .map(([, col]) => ({
           headerName: col.display_name || col.column_name,
           field: `${col.column_name}_${col.id}`,
+          ...(col.data_type === 'boolean'
+            ? {
+                cellDataType: 'text' as const,
+                valueFormatter: (params: { value: unknown }) => {
+                  if (params.value === true) return 'true'
+                  if (params.value === false) return 'false'
+                  return ''
+                },
+              }
+            : {}),
         })),
       { headerName: 'Total Energy Usage', field: 'total_energy_usage', sortable: false, filter: false, floatingFilter: false },
       { headerName: '% of Total Energy', field: 'percentage_of_total_energy_usage', sortable: false, filter: false, floatingFilter: false },
@@ -274,15 +299,9 @@ export class FacilitiesPlanComponent implements OnInit, OnDestroy {
   private _refreshGrid(): void {
     if (!this.currentRun) return
     const runId = this.currentRun.id
-    this.isLoading = true
     this._facilitiesPlanRunService
       .getProperties(runId, 1, 1000, this.activeFilters, this.activeSorts)
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isLoading = false
-        }),
-      )
+      .pipe(take(1))
       .subscribe({
         next: (res) => {
           this.rowData = res.properties
