@@ -4,7 +4,7 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, RowDragEndEvent } from 'ag-grid-community'
-import { combineLatest, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { combineLatest, filter, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { CurrentUser, Cycle, ImportFile } from '@seed/api'
 import { CycleService, DatasetService, InventoryService, PairingService, UserService } from '@seed/api'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
@@ -59,9 +59,23 @@ export class PairingComponent implements OnDestroy, OnInit {
         switchMap(() => this.getImportFile()),
         switchMap(() => this.getDependencies()),
         switchMap(() => this.loadInventory()),
+        switchMap(() => this.watchTypeChanges()),
         takeUntil(this._unsubscribeAll$),
       )
       .subscribe()
+  }
+
+  // The route reuses this component across the sibling properties/taxlots routes, so the
+  // `type` route param must be watched reactively rather than read once at construction time.
+  watchTypeChanges() {
+    return this._route.paramMap.pipe(
+      map((params) => params.get('type') as InventoryType),
+      filter((type) => type !== this.type),
+      tap((type) => {
+        this.type = type
+      }),
+      switchMap(() => this.loadInventory()),
+    )
   }
 
   get otherType(): InventoryType {
@@ -157,6 +171,7 @@ export class PairingComponent implements OnDestroy, OnInit {
       minWidth: 260,
       sortable: false,
       filter: false,
+      pinned: 'right',
       cellRenderer: this.pairedCellRenderer,
     }
     return [...columnDefs, pairedColumn]
@@ -186,9 +201,13 @@ export class PairingComponent implements OnDestroy, OnInit {
   }
 
   pairedLabel(state: State): string {
+    // Field names in the API response are suffixed with a unique column id (e.g.
+    // "address_line_1_11") to disambiguate property vs. tax lot columns of the same name.
     const candidates = ['address_line_1', 'pm_property_id', 'custom_id_1', 'jurisdiction_tax_lot_id']
-    for (const key of candidates) {
-      const value = state[key]
+    const stateKeys = Object.keys(state)
+    for (const candidate of candidates) {
+      const key = stateKeys.find((k) => k === candidate || k.startsWith(`${candidate}_`))
+      const value = key ? state[key] : undefined
       if (typeof value === 'string' || typeof value === 'number') return String(value)
     }
     const viewId = this.type === 'taxlots' ? state.taxlot_view_id : state.property_view_id
@@ -207,11 +226,13 @@ export class PairingComponent implements OnDestroy, OnInit {
 
   onLeftGridReady(event: GridReadyEvent) {
     this.leftGridApi = event.api
+    this.leftGridApi.sizeColumnsToFit()
     this.wireDragDropIfReady()
   }
 
   onRightGridReady(event: GridReadyEvent) {
     this.rightGridApi = event.api
+    this.rightGridApi.sizeColumnsToFit()
     this.wireDragDropIfReady()
   }
 
