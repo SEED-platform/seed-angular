@@ -7,7 +7,7 @@
 
   <mat-dialog-content>
     <p>
-      {{ t('Are you sure you want to delete?') }} <strong>{{ data.run.name }}</strong>
+      {{ t('Are you sure you want to delete?') }} <strong>{{ data.run.name || '#' + data.run.id }}</strong>
     </p>
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('This action cannot be undone.') }}</p>
   </mat-dialog-content>
