@@ -85,10 +85,17 @@ canonical examples they reference.
 - **[`docs/porting-forms.md`](../docs/porting-forms.md)** — the form-specific recipe once you're
   inside a page: canonical full-page/modal form components to copy, the reusable service
   integration points (`CycleService`, `ColumnService`, `SnackBarService`, `ErrorService`, ...),
-  the validation/confirm/save flow, and the Transloco + Lokalise workflow.
+  the validation/confirm/save flow, and the Transloco + Lokalise workflow. Not every legacy page
+  is a reactive-form CRUD screen, though — it also covers non-form interactive workspaces (e.g.
+  the dual-grid drag-and-drop `datasets/pairing` page), so check its canonical examples table for
+  the closest match before assuming a `FormGroup`/save-flow shape.
 
 Both docs assume the conventions below and in `DEVELOPER.md`; don't reimplement backend logic —
-the API usually already exists in `SEED-platform/seed`.
+the API usually already exists in `SEED-platform/seed`. When a legacy page's own settings/config
+mechanism (e.g. a bespoke `localStorage`-backed column picker) duplicates something this app
+already provides (e.g. the List View Profile selector), prefer reusing the existing mechanism
+over porting the legacy one 1:1 — record that decision in `MIGRATION.md`'s "Won't migrate" list
+with a one-line rationale (see the "Pairing settings" entry for precedent).
 
 ## Key conventions
 
