@@ -229,6 +229,13 @@ export class NavigationService {
           icon: 'fa-solid:square-poll-horizontal',
           type: 'basic',
         },
+        {
+          id: 'insights/facilities-plan',
+          link: '/insights/facilities-plan',
+          title: 'Facilities Plan',
+          icon: 'fa-solid:building-circle-check',
+          type: 'basic',
+        },
       ],
     },
     {

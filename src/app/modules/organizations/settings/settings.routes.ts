@@ -4,6 +4,7 @@ import { AuditTemplateComponent } from './audit-template/audit-template.componen
 import { DisplayFieldsComponent } from './display-fields/display-fields.component'
 import { DisplayUnitsComponent } from './display-units/display-units.component'
 import { EmailComponent } from './email/email.component'
+import { FacilitiesPlanSettingsComponent } from './facilities-plan/facilities-plan.component'
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
 import { SalesforceBuildingIntegrationComponent } from './salesforce-building-integration/salesforce-building-integration.component'
@@ -46,6 +47,11 @@ export default [
     path: 'email',
     title: 'Email',
     component: EmailComponent,
+  },
+  {
+    path: 'facilities-plan',
+    title: 'Facilities Plan',
+    component: FacilitiesPlanSettingsComponent,
   },
   {
     path: 'maintenance',

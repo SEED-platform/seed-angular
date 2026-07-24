@@ -79,6 +79,12 @@ export class SettingsComponent implements AfterViewInit {
           type: 'basic',
         },
         {
+          id: 'organizations/settings/facilities-plan',
+          link: '/organizations/settings/facilities-plan',
+          title: 'Facilities Plan',
+          type: 'basic',
+        },
+        {
           id: 'organizations/settings/ubid',
           link: '/organizations/settings/ubid',
           title: 'UBID',

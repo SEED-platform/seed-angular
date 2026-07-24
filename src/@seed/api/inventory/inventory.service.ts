@@ -423,4 +423,13 @@ export class InventoryService {
       }),
     )
   }
+
+  batchUpdatePropertyStates(orgId: number, propertyViewIds: number[], valuesByColumnId: Record<number, unknown>): Observable<unknown> {
+    const url = `/api/v3/properties/batch_update/?organization_id=${orgId}`
+    return this._httpClient.put(url, { property_view_ids: propertyViewIds, values_by_column_id: valuesByColumnId }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating properties')
+      }),
+    )
+  }
 }
