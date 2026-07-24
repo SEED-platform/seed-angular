@@ -1,3 +1,200 @@
-<seed-page [config]="{ title: 'Portfolio Summary', titleIcon: 'fa-solid:square-poll-horizontal' }">
-  <div>Portfolio Summary Content</div>
+<seed-page
+  class="flex flex-auto flex-col"
+  *transloco="let t"
+  [config]="{
+    title: 'Portfolio Summary',
+    titleIcon: 'fa-solid:square-poll-horizontal',
+  }"
+>
+  <div class="content mx-5 my-2">
+    <!-- Configure Goals -->
+    <div class="mb-8 flex h-12 items-center">
+      <button class="mx-6 w-40" (click)="openConfigureGoals()" mat-flat-button color="primary">
+        <span class="ml-2">{{ t('Configure Goals') }}</span>
+      </button>
+    </div>
+
+    <!-- Goal Selector -->
+    <div>
+      <mat-label class="text-secondary mr-4 text-sm">{{ t('Goal') }}:</mat-label>
+      <mat-select
+        class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
+        [value]="currentGoal?.id"
+        (selectionChange)="selectGoal($event)"
+        placeholder="(select a goal)"
+      >
+        @for (goal of goals; track goal.id) {
+          <mat-option [value]="goal.id">{{ goal.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    @if (organization && organization.bb_salesforce_enabled) {
+      <p>{{ t('Salesforce portfolio functionality is enabled for this organization. Configure connection details by clicking on') }}</p>
+      <a class="background-blue underline" (click)="toSettings()">{{ t('Salesforce settings') }}</a>
+      <div class="flex items-center">
+        <span class="mr-2">{{ t('Salesforce Connection Status') }}:</span>
+        @if (isLoggedIntoBbSalesforce) {
+          <mat-icon class="text-green-500">check_circle</mat-icon>
+          <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">
+            {{ t('Logout') }}
+          </button>
+        } @else {
+          <mat-icon class="text-red-500">cancel</mat-icon>
+          <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">
+            {{ t('Login') }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (currentGoal) {
+      <div class="flex flex-row">
+        <!-- Goal Summary  -->
+        <div class="m-4 w-1/2 rounded-xl border bg-white p-4 dark:bg-gray-800">
+          <div class="text-secondary text-xl font-medium">{{ t('Type') }}: {{ currentGoal.type }}</div>
+          <div class="text-secondary text-xl font-medium">{{ t('Baseline Cycle') }}: {{ currentGoal.baseline_cycle_name }}</div>
+          <div class="text-secondary text-xl font-medium">{{ currentGoal.level_name }}: {{ currentGoal.access_level_instance_name }}</div>
+          <div class="text-secondary text-xl font-medium">{{ t('Portfolio Target') }}: {{ currentGoal.target_percentage }}</div>
+          <div class="text-secondary text-xl font-medium">{{ t('Commitment Sq. Ft') }}: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
+          <div class="text-secondary text-xl font-medium">{{ t('Area Column') }}: {{ currentGoal.area_column_name }}</div>
+          <div class="text-secondary text-xl font-medium">{{ t('Primary EUI') }}: {{ currentGoal.eui_column1_name }}</div>
+        </div>
+
+        <!-- CycleGoal Side Summary -->
+        @if (currentGoal && portfolioSummary) {
+          <table class="m-4 rounded-xl border bg-white p-4 dark:bg-gray-800">
+            <tr>
+              <th class="px-3 py-1"></th>
+              <th class="px-3 py-1"></th>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Commitment (Sq. Ft)') }}</td>
+              <td class="px-3 py-1">{{ currentGoal.commitment_sqft }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Shared (Sq. Ft)') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.shared_sqft }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Passing Checks (Sq. Ft)') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.current_total_sqft }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Passing Checks (% of committed)') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.passing_committed }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Passing Checks (% of shared)') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.passing_shared }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Total Passing Checks') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.total_passing }}</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-1">{{ t('Total New or Acquired') }}</td>
+              <td class="px-3 py-1">{{ portfolioSummary.total_new_or_acquired }}</td>
+            </tr>
+          </table>
+        }
+      </div>
+
+      <!-- CycleGoal Selector and Add Cycle Button -->
+      <mat-button-toggle-group (change)="selectCycleGoal($event)" name="fontStyle" aria-label="Font Style" color="primary">
+        @for (cycle_goal of currentGoal.cycle_goals; track cycle_goal.id) {
+          <mat-button-toggle [value]="cycle_goal.id">{{ cycle_goal.current_cycle.name }}</mat-button-toggle>
+        }
+      </mat-button-toggle-group>
+      <button class="mx-6 w-40" (click)="openAddCycle()" mat-flat-button color="primary">
+        <mat-icon class="fill-gray-700 icon-size-4 dark:fill-gray-200" svgIcon="fa-solid:plus"></mat-icon>
+        <span class="ml-2">{{ t('Add Cycle') }}</span>
+      </button>
+
+      <!-- Data Quality Checks Accordion -->
+      @if (currentCycleGoal) {
+        <mat-accordion class="mt-8 max-w-4xl">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title> {{ t('Portfolio Summary') }} </mat-panel-title>
+            </mat-expansion-panel-header>
+            <span class="mb-4 flex items-baseline text-lg font-medium"
+              >{{ t('Unexpected Portfolio Summary Calculations?') }}
+              <button class="mx-6 w-80" (click)="runDataQualityChecks()" mat-flat-button color="primary">
+                <span class="ml-2">{{ t('Run Data Quality Checks') }}</span>
+              </button>
+            </span>
+            <span>{{
+              t(
+                'Portfolio Summary calculations only include properties that have \"Passed Checks\" and are not "New Build or Acquired" (see far right columns below).'
+              )
+            }}</span>
+            <span>{{ t('Run Data Quality Check, available in the Actions dropdown, to auto-populate the "Passed Checks" column.') }}</span>
+            <div class="pt-2">
+              <span>{{ t('Data Quality Checks can be configured in ') }}</span>
+              <a class="ml-1 text-primary-500 hover:underline focus:underline" [routerLink]="['/organizations/data-quality/properties']">{{
+                t('Data Quality Settings.')
+              }}</a>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <!-- CycleGoal Summary -->
+        <div class="h-1/4-page m-5 flex flex-col">
+          <ag-grid-angular
+            class="filter-border"
+            [theme]="gridTheme$ | async"
+            [rowData]="cycleGoalSummaryData"
+            [columnDefs]="cycleGoalSummaryColumnDefs"
+            [style.height.px]="100"
+          />
+        </div>
+      }
+
+      <!-- Partner Feedback -->
+      <div>
+        <form class="flex flex-col gap-4" [formGroup]="partnerNoteForm">
+          <mat-form-field>
+            <mat-label>{{ t('Note') }}</mat-label>
+            <textarea matInput formControlName="text" placeholder="Note content..." rows="4"></textarea>
+          </mat-form-field>
+        </form>
+        @if (partnerNoteForm.disabled) {
+          <button class="mx-6 w-80" (click)="setEditingPartnerNote(true)" mat-flat-button color="primary">
+            <span class="ml-2">{{ t('Edit') }}</span>
+          </button>
+        } @else {
+          <button class="mx-6 w-80" (click)="savePartnerNote()" mat-flat-button color="primary">
+            <span class="ml-2">{{ t('Save') }}</span>
+          </button>
+        }
+      </div>
+      <div class="w-full">
+        <mat-checkbox [checked]="currentGoal.partner_note_approval" (change)="changePartnerNoteApproval($event.checked)" color="primary">
+          <span class="text-lg">{{ t('Partner Approval') }}</span>
+        </mat-checkbox>
+        @if (currentGoal.partner_note_approval) {
+          <div class="text-secondary text-sm">
+            {{ partnerNoteApprovalLabel }}
+          </div>
+        }
+      </div>
+
+      <!-- Chart -->
+      <div class="w-1/2">
+        <canvas id="canvas" #canvas></canvas>
+      </div>
+      <div class="h-1/2-page m-5 flex flex-col">
+        <ag-grid-angular
+          class="filter-border"
+          [theme]="gridTheme$ | async"
+          [rowData]="goalSummaryData"
+          [columnDefs]="goalSummaryColumnDefs"
+          [domLayout]="'autoHeight'"
+        />
+      </div>
+    } @else {
+      <seed-not-found icon="fa-solid:square-poll-horizontal" message="No Goal Selected"></seed-not-found>
+    }
+  </div>
 </seed-page>

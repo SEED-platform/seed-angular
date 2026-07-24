@@ -1,14 +1,308 @@
-import type { OnInit } from '@angular/core'
-import { Component } from '@angular/core'
-import { PageComponent } from '@seed/components'
+import { CommonModule } from '@angular/common'
+import type { ElementRef, OnInit } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MatButtonModule } from '@angular/material/button'
+import type { MatButtonToggleChange } from '@angular/material/button-toggle'
+import { MatButtonToggleModule } from '@angular/material/button-toggle'
+import { MatCheckboxModule } from '@angular/material/checkbox'
+import { MatDialog } from '@angular/material/dialog'
+import { MatExpansionModule } from '@angular/material/expansion'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
+import { MatInputModule } from '@angular/material/input'
+import type { MatSelectChange } from '@angular/material/select'
+import { MatSelectModule } from '@angular/material/select'
+import { Router, RouterLink } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
+import type { ColDef } from 'ag-grid-community'
+import { Chart } from 'chart.js/auto'
+import annotationPlugin from 'chartjs-plugin-annotation'
+import { Subject, switchMap, takeUntil } from 'rxjs'
+import type { CurrentUser, CycleGoal, Goal, Organization, PortfolioSummary, WeightedEUI } from '@seed/api'
+import { GoalService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
+import { NotFoundComponent, PageComponent } from '@seed/components'
+import { SharedImports } from '@seed/directives'
+import { ConfigService } from '@seed/services'
+import { AddCycleDialogComponent } from './add-cycle-dialog'
+import { ConfigureGoalsDialogComponent } from './configure-goals-dialog'
+import type { AddCycleData, ConfigureGoalsData } from './portfolio-summary.types'
 
+Chart.register(annotationPlugin)
 @Component({
   selector: 'seed-portfolio-summary',
   templateUrl: './portfolio-summary.component.html',
-  imports: [PageComponent],
+  imports: [
+    CommonModule,
+    NotFoundComponent,
+    PageComponent,
+    MatIconModule,
+    MatButtonModule,
+    SharedImports,
+    MatSelectModule,
+    MatButtonToggleModule,
+    AgGridAngular,
+    AgGridModule,
+    MatExpansionModule,
+    RouterLink,
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatCheckboxModule,
+  ],
 })
 export class PortfolioSummaryComponent implements OnInit {
+  private _matDialog = inject(MatDialog)
+  private _configService = inject(ConfigService)
+  private _goalService = inject(GoalService)
+  private _organizationService = inject(OrganizationService)
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  @ViewChild('canvas') canvas!: ElementRef<HTMLCanvasElement>
+  private _userService = inject(UserService)
+  private _router = inject(Router)
+  private _salesforcePortfolioService = inject(SalesforcePortfolioService)
+  private _transloco = inject(TranslocoService)
+  isLoggedIntoBbSalesforce: boolean
+
+  goals: Goal[]
+  currentGoal: Goal
+  currentCycleGoal: CycleGoal
+  portfolioSummary: PortfolioSummary
+  organization: Organization
+  chart: Chart<'bar', string[], string>
+  currentUser: CurrentUser
+  partnerNoteForm = new FormGroup({
+    text: new FormControl<string | null>({ value: '', disabled: true }),
+  })
+
+  gridTheme$ = this._configService.gridTheme$
+  defaultColDef = { suppressMovable: true }
+  cycleGoalSummaryData: PortfolioSummary[] = []
+  cycleGoalSummaryColumnDefs: ColDef[] = [
+    { headerName: 'Cycle', field: 'baseline_cycle_name' },
+    { headerName: 'Total Area. (ft**2)', field: 'baseline_total_sqft' },
+    { headerName: 'Total kBTU', field: 'baseline_total_kbtu' },
+    { headerName: 'EUI (kBtu/ft**2/year)', field: 'baseline_weighted_eui' },
+    { headerName: 'Cycle', field: 'current_cycle_name' },
+    { headerName: 'Total Area. (ft**2)', field: 'current_total_sqft' },
+    { headerName: 'Total kBTU', field: 'current_total_kbtu' },
+    { headerName: 'EUI (kBtu/ft**2/year)', field: 'current_weighted_eui' },
+    { headerName: 'Area % Change', field: 'sqft_change' },
+    { headerName: 'EUI % Improvement', field: 'eui_change' },
+  ]
+  goalSummaryData: WeightedEUI[] = []
+  goalSummaryColumnDefs: ColDef[] = [
+    { field: 'Cycle Name' },
+    { field: 'Baseline?' },
+    { field: 'EUI' },
+    { field: 'Goal' },
+    { field: 'Annual % Imp' },
+    { field: 'Cumulative % Imp' },
+  ]
+
   ngOnInit(): void {
-    console.log('Portfolio Summary')
+    this._organizationService.currentOrganization$
+      .pipe(
+        takeUntil(this._unsubscribeAll$),
+        switchMap((organization) => {
+          this.organization = organization
+          return this._salesforcePortfolioService.verifyToken(this.organization.id)
+        }),
+      )
+      .subscribe((r) => {
+        this.isLoggedIntoBbSalesforce = r.valid
+      })
+
+    this._goalService.goals$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((goals) => {
+      this.goals = goals
+    })
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
+      this.currentUser = currentUser
+    })
+  }
+
+  // Dialog openers
+  openAddCycle(): void {
+    const dialogRef = this._matDialog.open(AddCycleDialogComponent, {
+      autoFocus: false,
+      disableClose: true,
+      data: { currentGoal: this.currentGoal, isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce } satisfies AddCycleData,
+    })
+
+    dialogRef.afterClosed().subscribe((newCycleGoal?: CycleGoal) => {
+      if (newCycleGoal) {
+        this._goalService
+          .getCycleGoals(this.currentGoal.id, this.organization.id)
+          .pipe(takeUntil(this._unsubscribeAll$))
+          .subscribe((cycleGoals) => {
+            this.currentGoal.cycle_goals = cycleGoals
+          })
+      }
+    })
+  }
+
+  openConfigureGoals(): void {
+    this._matDialog.open(ConfigureGoalsDialogComponent, {
+      autoFocus: false,
+      disableClose: true,
+      width: '50rem',
+      height: '50rem',
+      data: {
+        goals: this.goals,
+        isLoggedIntoBbSalesforce: this.isLoggedIntoBbSalesforce,
+        bb_salesforce_enabled: this.organization.bb_salesforce_enabled,
+      } satisfies ConfigureGoalsData,
+    })
+  }
+
+  // button pushes
+  runDataQualityChecks(): void {
+    // TODO: wire up to DataQualityService once the backend endpoint for this workflow is finalized.
+  }
+
+  setEditingPartnerNote(isEditing: boolean): void {
+    if (isEditing) {
+      this.partnerNoteForm.enable()
+    } else {
+      this.partnerNoteForm.disable()
+    }
+  }
+
+  savePartnerNote(): void {
+    this.currentGoal.partner_note = this.partnerNoteForm.value.text
+    this._goalService
+      .editGoal(
+        this.currentGoal.id,
+        {
+          partner_note: this.currentGoal.partner_note,
+        },
+        this.organization.id,
+      )
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(() => {
+        this.setEditingPartnerNote(false)
+      })
+  }
+
+  changePartnerNoteApproval(isApproved: boolean): void {
+    this.currentGoal.partner_note_approval = isApproved
+    this.currentGoal.partner_note_approval_time = isApproved ? new Date().toJSON() : null
+    this.currentGoal.partner_note_approval_user = isApproved ? this.currentUser.id : null
+    this._goalService
+      .editGoal(
+        this.currentGoal.id,
+        {
+          partner_note_approval: this.currentGoal.partner_note_approval,
+          partner_note_approval_time: this.currentGoal.partner_note_approval_time,
+          partner_note_approval_user: this.currentGoal.partner_note_approval_user,
+        },
+        this.organization.id,
+      )
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((editedGoal) => {
+        this.currentGoal = editedGoal
+      })
+  }
+
+  async toSettings() {
+    await this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+  }
+
+  loginToSalesforce(): void {
+    this._salesforcePortfolioService
+      .getLoginUrl(this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((response) => {
+        window.location.href = response.url
+      })
+  }
+
+  // Selectors
+  selectGoal(event: MatSelectChange) {
+    const goalId: number = event.value as number
+    this.currentGoal = this.goals.find((g) => g.id === goalId)
+    this.partnerNoteForm.setValue({ text: this.currentGoal.partner_note })
+
+    this._goalService
+      .getWeightedEUIs(this.currentGoal.id, this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(({ results }) => {
+        this.createChart(results)
+        this.goalSummaryData = results
+      })
+
+    this._goalService
+      .getCycleGoals(this.currentGoal.id, this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((cycleGoals) => {
+        this.currentGoal.cycle_goals = cycleGoals
+      })
+  }
+
+  selectCycleGoal(event: MatButtonToggleChange) {
+    const cycleGoalId: number = event.value as number
+    this.currentCycleGoal = this.currentGoal.cycle_goals.find((cycleGoal) => cycleGoal.id === cycleGoalId)
+
+    this._goalService
+      .getPortfolioSummary(this.currentGoal.id, this.currentCycleGoal.id, this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((portfolioSummary) => {
+        this.cycleGoalSummaryData = [portfolioSummary]
+        this.portfolioSummary = portfolioSummary
+      })
+  }
+
+  get partnerNoteApprovalLabel(): string {
+    return this._transloco.translate('Approved at {{time}} by {{user}}', {
+      time: this.currentGoal.partner_note_approval_time,
+      user: this.currentGoal.partner_note_approval_user,
+    })
+  }
+
+  // chart
+  createChart(weightedEUIs: WeightedEUI[]) {
+    this.chart?.destroy()
+    const ctx = this.canvas.nativeElement.getContext('2d')
+    const goalValue = weightedEUIs[0]?.Goal
+    this.chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [
+          {
+            data: weightedEUIs.map((we) => we.EUI),
+            backgroundColor: ['#1E428A', ...new Array<string>(weightedEUIs.length).fill('#06732cff')],
+          },
+        ],
+        labels: weightedEUIs.map((we) => we['Cycle Name']),
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: this._transloco.translate('Energy Use Intensity by Reporting Period'),
+          },
+          annotation: {
+            annotations:
+              goalValue == null
+                ? {}
+                : {
+                    line1: {
+                      type: 'line',
+                      yMin: goalValue,
+                      yMax: goalValue,
+                      borderWidth: 2,
+                      borderDash: [4],
+                    },
+                  },
+          },
+        },
+      },
+    })
   }
 }

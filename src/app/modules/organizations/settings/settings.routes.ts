@@ -7,7 +7,8 @@ import { EmailComponent } from './email/email.component'
 import { FacilitiesPlanSettingsComponent } from './facilities-plan/facilities-plan.component'
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
-import { SalesforceComponent } from './salesforce/salesforce.component'
+import { SalesforceBuildingIntegrationComponent } from './salesforce-building-integration/salesforce-building-integration.component'
+import { SalesforcePortfolioIntegrationComponent } from './salesforce-portfolio-integration/salesforce-portfolio-integration.component'
 import { TwoFactorComponent } from './two-factor/two-factor.component'
 import { UBIDComponent } from './ubid/ubid.component'
 
@@ -58,9 +59,14 @@ export default [
     component: MaintenanceComponent,
   },
   {
-    path: 'salesforce',
-    title: 'Salesforce Integration',
-    component: SalesforceComponent,
+    path: 'salesforce-building-integration',
+    title: 'Salesforce Building Integration',
+    component: SalesforceBuildingIntegrationComponent,
+  },
+  {
+    path: 'salesforce-portfolio-integration',
+    title: 'Salesforce Portfolio Integration',
+    component: SalesforcePortfolioIntegrationComponent,
   },
   {
     path: 'two-factor',

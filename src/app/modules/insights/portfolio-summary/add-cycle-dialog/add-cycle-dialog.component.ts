@@ -1,0 +1,85 @@
+import { CommonModule } from '@angular/common'
+import type { OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { MatButtonModule } from '@angular/material/button'
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
+import { MatInputModule } from '@angular/material/input'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import type { MatSelectChange } from '@angular/material/select'
+import { MatSelectModule } from '@angular/material/select'
+import { Subject, takeUntil } from 'rxjs'
+import type { AnnualReport, Cycle } from '@seed/api'
+import { CycleService, GoalService, SalesforcePortfolioService } from '@seed/api'
+import { SharedImports } from '@seed/directives'
+import type { AddCycleData } from '../portfolio-summary.types'
+
+@Component({
+  selector: 'seed-add-cycle-dialog',
+  templateUrl: './add-cycle-dialog.component.html',
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule,
+    SharedImports,
+    MatSelectModule,
+  ],
+})
+export class AddCycleDialogComponent implements OnInit, OnDestroy {
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  private _cycleService = inject(CycleService)
+  private _goalService = inject(GoalService)
+  private _salesforcePortfolioService = inject(SalesforcePortfolioService)
+  cycles: Cycle[] = []
+  selectedCycle?: Cycle = null
+  selectedAnnualReport?: AnnualReport = null
+  data = inject(MAT_DIALOG_DATA) as AddCycleData
+  isLoggedIntoBbSalesforce: boolean
+  annualReports: AnnualReport[] = []
+  private _dialogRef = inject(MatDialogRef<AddCycleDialogComponent>)
+
+  ngOnInit(): void {
+    this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((cycles) => {
+      this.cycles = cycles
+    })
+
+    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce
+    if (this.isLoggedIntoBbSalesforce) {
+      this._salesforcePortfolioService.getAnnualReports(this.data.currentGoal.id).subscribe((annualReports) => {
+        this.annualReports = annualReports.results
+      })
+    }
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+
+  selectCycle(event: MatSelectChange): void {
+    const selectedCycleId: number = event.value as number
+    this.selectedCycle = this.cycles.find((c) => c.id === selectedCycleId)
+  }
+
+  selectAnnualReport(event: MatSelectChange): void {
+    const selectedAnnualReportId: string = event.value as string
+    this.selectedAnnualReport = this.annualReports.find((r) => r.id === selectedAnnualReportId)
+  }
+
+  submit(): void {
+    this._goalService
+      .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport?.id, this.selectedAnnualReport?.name)
+      .subscribe((newCycleGoal) => {
+        this._dialogRef.close(newCycleGoal)
+      })
+  }
+}
