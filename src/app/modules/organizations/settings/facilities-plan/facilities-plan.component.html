@@ -73,8 +73,8 @@
 
                 <mat-form-field>
                   <mat-label>{{ t('Energy Running Sum Percentage') }}</mat-label>
-                  <input matInput formControlName="energy_running_sum_percentage" type="number" min="0" max="100" step="1" />
-                  <mat-hint>{{ t('Percent (0–100) of total energy usage that triggers plan compliance') }}</mat-hint>
+                  <input matInput formControlName="energy_running_sum_percentage" type="number" min="0" max="1" step="0.01" />
+                  <mat-hint>{{ t('Fraction (0–1) of total energy usage that triggers plan compliance') }}</mat-hint>
                 </mat-form-field>
               </div>
             </div>
