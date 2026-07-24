@@ -9,10 +9,12 @@ import type {
   CrossCyclesResponse,
   DeleteParams,
   FilterResponse,
+  FormCreateResponse,
   GenericView,
   GenericViewsResponse,
   InventoryDisplayType,
   InventoryExportData,
+  InventoryFormCreateData,
   InventoryType,
   InventoryTypeGoal,
   NewProfileData,
@@ -283,6 +285,23 @@ export class InventoryService {
         // errors tend to be non human readable
         this._snackBar.alert('Error updating taxlot. Check data types and try again')
         return throwError(() => error)
+      }),
+    )
+  }
+
+  createInventory(
+    data: InventoryFormCreateData,
+    inventoryType: InventoryType,
+    viewId: number | null = null,
+  ): Observable<FormCreateResponse> {
+    const url = `/api/v3/${inventoryType}/form_create/`
+    const params: Record<string, number> = { organization_id: this.orgId }
+    if (viewId !== null) {
+      params.related_view_id = viewId
+    }
+    return this._httpClient.post<FormCreateResponse>(url, data, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error creating ${inventoryType === 'taxlots' ? 'tax lot' : 'property'}`)
       }),
     )
   }

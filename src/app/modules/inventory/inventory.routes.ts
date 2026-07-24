@@ -22,6 +22,7 @@ import { GroupPropertiesComponent } from '../inventory-list/groups/detail/proper
 import { ServiceDetailComponent } from '../inventory-list/groups/detail/systems/service-detail/service-detail.component'
 import { GroupSystemsComponent } from '../inventory-list/groups/detail/systems/systems.component'
 import { SummaryComponent } from '../inventory-list/summary/summary.component'
+import { InventoryCreateComponent } from './create/inventory-create.component'
 import type { InventoryType } from './inventory.types'
 
 type NewType = {
@@ -41,6 +42,14 @@ const integerId: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 
 export default [
   // Place new routes like /settings before :id
+  {
+    path: 'create',
+    title: (route) => {
+      const type = (route.params as InventoryParam).type
+      return type === 'properties' ? 'Create Property' : 'Create Tax Lot'
+    },
+    component: InventoryCreateComponent,
+  },
   {
     path: 'groups',
     title: 'Groups',
