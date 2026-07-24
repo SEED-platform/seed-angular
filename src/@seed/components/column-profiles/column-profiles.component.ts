@@ -163,7 +163,17 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
     // add icon to extra data and derived columns
     const iconName = derived_column ? 'link' : is_extra_data ? 'emergency' : null
     const textSize = derived_column ? 'text-sm' : 'text-xs'
-    return `${value} <span class="material-icons align-middle ml-1 mb-2 text-secondary ${textSize}">${iconName}</span>`
+
+    const container = document.createElement('div')
+    container.append(document.createTextNode(value))
+    container.append(document.createTextNode(' '))
+
+    const icon = document.createElement('span')
+    icon.className = `material-icons align-middle ml-1 mb-2 text-secondary ${textSize}`
+    icon.textContent = iconName
+    container.append(icon)
+
+    return container
   }
 
   // pinRenderer = () => {
