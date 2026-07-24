@@ -245,6 +245,14 @@
   height: calc(100vh - 265px)
 }
 
+.fp-in-plan {
+  background-color: rgb(220 252 231) !important; // green-100
+}
+
+.dark .fp-in-plan {
+  background-color: rgb(20 83 45 / 40%) !important; // green-900/40
+}
+
 .filter-border {
   .ag-floating-filter-input {
     outline: 1px solid #cecece;

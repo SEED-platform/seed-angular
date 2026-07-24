@@ -5,6 +5,7 @@ import { DatasetService, UserService } from '@seed/api'
 import { DataMappingComponent } from './data-mappings'
 import { DatasetComponent } from './dataset/dataset.component'
 import { DatasetsComponent } from './datasets.component'
+import { PairingComponent } from './pairing'
 
 export default [
   {
@@ -42,5 +43,10 @@ export default [
     path: 'mappings/:id',
     title: 'Data Mappings',
     component: DataMappingComponent,
+  },
+  {
+    path: 'pairing/:id/:type',
+    title: 'Pairing',
+    component: PairingComponent,
   },
 ] satisfies Routes
