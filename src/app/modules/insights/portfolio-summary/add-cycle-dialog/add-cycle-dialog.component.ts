@@ -11,10 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import type { MatSelectChange } from '@angular/material/select'
 import { MatSelectModule } from '@angular/material/select'
 import { Subject, takeUntil } from 'rxjs'
-import { type Cycle, CycleService } from '@seed/api/cycle'
-import { GoalService } from '@seed/api/goal'
-import type { AnnualReport } from '@seed/api/salesforce-portfolio'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
+import type { AnnualReport, Cycle } from '@seed/api'
+import { CycleService, GoalService, SalesforcePortfolioService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import type { AddCycleData } from '../portfolio-summary.types'
 
@@ -68,28 +66,19 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
   }
 
   selectCycle(event: MatSelectChange): void {
-    console.log(event)
-    console.log(event.value)
     const selectedCycleId: number = event.value as number
     this.selectedCycle = this.cycles.find((c) => c.id === selectedCycleId)
-    console.log(this.selectedCycle)
   }
 
   selectAnnualReport(event: MatSelectChange): void {
-    console.log(event)
-    console.log(event.value)
     const selectedAnnualReportId: string = event.value as string
     this.selectedAnnualReport = this.annualReports.find((r) => r.id === selectedAnnualReportId)
-    console.log(this.selectedAnnualReport)
   }
 
   submit(): void {
-    console.log(this.selectedAnnualReport)
-    console.log(this.selectedCycle)
     this._goalService
-      .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport.id, this.selectedAnnualReport.name)
+      .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport?.id, this.selectedAnnualReport?.name)
       .subscribe((newCycleGoal) => {
-        console.log(newCycleGoal)
         this._dialogRef.close(newCycleGoal)
       })
   }

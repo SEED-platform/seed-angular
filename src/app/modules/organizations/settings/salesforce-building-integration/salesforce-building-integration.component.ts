@@ -14,7 +14,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 
 @Component({
   selector: 'seed-organizations-settings-salesforce-building-integration',
-  templateUrl: './salesforce.component.html',
+  templateUrl: './salesforce-building-integration.component.html',
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class SalesforceBuildingIntegrationComponent implements OnDestroy, OnInit {

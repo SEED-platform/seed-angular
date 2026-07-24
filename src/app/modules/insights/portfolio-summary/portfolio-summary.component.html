@@ -15,7 +15,7 @@
 
   <!-- Goal Selector -->
   <div>
-    <mat-label class="text-secondary mr-4 text-sm">Goal:</mat-label>
+    <mat-label class="text-secondary mr-4 text-sm">{{ t('Goal') }}:</mat-label>
     <mat-select
       class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
       [value]="currentGoal?.id"
@@ -29,10 +29,10 @@
   </div>
 
   @if (organization && organization.bb_salesforce_enabled) {
-    <p>Salesforce portfolio functionality is enabled for this organization. Configure connection details by clicking on</p>
+    <p>{{ t('Salesforce portfolio functionality is enabled for this organization. Configure connection details by clicking on') }}</p>
     <a class="background-blue underline" (click)="toSettings()">{{ t('Salesforce settings') }}</a>
     <div class="flex items-center">
-      <span style="margin-right: 10px">Salesforce Connection Status:</span>
+      <span class="mr-2">{{ t('Salesforce Connection Status') }}:</span>
       @if (isLoggedIntoBbSalesforce) {
         <mat-icon class="text-green-500">check_circle</mat-icon>
         <button class="flex w-20 items-center justify-center" (click)="loginToSalesforce()" mat-flat-button color="primary">
@@ -51,13 +51,13 @@
     <div class="flex flex-row">
       <!-- Goal Summary  -->
       <div class="m-4 w-1/2 rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
-        <div class="text-secondary text-xl font-medium">Type: {{ currentGoal.type }}</div>
-        <div class="text-secondary text-xl font-medium">Baseline Cycle: {{ currentGoal.baseline_cycle_name }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Type') }}: {{ currentGoal.type }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Baseline Cycle') }}: {{ currentGoal.baseline_cycle_name }}</div>
         <div class="text-secondary text-xl font-medium">{{ currentGoal.level_name }}: {{ currentGoal.access_level_instance_name }}</div>
-        <div class="text-secondary text-xl font-medium">Portfolio Target: {{ currentGoal.target_percentage }}</div>
-        <div class="text-secondary text-xl font-medium">Commitment Sq. Ft: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
-        <div class="text-secondary text-xl font-medium">Area Column: {{ currentGoal.area_column_name }}</div>
-        <div class="text-secondary text-xl font-medium">Primary EUI: {{ currentGoal.eui_column1_name }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Portfolio Target') }}: {{ currentGoal.target_percentage }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Commitment Sq. Ft') }}: {{ currentGoal.commitment_sqft || 'n/a' }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Area Column') }}: {{ currentGoal.area_column_name }}</div>
+        <div class="text-secondary text-xl font-medium">{{ t('Primary EUI') }}: {{ currentGoal.eui_column1_name }}</div>
       </div>
 
       <!-- CycleGoal Side Summary -->
@@ -68,31 +68,31 @@
             <th></th>
           </tr>
           <tr>
-            <td>Commitment (Sq. Ft)</td>
+            <td>{{ t('Commitment (Sq. Ft)') }}</td>
             <td>{{ currentGoal.commitment_sqft }}</td>
           </tr>
           <tr>
-            <td>Shared (Sq. Ft)</td>
+            <td>{{ t('Shared (Sq. Ft)') }}</td>
             <td>{{ portfolioSummary.shared_sqft }}</td>
           </tr>
           <tr>
-            <td>Passing Checks (Sq. Ft)</td>
+            <td>{{ t('Passing Checks (Sq. Ft)') }}</td>
             <td>{{ portfolioSummary.current_total_sqft }}</td>
           </tr>
           <tr>
-            <td>Passing Checks (% of committed)</td>
+            <td>{{ t('Passing Checks (% of committed)') }}</td>
             <td>{{ portfolioSummary.passing_committed }}</td>
           </tr>
           <tr>
-            <td>Passing Checks (% of shared)</td>
+            <td>{{ t('Passing Checks (% of shared)') }}</td>
             <td>{{ portfolioSummary.passing_shared }}</td>
           </tr>
           <tr>
-            <td>Total Passing Checks</td>
+            <td>{{ t('Total Passing Checks') }}</td>
             <td>{{ portfolioSummary.total_passing }}</td>
           </tr>
           <tr>
-            <td>Total New or Acquired</td>
+            <td>{{ t('Total New or Acquired') }}</td>
             <td>{{ portfolioSummary.total_new_or_acquired }}</td>
           </tr>
         </table>
@@ -115,10 +115,10 @@
       <mat-accordion class="mt-8 max-w-4xl">
         <mat-expansion-panel>
           <mat-expansion-panel-header>
-            <mat-panel-title> Portfolio Summary </mat-panel-title>
+            <mat-panel-title> {{ t('Portfolio Summary') }} </mat-panel-title>
           </mat-expansion-panel-header>
           <span class="mb-4 flex items-baseline text-lg font-medium"
-            >Unexpected Portfolio Summary Calculations?
+            >{{ t('Unexpected Portfolio Summary Calculations?') }}
             <button class="mx-6 w-80" (click)="runDataQualityChecks()" mat-flat-button color="primary">
               <span class="ml-2">{{ t('Run Data Quality Checks') }}</span>
             </button>
@@ -154,7 +154,7 @@
     <div>
       <form class="flex flex-col gap-4" [formGroup]="partnerNoteForm">
         <mat-form-field>
-          <mat-label>Note</mat-label>
+          <mat-label>{{ t('Note') }}</mat-label>
           <textarea matInput formControlName="text" placeholder="Note content..." rows="4"></textarea>
         </mat-form-field>
       </form>
@@ -170,18 +170,18 @@
     </div>
     <div class="w-full">
       <mat-checkbox [checked]="currentGoal.partner_note_approval" (change)="changePartnerNoteApproval($event.checked)" color="primary">
-        <span class="text-lg">Partner Approval</span>
+        <span class="text-lg">{{ t('Partner Approval') }}</span>
       </mat-checkbox>
       @if (currentGoal.partner_note_approval) {
         <div class="text-secondary text-sm">
-          Approved at {{ currentGoal.partner_note_approval_time }} by {{ currentGoal.partner_note_approval_user }}
+          {{ partnerNoteApprovalLabel }}
         </div>
       }
     </div>
 
     <!-- Chart -->
     <div class="w-1/2">
-      <canvas id="canvas" #canvas>{{ chart }}</canvas>
+      <canvas id="canvas" #canvas></canvas>
     </div>
     <div class="h-1/2-page m-5 flex flex-col">
       <ag-grid-angular
@@ -192,5 +192,7 @@
         [domLayout]="'autoHeight'"
       />
     </div>
+  } @else {
+    <seed-not-found icon="fa-solid:square-poll-horizontal" message="No Goal Selected"></seed-not-found>
   }
 </seed-page>

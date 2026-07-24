@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, map, take, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import type { CycleGoal, Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
+import type { CycleGoal, CycleGoalsResponse, Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
 
 @Injectable({ providedIn: 'root' })
 export class GoalService {
@@ -84,7 +84,7 @@ export class GoalService {
     )
   }
 
-  createCycleGoal(goalId: number, cycleId: number, annual_report_id: string, annual_report_name: string): Observable<CycleGoal> {
+  createCycleGoal(goalId: number, cycleId: number, annual_report_id?: string, annual_report_name?: string): Observable<CycleGoal> {
     const url = `/api/v3/goals/${goalId}/cycles/?organization_id=${this.orgId}`
     return this._httpClient
       .post<CycleGoal>(url, {
@@ -97,5 +97,15 @@ export class GoalService {
           return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
         }),
       )
+  }
+
+  getCycleGoals(goalId: number, orgId: number): Observable<CycleGoal[]> {
+    const url = `/api/v3/goals/${goalId}/cycles/?organization_id=${orgId}`
+    return this._httpClient.get<CycleGoalsResponse>(url).pipe(
+      map(({ cycle_goals }) => cycle_goals),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching cycle goals: ${error.message}`)
+      }),
+    )
   }
 }

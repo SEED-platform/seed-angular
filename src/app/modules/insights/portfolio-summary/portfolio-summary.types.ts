@@ -1,4 +1,4 @@
-import type { Goal } from '@seed/api/goal'
+import type { Goal } from '@seed/api'
 
 export type ConfigureGoalsData = {
   goals: Goal[];

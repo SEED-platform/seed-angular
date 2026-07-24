@@ -14,18 +14,14 @@ import { MatInputModule } from '@angular/material/input'
 import type { MatSelectChange } from '@angular/material/select'
 import { MatSelectModule } from '@angular/material/select'
 import { Router, RouterLink } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular, AgGridModule } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
 import { Subject, switchMap, takeUntil } from 'rxjs'
-import type { CycleGoal, Goal, PortfolioSummary, WeightedEUI } from '@seed/api/goal'
-import { GoalService } from '@seed/api/goal'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
-import type { CurrentUser } from '@seed/api/user'
-import { UserService } from '@seed/api/user'
+import type { CurrentUser, CycleGoal, Goal, Organization, PortfolioSummary, WeightedEUI } from '@seed/api'
+import { GoalService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { ConfigService } from '@seed/services'
@@ -67,6 +63,7 @@ export class PortfolioSummaryComponent implements OnInit {
   private _userService = inject(UserService)
   private _router = inject(Router)
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
+  private _transloco = inject(TranslocoService)
   isLoggedIntoBbSalesforce: boolean
 
   goals: Goal[]
@@ -135,7 +132,14 @@ export class PortfolioSummaryComponent implements OnInit {
     })
 
     dialogRef.afterClosed().subscribe((newCycleGoal?: CycleGoal) => {
-      if (newCycleGoal) this.currentGoal.cycle_goals.push(newCycleGoal)
+      if (newCycleGoal) {
+        this._goalService
+          .getCycleGoals(this.currentGoal.id, this.organization.id)
+          .pipe(takeUntil(this._unsubscribeAll$))
+          .subscribe((cycleGoals) => {
+            this.currentGoal.cycle_goals = cycleGoals
+          })
+      }
     })
   }
 
@@ -155,7 +159,7 @@ export class PortfolioSummaryComponent implements OnInit {
 
   // button pushes
   runDataQualityChecks(): void {
-    console.log('runDataQualityChecks')
+    // TODO: wire up to DataQualityService once the backend endpoint for this workflow is finalized.
   }
 
   setEditingPartnerNote(isEditing: boolean): void {
@@ -211,7 +215,6 @@ export class PortfolioSummaryComponent implements OnInit {
       .getLoginUrl(this.organization.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((response) => {
-        console.log(response)
         window.location.href = response.url
       })
   }
@@ -229,6 +232,13 @@ export class PortfolioSummaryComponent implements OnInit {
         this.createChart(results)
         this.goalSummaryData = results
       })
+
+    this._goalService
+      .getCycleGoals(this.currentGoal.id, this.organization.id)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((cycleGoals) => {
+        this.currentGoal.cycle_goals = cycleGoals
+      })
   }
 
   selectCycleGoal(event: MatButtonToggleChange) {
@@ -244,10 +254,18 @@ export class PortfolioSummaryComponent implements OnInit {
       })
   }
 
+  get partnerNoteApprovalLabel(): string {
+    return this._transloco.translate('Approved at {{time}} by {{user}}', {
+      time: this.currentGoal.partner_note_approval_time,
+      user: this.currentGoal.partner_note_approval_user,
+    })
+  }
+
   // chart
   createChart(weightedEUIs: WeightedEUI[]) {
     this.chart?.destroy()
     const ctx = this.canvas.nativeElement.getContext('2d')
+    const goalValue = weightedEUIs[0]?.Goal
     this.chart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -267,18 +285,21 @@ export class PortfolioSummaryComponent implements OnInit {
           },
           title: {
             display: true,
-            text: 'Energy Use Intensity by Reporting Period',
+            text: this._transloco.translate('Energy Use Intensity by Reporting Period'),
           },
           annotation: {
-            annotations: {
-              line1: {
-                type: 'line',
-                yMin: weightedEUIs[0].Goal,
-                yMax: weightedEUIs[0].Goal,
-                borderWidth: 2,
-                borderDash: [4],
-              },
-            },
+            annotations:
+              goalValue == null
+                ? {}
+                : {
+                    line1: {
+                      type: 'line',
+                      yMin: goalValue,
+                      yMax: goalValue,
+                      borderWidth: 2,
+                      borderDash: [4],
+                    },
+                  },
           },
         },
       },

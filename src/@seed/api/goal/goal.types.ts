@@ -9,6 +9,11 @@ export type CycleGoal = {
   };
 }
 
+export type CycleGoalsResponse = {
+  status: string;
+  cycle_goals: CycleGoal[];
+}
+
 export type Goal = {
   access_level_instance: number;
   area_column: number;

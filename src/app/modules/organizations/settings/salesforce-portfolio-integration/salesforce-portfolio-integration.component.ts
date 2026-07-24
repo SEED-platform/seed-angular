@@ -1,36 +1,21 @@
-import type { OnInit } from '@angular/core'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { Subject, takeUntil } from 'rxjs'
-import type { Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
+import type { Organization } from '@seed/api'
+import { OrganizationService, SalesforcePortfolioService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-salesforce-portfolio-integration',
-  imports: [
-    MatButtonModule,
-    PageComponent,
-    SharedImports,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatFormFieldModule,
-  ],
+  imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
   templateUrl: './salesforce-portfolio-integration.component.html',
-  styleUrl: './salesforce-portfolio-integration.component.scss',
 })
-export class SalesforcePortfolioIntegrationComponent implements OnInit {
+export class SalesforcePortfolioIntegrationComponent implements OnDestroy, OnInit {
   salesforceForm = new FormGroup({
-    enabled: new FormControl<boolean>(false),
+    enabled: new FormControl(false),
     config: new FormGroup({
       url: new FormControl(''),
       clientId: new FormControl(''),
@@ -70,14 +55,17 @@ export class SalesforcePortfolioIntegrationComponent implements OnInit {
         .pipe(takeUntil(this._unsubscribeAll$))
         .subscribe((response) => {
           this.isLoggedIntoBbSalesforce = response.valid
-          console.log(response)
         })
     })
   }
 
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+  }
+
   submit(): void {
     const config = this.salesforceForm.get('config')
-    console.log(config.value)
     this._salesforcePortfolioService
       .updateConfig(
         {
@@ -106,7 +94,6 @@ export class SalesforcePortfolioIntegrationComponent implements OnInit {
       .getLoginUrl(this.organization.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((response) => {
-        console.log(response)
         window.location.href = response.url
       })
   }

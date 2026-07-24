@@ -11,15 +11,17 @@ import { MatInputModule } from '@angular/material/input'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { MatSelectModule } from '@angular/material/select'
 import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
-import type { Column } from '@seed/api/column'
-import { ColumnService } from '@seed/api/column'
-import { type Cycle, CycleService } from '@seed/api/cycle'
-import type { Goal } from '@seed/api/goal'
-import { GoalService } from '@seed/api/goal'
-import type { AccessLevelInstancesByDepth, AccessLevelsByDepth, Organization } from '@seed/api/organization'
-import { OrganizationService } from '@seed/api/organization'
-import { SalesforcePortfolioService } from '@seed/api/salesforce-portfolio'
-import type { SalesforceGoal, SalesforcePartner } from '@seed/api/salesforce-portfolio/salesforce-portfolio.types'
+import type {
+  AccessLevelInstancesByDepth,
+  AccessLevelsByDepth,
+  Column,
+  Cycle,
+  Goal,
+  Organization,
+  SalesforceGoal,
+  SalesforcePartner,
+} from '@seed/api'
+import { ColumnService, CycleService, GoalService, OrganizationService, SalesforcePortfolioService } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import type { ConfigureGoalsData } from '../portfolio-summary.types'
 
@@ -46,7 +48,7 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   data = inject(MAT_DIALOG_DATA) as ConfigureGoalsData
   goalForm = new FormGroup({
-    name: new FormControl<string | null>('', Validators.required),
+    name: new FormControl('', Validators.required),
     type: new FormControl<'standard' | 'transaction' | null>(null, Validators.required),
     baselineCycle: new FormControl<number | null>(null, Validators.required),
     accessLevel: new FormControl<string | null>(null, Validators.required),
@@ -57,8 +59,8 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
     euiColumn3: new FormControl<number | null>(null),
     targetPercentage: new FormControl<number | null>(null, Validators.required),
     commitmentSqft: new FormControl<number | null>(null, Validators.required),
-    salesforcePartnerID: new FormControl<string | null>(null, Validators.required),
-    salesforceGoalID: new FormControl<string | null>(null, Validators.required),
+    salesforcePartnerID: new FormControl<string | null>(null),
+    salesforceGoalID: new FormControl<string | null>(null),
   })
   private _cycleService = inject(CycleService)
   cycles: Cycle[]
@@ -151,14 +153,14 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   }
 
   onPartnerChange(partnerId: string) {
-    const partner = this.salesforcePartners.find((p) => p.id == partnerId)
-    this.salesforceGoals = partner.goals
+    const partner = this.salesforcePartners?.find((p) => p.id == partnerId)
+    this.salesforceGoals = partner?.goals ?? []
   }
 
   save(): void {
     const formValues = this.goalForm.value
-    const partner = this.salesforcePartners.find((p) => p.id == formValues.salesforcePartnerID)
-    const goal = partner.goals.find((g) => g.id == formValues.salesforceGoalID)
+    const partner = this.bb_salesforce_enabled ? this.salesforcePartners?.find((p) => p.id == formValues.salesforcePartnerID) : undefined
+    const goal = partner?.goals.find((g) => g.id == formValues.salesforceGoalID)
 
     const request_data = {
       name: formValues.name,
@@ -171,10 +173,8 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
       eui_column3: formValues.euiColumn3,
       target_percentage: formValues.targetPercentage,
       commitment_sqft: formValues.commitmentSqft,
-      salesforce_partner_id: partner.id,
-      salesforce_partner_name: partner.name,
-      salesforce_goal_id: goal.id,
-      salesforce_goal_name: goal.name,
+      ...(partner && { salesforce_partner_id: partner.id, salesforce_partner_name: partner.name }),
+      ...(goal && { salesforce_goal_id: goal.id, salesforce_goal_name: goal.name }),
     }
 
     if (this.currentGoal == null) {

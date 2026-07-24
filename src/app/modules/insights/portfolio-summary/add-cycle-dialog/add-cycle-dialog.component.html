@@ -13,7 +13,7 @@
 
   <!-- Cycle selector -->
   <div>
-    <mat-label class="text-secondary mr-4 text-sm">Current Cycle:</mat-label>
+    <mat-label class="text-secondary mr-4 text-sm">{{ t('Current Cycle') }}:</mat-label>
     <mat-select
       class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
       [value]="selectedCycle?.id"
@@ -28,7 +28,7 @@
 
   <!-- Annual Report selector -->
   <div>
-    <mat-label class="text-secondary mr-4 text-sm">Annual Report</mat-label>
+    <mat-label class="text-secondary mr-4 text-sm">{{ t('Annual Report') }}</mat-label>
     <mat-select
       class="h-10 w-60 rounded border border-gray-500 p-3 text-sm"
       [value]="selectedAnnualReport?.id"
