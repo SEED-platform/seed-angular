@@ -105,7 +105,9 @@ against this app's route files. Update this table as pages move between columns.
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
 - [ ] **Organization sharing** (`/accounts/:organization_id/sharing`, `organization_sharing_controller`)
-      — cross-org data sharing settings tab.
+      — org-settings tab that selects which property columns are publicly exposed in the
+      organization's public data feed, and sets the public query threshold. (This is about public
+      column exposure, not sub-organizations.)
 - [ ] **Program setup** (`/accounts/:organization_id/program_setup[/:id]`, `program_setup_controller`)
       — BuildingSync/program configuration for an org, under org settings. (Don't confuse with
       `ProgramConfigComponent` in `insights/config/` — that's a smaller compliance-metric picker
@@ -144,7 +146,8 @@ route. Notes from that pass:
   parallel column-config mechanism for one page.
 - **Inventory plots** (`/{properties|taxlots}/plots`, `inventory_plots_controller`) — a charting
   view over inventory data. Superseded: it was unlinked and effectively unused in the legacy UI (a
-  fixed 2×2 grid of hardcoded scatter plots); the Insights module now covers this need.
+  fixed 2×2 grid of hardcoded scatter plots — Year Built vs ECI, CO₂ vs GFA, BETTER Savings vs ECI,
+  and CO₂/sqft vs Year Built); the Insights module now covers this need.
 - **Sub-organizations** (`/accounts/:organization_id/sub_org`, `organization_controller`) —
   create/manage child organizations. Superseded: the project is standardizing on access levels (the
   already-migrated `access-level-tree`) instead of sub-orgs.
