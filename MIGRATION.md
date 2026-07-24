@@ -105,22 +105,14 @@ against this app's route files. Update this table as pages move between columns.
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
 - [ ] **Organization sharing** (`/accounts/:organization_id/sharing`, `organization_sharing_controller`)
-      — cross-org data sharing settings tab.
+      — org-settings tab that selects which property columns are publicly exposed in the
+      organization's public data feed, and sets the public query threshold. (This is about public
+      column exposure, not sub-organizations.)
 - [ ] **Program setup** (`/accounts/:organization_id/program_setup[/:id]`, `program_setup_controller`)
       — BuildingSync/program configuration for an org, under org settings. (Don't confuse with
       `ProgramConfigComponent` in `insights/config/` — that's a smaller compliance-metric picker
       embedded in the already-migrated `program-overview`/`property-insights` pages, not the
       full org-level program CRUD admin page.)
-- [ ] **Sub-organizations** (`/accounts/:organization_id/sub_org`, `organization_controller`) —
-      create/manage child organizations.
-- [ ] **Inventory plots** (`/{properties|taxlots}/plots`, `inventory_plots_controller`) — charting
-      view over inventory data.
-- [ ] **Facilities Plan** (`/insights/facilities_plan`, `facilities_plan_controller`) — the
-      facilities/systems/services planning landing page. (Note: the `service_detail` sub-page it
-      links to *is* already migrated, under `inventory/groups/:groupId/systems/services/:systemId/:serviceId`.)
-      **In progress:** see the `facilities-plan` branch (no PR yet) — has an initial
-      `insights/facilities-plan` component + bulk-edit/delete/form modals already scaffolded.
-      Check that branch before starting new work here.
 
 ### Cross-checked against legacy `js/services/`
 
@@ -135,8 +127,8 @@ route. Notes from that pass:
   above, `compliance_metric_service`→`insights/config/program-config.component.ts`,
   `map_service`'s EEEJ/disadvantaged-tract filter→`inventory-list/map/map.component.ts`,
   `property_measure_service`→`inventory-detail/detail` scenarios grid, `pairing_service`→Pairing
-  workflow) or a page already on the list above (`facilities_plan_service`/
-  `facilities_plan_run_service`/`service_service`/`system_service`→Facilities Plan).
+  workflow, `facilities_plan_service`/`facilities_plan_run_service`/`service_service`/
+  `system_service`→the now-migrated Facilities Plan page) or a page already on the list above.
 - **Dead/unused in the legacy app** — not referenced by any legacy controller, so don't bother
   porting them: `element_service`, `uniformat_service`, `event_service`.
 - **Cross-cutting utilities, not features** — no dedicated page to port, these are legacy
@@ -152,6 +144,13 @@ route. Notes from that pass:
   (`modules/datasets/pairing/pairing.component.ts`) reuses the existing List View Profile column
   selector already used by the Properties/Tax Lots list pages instead of building a second,
   parallel column-config mechanism for one page.
+- **Inventory plots** (`/{properties|taxlots}/plots`, `inventory_plots_controller`) — a charting
+  view over inventory data. Superseded: it was unlinked and effectively unused in the legacy UI (a
+  fixed 2×2 grid of hardcoded scatter plots — Year Built vs ECI, CO₂ vs GFA, BETTER Savings vs ECI,
+  and CO₂/sqft vs Year Built); the Insights module now covers this need.
+- **Sub-organizations** (`/accounts/:organization_id/sub_org`, `organization_controller`) —
+  create/manage child organizations. Superseded: the project is standardizing on access levels (the
+  already-migrated `access-level-tree`) instead of sub-orgs.
 
 ### Already migrated (for reference — don't re-port these)
 
@@ -165,7 +164,8 @@ derived-columns — the derived column *editor* is now a modal rather than its o
 full `inventory_*`/`inventory_detail_*`/`inventory_group_*` family (list, map, summary,
 cross-cycles, groups incl. dashboard/meters/systems, detail incl. analyses/meters/sensors/timeline/
 notes/ubids/column-detail-profiles), and `insights_program`/`insights_property`/`reports`
-(→ default-reports)/`custom_reports`/`data_view`/`portfolio_summary`.
+(→ default-reports)/`custom_reports`/`data_view`/`portfolio_summary`, and `facilities_plan`
+(→ `insights/facilities-plan` plus the org-settings facilities-plan page).
 
 If you migrate something from the "not yet migrated" list, move its line into this section (or
 just delete the line) in the same PR. If the team instead decides *not* to port something, move
