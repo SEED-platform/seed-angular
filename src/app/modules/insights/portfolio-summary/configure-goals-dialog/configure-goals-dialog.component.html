@@ -6,8 +6,8 @@
 
   <div class="flex flex-row gap-10">
     <!-- Goal Selector -->
-    <div class="rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">
-      <div>{{ t('GOALS') }}</div>
+    <div class="rounded-xl border bg-white p-4 dark:bg-gray-800">
+      <div class="text-secondary mb-3 text-sm font-semibold uppercase tracking-wide">{{ t('GOALS') }}</div>
       <mat-button-toggle-group
         class="flex flex-col"
         [value]="currentGoal?.id"
@@ -25,7 +25,7 @@
 
     <form class="flex w-full flex-col gap-4" [formGroup]="goalForm">
       <!-- Goal -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('GOAL') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('GOAL') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Name') }}</mat-label>
         <input matInput formControlName="name" />
@@ -44,7 +44,7 @@
       </mat-form-field>
 
       <!-- CYCLE -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('CYCLE SELECTION') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('CYCLE SELECTION') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Baseline Cycle') }}</mat-label>
         <mat-select formControlName="baselineCycle">
@@ -56,7 +56,7 @@
       </mat-form-field>
 
       <!-- Access Level Instance -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('ACCESS LEVEL INSTANCE') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('ACCESS LEVEL INSTANCE') }}</div>
       <mat-form-field>
         <mat-label>{{ t('Access Level') }}</mat-label>
         <mat-select (selectionChange)="onAccessLevelChange($event.value)" formControlName="accessLevel">
@@ -76,7 +76,7 @@
       </mat-form-field>
 
       <!-- Area Target Column -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('AREA TARGET COLUMN') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('AREA TARGET COLUMN') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Area Column') }}</mat-label>
         <mat-select formControlName="areaColumn">
@@ -88,7 +88,7 @@
       </mat-form-field>
 
       <!-- EUI TARGET COLUMNS -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('EUI TARGET COLUMNS') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('EUI TARGET COLUMNS') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Primary Column') }}</mat-label>
         <mat-select formControlName="euiColumn1">
@@ -122,7 +122,7 @@
       }
 
       <!-- PORTFOLIO TARGET -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('PORTFOLIO TARGET') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('PORTFOLIO TARGET') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Percentage (%)') }}</mat-label>
         <input matInput type="number" formControlName="targetPercentage" min="0" max="100" />
@@ -130,7 +130,7 @@
       </mat-form-field>
 
       <!-- COMMITMENT -->
-      <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('COMMITMENT') }}</div>
+      <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('COMMITMENT') }}</div>
       <mat-form-field appearance="fill">
         <mat-label>{{ t('Commitment (Sq Ft)') }}</mat-label>
         <input matInput type="number" formControlName="commitmentSqft" min="0" />
@@ -139,7 +139,7 @@
 
       <!-- SAlESFORCE -->
       @if (bb_salesforce_enabled) {
-        <div class="w-full rounded-xl border bg-white p-10 p-4 dark:bg-gray-800">{{ t('SALESFORCE') }}</div>
+        <div class="text-secondary text-sm font-semibold uppercase tracking-wide">{{ t('SALESFORCE') }}</div>
         @if (isLoggedIntoBbSalesforce) {
           <mat-form-field appearance="fill">
             <mat-label>{{ t('Salesforce Partner') }}</mat-label>
