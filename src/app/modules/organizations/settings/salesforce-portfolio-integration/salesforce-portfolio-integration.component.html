@@ -12,7 +12,9 @@
         <!-- enable -->
         <div class="prose">{{ t('Enable this if you would like to sync data between SEED and a Salesforce instance') }}</div>
         <div class="mb-6 flex">
-          <mat-slide-toggle [formControlName]="'enabled'" (change)="toggleForm($event.checked)">{{ t('Enable Salesforce Integration') }}</mat-slide-toggle>
+          <mat-slide-toggle [formControlName]="'enabled'" (change)="toggleForm($event.checked)">{{
+            t('Enable Salesforce Integration')
+          }}</mat-slide-toggle>
         </div>
 
         @if (salesforceForm.value.enabled) {

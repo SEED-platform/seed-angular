@@ -22,7 +22,7 @@ export class SalesforceLoginComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         switchMap(([params, organization]) => {
-          const code = params['code']
+          const code: unknown = params.code
           if (typeof code !== 'string' || !code) {
             void this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
             return EMPTY

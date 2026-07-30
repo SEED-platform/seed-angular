@@ -120,27 +120,26 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   }
 
   selectGoal(goalId?: number) {
-      this.currentGoal = undefined
-      // old goal
-      this.currentGoal = this.goals.find((g) => g.id === goalId)
-      this.onAccessLevelChange(this.currentGoal.level_name)
-      this.onPartnerChange(this.currentGoal.salesforce_partner_id)
-      this.goalForm.setValue({
-        salesforcePartnerID: this.currentGoal.salesforce_partner_id,
-        salesforceGoalID: this.currentGoal.salesforce_goal_id,
-        name: this.currentGoal.name,
-        type: this.currentGoal.type,
-        baselineCycle: this.currentGoal.baseline_cycle,
-        accessLevel: this.currentGoal.level_name,
-        accessLevelInstanceId: this.currentGoal.access_level_instance,
-        areaColumn: this.currentGoal.area_column,
-        euiColumn1: this.currentGoal.eui_column1,
-        euiColumn2: this.currentGoal.eui_column2,
-        euiColumn3: this.currentGoal.eui_column3,
-        targetPercentage: this.currentGoal.target_percentage,
-        commitmentSqft: this.currentGoal.commitment_sqft,
-      })
-    }
+    this.currentGoal = undefined
+    // old goal
+    this.currentGoal = this.goals.find((g) => g.id === goalId)
+    this.onAccessLevelChange(this.currentGoal.level_name)
+    this.onPartnerChange(this.currentGoal.salesforce_partner_id)
+    this.goalForm.setValue({
+      salesforcePartnerID: this.currentGoal.salesforce_partner_id,
+      salesforceGoalID: this.currentGoal.salesforce_goal_id,
+      name: this.currentGoal.name,
+      type: this.currentGoal.type,
+      baselineCycle: this.currentGoal.baseline_cycle,
+      accessLevel: this.currentGoal.level_name,
+      accessLevelInstanceId: this.currentGoal.access_level_instance,
+      areaColumn: this.currentGoal.area_column,
+      euiColumn1: this.currentGoal.eui_column1,
+      euiColumn2: this.currentGoal.eui_column2,
+      euiColumn3: this.currentGoal.eui_column3,
+      targetPercentage: this.currentGoal.target_percentage,
+      commitmentSqft: this.currentGoal.commitment_sqft,
+    })
   }
 
   onAccessLevelChange(accessLevelName: string) {

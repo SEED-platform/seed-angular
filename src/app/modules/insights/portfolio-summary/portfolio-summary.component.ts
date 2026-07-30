@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { ElementRef, OnInit } from '@angular/core'
+import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
@@ -53,7 +53,7 @@ Chart.register(annotationPlugin)
     MatCheckboxModule,
   ],
 })
-export class PortfolioSummaryComponent implements OnInit {
+export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   private _matDialog = inject(MatDialog)
   private _configService = inject(ConfigService)
   private _goalService = inject(GoalService)
@@ -71,7 +71,7 @@ export class PortfolioSummaryComponent implements OnInit {
   currentCycleGoal: CycleGoal
   portfolioSummary: PortfolioSummary
   organization: Organization
-  chart: Chart<'bar', string[], string>
+  chart: Chart<'bar', number[], string>
   currentUser: CurrentUser
   partnerNoteForm = new FormGroup({
     text: new FormControl<string | null>({ value: '', disabled: true }),
