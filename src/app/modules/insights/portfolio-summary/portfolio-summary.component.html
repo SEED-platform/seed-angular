@@ -31,7 +31,7 @@
 
     @if (organization && organization.bb_salesforce_enabled) {
       <p>{{ t('Salesforce portfolio functionality is enabled for this organization. Configure connection details by clicking on') }}</p>
-      <a class="background-blue underline" (click)="toSettings()">{{ t('Salesforce settings') }}</a>
+      <button type="button" class="text-primary-500 underline hover:underline focus:underline" (click)="toSettings()">{{ t('Salesforce settings') }}</button>
       <div class="flex items-center">
         <span class="mr-2">{{ t('Salesforce Connection Status') }}:</span>
         @if (isLoggedIntoBbSalesforce) {

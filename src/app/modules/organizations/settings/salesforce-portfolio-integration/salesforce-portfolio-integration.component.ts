@@ -94,13 +94,11 @@ export class SalesforcePortfolioIntegrationComponent implements OnDestroy, OnIni
       .getLoginUrl(this.organization.id)
       .pipe(takeUntil(this._unsubscribeAll$))
       .subscribe((response) => {
-        window.location.href = response.url
+        if (response.url) window.location.href = response.url
       })
   }
 
-  toggleForm(): void {
-    const enabled = this.salesforceForm.get('enabled').value
-
+  toggleForm(enabled: boolean): void {
     this.organization.bb_salesforce_enabled = enabled
     this._organizationService.updateSettings(this.organization).subscribe()
 

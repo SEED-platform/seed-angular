@@ -12,7 +12,7 @@
         <!-- enable -->
         <div class="prose">{{ t('Enable this if you would like to sync data between SEED and a Salesforce instance') }}</div>
         <div class="mb-6 flex">
-          <mat-slide-toggle [formControlName]="'enabled'" (click)="toggleForm()">{{ t('Enable Salesforce Integration') }}</mat-slide-toggle>
+          <mat-slide-toggle [formControlName]="'enabled'" (change)="toggleForm($event.checked)">{{ t('Enable Salesforce Integration') }}</mat-slide-toggle>
         </div>
 
         @if (salesforceForm.value.enabled) {
@@ -32,8 +32,8 @@
               <mat-label>{{ t('Client Secret') }}</mat-label>
               <input [formControlName]="'clientSecret'" [type]="passwordHidden ? 'password' : 'text'" matInput />
               <button
-                [attr.aria-label]="'Hide password'"
-                [attr.aria-pressed]="passwordHidden"
+                [attr.aria-label]="passwordHidden ? 'Show password' : 'Hide password'"
+                [attr.aria-pressed]="!passwordHidden"
                 (click)="togglePassword()"
                 mat-icon-button
                 matSuffix

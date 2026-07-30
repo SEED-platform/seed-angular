@@ -76,6 +76,8 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
+    if (!this.selectedCycle) return
+
     this._goalService
       .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport?.id, this.selectedAnnualReport?.name)
       .subscribe((newCycleGoal) => {

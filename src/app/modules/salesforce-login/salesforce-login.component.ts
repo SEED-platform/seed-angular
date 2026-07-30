@@ -2,7 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoDirective } from '@jsverse/transloco'
-import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
+import { combineLatest, EMPTY, Subject, switchMap, takeUntil } from 'rxjs'
 import { OrganizationService, SalesforcePortfolioService } from '@seed/api'
 
 @Component({
@@ -22,11 +22,17 @@ export class SalesforceLoginComponent implements OnDestroy, OnInit {
       .pipe(
         takeUntil(this._unsubscribeAll$),
         switchMap(([params, organization]) => {
-          return this._salesforcePortfolioService.getToken(params.code as string, organization.id)
+          const code = params['code']
+          if (typeof code !== 'string' || !code) {
+            void this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+            return EMPTY
+          }
+          return this._salesforcePortfolioService.getToken(code, organization.id)
         }),
       )
-      .subscribe(() => {
-        void this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+      .subscribe({
+        next: () => void this._router.navigate(['organizations/settings/salesforce-portfolio-integration']),
+        error: () => void this._router.navigate(['organizations/settings/salesforce-portfolio-integration']),
       })
   }
 

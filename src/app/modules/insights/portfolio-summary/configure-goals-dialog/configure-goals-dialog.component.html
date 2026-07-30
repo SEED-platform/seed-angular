@@ -96,13 +96,13 @@
             <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
           }
         </mat-select>
-        <mat-hint>{{ t('Not seeing your column? Update the column\'s data type to "Area" in Column Settings') }}</mat-hint>
+        <mat-hint>{{ t('Not seeing your column? Update the column\'s data type to "EUI" in Column Settings') }}</mat-hint>
       </mat-form-field>
       @if (goalForm.value.euiColumn1) {
         <mat-form-field appearance="fill">
           <mat-label>{{ t('Secondary Column') }}</mat-label>
           <mat-select formControlName="euiColumn2">
-            <mat-option value="">--</mat-option>
+            <mat-option [value]="null">--</mat-option>
             @for (column of euiColumns; track column.id) {
               <mat-option [value]="column.id">{{ column.display_name }}</mat-option>
             }

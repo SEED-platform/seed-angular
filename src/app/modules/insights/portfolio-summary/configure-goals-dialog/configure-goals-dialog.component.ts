@@ -120,11 +120,7 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   }
 
   selectGoal(goalId?: number) {
-    if (goalId == null) {
-      // new goal
-      this.goalForm.reset()
-      this.currentGoal = null
-    } else {
+      this.currentGoal = undefined
       // old goal
       this.currentGoal = this.goals.find((g) => g.id === goalId)
       this.onAccessLevelChange(this.currentGoal.level_name)

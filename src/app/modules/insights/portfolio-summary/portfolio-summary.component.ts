@@ -271,7 +271,7 @@ export class PortfolioSummaryComponent implements OnInit {
       data: {
         datasets: [
           {
-            data: weightedEUIs.map((we) => we.EUI),
+            data: weightedEUIs.map((we) => Number(we.EUI)),
             backgroundColor: ['#1E428A', ...new Array<string>(weightedEUIs.length).fill('#06732cff')],
           },
         ],
@@ -304,5 +304,11 @@ export class PortfolioSummaryComponent implements OnInit {
         },
       },
     })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+    this.chart?.destroy()
   }
 }

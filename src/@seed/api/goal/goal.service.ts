@@ -5,17 +5,14 @@ import type { Observable } from 'rxjs'
 import { BehaviorSubject, catchError, map, take, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api/organization'
 import { ErrorService } from '@seed/services'
-import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { CycleGoal, CycleGoalsResponse, Goal, GoalsResponse, PortfolioSummary, weightedEUIsResponse } from './goal.types'
 
 @Injectable({ providedIn: 'root' })
 export class GoalService {
   private _httpClient = inject(HttpClient)
   private _organizationService = inject(OrganizationService)
-  private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _goals = new BehaviorSubject<Goal[]>([])
-  private _portfolioSummary = new BehaviorSubject<PortfolioSummary>(undefined)
   orgId: number
 
   goals$ = this._goals.asObservable()
@@ -66,7 +63,7 @@ export class GoalService {
     )
   }
 
-  editGoal(goalId: number, editedGoal, orgId: number): Observable<Goal> {
+  editGoal(goalId: number, editedGoal: Record<string, unknown>, orgId: number): Observable<Goal> {
     const url = `/api/v3/goals/${goalId}/?organization_id=${orgId}`
     return this._httpClient.put<Goal>(url, editedGoal).pipe(
       catchError((error: HttpErrorResponse) => {

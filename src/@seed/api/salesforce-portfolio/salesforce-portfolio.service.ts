@@ -6,6 +6,7 @@ import { catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
 import type {
+  getAnnualReportsResponse,
   getPartnersResponse,
   getTokenResponse,
   loginUrlResponse,
@@ -65,12 +66,12 @@ export class SalesforcePortfolioService {
     )
   }
 
-  getAnnualReports(goalId: number): Observable<getPartnersResponse> {
+  getAnnualReports(goalId: number): Observable<getAnnualReportsResponse> {
     const url = `/api/v3/bb_salesforce/annual_report/?organization_id=${this.orgId}&goal_id=${goalId}`
-    return this._httpClient.get<getPartnersResponse>(url).pipe(
+    return this._httpClient.get<getAnnualReportsResponse>(url).pipe(
       map((response) => response),
       catchError((error: HttpErrorResponse) => {
-        return this._errorService.handleError(error, `Error fetching summary: ${error.message}`)
+        return this._errorService.handleError(error, `Error fetching annual reports: ${error.message}`)
       }),
     )
   }
