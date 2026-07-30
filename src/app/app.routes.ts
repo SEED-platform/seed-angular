@@ -7,6 +7,7 @@ import { ContactComponent } from './modules/main/contact/contact.component'
 import { DocumentationComponent } from './modules/main/documentation/documentation.component'
 import { HomeComponent } from './modules/main/home/home.component'
 import { ProfileComponent } from './modules/profile/profile.component'
+import { SalesforceLoginComponent } from './modules/salesforce-login/salesforce-login.component'
 
 const inventoryTypeMatcher = (segments: UrlSegment[]) => {
   const [type, ..._] = segments
@@ -84,6 +85,7 @@ export const appRoutes: Route[] = [
       { path: 'about', title: 'About', component: AboutComponent },
       { path: 'contact', title: 'Contact', component: ContactComponent },
       { path: 'documentation', title: 'Documentation', component: DocumentationComponent },
+      { path: 'salesforce-login', title: 'Salesforce Login', component: SalesforceLoginComponent },
       {
         path: 'organizations',
         loadChildren: () => import('app/modules/organizations/organizations.routes'),
