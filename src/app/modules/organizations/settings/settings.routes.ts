@@ -8,6 +8,7 @@ import { FacilitiesPlanSettingsComponent } from './facilities-plan/facilities-pl
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
 import { SalesforceComponent } from './salesforce/salesforce.component'
+import { SharingComponent } from './sharing/sharing.component'
 import { TwoFactorComponent } from './two-factor/two-factor.component'
 import { UBIDComponent } from './ubid/ubid.component'
 
@@ -61,6 +62,11 @@ export default [
     path: 'salesforce',
     title: 'Salesforce Integration',
     component: SalesforceComponent,
+  },
+  {
+    path: 'sharing',
+    title: 'Organization Sharing',
+    component: SharingComponent,
   },
   {
     path: 'two-factor',

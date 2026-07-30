@@ -104,10 +104,6 @@ against this app's route files. Update this table as pages move between columns.
 - [ ] **Salesforce login callback** (`/salesforce_login`, `salesforce_login_controller`) — the
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
-- [ ] **Organization sharing** (`/accounts/:organization_id/sharing`, `organization_sharing_controller`)
-      — org-settings tab that selects which property columns are publicly exposed in the
-      organization's public data feed, and sets the public query threshold. (This is about public
-      column exposure, not sub-organizations.)
 - [ ] **Program setup** (`/accounts/:organization_id/program_setup[/:id]`, `program_setup_controller`)
       — BuildingSync/program configuration for an org, under org settings. (Don't confuse with
       `ProgramConfigComponent` in `insights/config/` — that's a smaller compliance-metric picker
@@ -160,7 +156,9 @@ Everything else in `seed.js`'s state table has a corresponding route in this app
 `pairing`→`datasets/pairing/:id/:type`, `about`/
 `contact`/`api_docs`, the full `organization_*` settings family (settings, access-level-tree,
 column settings/mappings, data-quality incl. goals, cycles, labels, members, email-templates,
-derived-columns — the derived column *editor* is now a modal rather than its own route), and the
+derived-columns — the derived column *editor* is now a modal rather than its own route),
+`organization_sharing`→`organizations/settings/sharing` (public column selection + public query
+threshold for the org's public data feed), and the
 full `inventory_*`/`inventory_detail_*`/`inventory_group_*` family (list, map, summary,
 cross-cycles, groups incl. dashboard/meters/systems, detail incl. analyses/meters/sensors/timeline/
 notes/ubids/column-detail-profiles), and `insights_program`/`insights_property`/`reports`

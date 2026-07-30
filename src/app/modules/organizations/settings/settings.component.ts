@@ -67,6 +67,12 @@ export class SettingsComponent implements AfterViewInit {
           type: 'basic',
         },
         {
+          id: 'organizations/settings/sharing',
+          link: '/organizations/settings/sharing',
+          title: 'Organization Sharing',
+          type: 'basic',
+        },
+        {
           id: 'organizations/settings/two-factor',
           link: '/organizations/settings/two-factor',
           title: 'Two-Factor Authentication',
