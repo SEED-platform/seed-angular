@@ -4,8 +4,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { RouterLink } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { combineLatest, finalize, forkJoin, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import type { Organization, SharedField, UsedColumn, UserAuth } from '@seed/api'
-import { AnalysisService, OrganizationService, UserService } from '@seed/api'
+import type { Column, Organization, SharedField, UsedColumn, UserAuth } from '@seed/api'
+import { AnalysisService, ColumnService, OrganizationService, UserService } from '@seed/api'
 import { AlertComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -27,14 +27,23 @@ type SharableField = {
 })
 export class SharingComponent implements OnDestroy, OnInit {
   private _analysisService = inject(AnalysisService)
+  private _columnService = inject(ColumnService)
   private _organizationService = inject(OrganizationService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+
+  // Every column defined for the org (Property + Tax Lot), used as the catalog for `addField()` —
+  // see `availableFieldsToAdd`. Populated in `_setFields`.
+  private _allColumns: SharableField[] = []
 
   readonly baseUrl = window.location.origin
 
   organization: Organization
   auth: UserAuth
+  // Rows shown in the table below: every column currently populated with data, plus any column
+  // already marked public even if it no longer has data (see `_setFields`). Additional columns
+  // (e.g. ones that don't have data yet) can be appended via `addField()`, driven by the "Add a
+  // field" autocomplete in the template — `public_checked` still only gets persisted on `save()`.
   fields: SharableField[] = []
   loading = true
   loadError = false
@@ -42,6 +51,7 @@ export class SharingComponent implements OnDestroy, OnInit {
   saved = false
   searchTableName = ''
   searchDisplayName = ''
+  addFieldQuery = ''
 
   thresholdForm = new FormGroup({
     query_threshold: new FormControl<number | null>(null, [Validators.min(0), Validators.pattern(/^\d+$/)]),
@@ -69,6 +79,20 @@ export class SharingComponent implements OnDestroy, OnInit {
     return this.filteredFields.some((field) => field.public_checked) && !this.allFilteredSelected
   }
 
+  // Org columns not already shown in `fields`, filtered by `addFieldQuery` — the pick-list for
+  // the "Add a field" autocomplete. Capped so a large org's column catalog doesn't render an
+  // unbounded dropdown.
+  get availableFieldsToAdd(): SharableField[] {
+    const existingIds = new Set(this.fields.map((field) => field.id))
+    const query = this.addFieldQuery.trim().toLowerCase()
+    return this._allColumns
+      .filter((field) => !existingIds.has(field.id))
+      .filter(
+        (field) => !query || field.display_name.toLowerCase().includes(query) || this.tableLabel(field.table_name).toLowerCase().includes(query),
+      )
+      .slice(0, 50)
+  }
+
   ngOnInit(): void {
     combineLatest([this._organizationService.currentOrganization$, this._userService.auth$])
       .pipe(takeUntil(this._unsubscribeAll$))
@@ -91,6 +115,13 @@ export class SharingComponent implements OnDestroy, OnInit {
     return tableName === 'TaxLotState' ? 'Tax Lot' : 'Property'
   }
 
+  // A plain `<a target="_blank">` to a same-origin URL gets redirected to same-tab navigation by
+  // the app-wide `ExternalLinkDirective` (it only forces a new tab for cross-origin links), so
+  // the "Test" buttons open explicitly via `window.open` instead.
+  openInNewTab(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   onSelectAllChange(checked: boolean): void {
     const visibleIds = new Set(this.filteredFields.map((field) => field.id))
     for (const field of this.fields) {
@@ -98,6 +129,19 @@ export class SharingComponent implements OnDestroy, OnInit {
         field.public_checked = checked
       }
     }
+  }
+
+  // Appends an org column picked from the "Add a field" autocomplete to the table, unchecked by
+  // default — the user still has to tick "Share" and click "Save Changes" for it to persist.
+  addField(field: SharableField): void {
+    this.fields = [...this.fields, { ...field, public_checked: false }].sort((a, b) => naturalSort(a.display_name, b.display_name))
+    this.addFieldQuery = ''
+  }
+
+  // MatAutocomplete uses this to compute the text left in the input after a selection; always
+  // blank so the input stays ready for the next search instead of echoing the picked field's name.
+  clearAutocompleteDisplay(): string {
+    return ''
   }
 
   save(): void {
@@ -143,29 +187,41 @@ export class SharingComponent implements OnDestroy, OnInit {
       })
   }
 
-  private _fetchSharingData(orgId: number): Observable<{ usedColumns: UsedColumn[]; sharedFields: SharedField[]; queryThreshold: number }> {
+  private _fetchSharingData(
+    orgId: number,
+  ): Observable<{ usedColumns: UsedColumn[]; allColumns: Column[]; sharedFields: SharedField[]; queryThreshold: number }> {
     return forkJoin({
       usedColumns: this._analysisService.getUsedColumns(orgId),
+      // Full org column catalog (Property + Tax Lot, used or not) — lets the user add a field to
+      // the table below that doesn't have data yet, not just ones already in `usedColumns`.
+      allColumns: this._columnService.getPropertyColumns(orgId),
       sharedFields: this._organizationService.getSharedFields(orgId),
       queryThreshold: this._organizationService.getQueryThreshold(orgId),
     }).pipe(
-      tap(({ usedColumns, sharedFields, queryThreshold }) => {
-        this._setFields(usedColumns, sharedFields)
+      tap(({ usedColumns, allColumns, sharedFields, queryThreshold }) => {
+        this._setFields(usedColumns, allColumns, sharedFields)
         this.thresholdForm.get('query_threshold').setValue(queryThreshold)
       }),
     )
   }
 
-  private _setFields(usedColumns: UsedColumn[], sharedFields: SharedField[]): void {
+  private _setFields(usedColumns: UsedColumn[], allColumns: Column[], sharedFields: SharedField[]): void {
     const publicNames = new Set(sharedFields.map((field) => field.name))
-    this.fields = usedColumns
-      .map((column) => ({
-        id: column.id,
-        table_name: column.table_name,
-        name: column.name,
-        display_name: column.display_name,
-        public_checked: publicNames.has(column.name),
-      }))
-      .sort((a, b) => naturalSort(a.display_name, b.display_name))
+    const usedIds = new Set(usedColumns.map((column) => column.id))
+    const toSharableField = (column: UsedColumn | Column): SharableField => ({
+      id: column.id,
+      table_name: column.table_name,
+      name: column.name,
+      display_name: column.display_name,
+      public_checked: publicNames.has(column.name),
+    })
+
+    this._allColumns = allColumns.map(toSharableField).sort((a, b) => naturalSort(a.display_name, b.display_name))
+
+    // Include any column that's already shared but fell out of `usedColumns` (its data was since
+    // cleared) so saving doesn't silently un-share it just because it's no longer populated.
+    const staleSharedFields = this._allColumns.filter((field) => field.public_checked && !usedIds.has(field.id))
+
+    this.fields = [...usedColumns.map(toSharableField), ...staleSharedFields].sort((a, b) => naturalSort(a.display_name, b.display_name))
   }
 }

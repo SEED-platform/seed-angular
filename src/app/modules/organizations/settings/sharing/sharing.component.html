@@ -48,13 +48,33 @@
                 </mat-expansion-panel-header>
                 <div class="prose max-w-none">
                   <h3>JSON/HTML</h3>
-                  <p>
+                  <p class="flex flex-wrap items-center gap-2">
                     {{ t('PUBLIC_JSON') }}:
                     <strong>{{ baseUrl }}/api/v3/public/organizations/{{ organization.id }}/feed.json</strong>
+                    <button
+                      [matTooltip]="t('Test')"
+                      [attr.aria-label]="t('Open the public JSON feed in a new tab')"
+                      (click)="openInNewTab(baseUrl + '/api/v3/public/organizations/' + organization.id + '/feed.json')"
+                      type="button"
+                      mat-icon-button
+                      color="primary"
+                    >
+                      <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
+                    </button>
                   </p>
-                  <p>
+                  <p class="flex flex-wrap items-center gap-2">
                     {{ t('PUBLIC_HTML') }}:
                     <strong>{{ baseUrl }}/api/v3/public/organizations/{{ organization.id }}/feed.html</strong>
+                    <button
+                      [matTooltip]="t('Test')"
+                      [attr.aria-label]="t('Open the public HTML feed in a new tab')"
+                      (click)="openInNewTab(baseUrl + '/api/v3/public/organizations/' + organization.id + '/feed.html')"
+                      type="button"
+                      mat-icon-button
+                      color="primary"
+                    >
+                      <mat-icon class="icon-size-4" svgIcon="fa-solid:arrow-up-right-from-square"></mat-icon>
+                    </button>
                   </p>
                   <p>{{ t('SHARING_QUERY_PARAMS') }}:</p>
                   <ul>
@@ -107,6 +127,41 @@
             <div class="bg-card flex flex-col gap-y-4 rounded-2xl p-6 shadow">
               <div class="text-lg font-medium">{{ t('Selecting Fields to Share') }}</div>
               <div class="prose max-w-none">{{ t('PUBLIC_SHARE') }}</div>
+
+              <!--
+                Rows below start out as every field already populated with data in this org's
+                Property/Tax Lot inventory, plus any field already marked public even if it no
+                longer has data (see SharingComponent._setFields). Checking "Share" only flags a
+                row as public — it isn't persisted until "Save Changes" is clicked. To make a
+                field that isn't listed yet sharable (e.g. one that doesn't have data yet), use
+                "Add a field" below to append it as a new row first.
+              -->
+              <seed-alert [showIcon]="true" type="info" appearance="outline">
+                {{ t('PUBLIC_SHARE_FIELDS_HELP') }}
+              </seed-alert>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ t('Add a field') }}</mat-label>
+                <input
+                  [(ngModel)]="addFieldQuery"
+                  [ngModelOptions]="{ standalone: true }"
+                  [matAutocomplete]="addFieldAuto"
+                  [placeholder]="t('Search by field or table name to add it below')"
+                  matInput
+                />
+                <mat-autocomplete
+                  #addFieldAuto="matAutocomplete"
+                  [displayWith]="clearAutocompleteDisplay"
+                  (optionSelected)="addField($event.option.value)"
+                >
+                  @for (field of availableFieldsToAdd; track field.id) {
+                    <mat-option [value]="field">{{ tableLabel(field.table_name) }} &mdash; {{ field.display_name }}</mat-option>
+                  } @empty {
+                    <mat-option disabled>{{ t('No matching fields found.') }}</mat-option>
+                  }
+                </mat-autocomplete>
+                <mat-hint>{{ t('Selecting a field adds it to the list below so it can be shared.') }}</mat-hint>
+              </mat-form-field>
 
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <mat-form-field appearance="outline">
