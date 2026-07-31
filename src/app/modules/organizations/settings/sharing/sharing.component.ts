@@ -88,7 +88,8 @@ export class SharingComponent implements OnDestroy, OnInit {
     return this._allColumns
       .filter((field) => !existingIds.has(field.id))
       .filter(
-        (field) => !query || field.display_name.toLowerCase().includes(query) || this.tableLabel(field.table_name).toLowerCase().includes(query),
+        (field) =>
+          !query || field.display_name.toLowerCase().includes(query) || this.tableLabel(field.table_name).toLowerCase().includes(query),
       )
       .slice(0, 50)
   }
@@ -192,7 +193,13 @@ export class SharingComponent implements OnDestroy, OnInit {
 
   private _fetchSharingData(
     orgId: number,
-  ): Observable<{ usedColumns: UsedColumn[]; propertyColumns: Column[]; taxLotColumns: Column[]; sharedFields: SharedField[]; queryThreshold: number }> {
+  ): Observable<{
+    usedColumns: UsedColumn[];
+    propertyColumns: Column[];
+    taxLotColumns: Column[];
+    sharedFields: SharedField[];
+    queryThreshold: number;
+  }> {
     return forkJoin({
       usedColumns: this._analysisService.getUsedColumns(orgId),
       // Full org column catalog (Property + Tax Lot, used or not) — lets the user add a field to

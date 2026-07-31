@@ -69,7 +69,7 @@ export class SettingsComponent implements AfterViewInit {
         {
           id: 'organizations/settings/sharing',
           link: '/organizations/settings/sharing',
-          title: 'Organization Sharing',
+          title: 'Public Data Sharing',
           type: 'basic',
         },
         {

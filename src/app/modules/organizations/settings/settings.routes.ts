@@ -65,7 +65,7 @@ export default [
   },
   {
     path: 'sharing',
-    title: 'Organization Sharing',
+    title: 'Public Data Sharing',
     component: SharingComponent,
   },
   {

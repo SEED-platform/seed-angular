@@ -1,7 +1,7 @@
 <seed-page
   [config]="{
     titleIcon: 'fa-solid:share-from-square',
-    title: 'Organization Sharing',
+    title: 'Public Data Sharing',
     breadcrumbs: ['Organization Settings'],
     sideNavToggle: true,
   }"
@@ -13,7 +13,7 @@
       </div>
     } @else if (loadError) {
       <seed-alert [showIcon]="true" type="error" appearance="outline">
-        {{ t('Failed to load Organization Sharing settings. Please try refreshing the page.') }}
+        {{ t('Failed to load Public Data Sharing settings. Please try refreshing the page.') }}
       </seed-alert>
     } @else if (organization) {
       <div class="max-w-4xl">

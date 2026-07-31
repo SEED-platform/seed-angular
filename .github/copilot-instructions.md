@@ -275,7 +275,7 @@ rationale.
 Largely at parity: auth, dashboard, profile, inventory list + detail, inventory groups, datasets +
 data mapping, **data pairing**, analyses, insights (portfolio summary, program overview, property
 insights, program config, default + custom reports), **facilities plan**, the full organizations
-settings/people/columns/rules family (including **Organization Sharing**), and the API
+settings/people/columns/rules family (including **Public Data Sharing**), and the API
 docs/Swagger page.
 
 Still to port (highlights — MIGRATION.md is authoritative): personal two-factor setup, the

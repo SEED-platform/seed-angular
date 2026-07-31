@@ -107,7 +107,7 @@ export class OrganizationService {
   }
 
   /**
-   * gets the fields currently marked as publicly shared for an org (Organization Sharing page)
+   * gets the fields currently marked as publicly shared for an org (Public Data Sharing page)
    */
   getSharedFields(organizationId: number): Observable<SharedField[]> {
     const url = `/api/v3/organizations/${organizationId}/shared_fields/`
@@ -120,7 +120,7 @@ export class OrganizationService {
   }
 
   /**
-   * gets the public query threshold for an org (Organization Sharing page)
+   * gets the public query threshold for an org (Public Data Sharing page)
    */
   getQueryThreshold(organizationId: number): Observable<number> {
     const url = `/api/v3/organizations/${organizationId}/query_threshold/`
