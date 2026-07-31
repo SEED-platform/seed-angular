@@ -189,17 +189,18 @@ export class SharingComponent implements OnDestroy, OnInit {
 
   private _fetchSharingData(
     orgId: number,
-  ): Observable<{ usedColumns: UsedColumn[]; allColumns: Column[]; sharedFields: SharedField[]; queryThreshold: number }> {
+  ): Observable<{ usedColumns: UsedColumn[]; propertyColumns: Column[]; taxLotColumns: Column[]; sharedFields: SharedField[]; queryThreshold: number }> {
     return forkJoin({
       usedColumns: this._analysisService.getUsedColumns(orgId),
       // Full org column catalog (Property + Tax Lot, used or not) — lets the user add a field to
       // the table below that doesn't have data yet, not just ones already in `usedColumns`.
-      allColumns: this._columnService.getPropertyColumns(orgId),
+      propertyColumns: this._columnService.getPropertyColumns(orgId),
+      taxLotColumns: this._columnService.getTaxLotColumns(orgId),
       sharedFields: this._organizationService.getSharedFields(orgId),
       queryThreshold: this._organizationService.getQueryThreshold(orgId),
     }).pipe(
-      tap(({ usedColumns, allColumns, sharedFields, queryThreshold }) => {
-        this._setFields(usedColumns, allColumns, sharedFields)
+      tap(({ usedColumns, propertyColumns, taxLotColumns, sharedFields, queryThreshold }) => {
+        this._setFields(usedColumns, [...propertyColumns, ...taxLotColumns], sharedFields)
         this.thresholdForm.get('query_threshold').setValue(queryThreshold)
       }),
     )
