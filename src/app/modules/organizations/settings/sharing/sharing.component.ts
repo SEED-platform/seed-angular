@@ -167,6 +167,9 @@ export class SharingComponent implements OnDestroy, OnInit {
         next: () => {
           this.saved = true
         },
+        error: () => {
+          this.saved = false
+        },
       })
   }
 
@@ -207,14 +210,14 @@ export class SharingComponent implements OnDestroy, OnInit {
   }
 
   private _setFields(usedColumns: UsedColumn[], allColumns: Column[], sharedFields: SharedField[]): void {
-    const publicNames = new Set(sharedFields.map((field) => field.name))
+    const publicKeys = new Set(sharedFields.map((field) => `${field.table_name}:${field.name}`))
     const usedIds = new Set(usedColumns.map((column) => column.id))
     const toSharableField = (column: UsedColumn | Column): SharableField => ({
       id: column.id,
       table_name: column.table_name,
       name: column.name,
       display_name: column.display_name,
-      public_checked: publicNames.has(column.name),
+      public_checked: publicKeys.has(`${column.table_name}:${column.name}`),
     })
 
     this._allColumns = allColumns.map(toSharableField).sort((a, b) => naturalSort(a.display_name, b.display_name))

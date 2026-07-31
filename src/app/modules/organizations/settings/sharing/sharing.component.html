@@ -47,7 +47,7 @@
                   <mat-panel-title class="select-none font-medium leading-tight">{{ t('URL_OPTIONS') }}</mat-panel-title>
                 </mat-expansion-panel-header>
                 <div class="prose max-w-none">
-                  <h3>JSON/HTML</h3>
+                  <h3>{{ t('JSON/HTML') }}</h3>
                   <p class="flex flex-wrap items-center gap-2">
                     {{ t('PUBLIC_JSON') }}:
                     <strong>{{ baseUrl }}/api/v3/public/organizations/{{ organization.id }}/feed.json</strong>
@@ -184,6 +184,7 @@
                             [checked]="allFilteredSelected"
                             [indeterminate]="someFilteredSelected"
                             [matTooltip]="t('Select all visible fields')"
+                            [attr.aria-label]="t('Select all visible fields')"
                             (change)="onSelectAllChange($event.checked)"
                           ></mat-checkbox>
                           <span class="font-medium">{{ t('Share') }}</span>
