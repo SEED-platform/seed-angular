@@ -106,7 +106,7 @@ export class SalesforceBuildingIntegrationComponent implements OnDestroy, OnInit
     })
     this._bbSalesforceService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((config) => {
       this.bbSalesforceConfig = config
-      for (const field of Object.keys(config)) {
+      for (const field of Object.keys(config ?? {})) {
         const key = `bbSalesforceConfig.${field}`
         if (this.bbSalesforceForm.get(key)) {
           this.bbSalesforceForm.get(key).patchValue(config[field])
@@ -295,17 +295,10 @@ export class SalesforceBuildingIntegrationComponent implements OnDestroy, OnInit
     this.organization.bb_salesforce_enabled = this.bbSalesforceForm.get('bb_salesforce_enabled').value
     this._organizationService.updateSettings(this.organization).subscribe()
     const configValues = this.bbSalesforceForm.controls.bbSalesforceConfig.value
-    if (this.bbSalesforceConfig?.id) {
-      this._bbSalesforceService.update(this.organization.id, { ...this.bbSalesforceConfig, ...configValues }).subscribe((config) => {
-        this.bbSalesforceConfig = config
-      })
-    } else {
-      this._bbSalesforceService
-        .create(this.organization.id, { ...configValues, organization_id: this.organization.id })
-        .subscribe((config) => {
-          this.bbSalesforceConfig = config
-        })
-    }
+    // update_config endpoint handles upsert (create or update) using the org from query param
+    this._bbSalesforceService.update(this.organization.id, configValues).subscribe((config) => {
+      this.bbSalesforceConfig = config
+    })
   }
 
   private _checkBbLoginStatus(): void {

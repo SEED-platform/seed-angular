@@ -63,13 +63,7 @@ export class SettingsComponent implements AfterViewInit {
         {
           id: 'organizations/settings/salesforce-building-integration',
           link: '/organizations/settings/salesforce-building-integration',
-          title: 'Salesforce Building Integration',
-          type: 'basic',
-        },
-        {
-          id: 'organizations/settings/salesforce-portfolio-integration',
-          link: '/organizations/settings/salesforce-portfolio-integration',
-          title: 'Salesforce Portfolio Integration',
+          title: 'Salesforce Integration',
           type: 'basic',
         },
         {

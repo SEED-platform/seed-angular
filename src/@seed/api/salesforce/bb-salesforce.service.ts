@@ -37,11 +37,8 @@ export class BbSalesforceService {
     const url = `/api/v3/bb_salesforce/configs/?organization_id=${organizationId}`
     return this._httpClient.get<BbSalesforceConfigsResponse>(url).pipe(
       map((response) => {
-        if (response.bb_salesforce_configs.length === 0) {
-          this._config.next({} as BbSalesforceConfig)
-        } else {
-          this._config.next(response.bb_salesforce_configs[0])
-        }
+        // API returns a single config object or {} when none exists
+        this._config.next(response.bb_salesforce_configs ?? ({} as BbSalesforceConfig))
         return response
       }),
       catchError((error: HttpErrorResponse) => {
@@ -63,7 +60,7 @@ export class BbSalesforceService {
     )
   }
 
-  update(organizationId: number, config: BbSalesforceConfig): Observable<BbSalesforceConfig> {
+  update(organizationId: number, config: Partial<BbSalesforceConfig>): Observable<BbSalesforceConfig> {
     const url = `/api/v3/bb_salesforce/configs/update_config/?organization_id=${organizationId}`
     return this._httpClient.put<BbSalesforceConfigResponse>(url, { ...config }).pipe(
       map((response) => {

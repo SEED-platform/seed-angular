@@ -26,7 +26,7 @@ export class SalesforceLoginComponent implements OnDestroy, OnInit {
         }),
       )
       .subscribe(() => {
-        void this._router.navigate(['organizations/settings/salesforce-portfolio-integration'])
+        void this._router.navigate(['organizations/settings/salesforce-building-integration'])
       })
   }
 
