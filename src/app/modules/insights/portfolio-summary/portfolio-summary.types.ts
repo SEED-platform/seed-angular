@@ -1,4 +1,4 @@
-import type { Goal } from '@seed/api'
+import type { CycleGoal, Goal } from '@seed/api'
 
 export type ConfigureGoalsData = {
   goals: Goal[];
@@ -9,4 +9,12 @@ export type ConfigureGoalsData = {
 export type AddCycleData = {
   currentGoal: Goal;
   isLoggedIntoBbSalesforce: boolean;
+  existingCycleGoal?: CycleGoal;
+}
+
+export type LabelColumnKey = 'baseline' | 'current'
+
+export type PortfolioSummaryGridContext = {
+  labelsExpanded: Record<LabelColumnKey, boolean>;
+  toggleLabels: (key: LabelColumnKey) => void;
 }

@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core'
 import type { Observable } from 'rxjs'
 import { catchError, map, ReplaySubject } from 'rxjs'
 import { ErrorService } from '@seed/services/error/error.service'
+import type { ProgressResponse } from '../progress'
 import { UserService } from '../user'
 import type {
   AuditTemplateConfig,
@@ -88,6 +89,24 @@ export class AuditTemplateService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating Audit Template Config')
+      }),
+    )
+  }
+
+  batchExportToAuditTemplate(orgId: number, propertyViewIds: number[]): Observable<ProgressResponse> {
+    const url = `/api/v3/audit_template/batch_export_to_audit_template/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, { property_view_ids: propertyViewIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting to Audit Template')
+      }),
+    )
+  }
+
+  batchGetCitySubmissionXml(orgId: number, viewIds: number[], defaultCycle: number | null): Observable<ProgressResponse> {
+    const url = `/api/v3/audit_template/batch_get_city_submission_xml/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, { view_ids: viewIds, default_cycle: defaultCycle }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error importing Audit Template submissions')
       }),
     )
   }

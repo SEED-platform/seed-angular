@@ -1,12 +1,13 @@
 export type CycleGoal = {
   id: number;
-  salesforce_annual_report_id?: string;
-  salesforce_annual_report_name?: string;
   current_cycle: {
+    id: number;
     end: string;
     start: string;
     name: string;
   };
+  salesforce_annual_report_id?: string;
+  salesforce_annual_report_name?: string;
 }
 
 export type CycleGoalsResponse = {
@@ -36,6 +37,7 @@ export type Goal = {
   partner_note_approval: boolean;
   partner_note_approval_time?: string;
   partner_note_approval_user?: number;
+  partner_note_approval_user_name?: string;
   salesforce_goal_id?: string;
   salesforce_goal_name?: string;
   salesforce_partner_id?: string;
@@ -83,4 +85,54 @@ export type WeightedEUI = {
 export type weightedEUIsResponse = {
   status: string;
   results: WeightedEUI[];
+}
+
+export type GoalNote = {
+  id: number;
+  goal: number;
+  property: number;
+  question: string | null;
+  resolution: string | null;
+  passed_checks: boolean;
+  new_or_acquired: boolean;
+}
+
+export type HistoricalNote = {
+  id: number;
+  text: string;
+  property: number;
+}
+
+export type GoalProperty = {
+  id: number;
+  baseline_cycle: string;
+  current_cycle: string;
+  baseline_view_id: number | null;
+  current_view_id: number | null;
+  baseline_sqft: number | null;
+  current_sqft: number | null;
+  baseline_eui: number | null;
+  current_eui: number | null;
+  baseline_kbtu: number | null;
+  current_kbtu: number | null;
+  sqft_change: number | null;
+  eui_change: number | null;
+  goal_note: GoalNote | null;
+  historical_note: HistoricalNote | null;
+} & Record<string, unknown>
+
+export type GoalPagination = {
+  page: number;
+  start: number;
+  end: number;
+  num_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+  total: number;
+}
+
+export type GoalPropertiesResponse = {
+  properties: GoalProperty[];
+  pagination: GoalPagination;
+  property_lookup: Record<number, number>;
 }

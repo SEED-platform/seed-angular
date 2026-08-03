@@ -10,3 +10,13 @@ export type Label = {
 export type LabelColor = 'red' | 'orange' | 'white' | 'blue' | 'light blue' | 'green' | 'gray'
 
 export type LabelOperator = 'and' | 'or' | 'exclude'
+
+export type PropertyViewLabel = {
+  id: number;
+  propertyview: number;
+  statuslabel: number;
+  goal: number | null;
+  name: string;
+  color: LabelColor;
+  show_in_list: boolean;
+}

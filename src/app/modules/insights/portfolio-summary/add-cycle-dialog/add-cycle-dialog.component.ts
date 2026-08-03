@@ -1,61 +1,61 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { MatButtonModule } from '@angular/material/button'
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatIconModule } from '@angular/material/icon'
-import { MatInputModule } from '@angular/material/input'
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
-import type { MatSelectChange } from '@angular/material/select'
-import { MatSelectModule } from '@angular/material/select'
+import { Component, inject } from '@angular/core'
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
-import type { AnnualReport, Cycle } from '@seed/api'
+import type { AnnualReport, Cycle, CycleGoal } from '@seed/api'
 import { CycleService, GoalService, SalesforcePortfolioService } from '@seed/api'
+import { ModalHeaderComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
+import { MaterialImports } from '@seed/materials'
 import type { AddCycleData } from '../portfolio-summary.types'
 
 @Component({
   selector: 'seed-add-cycle-dialog',
   templateUrl: './add-cycle-dialog.component.html',
-  encapsulation: ViewEncapsulation.None,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
-    SharedImports,
-    MatSelectModule,
-  ],
+  imports: [CommonModule, MaterialImports, ModalHeaderComponent, SharedImports],
 })
 export class AddCycleDialogComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _cycleService = inject(CycleService)
   private _goalService = inject(GoalService)
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
-  cycles: Cycle[] = []
-  selectedCycle?: Cycle = null
-  selectedAnnualReport?: AnnualReport = null
-  data = inject(MAT_DIALOG_DATA) as AddCycleData
-  isLoggedIntoBbSalesforce: boolean
-  annualReports: AnnualReport[] = []
   private _dialogRef = inject(MatDialogRef<AddCycleDialogComponent>)
+  data = inject(MAT_DIALOG_DATA) as AddCycleData
+
+  cycles: Cycle[] = []
+  selectedCycle: Cycle | null = null
+  selectedAnnualReport: AnnualReport | null = null
+  isLoggedIntoBbSalesforce = false
+  annualReports: AnnualReport[] = []
+  isSaving = false
+
+  get isEditing(): boolean {
+    return !!this.data.existingCycleGoal
+  }
+
+  get title(): string {
+    return this.isEditing ? 'Edit Cycle' : 'Add Cycle'
+  }
 
   ngOnInit(): void {
+    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce
+
     this._cycleService.cycles$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((cycles) => {
       this.cycles = cycles
+      if (this.isEditing) {
+        const existingId = this.data.existingCycleGoal?.current_cycle.id
+        this.selectedCycle = cycles.find((c) => c.id === existingId) ?? null
+      }
     })
 
-    this.isLoggedIntoBbSalesforce = this.data.isLoggedIntoBbSalesforce
     if (this.isLoggedIntoBbSalesforce) {
       this._salesforcePortfolioService.getAnnualReports(this.data.currentGoal.id).subscribe((annualReports) => {
         this.annualReports = annualReports.results
+        if (this.isEditing && this.data.existingCycleGoal?.salesforce_annual_report_id) {
+          const existingReportId = this.data.existingCycleGoal?.salesforce_annual_report_id
+          this.selectedAnnualReport = this.annualReports.find((r) => r.id === existingReportId) ?? null
+        }
       })
     }
   }
@@ -65,21 +65,38 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
     this._unsubscribeAll$.complete()
   }
 
-  selectCycle(event: MatSelectChange): void {
-    const selectedCycleId: number = event.value as number
-    this.selectedCycle = this.cycles.find((c) => c.id === selectedCycleId)
+  close(): void {
+    this._dialogRef.close()
   }
 
-  selectAnnualReport(event: MatSelectChange): void {
-    const selectedAnnualReportId: string = event.value as string
-    this.selectedAnnualReport = this.annualReports.find((r) => r.id === selectedAnnualReportId)
+  onCycleChange(cycleId: number): void {
+    this.selectedCycle = this.cycles.find((c) => c.id === cycleId) ?? null
+  }
+
+  onAnnualReportChange(reportId: string | null): void {
+    this.selectedAnnualReport = reportId ? (this.annualReports.find((r) => r.id === reportId) ?? null) : null
   }
 
   submit(): void {
-    this._goalService
-      .createCycleGoal(this.data.currentGoal.id, this.selectedCycle.id, this.selectedAnnualReport?.id, this.selectedAnnualReport?.name)
-      .subscribe((newCycleGoal) => {
-        this._dialogRef.close(newCycleGoal)
-      })
+    if (!this.selectedCycle) return
+    this.isSaving = true
+    const obs = this.isEditing
+      ? this._goalService.editCycleGoal(
+          this.data.currentGoal.id,
+          this.data.existingCycleGoal?.id ?? 0,
+          this.selectedCycle.id,
+          this.selectedAnnualReport?.id,
+          this.selectedAnnualReport?.name,
+        )
+      : this._goalService.createCycleGoal(
+          this.data.currentGoal.id,
+          this.selectedCycle.id,
+          this.selectedAnnualReport?.id,
+          this.selectedAnnualReport?.name,
+        )
+
+    obs.pipe(takeUntil(this._unsubscribeAll$)).subscribe((cycleGoal: CycleGoal) => {
+      this._dialogRef.close(cycleGoal)
+    })
   }
 }
