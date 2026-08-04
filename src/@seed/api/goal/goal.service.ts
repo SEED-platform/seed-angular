@@ -26,7 +26,7 @@ export class GoalService {
   private _snackBar = inject(SnackBarService)
   private _errorService = inject(ErrorService)
   private _goals = new BehaviorSubject<Goal[]>([])
-  private _portfolioSummary = new BehaviorSubject<PortfolioSummary>(undefined)
+  private _portfolioSummary = new BehaviorSubject<PortfolioSummary | null>(null)
   orgId: number
 
   goals$ = this._goals.asObservable()
