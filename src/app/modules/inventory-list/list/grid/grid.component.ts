@@ -267,17 +267,22 @@ export class InventoryGridComponent implements OnChanges {
             .filter(Boolean)
             .join('')
         }
-        const segments = value
-          .slice(0, 4)
-          .map((id: number) => {
-            const label = this.labelMap[id]
-            if (!label) return ''
-            const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
-            return `<span style="flex:1;min-width:0;background-color:${bg};" title="${label.name}"></span>`
-          })
-          .filter(Boolean)
-        if (!segments.length) return ''
-        return `<div style="height:100%;display:flex;align-items:center;"><div style="display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;">${segments.join('')}</div></div>`
+        const labelIds = value.slice(0, 4).filter((id: number) => !!this.labelMap[id])
+        if (!labelIds.length) return ''
+        const outer = document.createElement('div')
+        outer.style.cssText = 'height:100%;display:flex;align-items:center;'
+        const inner = document.createElement('div')
+        inner.style.cssText = 'display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;'
+        for (const id of labelIds) {
+          const label = this.labelMap[id]
+          const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
+          const span = document.createElement('span')
+          span.style.cssText = `flex:1;min-width:0;background-color:${bg};`
+          span.title = label.name
+          inner.appendChild(span)
+        }
+        outer.appendChild(inner)
+        return outer
       },
     }
   }
