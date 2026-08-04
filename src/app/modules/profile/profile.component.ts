@@ -11,7 +11,7 @@ import { SharedImports } from '@seed/directives'
   imports: [HorizontalNavigationComponent, SharedImports, RouterOutlet],
 })
 export class ProfileComponent {
-  tabs = ['Profile Info', 'Security', 'Developer', 'Admin']
+  tabs = ['Profile Info', 'Security', 'Two Factor Profile', 'Developer', 'Admin']
 
   readonly navigation: NavigationItem[] = [
     {
@@ -27,6 +27,13 @@ export class ProfileComponent {
       type: 'basic',
       icon: 'fa-solid:lock',
       link: '/profile/security',
+    },
+    {
+      id: 'two-factor',
+      title: 'Two Factor Profile',
+      type: 'basic',
+      icon: 'fa-solid:user-shield',
+      link: '/profile/two-factor',
     },
     {
       id: 'developer',
