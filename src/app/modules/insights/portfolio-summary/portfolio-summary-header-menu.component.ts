@@ -1,8 +1,10 @@
 import type { FlexibleConnectedPositionStrategyOrigin, OverlayRef } from '@angular/cdk/overlay'
 import { Overlay } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
-import type { AfterViewInit, TemplateRef } from '@angular/core'
+import type { AfterViewInit, OnDestroy, TemplateRef } from '@angular/core'
 import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
+import { Subject } from 'rxjs'
+import { takeUntil } from 'rxjs/operators'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { Column, GridApi, IHeaderParams } from 'ag-grid-community'
 import { MaterialImports } from '@seed/materials'
@@ -13,12 +15,13 @@ import { ConfigService } from '@seed/services'
   templateUrl: './portfolio-summary-header-menu.component.html',
   imports: [MaterialImports],
 })
-export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit {
+export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit, OnDestroy {
   @ViewChild('menu') menuTemplate!: TemplateRef<unknown>
   @ViewChild('trigger') trigger!: FlexibleConnectedPositionStrategyOrigin
 
   private _configService = inject(ConfigService)
   private _overlay = inject(Overlay)
+  private _unsubscribeAll$ = new Subject<void>()
   private _vcr = inject(ViewContainerRef)
   column: Column<unknown>
   gridApi: GridApi
@@ -35,7 +38,7 @@ export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, 
   }
 
   ngAfterViewInit(): void {
-    this._configService.scheme$.subscribe((scheme) => {
+    this._configService.scheme$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((scheme) => {
       this.scheme = scheme
     })
     this._setOverlay()
@@ -47,6 +50,12 @@ export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, 
     this.gridApi.addEventListener('columnPinned', () => {
       this.pinState = this.column.isPinned()
     })
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
+    this.overlayRef?.dispose()
   }
 
   toggleMenu(): void {
@@ -100,9 +109,12 @@ export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, 
       backdropClass: 'transparent-backdrop',
     })
 
-    this.overlayRef.backdropClick().subscribe(() => {
-      this.overlayRef.detach()
-    })
+    this.overlayRef
+      .backdropClick()
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe(() => {
+        this.overlayRef.detach()
+      })
   }
 
   private _detach(): void {
