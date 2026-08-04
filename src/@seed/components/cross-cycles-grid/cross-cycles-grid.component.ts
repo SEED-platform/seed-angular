@@ -74,7 +74,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       if (rowIndex === null || !rowIndex) return undefined
       const previous = params.api.getDisplayedRowAtIndex(rowIndex - 1)
       if (previous && previous.data?.id !== params.data?.id) {
-        return { borderTop: 'var(--ag-row-border-color, #9ca3af) solid 2px' }
+        return { borderTop: '2px solid var(--ag-row-border-color)' }
       }
       return undefined
     },
@@ -96,6 +96,9 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   initPage(): void {
+    // Cancel any prior initPage() subscriptions (e.g. when inputs change)
+    this._unsubscribeAll$.next()
+
     this._organizationService.currentOrganization$
       .pipe(
         takeUntil(this._unsubscribeAll$),
@@ -234,6 +237,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   buildDetailLinkColumnDef(): ColDef {
     const field = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
+    const detailLabel = this._transloco.translate('View detail')
+
     return {
       field,
       headerName: '',
@@ -246,7 +251,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       suppressMovable: true,
       cellRenderer: ({ value }: { value: number }) =>
         value
-          ? '<div class="flex justify-center mt-2"><span class="material-icons-outlined cursor-pointer" data-action="detail" title="View detail">info</span></div>'
+          ? `<button type="button" class="mt-2 flex w-full cursor-pointer justify-center" data-action="detail" title="${detailLabel}" aria-label="${detailLabel}"><span class="material-icons-outlined">info</span></button>`
           : '',
     }
   }
@@ -328,7 +333,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     const field = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
     if (event.colDef.field !== field) return
 
-    const action = (event.event.target as HTMLElement).getAttribute('data-action')
+    const action = (event.event?.target as HTMLElement | null)?.closest?.('[data-action]')?.getAttribute('data-action')
     if (action !== 'detail') return
 
     const { property_view_id, taxlot_view_id } = event.data as { property_view_id?: number; taxlot_view_id?: number }
