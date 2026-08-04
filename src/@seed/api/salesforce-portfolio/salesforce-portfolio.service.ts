@@ -6,6 +6,7 @@ import { catchError, map, Subject, takeUntil, tap } from 'rxjs'
 import { ErrorService } from '@seed/services'
 import { UserService } from '../user'
 import type {
+  getAnnualReportsResponse,
   getPartnersResponse,
   getTokenResponse,
   loginUrlResponse,
