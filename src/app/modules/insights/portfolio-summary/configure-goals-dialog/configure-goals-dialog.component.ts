@@ -3,7 +3,8 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
+import { Router } from '@angular/router'
+import { combineLatest, EMPTY, Subject, switchMap, takeUntil } from 'rxjs'
 import type {
   AccessLevelInstancesByDepth,
   AccessLevelsByDepth,
@@ -18,6 +19,7 @@ import { ColumnService, CycleService, GoalService, OrganizationService, Salesfor
 import { ModalHeaderComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { ConfigureGoalsData } from '../portfolio-summary.types'
 
 @Component({
@@ -33,6 +35,8 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
   private _dialogRef = inject(MatDialogRef<ConfigureGoalsDialogComponent>)
+  private _router = inject(Router)
+  private _snackBar = inject(SnackBarService)
   data = inject(MAT_DIALOG_DATA) as ConfigureGoalsData
 
   goalForm = new FormGroup({
@@ -83,11 +87,17 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
         takeUntil(this._unsubscribeAll$),
         switchMap((organization) => {
           this.organization = organization
+          if (!this.isLoggedIntoBbSalesforce) return EMPTY
           return this._salesforcePortfolioService.getPartners(this.organization.id)
         }),
       )
       .subscribe((r) => {
         this.salesforcePartners = r.results
+        // If a goal was already selected before partners loaded, populate the goals dropdown now
+        const currentPartnerId = this.goalForm.value.salesforcePartnerID
+        if (currentPartnerId) {
+          this.onPartnerChange(currentPartnerId)
+        }
       })
 
     combineLatest([
@@ -118,6 +128,11 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
 
   close(): void {
     this._dialogRef.close()
+  }
+
+  goToSalesforceSettings(): void {
+    this._dialogRef.close()
+    void this._router.navigate(['/organizations/settings/salesforce-building-integration'])
   }
 
   selectGoal(goalId: number | null | undefined): void {
@@ -169,6 +184,7 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
         this.currentGoal = null
         this.goalForm.reset()
         this.isDeleting = false
+        this._snackBar.success('Goal deleted')
       })
   }
 
@@ -204,6 +220,7 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
           this.goals = [...this.goals, goal]
           this._goalService.get(this.organization.id)
           this.isSaving = false
+          this._snackBar.success('Goal created')
         })
     } else {
       this._goalService
@@ -214,6 +231,7 @@ export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {
           this.goals = this.goals.map((g) => (g.id === goal.id ? goal : g))
           this._goalService.get(this.organization.id)
           this.isSaving = false
+          this._snackBar.success('Goal saved')
         })
     }
   }

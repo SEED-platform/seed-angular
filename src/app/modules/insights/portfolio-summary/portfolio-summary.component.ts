@@ -36,7 +36,8 @@ import { BulkEditGoalNotesModalComponent } from './bulk-edit-goal-notes-modal.co
 import { ConfigureGoalsDialogComponent } from './configure-goals-dialog'
 import { PortfolioSummaryHeaderMenuComponent } from './portfolio-summary-header-menu.component'
 import { PortfolioSummaryLabelHeaderComponent } from './portfolio-summary-label-header.component'
-import type { AddCycleData, ConfigureGoalsData, LabelColumnKey } from './portfolio-summary.types'
+import type { AddCycleData, ConfigureGoalsData, LabelColumnKey, SyncSalesforceData } from './portfolio-summary.types'
+import { SyncSalesforceDialogComponent } from './sync-salesforce-dialog'
 
 Chart.register(annotationPlugin)
 
@@ -472,7 +473,16 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   }
 
   reviewAndSyncToSalesforce(): void {
-    void this._router.navigate(['/organizations/settings/salesforce-portfolio-integration'])
+    if (!this.currentGoal || !this.currentCycleGoal) return
+    this._matDialog.open(SyncSalesforceDialogComponent, {
+      autoFocus: false,
+      width: '70rem',
+      data: {
+        goal: this.currentGoal,
+        currentCycleGoal: this.currentCycleGoal,
+        organization: this.organization,
+      } satisfies SyncSalesforceData,
+    })
   }
 
   toggleLabels(key: LabelColumnKey): void {
@@ -542,7 +552,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   // ─── Salesforce ───────────────────────────────────────────────────
 
   toSettings(): void {
-    void this._router.navigate(['/organizations/settings/salesforce-portfolio-integration'])
+    void this._router.navigate(['/organizations/settings/salesforce-building-integration'])
   }
 
   loginToSalesforce(): void {

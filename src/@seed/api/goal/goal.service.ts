@@ -15,6 +15,7 @@ import type {
   GoalsResponse,
   HistoricalNote,
   PortfolioSummary,
+  SalesforceSummaryResponse,
   weightedEUIsResponse,
 } from './goal.types'
 
@@ -219,6 +220,37 @@ export class GoalService {
     return this._httpClient.put<{ status: string; message: string }>(url, { property_view_ids: propertyViewIds, data }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error bulk updating goal notes')
+      }),
+    )
+  }
+
+  getSalesforceSummary(goalId: number, orgId: number): Observable<SalesforceSummaryResponse> {
+    const url = `/api/v3/goals/${goalId}/salesforce_summary/?organization_id=${orgId}`
+    return this._httpClient.get<SalesforceSummaryResponse>(url)
+  }
+
+  updateSalesforceCurrent(
+    goalId: number,
+    cycleGoalId: number,
+    reportStatus: string | null,
+    reviewStatus: string | null,
+    orgId: number,
+  ): Observable<{ status: string }> {
+    const url = `/api/v3/goals/${goalId}/update_salesforce_current/?organization_id=${orgId}`
+    return this._httpClient
+      .put<{ status: string }>(url, { cycle_goal_id: cycleGoalId, report_status: reportStatus, review_status: reviewStatus })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error syncing current report to Salesforce')
+        }),
+      )
+  }
+
+  updateSalesforceHistorical(goalId: number, cycleGoalIds: number[], orgId: number): Observable<{ status: string }> {
+    const url = `/api/v3/goals/${goalId}/update_salesforce_historical/?organization_id=${orgId}`
+    return this._httpClient.put<{ status: string }>(url, { cycle_goal_ids: cycleGoalIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error syncing historical reports to Salesforce')
       }),
     )
   }

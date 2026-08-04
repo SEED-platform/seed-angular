@@ -1,4 +1,4 @@
-import type { CycleGoal, Goal } from '@seed/api'
+import type { CycleGoal, Goal, Organization } from '@seed/api'
 
 export type ConfigureGoalsData = {
   goals: Goal[];
@@ -13,6 +13,12 @@ export type AddCycleData = {
 }
 
 export type LabelColumnKey = 'baseline' | 'current'
+
+export type SyncSalesforceData = {
+  goal: Goal;
+  currentCycleGoal: CycleGoal;
+  organization: Organization;
+}
 
 export type PortfolioSummaryGridContext = {
   labelsExpanded: Record<LabelColumnKey, boolean>;

@@ -136,3 +136,29 @@ export type GoalPropertiesResponse = {
   pagination: GoalPagination;
   property_lookup: Record<number, number>;
 }
+
+export type SalesforceAnnualReport = {
+  id: string;
+  baseline_portfolio_kbtu: number | null;
+  baseline_portfolio_eui: number | null;
+  reporting_year_start: string | null;
+  reporting_year_end: string | null;
+  number_of_properties: number | null;
+  portfolio_average_eui: number | null;
+  shared_square_feet: number | null;
+  reviewed_square_feet: number | null;
+  ei_annual_improvement: number | null;
+  portfolio_kbtu: number | null;
+  total_ei_improvement: number | null;
+  new_energy_savings: number | null;
+  report_status: string | null;
+  review_status: string | null;
+}
+
+export type SalesforceSummaryEntry = {
+  id: number;
+  seed: PortfolioSummary;
+  salesforce: SalesforceAnnualReport | Record<string, never>;
+}
+
+export type SalesforceSummaryResponse = Record<string, SalesforceSummaryEntry>
