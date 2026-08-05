@@ -31,7 +31,14 @@
           </mat-select>
         </mat-form-field>
       } @else {
-        <p class="text-secondary text-sm">{{ t('Log in to Salesforce to associate an Annual Report.') }}</p>
+        <div class="flex items-center gap-2 text-sm">
+          <mat-icon class="icon-size-4 text-amber-600 dark:text-amber-400" svgIcon="heroicons-solid:exclamation-triangle"></mat-icon>
+          <span class="text-amber-700 dark:text-amber-400">
+            {{ t('Not connected to Salesforce.') }}
+            <a class="cursor-pointer underline" (click)="goToSalesforceSettings()">{{ t('Log in via Organization Settings') }}</a>
+            {{ t('to associate an Annual Report.') }}
+          </span>
+        </div>
       }
     </div>
   </mat-dialog-content>

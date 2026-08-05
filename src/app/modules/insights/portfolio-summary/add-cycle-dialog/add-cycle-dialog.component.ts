@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { AnnualReport, Cycle, CycleGoal } from '@seed/api'
 import { CycleService, GoalService, SalesforcePortfolioService } from '@seed/api'
@@ -19,6 +20,7 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _cycleService = inject(CycleService)
   private _goalService = inject(GoalService)
+  private _router = inject(Router)
   private _salesforcePortfolioService = inject(SalesforcePortfolioService)
   private _dialogRef = inject(MatDialogRef<AddCycleDialogComponent>)
   data = inject(MAT_DIALOG_DATA) as AddCycleData
@@ -67,6 +69,11 @@ export class AddCycleDialogComponent implements OnInit, OnDestroy {
 
   close(): void {
     this._dialogRef.close()
+  }
+
+  goToSalesforceSettings(): void {
+    this._dialogRef.close()
+    void this._router.navigate(['/organizations/settings/salesforce-building-integration'])
   }
 
   onCycleChange(cycleId: number): void {
