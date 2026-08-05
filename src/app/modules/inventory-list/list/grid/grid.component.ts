@@ -257,15 +257,18 @@ export class InventoryGridComponent implements OnChanges {
       cellRenderer: ({ value }: { value: number[] }) => {
         if (!value?.length) return ''
         if (this.labelsExpanded) {
-          return value
-            .map((id: number) => {
-              const label = this.labelMap[id]
-              if (!label) return ''
-              const colorClass = label.color === 'light blue' ? 'blue light' : label.color
-              return `<span class="label ${colorClass} whitespace-nowrap px-2">${label.name}</span>`
-            })
-            .filter(Boolean)
-            .join('')
+          const container = document.createElement('div')
+          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;'
+          for (const id of value) {
+            const label = this.labelMap[id]
+            if (!label) continue
+            const colorClass = label.color === 'light blue' ? 'blue light' : label.color
+            const span = document.createElement('span')
+            span.className = `label ${colorClass} whitespace-nowrap px-2`
+            span.textContent = label.name
+            container.appendChild(span)
+          }
+          return container
         }
         const labelIds = value.slice(0, 4).filter((id: number) => !!this.labelMap[id])
         if (!labelIds.length) return ''
