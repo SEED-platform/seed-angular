@@ -5,16 +5,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import type { CellValueChangedEvent, GridApi } from 'ag-grid-community'
 import { BehaviorSubject, of, ReplaySubject } from 'rxjs'
-import type {
-  Column,
-  CycleGoal,
-  Goal,
-  GoalPagination,
-  GoalProperty,
-  Organization,
-  PortfolioSummary,
-  WeightedEUI,
-} from '@seed/api'
+import type { Column, CycleGoal, Goal, GoalPagination, GoalProperty, Organization, PortfolioSummary, WeightedEUI } from '@seed/api'
 import { ColumnService, GoalService, LabelService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'

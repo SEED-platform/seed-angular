@@ -1,7 +1,7 @@
 <seed-modal-header [close]="dismiss.bind(this)" title="Sync to Salesforce" titleIcon="fa-solid:arrows-rotate" />
 
-<mat-dialog-content>
-  <ng-container *transloco="let t">
+<ng-container *transloco="let t">
+  <mat-dialog-content>
     @if (isLoading) {
       <div class="flex justify-center p-10">
         <mat-spinner diameter="40" />
@@ -194,9 +194,9 @@
         }
       }
     }
-  </ng-container>
-</mat-dialog-content>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button (click)="dismiss()" mat-stroked-button>{{ t('Dismiss') }}</button>
-</mat-dialog-actions>
+  <mat-dialog-actions align="end">
+    <button (click)="dismiss()" mat-stroked-button>{{ t('Dismiss') }}</button>
+  </mat-dialog-actions>
+</ng-container>

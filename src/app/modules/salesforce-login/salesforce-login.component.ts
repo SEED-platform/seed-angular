@@ -2,7 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoDirective } from '@jsverse/transloco'
-import { combineLatest, EMPTY, Subject, switchMap, takeUntil } from 'rxjs'
+import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
 import { OrganizationService, SalesforcePortfolioService } from '@seed/api'
 
 @Component({
