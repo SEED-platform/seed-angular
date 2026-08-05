@@ -16,6 +16,7 @@ eisa
 epsg
 esbuild
 espm
+euis
 extrabold
 extralight
 femp
@@ -36,6 +37,7 @@ importfiles
 importrecord
 jaccard
 jsverse
+kbtu
 kgal
 lmdb
 lokalise
@@ -80,3 +82,8 @@ xmark
 csrftoken
 sankey
 evse
+propertyview
+statuslabel
+Baselining
+reengagement
+macrotask

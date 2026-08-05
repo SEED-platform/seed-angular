@@ -195,7 +195,7 @@ file is a flat `Record<string, string>` (no nesting).
 - **In components** import `TranslocoDirective` (not `TranslocoModule`); for programmatic strings
   (snackbars, titles) inject `TranslocoService` and call `.translate('My string')`.
 - **Workflow:** add new keys to `public/i18n/en_US.json` (key = English string, value = same
-  string), then run `pnpm update-translations` to sync to Lokalise. `es.json`/`fr_CA.json` are
+  string), then run `pnpm update-translations` to sync to Lokalise. `en_US.json`/`es.json`/`fr_CA.json` are
   Lokalise-managed — don't edit them manually.
 - Every user-facing string needs a key. `pnpm lint` does **not** catch missing keys — audit
   manually and **flag** any missing ones rather than silently shipping untranslated strings. When

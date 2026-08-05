@@ -1,3 +1,5 @@
+export * from './audit-template-export-modal.component'
+export * from './audit-template-import-modal.component'
 export * from './email-modal.component'
 export * from './femp-export-modal.component'
 export * from './geocode-modal.component'

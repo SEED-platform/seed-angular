@@ -11,6 +11,17 @@ import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 import { IconHeaderComponent } from './icon-header.component'
+import { InventoryLabelHeaderComponent } from './label-header.component'
+
+const LABEL_COLOR_MAP: Record<string, string> = {
+  red: '#b91c1c',
+  orange: '#fb923c',
+  gray: '#57534e',
+  green: '#15803d',
+  blue: '#1d4ed8',
+  'light blue': '#0891b2',
+  white: '#e5e7eb',
+}
 
 @Component({
   selector: 'seed-inventory-grid',
@@ -44,6 +55,14 @@ export class InventoryGridComponent implements OnChanges {
   darkMode: boolean
   gridTheme$ = this._configService.gridTheme$
   showAccessLevelInstances = true
+  labelsExpanded = false
+
+  readonly gridContext = {
+    labelsExpanded: false,
+    toggleLabels: () => {
+      this.toggleLabels()
+    },
+  }
 
   theme: string
 
@@ -144,6 +163,14 @@ export class InventoryGridComponent implements OnChanges {
     }
   }
 
+  toggleLabels(): void {
+    this.labelsExpanded = !this.labelsExpanded
+    this.gridContext.labelsExpanded = this.labelsExpanded
+    this.gridApi?.setColumnWidths([{ key: 'labels', newWidth: this.labelsExpanded ? 320 : 44 }])
+    this.gridApi?.refreshHeader()
+    this.gridApi?.refreshCells({ force: true, columns: ['labels'] })
+  }
+
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
@@ -213,33 +240,52 @@ export class InventoryGridComponent implements OnChanges {
     `
   }
 
-  buildLabelsCell() {
+  buildLabelsCell(): ColDef {
     return {
+      colId: 'labels',
       field: 'labels',
       headerName: 'Labels',
-      width: 80,
+      width: 44,
       filter: false,
       sortable: false,
       suppressMovable: true,
-      // labels come in as an array of ids [1,2,3]. Ag grid needs them formatted as a string
+      cellStyle: { paddingLeft: '0', paddingRight: '0' },
+      headerComponent: InventoryLabelHeaderComponent,
       valueFormatter: ({ value }: { value: number[] }) => {
-        const labels = value
-        return labels?.length ? labels.map((id: number) => this.labelMap[id]?.name).join(', ') : ''
+        return value?.length ? value.map((id: number) => this.labelMap[id]?.name).join(', ') : ''
       },
       cellRenderer: ({ value }: { value: number[] }) => {
-        const labels = value
-        if (!labels.length) return ''
-
-        const eLabels = labels
-          .map((id: number) => {
-            return this.labelMap[id]
-              ? `<div class="label ${this.labelMap[id]?.color} whitespace-nowrap px-2">${this.labelMap[id].name}</div>`
-              : ''
-          })
-          .join(' ')
-
-        const eGui = `<div>${eLabels}</div>`
-        return value ? eGui : ''
+        if (!value?.length) return ''
+        if (this.labelsExpanded) {
+          const container = document.createElement('div')
+          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;'
+          for (const id of value) {
+            const label = this.labelMap[id]
+            if (!label) continue
+            const colorClass = label.color === 'light blue' ? 'blue light' : label.color
+            const span = document.createElement('span')
+            span.className = `label ${colorClass} whitespace-nowrap px-2`
+            span.textContent = label.name
+            container.appendChild(span)
+          }
+          return container
+        }
+        const labelIds = value.slice(0, 4).filter((id: number) => !!this.labelMap[id])
+        if (!labelIds.length) return ''
+        const outer = document.createElement('div')
+        outer.style.cssText = 'height:100%;display:flex;align-items:center;'
+        const inner = document.createElement('div')
+        inner.style.cssText = 'display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;'
+        for (const id of labelIds) {
+          const label = this.labelMap[id]
+          const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
+          const span = document.createElement('span')
+          span.style.cssText = `flex:1;min-width:0;background-color:${bg};`
+          span.title = label.name
+          inner.appendChild(span)
+        }
+        outer.appendChild(inner)
+        return outer
       },
     }
   }

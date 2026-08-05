@@ -219,9 +219,8 @@ export class SummaryComponent implements OnDestroy, OnInit {
       return EMPTY
     }
 
-    const requestColumns = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length
-      ? 'all'
-      : this.selectedColumnNames
+    const requestColumns
+      = !this.availableColumns.length || this.selectedColumnNames.length === this.availableColumns.length ? 'all' : this.selectedColumnNames
 
     return this._propertyService.columnSummary(this.orgId, this.selectedCycleIds, requestColumns).pipe(
       tap((summary) => {
@@ -1011,11 +1010,12 @@ export class SummaryComponent implements OnDestroy, OnInit {
   private _matchesFilterExpression(params: TextMatcherParams): boolean {
     const rawFilterText = (params.filterText ?? '').trim()
     const value: unknown = params.value as unknown
-    const valueText = typeof value === 'string'
-      ? value
-      : typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
-        ? String(value)
-        : ''
+    const valueText
+      = typeof value === 'string'
+        ? value
+        : typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint'
+          ? String(value)
+          : ''
     const normalizedValue = valueText.toLowerCase()
 
     if (!rawFilterText) {

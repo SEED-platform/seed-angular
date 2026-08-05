@@ -64,7 +64,7 @@ export type BbSalesforceConfigResponse = {
 
 export type BbSalesforceConfigsResponse = {
   status: string;
-  bb_salesforce_configs: BbSalesforceConfig[];
+  bb_salesforce_configs: BbSalesforceConfig;
 }
 
 export type BbSalesforceLoginUrlResponse = {
