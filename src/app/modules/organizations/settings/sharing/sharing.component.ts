@@ -83,10 +83,10 @@ export class SharingComponent implements OnDestroy, OnInit {
   // the "Add a field" autocomplete. Capped so a large org's column catalog doesn't render an
   // unbounded dropdown.
   get availableFieldsToAdd(): SharableField[] {
-    const existingIds = new Set(this.fields.map((field) => field.id))
+    const existingKeys = new Set(this.fields.map((field) => `${field.table_name}:${field.id}`))
     const query = this.addFieldQuery.trim().toLowerCase()
     return this._allColumns
-      .filter((field) => !existingIds.has(field.id))
+      .filter((field) => !existingKeys.has(`${field.table_name}:${field.id}`))
       .filter(
         (field) =>
           !query || field.display_name.toLowerCase().includes(query) || this.tableLabel(field.table_name).toLowerCase().includes(query),
@@ -143,6 +143,11 @@ export class SharingComponent implements OnDestroy, OnInit {
   // blank so the input stays ready for the next search instead of echoing the picked field's name.
   clearAutocompleteDisplay(): string {
     return ''
+  }
+
+  toggleFeed(enabled: boolean): void {
+    this.organization.public_feed_enabled = enabled
+    this._organizationService.updateSettings(this.organization).subscribe()
   }
 
   save(): void {
@@ -218,7 +223,7 @@ export class SharingComponent implements OnDestroy, OnInit {
 
   private _setFields(usedColumns: UsedColumn[], allColumns: Column[], sharedFields: SharedField[]): void {
     const publicKeys = new Set(sharedFields.map((field) => `${field.table_name}:${field.name}`))
-    const usedIds = new Set(usedColumns.map((column) => column.id))
+    const usedKeys = new Set(usedColumns.map((column) => `${column.table_name}:${column.id}`))
     const toSharableField = (column: UsedColumn | Column): SharableField => ({
       id: column.id,
       table_name: column.table_name,
@@ -227,11 +232,13 @@ export class SharingComponent implements OnDestroy, OnInit {
       public_checked: publicKeys.has(`${column.table_name}:${column.name}`),
     })
 
-    this._allColumns = allColumns.map(toSharableField).sort((a, b) => naturalSort(a.display_name, b.display_name))
+    // Deduplicate the full column catalog by composite table_name:id key before storing.
+    const dedupedColumns = [...new Map(allColumns.map((col) => [`${col.table_name}:${col.id}`, col])).values()]
+    this._allColumns = dedupedColumns.map(toSharableField).sort((a, b) => naturalSort(a.display_name, b.display_name))
 
     // Include any column that's already shared but fell out of `usedColumns` (its data was since
     // cleared) so saving doesn't silently un-share it just because it's no longer populated.
-    const staleSharedFields = this._allColumns.filter((field) => field.public_checked && !usedIds.has(field.id))
+    const staleSharedFields = this._allColumns.filter((field) => field.public_checked && !usedKeys.has(`${field.table_name}:${field.id}`))
 
     this.fields = [...usedColumns.map(toSharableField), ...staleSharedFields].sort((a, b) => naturalSort(a.display_name, b.display_name))
   }

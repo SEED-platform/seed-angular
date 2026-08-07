@@ -27,22 +27,19 @@
           </seed-alert>
         } @else {
           <div class="bg-card mb-6 flex flex-col gap-y-2 rounded-2xl p-6 shadow">
-            <div class="prose max-w-none">
-              {{ t('The Public Feed functionality is currently') }}:
-              @if (organization.public_feed_enabled) {
-                <span class="font-semibold text-primary-700 dark:text-primary-300">{{ t('ENABLED') }}</span>
-              } @else {
-                <span class="text-secondary font-semibold">{{ t('DISABLED') }}</span>
-              }
-              &mdash; {{ t('Visit') }}
-              <a routerLink="/organizations/settings/options">{{ t('Organization Settings') }}</a>
-              {{ t('to enable or disable Public Feed functionality') }}
+            <mat-slide-toggle [checked]="organization.public_feed_enabled" (change)="toggleFeed($event.checked)">
+              {{ t('Enable Public Endpoints') }}
+            </mat-slide-toggle>
+            <div class="prose ml-10 mt-2 max-w-none">
+              {{
+                t('When enabled, data is accessible via the /v3/public endpoints. Configure which fields are shared in the table below.')
+              }}
             </div>
           </div>
 
           @if (organization.public_feed_enabled) {
             <mat-accordion class="mb-6 block">
-              <mat-expansion-panel>
+              <mat-expansion-panel class="bg-card rounded-2xl shadow">
                 <mat-expansion-panel-header collapsedHeight="56px">
                   <mat-panel-title class="select-none font-medium leading-tight">{{ t('URL_OPTIONS') }}</mat-panel-title>
                 </mat-expansion-panel-header>
@@ -134,34 +131,11 @@
                 longer has data (see SharingComponent._setFields). Checking "Share" only flags a
                 row as public — it isn't persisted until "Save Changes" is clicked. To make a
                 field that isn't listed yet sharable (e.g. one that doesn't have data yet), use
-                "Add a field" below to append it as a new row first.
+                "Add a field" at the bottom to append it as a new row first.
               -->
               <seed-alert [showIcon]="true" type="info" appearance="outline">
                 {{ t('PUBLIC_SHARE_FIELDS_HELP') }}
               </seed-alert>
-
-              <mat-form-field appearance="outline">
-                <mat-label>{{ t('Add a field') }}</mat-label>
-                <input
-                  [(ngModel)]="addFieldQuery"
-                  [ngModelOptions]="{ standalone: true }"
-                  [matAutocomplete]="addFieldAuto"
-                  [placeholder]="t('Search by field or table name to add it below')"
-                  matInput
-                />
-                <mat-autocomplete
-                  #addFieldAuto="matAutocomplete"
-                  [displayWith]="clearAutocompleteDisplay"
-                  (optionSelected)="addField($event.option.value)"
-                >
-                  @for (field of availableFieldsToAdd; track field.id) {
-                    <mat-option [value]="field">{{ tableLabel(field.table_name) }} &mdash; {{ field.display_name }}</mat-option>
-                  } @empty {
-                    <mat-option disabled>{{ t('No matching fields found.') }}</mat-option>
-                  }
-                </mat-autocomplete>
-                <mat-hint>{{ t('Selecting a field adds it to the list below so it can be shared.') }}</mat-hint>
-              </mat-form-field>
 
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <mat-form-field appearance="outline">
@@ -195,7 +169,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    @for (field of filteredFields; track field.id) {
+                    @for (field of filteredFields; track field.table_name + ':' + field.id) {
                       <tr class="border-t border-gray-200 dark:border-gray-700">
                         <td class="p-2">
                           <mat-checkbox [(ngModel)]="field.public_checked" [ngModelOptions]="{ standalone: true }"></mat-checkbox>
@@ -211,6 +185,31 @@
                   </tbody>
                 </table>
               </div>
+
+              <div class="text-secondary text-sm font-medium">
+                {{ t('Or select a field to add to the table. Selecting a field adds it to the table above so it can be shared.') }}
+              </div>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ t('Add a field') }}</mat-label>
+                <input
+                  [(ngModel)]="addFieldQuery"
+                  [ngModelOptions]="{ standalone: true }"
+                  [matAutocomplete]="addFieldAuto"
+                  [placeholder]="t('Search by field or table name')"
+                  matInput
+                />
+                <mat-autocomplete
+                  #addFieldAuto="matAutocomplete"
+                  [displayWith]="clearAutocompleteDisplay"
+                  (optionSelected)="addField($event.option.value)"
+                >
+                  @for (field of availableFieldsToAdd; track field.table_name + ':' + field.id) {
+                    <mat-option [value]="field">{{ tableLabel(field.table_name) }} &mdash; {{ field.display_name }}</mat-option>
+                  } @empty {
+                    <mat-option disabled>{{ t('No matching fields found.') }}</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
 
               <div class="flex items-center gap-4">
                 <button [disabled]="thresholdForm.invalid || saving" (click)="save()" mat-flat-button color="primary" type="button">

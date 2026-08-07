@@ -17,12 +17,11 @@ export class OptionsComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   organization: Organization
-  fields: string[] = ['name', 'geocoding_enabled', 'comstock_enabled', 'public_feed_enabled']
+  fields: string[] = ['name', 'geocoding_enabled', 'comstock_enabled']
   optionsForm = new FormGroup({
     name: new FormControl('', Validators.required),
     geocoding_enabled: new FormControl(false),
     comstock_enabled: new FormControl(false),
-    public_feed_enabled: new FormControl(false),
   })
 
   ngOnInit(): void {
@@ -45,7 +44,6 @@ export class OptionsComponent implements OnInit, OnDestroy {
       this.organization.name = this.optionsForm.get('name').value
       this.organization.geocoding_enabled = this.optionsForm.get('geocoding_enabled').value
       this.organization.comstock_enabled = this.optionsForm.get('comstock_enabled').value
-      this.organization.public_feed_enabled = this.optionsForm.get('public_feed_enabled').value
       this._organizationService.updateSettings(this.organization).subscribe()
     }
   }
