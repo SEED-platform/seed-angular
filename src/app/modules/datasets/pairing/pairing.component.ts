@@ -160,7 +160,16 @@ export class PairingComponent implements OnDestroy, OnInit {
   }
 
   withDragColumn(columnDefs: ColDef[]): ColDef[] {
-    const dragColumn: ColDef = { field: 'drag', headerName: '', rowDrag: true, sortable: false, filter: false, resizable: false, width: 44, pinned: 'left' }
+    const dragColumn: ColDef = {
+      field: 'drag',
+      headerName: '',
+      rowDrag: true,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      width: 44,
+      pinned: 'left',
+    }
     return [dragColumn, ...columnDefs]
   }
 
