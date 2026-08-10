@@ -72,6 +72,11 @@ export type Organization = BriefOrganization & {
   default_reports_x_axis_options: Column[];
   default_reports_y_axis_options: Column[];
   require_2fa: boolean;
+  // Not part of the standard organization GET response; fetched separately via
+  // `getQueryThreshold` and attached here before `updateSettings` saves it back.
+  query_threshold?: number;
+  // Write-only: attached before `updateSettings` to persist the public column selection.
+  public_fields?: { id: number }[];
 }
 
 export type OrganizationSettings = Omit<Organization, 'default_reports_x_axis_options' | 'default_reports_y_axis_options'> & {
@@ -85,6 +90,24 @@ export type OrganizationResponse = {
 }
 export type OrganizationsResponse = {
   organizations: (BriefOrganization | Organization)[];
+}
+
+// A column marked as publicly shared, as returned by the `shared_fields` endpoint.
+export type SharedField = {
+  table_name: string;
+  name: string;
+  column_name: string;
+  display_name: string;
+}
+
+export type SharedFieldsResponse = {
+  status: string;
+  public_fields: SharedField[];
+}
+
+export type QueryThresholdResponse = {
+  status: string;
+  query_threshold: number;
 }
 
 export type OrganizationUser = {
