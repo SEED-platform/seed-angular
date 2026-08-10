@@ -126,6 +126,24 @@ export type AnalysisSummaryStats = {
   is_extra_data: boolean;
 }
 
+// Column (with data) used by an organization's properties/tax lots, as returned by the
+// `used_columns` endpoint. Note the backend renames `shared_field_type` to `sharedFieldType`
+// on this response only (unlike the standard Column shape returned elsewhere).
+export type UsedColumn = {
+  id: number;
+  name: string;
+  organization_id: number;
+  table_name: 'PropertyState' | 'TaxLotState';
+  column_name: string;
+  display_name: string;
+  sharedFieldType: 'None' | 'Public';
+}
+
+export type UsedColumnsResponse = {
+  status: string;
+  columns: UsedColumn[];
+}
+
 export type SavingsTarget = 'AGGRESSIVE' | 'CONSERVATIVE' | 'NOMINAL'
 export type SelectMetersType = 'all' | 'date_range' | 'select_cycle'
 export type BenchmarkDataType = 'DEFAULT' | 'GENERATE'

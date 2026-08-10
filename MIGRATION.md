@@ -104,15 +104,23 @@ against this app's route files. Update this table as pages move between columns.
 - [ ] **Salesforce login callback** (`/salesforce_login`, `salesforce_login_controller`) — the
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
-- [ ] **Organization sharing** (`/accounts/:organization_id/sharing`, `organization_sharing_controller`)
-      — org-settings tab that selects which property columns are publicly exposed in the
-      organization's public data feed, and sets the public query threshold. (This is about public
-      column exposure, not sub-organizations.)
 - [ ] **Program setup** (`/accounts/:organization_id/program_setup[/:id]`, `program_setup_controller`)
       — BuildingSync/program configuration for an org, under org settings. (Don't confuse with
       `ProgramConfigComponent` in `insights/config/` — that's a smaller compliance-metric picker
       embedded in the already-migrated `program-overview`/`property-insights` pages, not the
       full org-level program CRUD admin page.)
+
+### Ported but incomplete (current working status)
+
+- [ ] **Salesforce login callback** — Angular implementation exists in PR #56, but callback
+      success/failure landing behavior still needs parity verification.
+- [ ] **Public Data Sharing** — Angular implementation exists in PR #77, with reviewer request
+      `kflemin`; verify API behavior, permissions, translations, and real-data save/reload.
+- [ ] **Portfolio Summary enhancement** — PR #56 remains in progress; verify goals, cycles,
+      partner approvals, Salesforce behavior, and remaining source-audit TODOs.
+
+The older “Not yet migrated” entries above are retained as historical route references; the daily
+source-audit table below is the current classification.
 
 ### Cross-checked against legacy `js/services/`
 
@@ -160,9 +168,11 @@ Everything else in `seed.js`'s state table has a corresponding route in this app
 `pairing`→`datasets/pairing/:id/:type`, `about`/
 `contact`/`api_docs`, the full `organization_*` settings family (settings, access-level-tree,
 column settings/mappings, data-quality incl. goals, cycles, labels, members, email-templates,
-derived-columns — the derived column *editor* is now a modal rather than its own route), and the
+derived-columns — the derived column *editor* is now a modal rather than its own route),
+`organization_sharing`→`organizations/settings/sharing` (public column selection + public query
+threshold for the org's public data feed), and the
 full `inventory_*`/`inventory_detail_*`/`inventory_group_*` family (list, map, summary,
-cross-cycles, groups incl. dashboard/meters/systems, detail incl. analyses/meters/sensors/timeline/
+groups incl. dashboard/meters/systems, detail incl. analyses/meters/sensors/timeline/
 notes/ubids/column-detail-profiles), and `insights_program`/`insights_property`/`reports`
 (→ default-reports)/`custom_reports`/`data_view`/`portfolio_summary`, and `facilities_plan`
 (→ `insights/facilities-plan` plus the org-settings facilities-plan page).
@@ -170,3 +180,58 @@ notes/ubids/column-detail-profiles), and `insights_program`/`insights_property`/
 If you migrate something from the "not yet migrated" list, move its line into this section (or
 just delete the line) in the same PR. If the team instead decides *not* to port something, move
 its line to "Won't migrate" with a reason instead.
+
+## Daily source-code parity snapshot
+
+Snapshot refreshed **2026-08-03 04:07 PDT** from the legacy route/template inventory, the current
+Angular source tree, local worktrees, and refreshed remote refs. Shared fragments and modal HTML
+remain counted under their owning page rather than as separate pages.
+
+| Inventory / status | Current count | Evidence |
+|---|---:|---|
+| Legacy partial HTML files | **166** | `seed/static/seed/partials/**/*.html` |
+| Unique route-owned legacy templates | **59** | 63 legacy states in `seed.js` collapse to 59 unique `partials/*.html` references |
+| Shared/modal legacy fragments | **107** | Parent-page burndown; 86 filenames contain `modal` |
+| Angular application HTML templates | **198** | `src/app/**/*.html` |
+| Angular shared HTML templates | **33** | `src/@seed/**/*.html` |
+| Baseline migrated | **51 / 59** | Route/component exists on the baseline, subject to full parity sign-off |
+| Ported but incomplete | **3 / 59** | Salesforce login, Public Data Sharing, Portfolio Summary enhancement |
+| Needs port | **2 / 59** | Personal two-factor setup and full Program Setup |
+| Won't migrate | **3 / 59** | Pairing settings, Inventory Plots, Sub-organizations |
+
+```mermaid
+xychart-beta
+    title "Legacy route-template migration burndown"
+    x-axis ["Baseline migrated", "Incomplete", "Needs port", "Won't migrate"]
+    y-axis "Unique route templates" 0 --> 59
+    bar [51, 3, 2, 3]
+```
+
+### Cross Cycles parity walkthrough
+
+Cross Cycles is now **functionally ported** (properties and tax lots, list + detail routes). The
+legacy route was `inventory_cycles` at `/{inventory_type:properties|taxlots}/cycles`, backed by
+`seed/static/seed/partials/inventory_cycles.html` and
+`seed/static/seed/js/controllers/inventory_cycles_controller.js`. Its parity surface —
+`inventory_service.properties_cycle()` / `taxlots_cycle()`, persisted last-selected cycles,
+profile and column payloads, matching-criteria columns, grouping/pinning, cycle name and start
+columns, filters, detail links, translated labels, and both property/tax-lot tabs — is now
+covered by:
+
+- `src/@seed/components/cross-cycles-grid/cross-cycles-grid.component.ts` — the shared grid
+  (cycle-partitioned fetch via `filterByCycle()`, flattened rows sorted/grouped by linking id
+  since row grouping is an ag-grid Enterprise-only feature this Community-licensed app doesn't
+  have, matching-criteria pinning, Cycle/Cycle Start columns, data-type-aware filters, clear
+  filters, loading/empty/error states).
+- `src/app/modules/inventory-list/cross-cycles/cross-cycles.component.ts` — the list-page wrapper
+  (persisted cycle multi-select + column-list-profile selection, tabs).
+- `src/app/modules/inventory-detail/cross-cycles/cross-cycles.component.ts` — the detail-page
+  wrapper (scopes the shared grid to the current record's linking id across all cycles).
+
+The legacy `properties_cycle()` / `taxlots_cycle()` endpoints map 1:1 to
+`src/@seed/api/inventory/inventory.service.ts` `filterByCycle()` (`/api/v3/{type}/filter_by_cycle/`)
+with no backend changes. `seed/utils/properties.py::properties_across_cycles` and
+`seed/utils/taxlots.py::taxlots_across_cycles` were optimized (single query + single
+`TaxLotProperty.serialize()` call across all requested cycles, instead of one of each per cycle)
+without changing the endpoint's request/response shape. Verified with seeded multi-cycle data
+(single-cycle, multi-cycle overlap, no-data, and missing-profile cases) and Playwright.

@@ -34,6 +34,9 @@ import type {
   OrganizationUserResponse,
   OrganizationUserSettings,
   OrganizationUsersResponse,
+  QueryThresholdResponse,
+  SharedField,
+  SharedFieldsResponse,
   StartSavingAccessLevelInstancesRequest,
   UpdateAccessLevelsRequest,
   UpdateAccessLevelsResponse,
@@ -99,6 +102,32 @@ export class OrganizationService {
       catchError((error: HttpErrorResponse) => {
         // TODO need to figure out error handling
         return this._errorService.handleError(error, 'Error fetching organization')
+      }),
+    )
+  }
+
+  /**
+   * gets the fields currently marked as publicly shared for an org (Public Data Sharing page)
+   */
+  getSharedFields(organizationId: number): Observable<SharedField[]> {
+    const url = `/api/v3/organizations/${organizationId}/shared_fields/`
+    return this._httpClient.get<SharedFieldsResponse>(url).pipe(
+      map((response) => response.public_fields),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching shared fields')
+      }),
+    )
+  }
+
+  /**
+   * gets the public query threshold for an org (Public Data Sharing page)
+   */
+  getQueryThreshold(organizationId: number): Observable<number> {
+    const url = `/api/v3/organizations/${organizationId}/query_threshold/`
+    return this._httpClient.get<QueryThresholdResponse>(url).pipe(
+      map((response) => response.query_threshold),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching query threshold')
       }),
     )
   }

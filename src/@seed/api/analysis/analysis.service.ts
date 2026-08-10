@@ -20,6 +20,8 @@ import type {
   ListAnalysesResponse,
   ListMessagesResponse,
   PropertyAnalysesResponse,
+  UsedColumn,
+  UsedColumnsResponse,
   View,
 } from './analysis.types'
 
@@ -185,6 +187,17 @@ export class AnalysisService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error creating analysis')
+      }),
+    )
+  }
+
+  // Get all property and taxlot columns that have data in them for an org (used by Public Data Sharing)
+  getUsedColumns(orgId: number): Observable<UsedColumn[]> {
+    const url = `/api/v3/analyses/used_columns/?organization_id=${orgId}`
+    return this._httpClient.get<UsedColumnsResponse>(url).pipe(
+      map((response) => response.columns),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching used columns')
       }),
     )
   }

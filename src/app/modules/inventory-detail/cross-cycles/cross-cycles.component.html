@@ -1,11 +1,13 @@
 <seed-page
   [config]="{
-    title: 'Property',
+    title: displayName,
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:shuffle',
-    breadcrumbs: ['Property', 'Cross Cycles'],
+    breadcrumbs: [displayName, 'Cross Cycles'],
     sideNavToggle: true,
   }"
 >
-  <seed-not-found message="Cross Cycles in development..." icon="fa-solid:triangle-exclamation"></seed-not-found>
+  @if (linkingId) {
+    <seed-cross-cycles-grid [type]="type" [linkingId]="linkingId" mode="detail"></seed-cross-cycles-grid>
+  }
 </seed-page>

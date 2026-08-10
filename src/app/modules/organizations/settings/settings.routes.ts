@@ -7,7 +7,8 @@ import { EmailComponent } from './email/email.component'
 import { FacilitiesPlanSettingsComponent } from './facilities-plan/facilities-plan.component'
 import { MaintenanceComponent } from './maintenance/maintenance.component'
 import { OptionsComponent } from './options/options.component'
-import { SalesforceBuildingIntegrationComponent } from './salesforce-building-integration/salesforce-building-integration.component'
+import { SalesforceComponent } from './salesforce/salesforce.component'
+import { SharingComponent } from './sharing/sharing.component'
 import { TwoFactorComponent } from './two-factor/two-factor.component'
 import { UBIDComponent } from './ubid/ubid.component'
 
@@ -61,6 +62,11 @@ export default [
     path: 'salesforce-building-integration',
     title: 'Salesforce Integration',
     component: SalesforceBuildingIntegrationComponent,
+  },
+  {
+    path: 'sharing',
+    title: 'Public Data Sharing',
+    component: SharingComponent,
   },
   {
     path: 'two-factor',

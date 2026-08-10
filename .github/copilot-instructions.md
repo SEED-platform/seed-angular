@@ -275,11 +275,11 @@ rationale.
 Largely at parity: auth, dashboard, profile, inventory list + detail, inventory groups, datasets +
 data mapping, **data pairing**, analyses, insights (portfolio summary, program overview, property
 insights, program config, default + custom reports), **facilities plan**, the full organizations
-settings/people/columns/rules family, and the API docs/Swagger page.
+settings/people/columns/rules family (including **Public Data Sharing**), and the API
+docs/Swagger page.
 
-Still to port (highlights — MIGRATION.md is authoritative): **Organization sharing**
-(`/accounts/:org/sharing`), personal two-factor setup, the Salesforce login callback, and org-level
-**program setup**.
+Still to port (highlights — MIGRATION.md is authoritative): personal two-factor setup, the
+Salesforce login callback, and org-level **program setup**.
 
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
