@@ -2,7 +2,13 @@ import { inject } from '@angular/core'
 import type { ActivatedRouteSnapshot, CanActivateFn, Routes } from '@angular/router'
 import { Router } from '@angular/router'
 import { DetailComponent } from 'app/modules/inventory-detail/detail/detail.component'
-import { ColumnListProfilesComponent, GroupsComponent, InventoryComponent, MapComponent } from 'app/modules/inventory-list'
+import {
+  ColumnListProfilesComponent,
+  GroupsComponent,
+  InventoryComponent,
+  CrossCyclesComponent as InventoryListCrossCyclesComponent,
+  MapComponent,
+} from 'app/modules/inventory-list'
 import {
   AnalysesComponent,
   CrossCyclesComponent,
@@ -77,7 +83,7 @@ export default [
   {
     path: 'cross-cycles',
     title: 'Cross Cycles',
-    component: CrossCyclesComponent,
+    component: InventoryListCrossCyclesComponent,
   },
   {
     path: 'map',
