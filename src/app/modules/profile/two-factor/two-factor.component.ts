@@ -107,6 +107,8 @@ export class ProfileTwoFactorComponent implements OnInit, OnDestroy {
   }
 
   resendTokenEmail(): void {
+    if (!confirm(`Resend a test email token to ${this.user.email}?`)) return
+
     this._twoFactorService
       .resendTokenEmail(this.user.org_id, this.user.email)
       .pipe(takeUntil(this._unsubscribeAll$))
