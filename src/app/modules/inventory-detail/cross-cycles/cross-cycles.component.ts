@@ -1,24 +1,27 @@
-import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { tap } from 'rxjs'
-import { OrganizationService } from '@seed/api'
-import { NotFoundComponent, PageComponent } from '@seed/components'
+import { Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { InventoryService, OrganizationService } from '@seed/api'
+import { PageComponent } from '@seed/components'
+import { CrossCyclesGridComponent } from '@seed/components/cross-cycles-grid/cross-cycles-grid.component'
+import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
   selector: 'seed-inventory-detail-cross-cycles',
   templateUrl: './cross-cycles.component.html',
-  imports: [CommonModule, NotFoundComponent, PageComponent],
+  imports: [AsyncPipe, CrossCyclesGridComponent, PageComponent],
 })
-export class CrossCyclesComponent implements OnInit {
+export class CrossCyclesComponent implements OnDestroy, OnInit {
+  private _inventoryService = inject(InventoryService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
-  columnDefs: ColDef[]
-  rowData: Record<string, unknown>[] = []
-  gridApi: GridApi
+  private readonly _unsubscribeAll$ = new Subject<void>()
+  displayName: InventoryDisplayType
+  linkingId?: number
+  type: InventoryType
   viewId: number
   viewDisplayField$: Observable<string>
 
@@ -28,10 +31,24 @@ export class CrossCyclesComponent implements OnInit {
 
   getUrlParams() {
     return this._route.parent.paramMap.pipe(
+      takeUntil(this._unsubscribeAll$),
       tap((params) => {
         this.viewId = parseInt(params.get('id'))
-        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, 'properties')
+        this.type = params.get('type') as InventoryType
+        this.displayName = this.type === 'taxlots' ? 'Tax Lot' : 'Property'
+        this.linkingId = undefined
+        this.viewDisplayField$ = this._organizationService.getViewDisplayField(this.viewId, this.type)
+      }),
+      switchMap(() => this._organizationService.currentOrganization$.pipe(take(1))),
+      switchMap((org) => this._inventoryService.getView(org.id, this.viewId, this.type)),
+      tap((view) => {
+        this.linkingId = this.type === 'taxlots' ? view.taxlot?.id : view.property?.id
       }),
     )
+  }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll$.next()
+    this._unsubscribeAll$.complete()
   }
 }
