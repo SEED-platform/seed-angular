@@ -109,7 +109,16 @@ const mockPropertiesResponse = {
 
 /** Build a minimal RowClassParams object for rule tests. */
 function makeParams(runningPct: number | null | undefined): RowClassParams<FacilitiesPlanRunProperty> {
-  return { data: { property_view_id: 1, total_energy_usage: 0, percentage_of_total_energy_usage: 0, rank: 1, running_percentage: runningPct, running_square_footage: 0 } } as unknown as RowClassParams<FacilitiesPlanRunProperty>
+  return {
+    data: {
+      property_view_id: 1,
+      total_energy_usage: 0,
+      percentage_of_total_energy_usage: 0,
+      rank: 1,
+      running_percentage: runningPct,
+      running_square_footage: 0,
+    },
+  } as unknown as RowClassParams<FacilitiesPlanRunProperty>
 }
 
 // ─── Suite ────────────────────────────────────────────────────────────────────
@@ -136,11 +145,12 @@ describe('FacilitiesPlanComponent', () => {
     runSpy = jasmine.createSpy('run').and.returnValue(of({ status: 'success' }))
 
     await TestBed.configureTestingModule({
-      imports: [
-        FacilitiesPlanComponent,
-      ],
+      imports: [FacilitiesPlanComponent],
       providers: [
-        { provide: FacilitiesPlanService, useValue: { facilitiesPlans$: facilitiesPlans$.asObservable(), list: jasmine.createSpy('list') } },
+        {
+          provide: FacilitiesPlanService,
+          useValue: { facilitiesPlans$: facilitiesPlans$.asObservable(), list: jasmine.createSpy('list') },
+        },
         {
           provide: FacilitiesPlanRunService,
           useValue: {
@@ -330,7 +340,7 @@ describe('FacilitiesPlanComponent', () => {
 
   describe('_buildColumnDefs', () => {
     const buildDefs = () => {
-      (component as unknown as { _buildColumnDefs: () => void })._buildColumnDefs()
+      ;(component as unknown as { _buildColumnDefs: () => void })._buildColumnDefs()
     }
 
     beforeEach(() => {

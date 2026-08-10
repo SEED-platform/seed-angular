@@ -333,7 +333,12 @@ export class InventoryService {
     )
   }
 
-  filterByCycle(orgId: number, profileId: number | undefined, cycleIds: number[], inventoryType: InventoryType): Observable<CrossCyclesResponse> {
+  filterByCycle(
+    orgId: number,
+    profileId: number | undefined,
+    cycleIds: number[],
+    inventoryType: InventoryType,
+  ): Observable<CrossCyclesResponse> {
     const url = `/api/v3/${inventoryType}/filter_by_cycle/`
     const data = {
       organization_id: orgId,

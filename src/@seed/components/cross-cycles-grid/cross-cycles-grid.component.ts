@@ -49,6 +49,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   private _transloco = inject(TranslocoService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private _detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
+  private _expandedLinkingIds = new Set<number>()
   columnDefs: ColDef[] = []
   columnMap = new Map<string, string>()
   columns: Column[] = []
@@ -70,11 +72,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   gridOptions: GridOptions<Record<string, unknown>> = {
     getRowStyle: (params) => {
-      const rowIndex = params.node.rowIndex
-      if (rowIndex === null || !rowIndex) return undefined
-      const previous = params.api.getDisplayedRowAtIndex(rowIndex - 1)
-      if (previous && previous.data?.id !== params.data?.id) {
-        return { borderTop: '2px solid var(--ag-row-border-color)' }
+      if (params.data?._isGroup) {
+        return { fontWeight: '600', borderTop: '2px solid var(--ag-row-border-color)' }
       }
       return undefined
     },
@@ -197,6 +196,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       : this.columns.filter((c) => !c.is_extra_data).map((c) => this.buildColumnDef(c.column_name, c.display_name, false))
 
     this.columnDefs = [
+      ...(this.mode === 'list' ? [this.buildExpandColumnDef()] : []),
       this.buildLinkingIdColumnDef(),
       this.buildDetailLinkColumnDef(),
       this.buildCycleColumnDef(),
@@ -229,8 +229,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       headerName: this._transloco.translate('Linking ID'),
       pinned: 'left',
       hide: this.mode === 'detail',
-      sort: 'asc',
-      sortIndex: 0,
+      ...(this.mode === 'detail' ? { sort: 'asc' as const, sortIndex: 0 } : {}),
       width: 110,
     }
   }
@@ -249,8 +248,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       filter: false,
       floatingFilter: false,
       suppressMovable: true,
-      cellRenderer: ({ value }: { value: number }) =>
-        value
+      cellRenderer: ({ data, value }: { data: Record<string, unknown>; value: number }) =>
+        !data._isGroup && value
           ? `<button type="button" class="mt-2 flex w-full cursor-pointer justify-center" data-action="detail" title="${detailLabel}" aria-label="${detailLabel}"><span class="material-icons-outlined">info</span></button>`
           : '',
     }
@@ -272,10 +271,29 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       pinned: 'left',
       filter: 'agDateColumnFilter',
       filterParams: { comparator: this.dateComparator },
-      sort: 'asc',
-      sortIndex: 1,
+      ...(this.mode === 'detail' ? { sort: 'asc' as const, sortIndex: 0 } : {}),
       valueFormatter: ({ value }: { value: string }) => (value ? new Date(value).toLocaleDateString() : ''),
       width: 130,
+    }
+  }
+
+  buildExpandColumnDef(): ColDef {
+    const toggleLabel = this._transloco.translate('Toggle cycles')
+    return {
+      colId: 'expand_col',
+      headerName: '',
+      pinned: 'left',
+      width: 36,
+      maxWidth: 36,
+      sortable: false,
+      filter: false,
+      floatingFilter: false,
+      suppressMovable: true,
+      cellRenderer: ({ data }: { data: Record<string, unknown> }) => {
+        if (!data?._isGroup) return ''
+        const icon = this._expandedLinkingIds.has(data.id as number) ? 'expand_more' : 'chevron_right'
+        return `<button type="button" class="mt-2 flex w-full cursor-pointer justify-center" data-action="toggle" aria-label="${toggleLabel}"><span class="material-icons-outlined">${icon}</span></button>`
+      },
     }
   }
 
@@ -309,19 +327,59 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   setRowData(dataByCycle: CrossCyclesResponse): void {
     const cycleById = new Map(this.cycles.map((c) => [c.id, c]))
-    let rows: Record<string, unknown>[] = Object.entries(dataByCycle ?? {}).flatMap(([cycleId, records]) =>
+    const allDetailRows: Record<string, unknown>[] = Object.entries(dataByCycle ?? {}).flatMap(([cycleId, records]) =>
       records.map((record) => ({
         ...record,
+        _isGroup: false,
         cycle_name: cycleById.get(Number(cycleId))?.name ?? '',
         cycle_start: cycleById.get(Number(cycleId))?.start ?? null,
       })),
     )
 
     if (this.mode === 'detail' && this.linkingId) {
-      rows = rows.filter((row) => row.id === this.linkingId)
+      this.rowData = allDetailRows.filter((row) => row.id === this.linkingId)
+      return
     }
 
-    this.rowData = rows
+    // Group by linking ID; start all collapsed
+    this._detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
+    this._expandedLinkingIds = new Set<number>()
+
+    for (const row of allDetailRows) {
+      const id = row.id as number
+      const existing = this._detailRowsByLinkingId.get(id) ?? []
+      existing.push(row)
+      this._detailRowsByLinkingId.set(id, existing)
+    }
+
+    const sortedIds = [...this._detailRowsByLinkingId.keys()].sort((a, b) => a - b)
+    this.rowData = sortedIds.map((id) => {
+      const detailRows = this._detailRowsByLinkingId.get(id) ?? []
+      const count = detailRows.length
+      return {
+        id,
+        _isGroup: true,
+        _cycleCount: count,
+        cycle_name: `${count} ${count === 1 ? this._transloco.translate('cycle') : this._transloco.translate('cycles')}`,
+        cycle_start: null,
+      }
+    })
+  }
+
+  toggleGroup(linkingId: number): void {
+    if (this._expandedLinkingIds.has(linkingId)) {
+      this._expandedLinkingIds.delete(linkingId)
+      this.rowData = this.rowData.filter((row) => row._isGroup === true || row.id !== linkingId)
+    } else {
+      this._expandedLinkingIds.add(linkingId)
+      const detailRows = this._detailRowsByLinkingId.get(linkingId) ?? []
+      const groupIdx = this.rowData.findIndex((row) => row._isGroup === true && row.id === linkingId)
+      if (groupIdx === -1) return
+      const newRowData = [...this.rowData]
+      newRowData.splice(groupIdx + 1, 0, ...detailRows)
+      this.rowData = newRowData
+    }
+    this.gridApi?.refreshCells({ columns: ['expand_col'], force: true })
   }
 
   onGridReady(params: GridReadyEvent): void {
@@ -330,10 +388,15 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   onCellClicked(event: CellClickedEvent): void {
+    const action = (event.event?.target as HTMLElement | null)?.closest?.('[data-action]')?.getAttribute('data-action')
+
+    if (action === 'toggle') {
+      this.toggleGroup((event.data as Record<string, unknown>).id as number)
+      return
+    }
+
     const field = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
     if (event.colDef.field !== field) return
-
-    const action = (event.event?.target as HTMLElement | null)?.closest?.('[data-action]')?.getAttribute('data-action')
     if (action !== 'detail') return
 
     const { property_view_id, taxlot_view_id } = event.data as { property_view_id?: number; taxlot_view_id?: number }
