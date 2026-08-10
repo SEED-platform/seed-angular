@@ -47,7 +47,7 @@ export class QrCodeModalComponent implements OnDestroy {
             this._snackBar.success(this._transloco.translate('Authenticator App Verified!'))
             this.close(true)
           } else {
-            this._snackBar.alert(response.error ?? this._transloco.translate('Unable to verify code. Please try again.'))
+            this.codeForm.controls.code.setErrors({ serverError: response.error ?? this._transloco.translate('Unable to verify code. Please try again.') })
           }
         },
         error: () => {

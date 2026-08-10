@@ -23,6 +23,8 @@
           <mat-error>{{ t('Verification Code') }} {{ t('Required') }}</mat-error>
         } @else if (codeForm.controls.code.hasError('pattern')) {
           <mat-error>{{ t('Enter the 6-digit code from your authenticator app') }}</mat-error>
+        } @else if (codeForm.controls.code.hasError('serverError')) {
+          <mat-error>{{ codeForm.controls.code.getError('serverError') }}</mat-error>
         }
       </mat-form-field>
       <button [disabled]="codeForm.invalid || verifying" mat-flat-button color="primary" type="submit">
