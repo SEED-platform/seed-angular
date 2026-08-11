@@ -44,7 +44,6 @@ export class ProfileTwoFactorComponent implements OnInit, OnDestroy {
       this.methodForm.get('method').setValue(user.two_factor_method)
       this.emailSent = false
     })
-
     ;(this._organizationService.get() as Observable<Organization[]>).pipe(take(1), takeUntil(this._unsubscribeAll$)).subscribe({
       next: (organizations) => {
         const requiring = organizations.filter((org) => org.user_role && org.require_2fa)

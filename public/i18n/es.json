@@ -1322,6 +1322,7 @@
   "Reporting Deadline": "Plazo de presentación de informes",
   "Reports": "Informes",
   "Require In Plan Column": "Requerido en la columna del plan",
+  "Require Two Factor Authentication": "Requiere autenticación de dos factores.",
   "Require two-factor authentication": "Exigir autenticación de dos factores",
   "Required": "Requerido",
   "Resend Test Email Token": "Reenviar token de correo electrónico de prueba",

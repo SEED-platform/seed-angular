@@ -24,9 +24,9 @@ export class TwoFactorService {
   setMethod(orgId: number, userEmail: string, methods: TwoFactorMethods): Observable<SetTwoFactorMethodResponse> {
     const url = '/api/v3/two_factor/set_method/'
     const params = { organization_id: orgId }
-    return this._httpClient.post<SetTwoFactorMethodResponse>(url, { user_email: userEmail, methods }, { params }).pipe(
-      catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error updating two-factor method')),
-    )
+    return this._httpClient
+      .post<SetTwoFactorMethodResponse>(url, { user_email: userEmail, methods }, { params })
+      .pipe(catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error updating two-factor method')))
   }
 
   /**
@@ -35,9 +35,9 @@ export class TwoFactorService {
   resendTokenEmail(orgId: number, userEmail: string): Observable<ResendTwoFactorTokenEmailResponse> {
     const url = '/api/v3/two_factor/resend_token_email/'
     const params = { organization_id: orgId }
-    return this._httpClient.post<ResendTwoFactorTokenEmailResponse>(url, { user_email: userEmail }, { params }).pipe(
-      catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error resending token email')),
-    )
+    return this._httpClient
+      .post<ResendTwoFactorTokenEmailResponse>(url, { user_email: userEmail }, { params })
+      .pipe(catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error resending token email')))
   }
 
   /**
@@ -46,9 +46,9 @@ export class TwoFactorService {
   generateQrCode(orgId: number, userEmail: string): Observable<GenerateTwoFactorQrCodeResponse> {
     const url = '/api/v3/two_factor/generate_qr_code/'
     const params = { organization_id: orgId }
-    return this._httpClient.post<GenerateTwoFactorQrCodeResponse>(url, { user_email: userEmail }, { params }).pipe(
-      catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error generating QR code')),
-    )
+    return this._httpClient
+      .post<GenerateTwoFactorQrCodeResponse>(url, { user_email: userEmail }, { params })
+      .pipe(catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error generating QR code')))
   }
 
   /**
@@ -57,8 +57,8 @@ export class TwoFactorService {
   verifyCode(orgId: number, userEmail: string, code: string): Observable<VerifyTwoFactorCodeResponse> {
     const url = '/api/v3/two_factor/verify_code/'
     const params = { organization_id: orgId }
-    return this._httpClient.post<VerifyTwoFactorCodeResponse>(url, { user_email: userEmail, code }, { params }).pipe(
-      catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error verifying code')),
-    )
+    return this._httpClient
+      .post<VerifyTwoFactorCodeResponse>(url, { user_email: userEmail, code }, { params })
+      .pipe(catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error verifying code')))
   }
 }

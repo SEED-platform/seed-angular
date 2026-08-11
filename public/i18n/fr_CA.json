@@ -1322,6 +1322,7 @@
   "Reporting Deadline": "Date limite de déclaration",
   "Reports": "Rapports",
   "Require In Plan Column": "Exiger dans la colonne du plan",
+  "Require Two Factor Authentication": "Exiger une authentification à deux facteurs",
   "Require two-factor authentication": "Exiger une authentification à deux facteurs",
   "Required": "Requis",
   "Resend Test Email Token": "Renvoyer le jeton d'e-mail de test",

@@ -39,15 +39,21 @@ export class AuthService {
     return this._httpClient.post('api/auth/reset-password', password)
   }
 
-  signIn(credentials: { username: string; password: string }): Observable<TokenResponse> {
+  signIn(credentials: { username: string; password: string; otp_token?: string }): Observable<TokenResponse> {
     // Throw error if the user is already logged in
     if (this._authenticated) {
       return throwError(() => new Error('User is already logged in.'))
     }
 
-    return this._httpClient.post<TokenResponse>('/api/token/', credentials).pipe(
+    // Strip empty otp_token so the backend treats a blank field as absent
+    const payload: Record<string, string> = { username: credentials.username, password: credentials.password }
+    if (credentials.otp_token) payload.otp_token = credentials.otp_token
+
+    return this._httpClient.post<TokenResponse>('/api/token/', payload).pipe(
       tap((response) => {
-        this.handleTokenResponse(response)
+        if (response.access && response.refresh) {
+          this.handleTokenResponse({ access: response.access, refresh: response.refresh })
+        }
       }),
     )
   }
@@ -55,13 +61,14 @@ export class AuthService {
   refreshAccessToken(): Observable<boolean> {
     return this._httpClient.post<TokenResponse>('/api/token/refresh/', { refresh: this.refreshToken }).pipe(
       map((response) => {
-        this.handleTokenResponse(response)
+        // The refresh endpoint always returns access + refresh tokens (no 2FA challenge).
+        this.handleTokenResponse(response as { access: string; refresh: string })
         return true
       }),
     )
   }
 
-  handleTokenResponse(response: TokenResponse) {
+  handleTokenResponse(response: { access: string; refresh: string }) {
     this.accessToken = response.access
     this.refreshToken = response.refresh
 
