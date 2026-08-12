@@ -196,9 +196,7 @@ export class SharingComponent implements OnDestroy, OnInit {
       })
   }
 
-  private _fetchSharingData(
-    orgId: number,
-  ): Observable<{
+  private _fetchSharingData(orgId: number): Observable<{
     usedColumns: UsedColumn[];
     propertyColumns: Column[];
     taxLotColumns: Column[];
