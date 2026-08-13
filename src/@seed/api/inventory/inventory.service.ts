@@ -456,4 +456,13 @@ export class InventoryService {
       }),
     )
   }
+
+  updateSalesforce(orgId: number, propertyViewIds: number[]): Observable<{ status: string; message: string }> {
+    const url = `/api/v3/properties/update_salesforce/?organization_id=${orgId}`
+    return this._httpClient.post<{ status: string; message: string }>(url, { property_view_ids: propertyViewIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating Salesforce')
+      }),
+    )
+  }
 }

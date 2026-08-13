@@ -4,9 +4,11 @@ import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
-import { InventoryService } from '@seed/api'
+import type { Cycle, Organization } from '@seed/api'
+import { AuditTemplateService, InventoryService, OrganizationService } from '@seed/api'
 import { DeleteModalComponent, MenuItemComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { ModalComponent } from 'app/modules/column-list-profile/modal/modal.component'
 import { DQCStartModalComponent } from 'app/modules/data-quality'
 import {
@@ -19,6 +21,8 @@ import {
 } from 'app/modules/inventory/actions'
 import type { InventoryType, Profile } from '../../../inventory'
 import {
+  AuditTemplateExportModalComponent,
+  AuditTemplateImportModalComponent,
   EmailModalComponent,
   FempExportModalComponent,
   GeocodeModalComponent,
@@ -36,6 +40,7 @@ import {
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
+  @Input() cycles: Cycle[] = []
   @Input() gridApi: GridApi
   @Input() groupMode = false
   @Input() inventory: Record<string, unknown>[]
@@ -48,14 +53,20 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Output() refreshInventory = new EventEmitter<number | null>()
   @Output() selectedAll = new EventEmitter<number[]>()
   @Output() toggleAccessLevels = new EventEmitter<void>()
+  private _auditTemplateService = inject(AuditTemplateService)
   private _inventoryService = inject(InventoryService)
+  private _organizationService = inject(OrganizationService)
   private _dialog = inject(MatDialog)
+  private _snackBar = inject(SnackBarService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   hasSelection: boolean
+  organization: Organization | null = null
   showAccessLevelInstances = true
 
   ngOnInit(): void {
-    return
+    this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((org) => {
+      this.organization = org
+    })
   }
 
   baseData() {
@@ -72,8 +83,34 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-  tempAction() {
-    console.log('temp action')
+  openAuditTemplateExportModal() {
+    const dialogRef = this._dialog.open(AuditTemplateExportModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewIds: this.selectedViewIds },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openAuditTemplateImportModal() {
+    const dialogRef = this._dialog.open(AuditTemplateImportModalComponent, {
+      width: '40rem',
+      data: { orgId: this.orgId, viewIds: this.selectedViewIds, org: this.organization, cycles: this.cycles },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  updateSalesforce() {
+    this._inventoryService
+      .updateSalesforce(this.orgId, this.selectedViewIds)
+      .pipe(takeUntil(this._unsubscribeAll$))
+      .subscribe((result) => {
+        if (result.status === 'success') {
+          this._snackBar.success(result.message || 'Salesforce updated successfully.')
+          this.refreshInventory.emit(null)
+        } else {
+          this._snackBar.alert(result.message || 'Error updating Salesforce.')
+        }
+      })
   }
 
   toggleAccessLevelInstances() {
