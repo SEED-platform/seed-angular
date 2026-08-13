@@ -5,7 +5,9 @@ export class LowerCaseUrlSerializer implements UrlSerializer {
   private _default = new DefaultUrlSerializer()
 
   parse(url: string): UrlTree {
-    return this._default.parse(url.toLowerCase())
+    const [path, query] = url.split('?')
+    const normalized = query ? `${path.toLowerCase()}?${query}` : url.toLowerCase()
+    return this._default.parse(normalized)
   }
 
   serialize(tree: UrlTree): string {
