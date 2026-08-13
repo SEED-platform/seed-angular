@@ -8,7 +8,7 @@ import { naturalSort } from '@seed/utils'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import type { InventoryType, InventoryTypeSingular } from 'app/modules/inventory/inventory.types'
 import { UserService } from '../user'
-import type { Label } from './label.types'
+import type { Label, PropertyViewLabel } from './label.types'
 
 @Injectable({ providedIn: 'root' })
 export class LabelService {
@@ -146,6 +146,15 @@ export class LabelService {
       }),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error updating label inventory: ${error.message}`)
+      }),
+    )
+  }
+
+  listByCycleGoal(orgId: number, goalId: number, cycleId: number): Observable<PropertyViewLabel[]> {
+    const url = `/api/v3/property_view_labels/list_by_cycle_goal/?organization_id=${orgId}&goal_id=${goalId}&cycle_id=${cycleId}`
+    return this._httpClient.get<PropertyViewLabel[]>(url).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, `Error fetching labels: ${error.message}`)
       }),
     )
   }
