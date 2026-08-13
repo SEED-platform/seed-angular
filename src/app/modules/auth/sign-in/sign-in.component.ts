@@ -1,8 +1,8 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
-import type { FormControl, FormGroup } from '@angular/forms'
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { TranslocoDirective } from '@jsverse/transloco'
 import { Subject, takeUntil } from 'rxjs'
 import { Animations } from '@seed/animations'
 import { ConfigService } from '@seed/api'
@@ -17,7 +17,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-in.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink, TranslocoDirective],
 })
 export class AuthSignInComponent implements OnInit, OnDestroy {
   private _route = inject(ActivatedRoute)
@@ -32,11 +32,15 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
   alert: Alert
   allowSignUp = false
   showAlert = false
+  twoFactorStep = false
+  twoFactorMethod: 'email' | 'token' = 'token'
   signInForm: FormGroup<{
     email: FormControl<string>;
     password: FormControl<string>;
     terms: FormControl<boolean>;
   }>
+  otpForm: FormGroup<{ otp_token: FormControl<string> }>
+  private _pendingCredentials: { username: string; password: string } | null = null
 
   ngOnInit(): void {
     this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ allow_signup: allowSignUp }) => {
@@ -47,6 +51,10 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
+    })
+
+    this.otpForm = new FormGroup({
+      otp_token: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     })
   }
 
@@ -80,7 +88,15 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
     // Sign in
     const { email, password } = this.signInForm.value as { email: string; password: string; terms: boolean }
     this._authService.signIn({ username: email.toLowerCase(), password }).subscribe({
-      next: () => {
+      next: (response) => {
+        if (response.two_factor_required) {
+          this._pendingCredentials = { username: email.toLowerCase(), password }
+          this.twoFactorMethod = response.two_factor_method ?? 'token'
+          this.twoFactorStep = true
+          this.signInForm.enable()
+          return
+        }
+
         // Set the redirect url.
         // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
         // to the correct page after a successful sign in. This way, that url can be set via
@@ -105,5 +121,54 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
         this.showAlert = true
       },
     })
+  }
+
+  submitOtp(): void {
+    this.otpForm.markAllAsTouched()
+
+    if (this.otpForm.invalid || !this._pendingCredentials) {
+      return
+    }
+
+    this.otpForm.disable()
+    this.showAlert = false
+
+    const { otp_token } = this.otpForm.getRawValue()
+    this._authService.signIn({ ...this._pendingCredentials, otp_token }).subscribe({
+      next: () => {
+        const redirectURL = this._route.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
+        void this._router.navigateByUrl(redirectURL)
+      },
+      error: () => {
+        this.otpForm.enable()
+        this.alert = {
+          type: 'error',
+          message: 'Invalid verification code',
+        }
+        this.showAlert = true
+      },
+    })
+  }
+
+  resendCode(): void {
+    if (!this._pendingCredentials) {
+      return
+    }
+    this._authService.signIn(this._pendingCredentials).subscribe({
+      next: () => {
+        this.alert = {
+          type: 'success',
+          message: 'A new code has been sent to your email address.',
+        }
+        this.showAlert = true
+      },
+    })
+  }
+
+  backToSignIn(): void {
+    this.twoFactorStep = false
+    this._pendingCredentials = null
+    this.otpForm.reset()
+    this.showAlert = false
   }
 }

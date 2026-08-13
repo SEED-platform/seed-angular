@@ -3,6 +3,7 @@ import { AdminComponent } from 'app/modules/profile/admin/admin.component'
 import { ProfileDeveloperComponent } from 'app/modules/profile/developer/developer.component'
 import { ProfileInfoComponent } from 'app/modules/profile/info/info.component'
 import { ProfileSecurityComponent } from 'app/modules/profile/security/security.component'
+import { ProfileTwoFactorComponent } from 'app/modules/profile/two-factor/two-factor.component'
 
 export default [
   {
@@ -19,6 +20,11 @@ export default [
     path: 'security',
     title: 'Security',
     component: ProfileSecurityComponent,
+  },
+  {
+    path: 'two-factor',
+    title: 'Two Factor Profile',
+    component: ProfileTwoFactorComponent,
   },
   {
     path: 'developer',

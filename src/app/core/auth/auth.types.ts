@@ -1,6 +1,8 @@
 export type TokenResponse = {
-  access: string;
-  refresh: string;
+  access?: string;
+  refresh?: string;
+  two_factor_required?: boolean;
+  two_factor_method?: 'email' | 'token';
 }
 
 export type UserToken = {

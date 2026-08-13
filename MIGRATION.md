@@ -98,9 +98,6 @@ against this app's route files. Update this table as pages move between columns.
 
 ### Not yet migrated
 
-- [ ] **Personal two-factor setup** (`/profile/two_factor_profile`, `two_factor_profile_controller`)
-      — user's own 2FA device enrollment. (Org-level two-factor *policy* settings are already
-      migrated to `organizations/settings/two-factor`; this is the separate personal setup flow.)
 - [ ] **Salesforce login callback** (`/salesforce_login`, `salesforce_login_controller`) — the
       OAuth success/failure landing page. (Distinct from Salesforce org *settings*, which are
       already migrated to `organizations/settings/salesforce`.)
@@ -131,8 +128,8 @@ to look for whole features hiding *inside* an already-migrated page rather than 
 route. Notes from that pass:
 
 - **No additional missing pages found.** Everything reachable from a controller maps to either an
-  already-migrated page (`goal_service`→`data-quality/goal`, `two_factor_service`→personal 2FA
-  above, `compliance_metric_service`→`insights/config/program-config.component.ts`,
+  already-migrated page (`goal_service`→`data-quality/goal`, `two_factor_service`→
+  `profile/two-factor`, `compliance_metric_service`→`insights/config/program-config.component.ts`,
   `map_service`'s EEEJ/disadvantaged-tract filter→`inventory-list/map/map.component.ts`,
   `property_measure_service`→`inventory-detail/detail` scenarios grid, `pairing_service`→Pairing
   workflow, `facilities_plan_service`/`facilities_plan_run_service`/`service_service`/
@@ -163,7 +160,8 @@ route. Notes from that pass:
 ### Already migrated (for reference — don't re-port these)
 
 Everything else in `seed.js`'s state table has a corresponding route in this app, including:
-`home`→dashboard, `profile`/`security`/`developer`/`admin`→`profile/*`, `analyses`/`analysis`/
+`home`→dashboard, `profile`/`security`/`developer`/`admin`→`profile/*`,
+`two_factor_profile`→`profile/two-factor`, `analyses`/`analysis`/
 `analysis_run`→`analyses/*`, `mapping`/`dataset_list`/`dataset_detail`→`datasets/*`,
 `pairing`→`datasets/pairing/:id/:type`, `about`/
 `contact`/`api_docs`, the full `organization_*` settings family (settings, access-level-tree,
