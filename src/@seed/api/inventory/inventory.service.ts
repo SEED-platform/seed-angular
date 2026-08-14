@@ -383,6 +383,15 @@ export class InventoryService {
     )
   }
 
+  copyToCycle(orgId: number, cycleId: number, viewIds: number[], columnIds: number[]): Observable<ProgressResponse> {
+    const url = `/api/v3/properties/copy_to_cycle/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, { cycle_id: cycleId, view_ids: viewIds, column_ids: columnIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error copying inventory to cycle')
+      }),
+    )
+  }
+
   startInventoryExport(orgId: number, data: InventoryExportData): Observable<ProgressResponse> {
     const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
     return this._httpClient.post<ProgressResponse>(url, data).pipe(

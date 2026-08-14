@@ -23,6 +23,14 @@
       label="Merge"
       icon="fa-solid:code-merge"
     ></seed-menu-item>
+    @if (type === 'properties') {
+      <seed-menu-item
+        [disabled]="!hasSelection"
+        (action)="openCopyToCycleModal()"
+        label="Copy to Different Cycle"
+        icon="fa-solid:copy"
+      ></seed-menu-item>
+    }
   }
   <seed-menu-item (action)="openShowPopulatedColumnsModal()" label="Only Show Populated Columns" icon="fa-solid:filter"></seed-menu-item>
   @if (!groupMode) {
