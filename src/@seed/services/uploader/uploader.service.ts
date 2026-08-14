@@ -52,11 +52,11 @@ export class UploaderService {
       switchMap(() => this.checkProgress(progressKey)),
       tap((response) => {
         this._updateProgressBarObj({ data: response, offset, multiplier, progressBarObj })
-        if (response.status === 'success') successFn(response)
+        if (response.status === 'success') successFn?.(response)
       }),
       catchError(() => {
         // TODO the interval needs to continue if the error was network-related
-        failureFn()
+        failureFn?.()
         return throwError(() => new Error('Progress check failed'))
       }),
     )

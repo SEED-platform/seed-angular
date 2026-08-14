@@ -7,6 +7,7 @@ import { ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
 import { DQCResultsModalComponent } from 'app/modules/data-quality'
+import { RefreshMetadataModalComponent } from 'app/modules/inventory-list/list/actions'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
 
 @Component({
@@ -50,7 +51,7 @@ export class MoreActionsModalComponent implements OnDestroy {
     { name: 'Groups: Add / Remove', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Labels: Add / Remove', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'Merge', action: this.tempAction, disabled: !this.data.viewIds.length },
-    { name: 'Set Update Time to Now', action: this.tempAction, disabled: !this.data.viewIds.length },
+    { name: 'Set Update Time to Now', action: () => this.openSetUpdateToNowModal(), disabled: !this.data.viewIds.length },
     { name: 'Salesforce: Update', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'UBID: Add / Update', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'UBID: Compare', action: this.tempAction, disabled: !this.data.viewIds.length },
@@ -83,6 +84,16 @@ export class MoreActionsModalComponent implements OnDestroy {
         }),
       )
       .subscribe()
+  }
+
+  openSetUpdateToNowModal() {
+    const dialogRef = this._dialog.open(RefreshMetadataModalComponent, {
+      width: '40rem',
+      data: { orgId: this.data.orgId, viewIds: this.data.viewIds, type: this.data.type },
+    })
+    dialogRef.afterClosed().subscribe((refreshed) => {
+      if (refreshed) this.close(true)
+    })
   }
 
   openDataQualityResultsModal(dqcId: number) {
