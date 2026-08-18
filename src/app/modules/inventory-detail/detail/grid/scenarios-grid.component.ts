@@ -84,7 +84,9 @@ export class ScenariosGridComponent implements OnChanges {
 
   deleteScenario(id: number, name: string): void {
     if (confirm(`Are you sure you want to delete scenario "${name}"?`)) {
-      this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe()
+      this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe(() => {
+        this.refreshView.emit(null)
+      })
     }
   }
 

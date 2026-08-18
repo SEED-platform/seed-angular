@@ -507,8 +507,7 @@ export class InventoryService {
 
   unmerge(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
     const url = `/api/v3/${type}/${viewId}/unmerge/?organization_id=${orgId}`
-    const request$
-      = type === 'properties' ? this._httpClient.put<{ view_id: number }>(url, {}) : this._httpClient.post<{ view_id: number }>(url, {})
+    const request$ = type === 'properties' ? this._httpClient.put<{ view_id: number }>(url, {}) : this._httpClient.post<{ view_id: number }>(url, {})
     return request$.pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error unmerging inventory')

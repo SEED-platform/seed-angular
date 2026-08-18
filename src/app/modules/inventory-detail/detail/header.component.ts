@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import type { OnInit } from '@angular/core'
+import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { type MatSelect } from '@angular/material/select'
@@ -28,7 +28,7 @@ import { UpdateWithEspmModalComponent } from './modal/update-with-espm-modal.com
   templateUrl: './header.component.html',
   imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnChanges {
   @Input() currentProfile: Profile
   @Input() labels: Label[]
   @Input() org: Organization
@@ -64,6 +64,13 @@ export class HeaderComponent implements OnInit {
     this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
     this.setAliGrid()
     this.buildActions()
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.org || changes.type || changes.view) {
+      this.enableMap = Boolean(this.view?.state.ubid && this.view?.state.bounding_box && this.view?.state.centroid)
+      this.buildActions()
+    }
   }
 
   buildActions(): void {
@@ -291,13 +298,16 @@ export class HeaderComponent implements OnInit {
         this._inventoryService
           .matchMergeLink(this.org.id, this.selectedView.id, this.type)
           .pipe(take(1))
-          .subscribe(({ view_id }) => {
-            this._snackBar.success('Match, merge, and link complete.')
-            if (view_id && view_id !== this.selectedView.id) {
-              void this._router.navigate([`/${this.type}/${view_id}`])
-            } else {
-              this.refreshDetail.emit()
-            }
+          .subscribe({
+            next: ({ view_id }) => {
+              this._snackBar.success('Match, merge, and link complete.')
+              if (view_id && view_id !== this.selectedView.id) {
+                void this._router.navigate([`/${this.type}/${view_id}`])
+              } else {
+                this.refreshDetail.emit()
+              }
+            },
+            error: () => undefined,
           })
       })
   }
@@ -318,13 +328,16 @@ export class HeaderComponent implements OnInit {
         this._inventoryService
           .unmerge(this.org.id, this.selectedView.id, this.type)
           .pipe(take(1))
-          .subscribe(({ view_id }) => {
-            this._snackBar.success('Unmerge complete.')
-            if (view_id && view_id !== this.selectedView.id) {
-              void this._router.navigate([`/${this.type}/${view_id}`])
-            } else {
-              this.refreshDetail.emit()
-            }
+          .subscribe({
+            next: ({ view_id }) => {
+              this._snackBar.success('Unmerge complete.')
+              if (view_id && view_id !== this.selectedView.id) {
+                void this._router.navigate([`/${this.type}/${view_id}`])
+              } else {
+                this.refreshDetail.emit()
+              }
+            },
+            error: () => undefined,
           })
       })
   }
