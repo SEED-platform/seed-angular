@@ -55,6 +55,7 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   data = inject(MAT_DIALOG_DATA) as {
     orgId: number;
     viewIds: number[];
+    analysesLink?: string;
   }
 
   form = new FormGroup({

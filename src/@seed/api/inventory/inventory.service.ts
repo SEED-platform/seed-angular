@@ -474,4 +474,66 @@ export class InventoryService {
       }),
     )
   }
+
+  getBuildingSync(orgId: number, viewId: number, profileId: number): Observable<string> {
+    const url = `/api/v3/properties/${viewId}/building_sync/`
+    return this._httpClient.get(url, { params: { organization_id: orgId, profile_id: profileId }, responseType: 'text' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error downloading BuildingSync file')
+      }),
+    )
+  }
+
+  updateWithBuildingSync(orgId: number, viewId: number, cycleId: number, file: File): Observable<{ status: string; message?: string }> {
+    const url = `/api/v3/properties/${viewId}/update_with_building_sync/?cycle_id=${cycleId}&organization_id=${orgId}`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    formData.append('file_type', '1')
+    return this._httpClient.put<{ status: string; message?: string }>(url, formData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating property with BuildingSync')
+      }),
+    )
+  }
+
+  matchMergeLink(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
+    const url = `/api/v3/${type}/${viewId}/match_merge_link/?organization_id=${orgId}`
+    return this._httpClient.post<{ view_id: number }>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error matching, merging, and linking')
+      }),
+    )
+  }
+
+  unmerge(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
+    const url = `/api/v3/${type}/${viewId}/unmerge/?organization_id=${orgId}`
+    const request$ = type === 'properties'
+      ? this._httpClient.put<{ view_id: number }>(url, {})
+      : this._httpClient.post<{ view_id: number }>(url, {})
+    return request$.pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error unmerging inventory')
+      }),
+    )
+  }
+
+  getEspmBuildingXlsx(orgId: number, pmPropertyId: string, username: string, password: string): Observable<ArrayBuffer> {
+    const url = `/api/v3/portfolio_manager/${pmPropertyId}/download/?organization_id=${orgId}`
+    return this._httpClient.post(url, { username, password }, { responseType: 'arraybuffer' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error downloading from ESPM')
+      }),
+    )
+  }
+
+  updateWithEspm(orgId: number, viewId: number, cycleId: number, mappingProfileId: number, file: Blob | File, filename?: string): Observable<{ success: boolean; message?: string }> {
+    const url = `/api/v3/properties/${viewId}/update_with_espm/?cycle_id=${cycleId}&organization_id=${orgId}&mapping_profile_id=${mappingProfileId}`
+    const formData = new FormData()
+    formData.append('file', file, filename ?? (file instanceof File ? file.name : `espm_${Date.now()}.xlsx`))
+    return this._httpClient.put<{ success: boolean; message?: string }>(url, formData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating with ESPM data')
+      }),
+    )
+  }
 }

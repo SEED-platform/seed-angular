@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import type { Scenario } from '@seed/api'
 import { ScenarioService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -24,6 +24,12 @@ export class ScenariosGridComponent implements OnChanges {
   private _configService = inject(ConfigService)
   private _scenarioService = inject(ScenarioService)
   columnDefs: ColDef[] = []
+  measureColumnDefs: ColDef[] = [
+    { field: 'category', headerName: 'Category', flex: 1 },
+    { field: 'display_name', headerName: 'Name', flex: 2 },
+    { field: 'implementation_status', headerName: 'Status', flex: 1 },
+    { field: 'description', headerName: 'Description', flex: 2 },
+  ]
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   scenarios: Scenario[]
@@ -76,13 +82,9 @@ export class ScenariosGridComponent implements OnChanges {
     return '<span class="material-icons mt-2  cursor-pointer text-secondary">clear</span>'
   }
 
-  onCellClicked(event: CellClickedEvent) {
-    if (event.colDef.field === 'actions') {
-      const { id, name } = event.data as { id: number; name: string }
-      if (confirm(`Are you sure you want to delete scenario "${name}" ?`)) {
-        console.log('DEVELOPER NOTE: Delete function fails while in development mode, via a vite proxy error')
-        this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe()
-      }
+  deleteScenario(id: number, name: string): void {
+    if (confirm(`Are you sure you want to delete scenario "${name}"?`)) {
+      this._scenarioService.deleteScenario(this.orgId, this.viewId, id).subscribe()
     }
   }
 
@@ -90,7 +92,7 @@ export class ScenariosGridComponent implements OnChanges {
     for (const history of this.view.history) {
       const date = new Date(history.date_edited).toLocaleString('en-US', {})
       const entry = { date, rawDate: history.date_edited, rowData: history.state.scenarios }
-      this.rowDataEntries.push(entry)
+      if (entry.rowData?.length) this.rowDataEntries.push(entry)
     }
     this.rowDataEntries.sort((a, b) => b.rawDate - a.rawDate)
   }
@@ -98,11 +100,9 @@ export class ScenariosGridComponent implements OnChanges {
   onGridReady(agGrid: GridReadyEvent) {
     this.gridApi = agGrid.api
     this.gridApi.sizeColumnsToFit()
-    this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
   }
 
-  getGridHeight(rowData: Scenario[]) {
-    if (!rowData) return
-    return Math.min(rowData.length * 42 + 50, 500)
+  getMeasuresHeight(measures: Record<string, unknown>[]): number {
+    return Math.min((measures?.length ?? 0) * 42 + 52, 300)
   }
 }

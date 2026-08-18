@@ -46,7 +46,7 @@
   </div>
 } @else {
   <div class="flex justify-center gap-2">
-    <a (click)="close(true)" routerLink="/analyses">
+    <a (click)="close(true)" [routerLink]="data.analysesLink ?? '/analyses'">
       <button mat-raised-button color="primary">View Analyses</button>
     </a>
   </div>

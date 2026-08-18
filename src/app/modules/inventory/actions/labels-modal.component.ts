@@ -31,9 +31,9 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   gridHeight = 0
   labels: Label[] = []
   newLabel: Label
-  rowData: (Label & { add: boolean; remove: boolean })[] = []
+  rowData: (Label & { add: boolean; remove: boolean; isApplied: boolean })[] = []
 
-  data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[] }
+  data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[]; appliedLabelIds?: number[] }
 
   form = new FormGroup({
     organization_id: new FormControl(this.data.orgId),
@@ -68,16 +68,19 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   }
 
   setRowData() {
-    this.rowData = this.labels.map((group) => ({
-      ...group,
-      add: group.id === this.newLabel?.id,
+    const appliedIds = this.data.appliedLabelIds
+    this.rowData = this.labels.map((label) => ({
+      ...label,
+      add: label.id === this.newLabel?.id,
       remove: false,
+      isApplied: appliedIds ? appliedIds.includes(label.id) : false,
     }))
 
     this.newLabel = null
   }
 
   setColDefs() {
+    const hasApplied = Boolean(this.data.appliedLabelIds)
     this.columnDefs = [
       {
         field: 'name',
@@ -85,8 +88,20 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
         flex: 1,
         cellRenderer: this.labelRenderer,
       },
-      { field: 'add', headerName: 'Add', flex: 0.2, editable: true },
-      { field: 'remove', headerName: 'Remove', flex: 0.2, editable: true },
+      {
+        field: 'add',
+        headerName: 'Add',
+        flex: 0.2,
+        editable: hasApplied ? (params) => !params.data.isApplied : true,
+        cellStyle: hasApplied ? (params) => (params.data.isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+      },
+      {
+        field: 'remove',
+        headerName: 'Remove',
+        flex: 0.2,
+        editable: hasApplied ? (params) => params.data.isApplied : true,
+        cellStyle: hasApplied ? (params) => (!params.data.isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+      },
     ]
   }
 
