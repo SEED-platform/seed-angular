@@ -23,6 +23,14 @@
       label="Merge"
       icon="fa-solid:code-merge"
     ></seed-menu-item>
+    @if (type === 'properties') {
+      <seed-menu-item
+        [disabled]="!hasSelection"
+        (action)="openCopyToCycleModal()"
+        label="Copy to Different Cycle"
+        icon="fa-solid:copy"
+      ></seed-menu-item>
+    }
   }
   <seed-menu-item (action)="openShowPopulatedColumnsModal()" label="Only Show Populated Columns" icon="fa-solid:filter"></seed-menu-item>
   @if (!groupMode) {
@@ -45,14 +53,20 @@
       </div>
     }
     <!-- Audit Template -->
-    @if (type === 'properties' && organization?.audit_template_user) {
+    @if (type === 'properties') {
       <mat-divider class="my-0"></mat-divider>
       <span class="text-secondary text-sm">Audit Template</span>
       <div>
-        <seed-menu-item [disabled]="!hasSelection" (action)="openAuditTemplateExportModal()" label="Export"> </seed-menu-item>
-        @if (organization?.audit_template_sync_enabled) {
-          <seed-menu-item [disabled]="!hasSelection" (action)="openAuditTemplateImportModal()" label="Update"> </seed-menu-item>
-        }
+        <seed-menu-item
+          [disabled]="!hasSelection || !organization?.audit_template_user"
+          (action)="openAuditTemplateExportModal()"
+          label="Export"
+        ></seed-menu-item>
+        <seed-menu-item
+          [disabled]="!hasSelection || !organization?.audit_template_user || !organization?.audit_template_sync_enabled"
+          (action)="openAuditTemplateImportModal()"
+          label="Update"
+        ></seed-menu-item>
       </div>
     }
     <mat-divider class="my-0"></mat-divider>

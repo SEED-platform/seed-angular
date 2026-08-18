@@ -383,6 +383,15 @@ export class InventoryService {
     )
   }
 
+  copyToCycle(orgId: number, cycleId: number, viewIds: number[], columnIds: number[]): Observable<ProgressResponse> {
+    const url = `/api/v3/properties/copy_to_cycle/?organization_id=${orgId}`
+    return this._httpClient.post<ProgressResponse>(url, { cycle_id: cycleId, view_ids: viewIds, column_ids: columnIds }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error copying inventory to cycle')
+      }),
+    )
+  }
+
   startInventoryExport(orgId: number, data: InventoryExportData): Observable<ProgressResponse> {
     const url = `/api/v3/tax_lot_properties/start_export/?organization_id=${orgId}`
     return this._httpClient.post<ProgressResponse>(url, data).pipe(
@@ -462,6 +471,73 @@ export class InventoryService {
     return this._httpClient.post<{ status: string; message: string }>(url, { property_view_ids: propertyViewIds }).pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error updating Salesforce')
+      }),
+    )
+  }
+
+  getBuildingSync(orgId: number, viewId: number, profileId: number): Observable<string> {
+    const url = `/api/v3/properties/${viewId}/building_sync/`
+    return this._httpClient.get(url, { params: { organization_id: orgId, profile_id: profileId }, responseType: 'text' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error downloading BuildingSync file')
+      }),
+    )
+  }
+
+  updateWithBuildingSync(orgId: number, viewId: number, cycleId: number, file: File): Observable<{ status: string; message?: string }> {
+    const url = `/api/v3/properties/${viewId}/update_with_building_sync/?cycle_id=${cycleId}&organization_id=${orgId}`
+    const formData = new FormData()
+    formData.append('file', file, file.name)
+    formData.append('file_type', '1')
+    return this._httpClient.put<{ status: string; message?: string }>(url, formData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating property with BuildingSync')
+      }),
+    )
+  }
+
+  matchMergeLink(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
+    const url = `/api/v3/${type}/${viewId}/match_merge_link/?organization_id=${orgId}`
+    return this._httpClient.post<{ view_id: number }>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error matching, merging, and linking')
+      }),
+    )
+  }
+
+  unmerge(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
+    const url = `/api/v3/${type}/${viewId}/unmerge/?organization_id=${orgId}`
+    const request$ = type === 'properties' ? this._httpClient.put<{ view_id: number }>(url, {}) : this._httpClient.post<{ view_id: number }>(url, {})
+    return request$.pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error unmerging inventory')
+      }),
+    )
+  }
+
+  getEspmBuildingXlsx(orgId: number, pmPropertyId: string, username: string, password: string): Observable<ArrayBuffer> {
+    const url = `/api/v3/portfolio_manager/${pmPropertyId}/download/?organization_id=${orgId}`
+    return this._httpClient.post(url, { username, password }, { responseType: 'arraybuffer' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error downloading from ESPM')
+      }),
+    )
+  }
+
+  updateWithEspm(
+    orgId: number,
+    viewId: number,
+    cycleId: number,
+    mappingProfileId: number,
+    file: Blob | File,
+    filename?: string,
+  ): Observable<{ success: boolean; message?: string }> {
+    const url = `/api/v3/properties/${viewId}/update_with_espm/?cycle_id=${cycleId}&organization_id=${orgId}&mapping_profile_id=${mappingProfileId}`
+    const formData = new FormData()
+    formData.append('file', file, filename ?? (file instanceof File ? file.name : `espm_${Date.now()}.xlsx`))
+    return this._httpClient.put<{ success: boolean; message?: string }>(url, formData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error updating with ESPM data')
       }),
     )
   }

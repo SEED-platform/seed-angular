@@ -192,9 +192,9 @@ describe('PortfolioSummaryComponent', () => {
     expect(component).toBeTruthy()
   })
 
-  // ─── ngOnInit: organisation and token ────────────────────────────────────────
+  // ─── ngOnInit: organization and token ────────────────────────────────────────
 
-  describe('ngOnInit — organisation loading', () => {
+  describe('ngOnInit — organization loading', () => {
     it('should set isLoggedIntoBbSalesforce true when token is valid', () => {
       verifyTokenSpy.and.returnValue(of({ valid: true }))
       orgSubject.next(mockOrganization)
@@ -274,7 +274,7 @@ describe('PortfolioSummaryComponent', () => {
       expect(component.portfolioSummary).toEqual(mockPortfolioSummary) // repopulated
     })
 
-    it('should initialise the partner note form with the goal note text', () => {
+    it('should initialize the partner note form with the goal note text', () => {
       goalsSubject.next([mockGoal])
       expect(component.partnerNoteForm.value.text).toBe('Initial note')
     })
@@ -481,7 +481,7 @@ describe('PortfolioSummaryComponent', () => {
       expect(dialogOpenSpy).toHaveBeenCalled()
     })
 
-    it('should pass the current goal, cycle goal and organisation to the dialog', () => {
+    it('should pass the current goal, cycle goal and organization to the dialog', () => {
       component.currentCycleGoal = mockCycleGoal
       component.reviewAndSyncToSalesforce()
       const dialogData = (dialogOpenSpy.calls.mostRecent().args[1] as { data: { goal: Goal; currentCycleGoal: CycleGoal } }).data

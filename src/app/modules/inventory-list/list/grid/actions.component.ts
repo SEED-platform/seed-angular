@@ -23,6 +23,7 @@ import type { InventoryType, Profile } from '../../../inventory'
 import {
   AuditTemplateExportModalComponent,
   AuditTemplateImportModalComponent,
+  CopyToCycleModalComponent,
   EmailModalComponent,
   FempExportModalComponent,
   GeocodeModalComponent,
@@ -175,6 +176,14 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     const dialogRef = this._dialog.open(MergeModalComponent, {
       width: '50rem',
       data: { ...this.baseData(), cycleId: this.cycleId, profileId: this.profile?.id || null },
+    })
+    this.afterClosed(dialogRef)
+  }
+
+  openCopyToCycleModal() {
+    const dialogRef = this._dialog.open(CopyToCycleModalComponent, {
+      width: '40rem',
+      data: { ...this.baseData(), cycles: this.cycles, profiles: this.profiles, currentCycleId: this.cycleId },
     })
     this.afterClosed(dialogRef)
   }
