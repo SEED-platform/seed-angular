@@ -1,6 +1,6 @@
+import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { booleanAttribute, Component, inject, input, ViewEncapsulation } from '@angular/core'
-import { AsyncPipe } from '@angular/common'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { asyncScheduler, observeOn, Subject, takeUntil } from 'rxjs'
 import { LoadingService } from '@seed/services'

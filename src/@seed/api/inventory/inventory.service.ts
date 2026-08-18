@@ -507,9 +507,8 @@ export class InventoryService {
 
   unmerge(orgId: number, viewId: number, type: InventoryType): Observable<{ view_id: number }> {
     const url = `/api/v3/${type}/${viewId}/unmerge/?organization_id=${orgId}`
-    const request$ = type === 'properties'
-      ? this._httpClient.put<{ view_id: number }>(url, {})
-      : this._httpClient.post<{ view_id: number }>(url, {})
+    const request$
+      = type === 'properties' ? this._httpClient.put<{ view_id: number }>(url, {}) : this._httpClient.post<{ view_id: number }>(url, {})
     return request$.pipe(
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, 'Error unmerging inventory')
@@ -526,7 +525,14 @@ export class InventoryService {
     )
   }
 
-  updateWithEspm(orgId: number, viewId: number, cycleId: number, mappingProfileId: number, file: Blob | File, filename?: string): Observable<{ success: boolean; message?: string }> {
+  updateWithEspm(
+    orgId: number,
+    viewId: number,
+    cycleId: number,
+    mappingProfileId: number,
+    file: Blob | File,
+    filename?: string,
+  ): Observable<{ success: boolean; message?: string }> {
     const url = `/api/v3/properties/${viewId}/update_with_espm/?cycle_id=${cycleId}&organization_id=${orgId}&mapping_profile_id=${mappingProfileId}`
     const formData = new FormData()
     formData.append('file', file, filename ?? (file instanceof File ? file.name : `espm_${Date.now()}.xlsx`))

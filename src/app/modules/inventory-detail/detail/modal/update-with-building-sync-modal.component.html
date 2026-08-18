@@ -1,4 +1,8 @@
-<seed-modal-header [close]="close.bind(this)" title="Update with BuildingSync" titleIcon="fa-solid:arrow-up-from-bracket"></seed-modal-header>
+<seed-modal-header
+  [close]="close.bind(this)"
+  title="Update with BuildingSync"
+  titleIcon="fa-solid:arrow-up-from-bracket"
+></seed-modal-header>
 
 <div class="flex flex-col gap-4">
   @if (errorMessage) {
@@ -7,7 +11,7 @@
 
   <div class="text-secondary text-sm">Select a BuildingSync XML file to update this property's data.</div>
 
-  <input accept=".xml,application/xml,text/xml" type="file" (change)="onFileChange($event)" />
+  <input (change)="onFileChange($event)" accept=".xml,application/xml,text/xml" type="file" />
 
   @if (file) {
     <div class="text-secondary text-sm">{{ file.name }}</div>

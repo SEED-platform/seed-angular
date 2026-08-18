@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
-import { Router } from '@angular/router'
 import { MatDialog } from '@angular/material/dialog'
 import { type MatSelect } from '@angular/material/select'
+import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, take, tap } from 'rxjs'
@@ -13,14 +13,13 @@ import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService, ConfirmationService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
-import { AuditTemplateExportModalComponent, AuditTemplateImportModalComponent } from 'app/modules/inventory-list/list/actions'
 import { AnalysisRunModalComponent, GroupsModalComponent, LabelsModalComponent, UbidModalComponent } from 'app/modules/inventory/actions'
-import { ExportModalComponent } from 'app/modules/inventory/actions/export-modal.component'
 import type { GenericView, GroupMapping, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
+import { AuditTemplateExportModalComponent, AuditTemplateImportModalComponent } from 'app/modules/inventory-list/list/actions'
 import { ModalComponent } from '../../column-list-profile/modal/modal.component'
+import { MapComponent } from './map.component'
 import { ExportBuildingSyncModalComponent } from './modal/export-building-sync-modal.component'
 import { ExportBuildingSyncXlsxModalComponent } from './modal/export-building-sync-xlsx-modal.component'
-import { MapComponent } from './map.component'
 import { UpdateWithBuildingSyncModalComponent } from './modal/update-with-building-sync-modal.component'
 import { UpdateWithEspmModalComponent } from './modal/update-with-espm-modal.component'
 
@@ -70,22 +69,118 @@ export class HeaderComponent implements OnInit {
   buildActions(): void {
     const isProperties = this.type === 'properties'
     this.actions = [
-      { name: 'Add to/Remove from Groups', action: () => this.openGroupsModal(), disabled: false },
-      { name: 'Add/Remove Labels', action: () => this.openLabelsModal(), disabled: false },
-      { name: 'Add/Update UBID', action: () => this.openUbidModal(), disabled: false },
-      { name: 'Export Audit Template File (XML)', action: () => this.tempAction(), disabled: true },
-      { name: 'Export BuildingSync', action: () => this.openExportBuildingSyncModal(), disabled: !isProperties },
-      { name: 'Export BuildingSync (Excel)', action: () => this.openExportBuildingSyncXlsxModal(), disabled: !isProperties },
-      { name: 'Export to Audit Template', action: () => this.openAuditTemplateExportModal(), disabled: !isProperties || !this.org?.audit_template_user },
-      { name: 'Merge and Link Matches', action: () => this.openMergeAndLinkConfirmation(), disabled: false },
-      { name: 'Only Show Populated Columns', action: () => this.openShowPopulatedColumnsModal(), disabled: false },
-      { name: 'Run Analysis', action: () => this.openRunAnalysisModal(), disabled: !isProperties },
-      { name: 'Update with Audit Template', action: () => this.openAuditTemplateImportModal(), disabled: !isProperties || !this.org?.audit_template_user || !this.org?.audit_template_sync_enabled },
-      { name: 'Update with BuildingSync', action: () => this.openUpdateWithBuildingSyncModal(), disabled: !isProperties },
-      { name: 'Update with ESPM', action: () => this.openUpdateWithEspmModal(), disabled: !isProperties },
-      ...(this.view?.history?.length > 1 ? [{ name: 'Unmerge Last', action: () => this.openUnmergeConfirmation(), disabled: false }] : []),
+      {
+        name: 'Add to/Remove from Groups',
+        action: () => {
+          this.openGroupsModal()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Add/Remove Labels',
+        action: () => {
+          this.openLabelsModal()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Add/Update UBID',
+        action: () => {
+          this.openUbidModal()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Export Audit Template File (XML)',
+        action: () => {
+          this.tempAction()
+        },
+        disabled: true,
+      },
+      {
+        name: 'Export BuildingSync',
+        action: () => {
+          this.openExportBuildingSyncModal()
+        },
+        disabled: !isProperties,
+      },
+      {
+        name: 'Export BuildingSync (Excel)',
+        action: () => {
+          this.openExportBuildingSyncXlsxModal()
+        },
+        disabled: !isProperties,
+      },
+      {
+        name: 'Export to Audit Template',
+        action: () => {
+          this.openAuditTemplateExportModal()
+        },
+        disabled: !isProperties || !this.org?.audit_template_user,
+      },
+      {
+        name: 'Merge and Link Matches',
+        action: () => {
+          this.openMergeAndLinkConfirmation()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Only Show Populated Columns',
+        action: () => {
+          this.openShowPopulatedColumnsModal()
+        },
+        disabled: false,
+      },
+      {
+        name: 'Run Analysis',
+        action: () => {
+          this.openRunAnalysisModal()
+        },
+        disabled: !isProperties,
+      },
+      {
+        name: 'Update with Audit Template',
+        action: () => {
+          this.openAuditTemplateImportModal()
+        },
+        disabled: !isProperties || !this.org?.audit_template_user || !this.org?.audit_template_sync_enabled,
+      },
+      {
+        name: 'Update with BuildingSync',
+        action: () => {
+          this.openUpdateWithBuildingSyncModal()
+        },
+        disabled: !isProperties,
+      },
+      {
+        name: 'Update with ESPM',
+        action: () => {
+          this.openUpdateWithEspmModal()
+        },
+        disabled: !isProperties,
+      },
+      ...(this.view?.history?.length > 1
+        ? [
+            {
+              name: 'Unmerge Last',
+              action: () => {
+                this.openUnmergeConfirmation()
+              },
+              disabled: false,
+            },
+          ]
+        : []),
       ...(this.org?.bb_salesforce_enabled && isProperties
-        ? [{ name: 'Update Salesforce', action: () => this.updateSalesforce(), disabled: false }]
+        ? [
+            {
+              name: 'Update Salesforce',
+              action: () => {
+                this.updateSalesforce()
+              },
+              disabled: false,
+            },
+          ]
         : []),
     ]
   }
@@ -235,7 +330,7 @@ export class HeaderComponent implements OnInit {
   }
 
   openUpdateWithEspmModal(): void {
-    const pmPropertyId = (this.view?.state as Record<string, unknown>)?.pm_property_id as string ?? ''
+    const pmPropertyId = ((this.view?.state as Record<string, unknown>)?.pm_property_id as string) ?? ''
     const dialogRef = this._dialog.open(UpdateWithEspmModalComponent, {
       width: '40rem',
       data: { orgId: this.org.id, viewId: this.selectedView.id, cycleId: this.view.cycle.id, pmPropertyId },
@@ -262,14 +357,18 @@ export class HeaderComponent implements OnInit {
       .pipe(
         take(1),
         filter(Boolean),
-        tap(() => this.refreshDetail.emit()),
+        tap(() => {
+          this.refreshDetail.emit()
+        }),
       )
       .subscribe()
   }
 
   onAction(action: () => void, select: MatSelect) {
     select.writeValue(null)
-    setTimeout(() => action())
+    setTimeout(() => {
+      action()
+    })
   }
 
   onChangeProfile(profileId: number) {

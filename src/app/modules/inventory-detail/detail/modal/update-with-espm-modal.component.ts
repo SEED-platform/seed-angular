@@ -59,8 +59,12 @@ export class UpdateWithEspmModalComponent implements OnInit {
       .updateWithEspm(this.data.orgId, this.data.viewId, this.data.cycleId, this.selectedProfileId, this.xlsxFile)
       .pipe(take(1))
       .subscribe({
-        next: (result) => this.handleResult(result),
-        error: () => { this.busy = false },
+        next: (result) => {
+          this.handleResult(result)
+        },
+        error: () => {
+          this.busy = false
+        },
       })
   }
 
@@ -78,13 +82,17 @@ export class UpdateWithEspmModalComponent implements OnInit {
         }),
       )
       .subscribe({
-        next: (result) => this.handleResult(result),
-        error: () => { this.busy = false },
+        next: (result) => {
+          this.handleResult(result)
+        },
+        error: () => {
+          this.busy = false
+        },
       })
   }
 
   handleResult(result: { success: boolean; message?: string }): void {
-    if (result && result.success === false) {
+    if (result?.success === false) {
       this.errorMessage = result.message ?? 'Error importing from ESPM.'
       this.busy = false
     } else {
@@ -97,4 +105,3 @@ export class UpdateWithEspmModalComponent implements OnInit {
     this._dialogRef.close()
   }
 }
-

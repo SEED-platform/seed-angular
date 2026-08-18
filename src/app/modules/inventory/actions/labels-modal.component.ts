@@ -92,15 +92,19 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
         field: 'add',
         headerName: 'Add',
         flex: 0.2,
-        editable: hasApplied ? (params) => !params.data.isApplied : true,
-        cellStyle: hasApplied ? (params) => (params.data.isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+        editable: hasApplied ? (params) => !(params.data as { isApplied: boolean }).isApplied : true,
+        cellStyle: hasApplied
+          ? (params) => ((params.data as { isApplied: boolean }).isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
       },
       {
         field: 'remove',
         headerName: 'Remove',
         flex: 0.2,
-        editable: hasApplied ? (params) => params.data.isApplied : true,
-        cellStyle: hasApplied ? (params) => (!params.data.isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+        editable: hasApplied ? (params) => (params.data as { isApplied: boolean }).isApplied : true,
+        cellStyle: hasApplied
+          ? (params) => (!(params.data as { isApplied: boolean }).isApplied ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
       },
     ]
   }

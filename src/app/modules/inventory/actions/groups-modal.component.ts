@@ -100,16 +100,20 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
         field: 'add',
         headerName: 'Add',
         flex: 0.5,
-        editable: showMembership ? (params) => this.allSameAli && !params.data.isMember : this.allSameAli,
+        editable: showMembership ? (params) => this.allSameAli && !(params.data as { isMember: boolean }).isMember : this.allSameAli,
         headerClass: () => (this.allSameAli ? '' : 'text-secondary'),
-        cellStyle: showMembership ? (params) => (params.data.isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+        cellStyle: showMembership
+          ? (params) => ((params.data as { isMember: boolean }).isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
       },
       {
         field: 'remove',
         headerName: 'Remove',
         flex: 0.5,
-        editable: showMembership ? (params) => params.data.isMember : true,
-        cellStyle: showMembership ? (params) => (!params.data.isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null) : null,
+        editable: showMembership ? (params) => (params.data as { isMember: boolean }).isMember : true,
+        cellStyle: showMembership
+          ? (params) => (!(params.data as { isMember: boolean }).isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
       },
     ]
   }
