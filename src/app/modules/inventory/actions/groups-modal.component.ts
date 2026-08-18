@@ -74,20 +74,19 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
     const nameCtrl = this.form.get('name')
     nameCtrl?.setValidators([Validators.required, SEEDValidators.uniqueValue(this.existingNames)])
 
-    this.aliGroups = this.groups
-      .filter((g) => this.aliIds.includes(g.access_level_instance))
-      .map((group) => ({ ...group, add: false, remove: false }))
+    this.setRowData()
     this.aliId = this.aliGroups[0]?.access_level_instance
     this.allSameAli = this.aliGroups.every((g) => g.access_level_instance === this.aliId)
 
     if (this.allSameAli) {
-      this.form.patchValue({ access_level_instance: this.aliId })
+      this.form.patchValue({ access_level_instance: this.aliId ?? this.aliIds[0] })
     }
     this.loading = false
   }
 
   setGrid() {
     this.setRowData()
+    const showMembership = this.data.viewIds.length === 1
     this.columnDefs = [
       { field: 'name', headerName: 'Group Name', flex: 1 },
       { field: 'access_level_instance_data.name', headerName: 'Access Level Instance' },
@@ -101,17 +100,34 @@ export class GroupsModalComponent implements OnDestroy, OnInit {
         field: 'add',
         headerName: 'Add',
         flex: 0.5,
-        editable: this.allSameAli,
+        editable: showMembership ? (params) => this.allSameAli && !(params.data as { isMember: boolean }).isMember : this.allSameAli,
         headerClass: () => (this.allSameAli ? '' : 'text-secondary'),
+        cellStyle: showMembership
+          ? (params) => ((params.data as { isMember: boolean }).isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
       },
-      { field: 'remove', headerName: 'Remove', flex: 0.5, editable: true },
+      {
+        field: 'remove',
+        headerName: 'Remove',
+        flex: 0.5,
+        editable: showMembership ? (params) => (params.data as { isMember: boolean }).isMember : true,
+        cellStyle: showMembership
+          ? (params) => (!(params.data as { isMember: boolean }).isMember ? { opacity: '0.3', cursor: 'not-allowed' } : null)
+          : null,
+      },
     ]
   }
 
   setRowData() {
+    const singleViewId = this.data.viewIds.length === 1 ? this.data.viewIds[0] : null
     this.aliGroups = this.groups
       .filter((g) => this.aliIds.includes(g.access_level_instance))
-      .map((group) => ({ ...group, add: false, remove: false }))
+      .map((group) => ({
+        ...group,
+        add: false,
+        remove: false,
+        isMember: singleViewId !== null ? group.views_list.includes(singleViewId) : false,
+      }))
   }
 
   onCellValueChanged(event: CellValueChangedEvent): void {

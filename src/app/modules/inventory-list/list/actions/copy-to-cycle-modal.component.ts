@@ -2,8 +2,8 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { TranslocoDirective } from '@jsverse/transloco'
-import { Subject, switchMap } from 'rxjs'
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
+import { Subject, switchMap, takeUntil } from 'rxjs'
 import type { Cycle } from '@seed/api'
 import { InventoryService } from '@seed/api'
 import { ModalHeaderComponent, ProgressBarComponent } from '@seed/components'
@@ -22,6 +22,7 @@ export class CopyToCycleModalComponent implements OnInit, OnDestroy {
   private _inventoryService = inject(InventoryService)
   private _uploaderService = inject(UploaderService)
   private _snackBar = inject(SnackBarService)
+  private _translocoService = inject(TranslocoService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   data = inject(MAT_DIALOG_DATA) as {
@@ -70,12 +71,13 @@ export class CopyToCycleModalComponent implements OnInit, OnDestroy {
           this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
             successFn: () => {
-              this._snackBar.success('Inventory copied to cycle successfully.')
+              this._snackBar.success(this._translocoService.translate('Inventory copied to cycle successfully.'))
               this.close(true)
             },
             progressBarObj: this.progressBarObj,
           }),
         ),
+        takeUntil(this._unsubscribeAll$),
       )
       .subscribe({
         error: () => {

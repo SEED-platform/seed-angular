@@ -6,14 +6,36 @@
   </div>
 
   @for (entry of rowDataEntries; track $index) {
-    <div class="text-secondary ml-1">{{ entry.date }}</div>
-    <ag-grid-angular
-      [columnDefs]="columnDefs"
-      [detailRowHeight]="150"
-      [rowData]="entry.rowData"
-      [theme]="gridTheme$ | async"
-      [style.height.px]="getGridHeight(entry.rowData)"
-      (gridReady)="onGridReady($event)"
-    ></ag-grid-angular>
+    <div class="text-secondary ml-1 text-sm">{{ entry.date }}</div>
+    <mat-accordion multi>
+      @for (scenario of entry.rowData; track scenario.id) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="font-medium">{{ scenario.name }}</mat-panel-title>
+            <mat-panel-description class="flex gap-6 text-xs">
+              <span>Elec: {{ scenario.annual_electricity_savings ?? 'N/A' }} kBtu</span>
+              <span>Peak: {{ scenario.annual_peak_electricity_reduction ?? 'N/A' }} kW</span>
+              <span>Gas: {{ scenario.annual_natural_gas_savings ?? 'N/A' }} kBtu</span>
+              <span>{{ scenario.measures?.length ?? 0 }} measure(s)</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          @if (scenario.measures?.length) {
+            <ag-grid-angular
+              [columnDefs]="measureColumnDefs"
+              [rowData]="scenario.measures"
+              [theme]="gridTheme$ | async"
+              [style.height.px]="getMeasuresHeight(scenario.measures)"
+            ></ag-grid-angular>
+          } @else {
+            <div class="text-secondary py-2 text-sm">No measures in this scenario.</div>
+          }
+
+          <div class="mt-2 flex justify-end">
+            <button (click)="deleteScenario(scenario.id, scenario.name)" color="warn" mat-stroked-button>Delete Scenario</button>
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
   }
 </div>
