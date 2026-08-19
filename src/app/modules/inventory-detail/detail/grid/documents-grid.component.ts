@@ -4,7 +4,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
-import { Subject, takeUntil, tap } from 'rxjs'
+import { map, Subject, takeUntil, tap } from 'rxjs'
 import type { Organization } from '@seed/api'
 import { InventoryService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -28,7 +28,7 @@ export class DocumentsGridComponent implements OnChanges, OnDestroy {
   private _inventoryService = inject(InventoryService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   gridApi: GridApi
-  gridTheme$ = this._configService.gridTheme$
+  gridTheme$ = this._configService.gridTheme$.pipe(map((t) => t.withParams({ oddRowBackgroundColor: 'rgba(0,0,0,0.04)' })))
   columnDefs: ColDef[] = []
   rowData: Record<string, unknown>[] = []
   defaultColDef = {

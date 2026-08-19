@@ -6,7 +6,7 @@ import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, FirstDataRenderedEvent, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
-import { finalize, Subject, tap } from 'rxjs'
+import { finalize, map, Subject, tap } from 'rxjs'
 import type { Column, CurrentUser, GenericColumn, OrganizationUserSettings } from '@seed/api'
 import { InventoryService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -46,7 +46,7 @@ export class HistoryGridComponent implements OnChanges, OnDestroy {
   extraDataColumnNames: Set<string>
   gridApi: GridApi
   gridColumns: (Column | ProfileColumn)[]
-  gridTheme$ = this._configService.gridTheme$
+  gridTheme$ = this._configService.gridTheme$.pipe(map((t) => t.withParams({ oddRowBackgroundColor: 'rgba(0,0,0,0.04)' })))
   loading = false
   orgUserId: number
   rowData: Record<string, unknown>[]

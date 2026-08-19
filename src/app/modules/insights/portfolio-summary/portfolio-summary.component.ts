@@ -19,6 +19,7 @@ import type {
   GoalPagination,
   GoalProperty,
   Organization,
+  OrganizationUserSettings,
   PortfolioSummary,
   PropertyViewLabel,
   WeightedEUI,
@@ -91,10 +92,13 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _propertyColumns: Column[] = []
+  private _orgUserId: number | null = null
+  private _userSettings: OrganizationUserSettings = {}
 
   readonly gridTheme$ = inject(ConfigService).gridTheme$
   readonly defaultColDef: ColDef = {
     suppressMovable: true,
+    floatingFilter: true,
     valueFormatter: (params) => {
       const v = params.value as string | number | null | undefined
       return v === null || v === undefined ? '\u2014' : String(v)
@@ -104,6 +108,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   isLoggedIntoBbSalesforce = false
   goals: Goal[] = []
   currentGoal: Goal | null = null
+  goalSearchCtrl = new FormControl('')
   currentCycleGoal: CycleGoal | null = null
   portfolioSummary: PortfolioSummary | null = null
   organization: Organization
@@ -234,12 +239,25 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       this._buildPropertyColumnDefs()
     })
 
-    this._goalService.goals$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((goals) => {
-      this.goals = goals
-      if (!this.currentGoal && goals.length) {
-        this._applyGoalSelection(goals[0].id)
-      }
-    })
+    // Load user settings first, then subscribe to goals so savedGoalId is available when goals arrive
+    this._userService.currentUser$
+      .pipe(
+        take(1),
+        switchMap((currentUser) => {
+          this._orgUserId = currentUser.org_user_id
+          this._userSettings = currentUser.settings ?? {}
+          return this._goalService.goals$
+        }),
+        takeUntil(this._unsubscribeAll$),
+      )
+      .subscribe((goals) => {
+        this.goals = goals
+        if (!this.currentGoal && goals.length) {
+          const savedId = this._userSettings?.insights?.portfolioSummary?.goalId
+          const savedGoal = savedId ? goals.find((g) => g.id === savedId) : null
+          this._applyGoalSelection((savedGoal ?? goals[0]).id)
+        }
+      })
   }
 
   ngOnDestroy(): void {
@@ -330,8 +348,18 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
 
   // ─── Selectors ──────────────────────────────────────────────────────
 
+  get filteredGoals(): Goal[] {
+    const search = (this.goalSearchCtrl.value ?? '').toLowerCase()
+    return search ? this.goals.filter((g) => g.name.toLowerCase().includes(search)) : this.goals
+  }
+
   selectGoal(event: MatSelectChange): void {
+    if (event.value == null) return
     this._applyGoalSelection(event.value as number)
+  }
+
+  onGoalDropdownOpened(opened: boolean): void {
+    if (opened) this.goalSearchCtrl.setValue('')
   }
 
   selectCycleGoal(cycleGoal: CycleGoal): void {
@@ -666,6 +694,17 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
     this.currentGoal = this.goals.find((g) => g.id === goalId) ?? null
     if (!this.currentGoal) return
 
+    this._userSettings = {
+      ...this._userSettings,
+      insights: { ...(this._userSettings.insights ?? {}), portfolioSummary: { goalId } },
+    }
+    if (this._orgUserId && this.organization?.id) {
+      this._organizationService
+        .updateOrganizationUser(this._orgUserId, this.organization.id, this._userSettings)
+        .pipe(take(1))
+        .subscribe()
+    }
+
     this.partnerNoteForm.setValue({ text: this.currentGoal.partner_note ?? '' })
     this.currentCycleGoal = null
     this.cycleGoalSummaryData = []
@@ -743,7 +782,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       .map((c) => ({
         headerName: c.display_name,
         field: `${c.column_name}_${c.id}`,
-        filter: false,
+        filter: 'agTextColumnFilter',
         headerComponent: PortfolioSummaryHeaderMenuComponent,
       }))
 
@@ -784,21 +823,21 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Property Name',
         field: findField('property_name'),
-        filter: false,
+        filter: 'agTextColumnFilter',
         headerComponent: PortfolioSummaryHeaderMenuComponent,
       },
       {
         headerName: 'Property Type',
         field: findField('property_type'),
-        filter: false,
+        filter: 'agTextColumnFilter',
         headerComponent: PortfolioSummaryHeaderMenuComponent,
       },
-      { headerName: 'Year Built', field: findField('year_built'), filter: false, headerComponent: PortfolioSummaryHeaderMenuComponent },
+      { headerName: 'Year Built', field: findField('year_built'), filter: 'agNumberColumnFilter', headerComponent: PortfolioSummaryHeaderMenuComponent },
       // Baseline columns (yellow)
       {
         headerName: 'Baseline Area',
         field: 'baseline_sqft',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: yellHdr,
         cellStyle: yellCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
@@ -806,7 +845,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Baseline EUI',
         field: 'baseline_eui',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: yellHdr,
         cellStyle: yellCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
@@ -814,7 +853,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Baseline kBTU',
         field: 'baseline_kbtu',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: yellHdr,
         cellStyle: yellCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
@@ -836,7 +875,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Current Area',
         field: 'current_sqft',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: redHdr,
         cellStyle: redCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
@@ -844,7 +883,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Current EUI',
         field: 'current_eui',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: redHdr,
         cellStyle: redCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
@@ -852,7 +891,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       {
         headerName: 'Current kBTU',
         field: 'current_kbtu',
-        filter: false,
+        filter: 'agNumberColumnFilter',
         headerStyle: redHdr,
         cellStyle: redCell,
         headerComponent: PortfolioSummaryHeaderMenuComponent,
