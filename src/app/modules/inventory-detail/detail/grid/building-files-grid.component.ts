@@ -3,6 +3,7 @@ import type { OnInit } from '@angular/core'
 import { Component, inject, Input } from '@angular/core'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import { map } from 'rxjs'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventory.types'
@@ -17,7 +18,7 @@ export class BuildingFilesGridComponent implements OnInit {
   @Input() type: InventoryType
   private _configService = inject(ConfigService)
   gridApi: GridApi
-  gridTheme$ = this._configService.gridTheme$
+  gridTheme$ = this._configService.gridTheme$.pipe(map((t) => t.withParams({ oddRowBackgroundColor: 'rgba(0,0,0,0.04)' })))
   columnDefs: ColDef[] = []
   rowData: Record<string, unknown>[] = []
   defaultColDef = {

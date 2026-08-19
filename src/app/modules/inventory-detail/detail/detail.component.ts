@@ -12,6 +12,7 @@ import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import type { GenericView, InventoryType, Profile, ViewResponse } from 'app/modules/inventory/inventory.types'
 import {
+  BuildingElementsGridComponent,
   BuildingFilesGridComponent,
   DocumentsGridComponent,
   HeaderComponent,
@@ -24,6 +25,7 @@ import {
   selector: 'seed-inventory-detail',
   templateUrl: './detail.component.html',
   imports: [
+    BuildingElementsGridComponent,
     BuildingFilesGridComponent,
     CommonModule,
     DocumentsGridComponent,

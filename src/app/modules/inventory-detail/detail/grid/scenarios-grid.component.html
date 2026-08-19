@@ -9,7 +9,7 @@
     <div class="text-secondary ml-1 text-sm">{{ entry.date }}</div>
     <mat-accordion multi>
       @for (scenario of entry.rowData; track scenario.id) {
-        <mat-expansion-panel>
+        <mat-expansion-panel class="bg-card">
           <mat-expansion-panel-header>
             <mat-panel-title class="font-medium">{{ scenario.name }}</mat-panel-title>
             <mat-panel-description class="flex gap-6 text-xs">

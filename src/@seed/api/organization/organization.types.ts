@@ -182,6 +182,7 @@ export type PropertyInsightsUserSettings = {
 
 export type InsightsUserSettings = {
   propertyInsights?: PropertyInsightsUserSettings;
+  portfolioSummary?: { goalId?: number };
 }
 
 export type OrganizationUsersResponse = {

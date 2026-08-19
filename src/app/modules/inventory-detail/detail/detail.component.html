@@ -61,6 +61,13 @@
       </seed-inventory-detail-documents-grid>
     }
 
+    <!-- BUILDING ELEMENTS -->
+    @if (view?.property && type === 'properties') {
+      <mat-divider></mat-divider>
+      <seed-inventory-detail-building-elements-grid [orgId]="orgId" [propertyId]="view.property.id">
+      </seed-inventory-detail-building-elements-grid>
+    }
+
     <!-- BUILDING FILES -->
     @if (view?.property && view?.state.files.length) {
       <mat-divider></mat-divider>
