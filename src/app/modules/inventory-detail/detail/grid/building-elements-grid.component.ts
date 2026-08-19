@@ -55,8 +55,7 @@ export class BuildingElementsGridComponent implements OnChanges {
         headerName: 'Uniformat Category',
         flex: 2,
         valueGetter: ({ data }: { data: PropertyElement }) => uniformat[data?.code]?.category ?? data?.code,
-        tooltipValueGetter: ({ data }: ITooltipParams<PropertyElement>) =>
-          `${this.buildHierarchy(data?.code, uniformat)} (${data?.code})`,
+        tooltipValueGetter: ({ data }: ITooltipParams<PropertyElement>) => `${this.buildHierarchy(data?.code, uniformat)} (${data?.code})`,
       },
       { field: 'description', headerName: 'Description', flex: 2 },
       { field: 'installation_date', headerName: 'Installation Date', flex: 1 },
@@ -76,8 +75,7 @@ export class BuildingElementsGridComponent implements OnChanges {
         field: 'replacement_cost',
         headerName: 'Replacement Cost',
         flex: 1,
-        valueFormatter: ({ value }: { value: number | null }) =>
-          value != null ? `$${Math.round(value).toLocaleString()}` : '',
+        valueFormatter: ({ value }: { value: number | null }) => (value != null ? `$${Math.round(value).toLocaleString()}` : ''),
       },
       ...extraKeys.map((key) => ({
         headerName: key,

@@ -699,10 +699,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       insights: { ...(this._userSettings.insights ?? {}), portfolioSummary: { goalId } },
     }
     if (this._orgUserId && this.organization?.id) {
-      this._organizationService
-        .updateOrganizationUser(this._orgUserId, this.organization.id, this._userSettings)
-        .pipe(take(1))
-        .subscribe()
+      this._organizationService.updateOrganizationUser(this._orgUserId, this.organization.id, this._userSettings).pipe(take(1)).subscribe()
     }
 
     this.partnerNoteForm.setValue({ text: this.currentGoal.partner_note ?? '' })
@@ -832,7 +829,12 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
         filter: 'agTextColumnFilter',
         headerComponent: PortfolioSummaryHeaderMenuComponent,
       },
-      { headerName: 'Year Built', field: findField('year_built'), filter: 'agNumberColumnFilter', headerComponent: PortfolioSummaryHeaderMenuComponent },
+      {
+        headerName: 'Year Built',
+        field: findField('year_built'),
+        filter: 'agNumberColumnFilter',
+        headerComponent: PortfolioSummaryHeaderMenuComponent,
+      },
       // Baseline columns (yellow)
       {
         headerName: 'Baseline Area',

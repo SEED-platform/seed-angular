@@ -13,8 +13,8 @@ export class PropertyElementService {
 
   getElements(orgId: number, propertyId: number): Observable<PropertyElement[]> {
     const url = `/api/v3/properties/${propertyId}/elements/`
-    return this._httpClient.get<PropertyElement[]>(url, { params: { organization_id: orgId } }).pipe(
-      catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error fetching building elements')),
-    )
+    return this._httpClient
+      .get<PropertyElement[]>(url, { params: { organization_id: orgId } })
+      .pipe(catchError((error: HttpErrorResponse) => this._errorService.handleError(error, 'Error fetching building elements')))
   }
 }
