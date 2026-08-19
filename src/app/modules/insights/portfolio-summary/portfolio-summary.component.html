@@ -30,17 +30,16 @@
           (openedChange)="onGoalDropdownOpened($event)"
         >
           <mat-select-trigger>{{ currentGoal?.name ?? t('(select a goal)') }}</mat-select-trigger>
-          <!-- Search input pinned at top of dropdown; value=null prevents accidental selection -->
-          <mat-option class="!h-10 !py-0" [value]="null">
+          <!-- Search input pinned at top of dropdown -->
+          <div class="px-4 py-1">
             <input
-              class="h-full w-full bg-transparent outline-none"
+              class="h-8 w-full bg-transparent outline-none"
               [formControl]="goalSearchCtrl"
               [placeholder]="t('Search\u2026')"
               (click)="$event.stopPropagation()"
-              (keydown.space)="$event.stopPropagation()"
-              (keydown.enter)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()"
             />
-          </mat-option>
+          </div>
           @for (goal of filteredGoals; track goal.id) {
             <mat-option [value]="goal.id">{{ goal.name }}</mat-option>
           }
