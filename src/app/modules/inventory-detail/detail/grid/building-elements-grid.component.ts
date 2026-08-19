@@ -39,10 +39,15 @@ export class BuildingElementsGridComponent implements OnChanges {
     forkJoin({
       elements: this._elementService.getElements(this.orgId, this.propertyId),
       uniformat: this._uniformatService.getUniformat(),
-    }).subscribe(({ elements, uniformat }) => {
-      this.elements = elements
-      this.buildColumnDefs(elements, uniformat)
-      this.loading = false
+    }).subscribe({
+      next: ({ elements, uniformat }) => {
+        this.elements = elements
+        this.buildColumnDefs(elements, uniformat)
+        this.loading = false
+      },
+      error: () => {
+        this.loading = false
+      },
     })
   }
 
@@ -99,6 +104,8 @@ export class BuildingElementsGridComponent implements OnChanges {
 
   onGridReady(agGrid: GridReadyEvent): void {
     this.gridApi = agGrid.api
-    this.gridApi.sizeColumnsToFit()
+    if (this.columnDefs.length) {
+      this.gridApi.sizeColumnsToFit()
+    }
   }
 }
