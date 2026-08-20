@@ -100,7 +100,7 @@ export class HeaderComponent implements OnInit, OnChanges {
       },
       {
         name: 'Export Audit Template File (XML)',
-        action: () => { this.exportAuditTemplateXml() },
+        action: this.exportAuditTemplateXml.bind(this) as () => void,
         disabled: !isProperties,
       },
       {
