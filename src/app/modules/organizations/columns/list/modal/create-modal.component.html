@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Create Column</h2>
+
+<mat-dialog-content>
+  <mat-form-field class="w-full">
+    <mat-label>Column Name</mat-label>
+    <input [(ngModel)]="columnName" [disabled]="inProgress" matInput autocomplete="off" />
+    @if (isDuplicate) {
+      <mat-error>This name is already in use.</mat-error>
+    }
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button [disabled]="inProgress" (click)="close()" mat-stroked-button>Cancel</button>
+  <button [disabled]="!isValid || inProgress" (click)="create()" mat-flat-button color="primary">Create Column</button>
+</mat-dialog-actions>

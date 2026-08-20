@@ -1,4 +1,10 @@
 <seed-page-table-container *transloco="let t">
+  <div class="mb-3 flex justify-end">
+    <button (click)="createColumn()" mat-flat-button color="primary">
+      <mat-icon class="icon-size-4" svgIcon="fa-solid:plus"></mat-icon>
+      <span class="ml-2">{{ t('New Column') }}</span>
+    </button>
+  </div>
   <mat-form-field class="w-full">
     <mat-label>Filter</mat-label>
     <input #input (keyup)="applyFilter($event)" matInput placeholder="Ex. ium" />

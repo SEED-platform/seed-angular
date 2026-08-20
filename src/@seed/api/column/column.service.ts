@@ -95,4 +95,14 @@ export class ColumnService {
       }),
     )
   }
+
+  createColumn(orgId: number, columnName: string, tableName: string): Observable<Column> {
+    return this._httpClient
+      .post<Column>('/api/v3/columns/', { organization_id: orgId, column_name: columnName, table_name: tableName })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return this._errorService.handleError(error, 'Error creating column')
+        }),
+      )
+  }
 }
