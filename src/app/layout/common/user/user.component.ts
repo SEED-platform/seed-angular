@@ -32,7 +32,7 @@ export class UserComponent implements OnInit, OnDestroy {
     // Subscribe to user changes
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((currentUser) => {
       this.user = currentUser
-      this.avatarUrl = `https://gravatar.com/avatar/${sha256(this.user.email.toLowerCase())}?size=128&d=mp`
+      this.avatarUrl = `https://www.gravatar.com/avatar/${sha256(this.user.email.toLowerCase())}?size=128&d=mp`
 
       // Mark for check
       this._changeDetectorRef.markForCheck()
