@@ -249,11 +249,12 @@ export class HeaderComponent implements OnInit, OnChanges {
       .pipe(take(1))
       .subscribe((xml) => {
         const blob = new Blob([xml], { type: 'application/xml;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
-        a.href = URL.createObjectURL(blob)
+        a.href = url
         a.download = `buildingsync_at_property_${this.selectedView.id}.xml`
         a.click()
-        URL.revokeObjectURL(a.href)
+        setTimeout(() => URL.revokeObjectURL(url), 0)
       })
   }
 
