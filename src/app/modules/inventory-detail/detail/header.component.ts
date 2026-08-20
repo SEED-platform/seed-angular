@@ -254,7 +254,9 @@ export class HeaderComponent implements OnInit, OnChanges {
         a.href = url
         a.download = `buildingsync_at_property_${this.selectedView.id}.xml`
         a.click()
-        setTimeout(() => URL.revokeObjectURL(url), 0)
+        setTimeout(() => {
+          URL.revokeObjectURL(url)
+        }, 0)
       })
   }
 

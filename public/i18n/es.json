@@ -1710,6 +1710,7 @@
   "This cycle name is already taken.": "El nombre de este ciclo ya está ocupado.",
   "This email link is invalid.": "Este enlace de correo electrónico no es válido.",
   "This label name is already taken.": "Este nombre de etiqueta ya está ocupado.",
+  "This name is already in use.": "Este nombre ya está en uso.",
   "This password must contain at least %(quantity)d %(type)s characters.": "Esta contraseña debe contener al menos %(quantity)d %(type)s caracteres.",
   "This plan has not yet been run": "Este plan aún no se ha ejecutado.",
   "This will reset your visible columns and column order to only columns that contain data. Are you sure you want to continue?": "Esto restablecerá las columnas visibles y el orden de las columnas a sólo las columnas que contengan datos. ¿Está seguro de que desea continuar?",

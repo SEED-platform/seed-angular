@@ -229,8 +229,10 @@ export class MetersComponent implements OnDestroy, OnInit {
       .filter((col) => timeFields.has(col.field) || selectedLabels.size === 0 || selectedLabels.has(col.field))
       .map((col) => ({ field: col.field, headerName: nameMap[col.field] ?? col.displayName }))
 
-    this.readingData =
-      selectedLabels.size === 0 ? this.meterReadings.readings : this.meterReadings.readings.filter((row) => selectedLabelsArray.some((label) => label in row))
+    this.readingData
+      = selectedLabels.size === 0
+        ? this.meterReadings.readings
+        : this.meterReadings.readings.filter((row) => selectedLabelsArray.some((label) => label in row))
     this.getReadingGridHeight()
     setTimeout(() => {
       this.buildChart()
@@ -249,26 +251,28 @@ export class MetersComponent implements OnDestroy, OnInit {
     const labelField = this.interval.toLowerCase()
     const labels = this.readingData.map((d) => String((d[labelField] as string | number) ?? (d.start_time as string | number) ?? ''))
     const scales: Record<string, unknown> = {}
-    const datasets = this.readingDefs.filter((col) => !timeFields.has(col.field) && col.field !== labelField).map((col, i) => {
-      const unit = /\(([^)]+)\)$/.exec(col.headerName ?? col.field)?.[1] ?? 'Value'
-      if (!scales[unit]) {
-        scales[unit] = {
-          type: 'linear',
-          position: Object.keys(scales).length === 0 ? 'left' : 'right',
-          title: { display: true, text: unit },
+    const datasets = this.readingDefs
+      .filter((col) => !timeFields.has(col.field) && col.field !== labelField)
+      .map((col, i) => {
+        const unit = /\(([^)]+)\)$/.exec(col.headerName ?? col.field)?.[1] ?? 'Value'
+        if (!scales[unit]) {
+          scales[unit] = {
+            type: 'linear',
+            position: Object.keys(scales).length === 0 ? 'left' : 'right',
+            title: { display: true, text: unit },
+          }
         }
-      }
-      const color = colors[i % colors.length]
-      return {
-        label: col.headerName ?? col.field,
-        data: this.readingData.map((d) => d[col.field] as number | null),
-        yAxisID: unit,
-        backgroundColor: color,
-        borderColor: color,
-        tension: 0.1,
-        fill: false,
-      }
-    })
+        const color = colors[i % colors.length]
+        return {
+          label: col.headerName ?? col.field,
+          data: this.readingData.map((d) => d[col.field] as number | null),
+          yAxisID: unit,
+          backgroundColor: color,
+          borderColor: color,
+          tension: 0.1,
+          fill: false,
+        }
+      })
 
     this._chart = new Chart(canvas, {
       type: 'line',
