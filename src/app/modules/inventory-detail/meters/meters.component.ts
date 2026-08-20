@@ -245,10 +245,11 @@ export class MetersComponent implements OnDestroy, OnInit {
     if (!canvas) return
 
     const colors = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a']
+    const timeFields = new Set(['start_time', 'end_time', 'month', 'year'])
     const labelField = this.interval.toLowerCase()
-    const labels = this.readingData.map((d) => String((d[labelField] as string | number) ?? ''))
+    const labels = this.readingData.map((d) => String((d[labelField] as string | number) ?? (d.start_time as string | number) ?? ''))
     const scales: Record<string, unknown> = {}
-    const datasets = this.readingDefs.slice(1).map((col, i) => {
+    const datasets = this.readingDefs.filter((col) => !timeFields.has(col.field) && col.field !== labelField).map((col, i) => {
       const unit = /\(([^)]+)\)$/.exec(col.headerName ?? col.field)?.[1] ?? 'Value'
       if (!scales[unit]) {
         scales[unit] = {
