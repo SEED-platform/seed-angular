@@ -1710,6 +1710,7 @@
   "This cycle name is already taken.": "This cycle name is already taken.",
   "This email link is invalid.": "This email link is invalid.",
   "This label name is already taken.": "This label name is already taken.",
+  "This name is already in use.": "This name is already in use.",
   "This password must contain at least %(quantity)d %(type)s characters.": "This password must contain at least %(quantity)d %(type)s characters.",
   "This plan has not yet been run": "This plan has not yet been run",
   "This will reset your visible columns and column order to only columns that contain data. Are you sure you want to continue?": "This will reset your visible columns and column order to show only columns that contain data. Are you sure you want to continue?",

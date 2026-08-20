@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { TranslocoDirective } from '@jsverse/transloco'
 import { take } from 'rxjs'
 import { ColumnService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -9,7 +10,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-columns-create-modal',
   templateUrl: './create-modal.component.html',
-  imports: [FormsModule, MaterialImports],
+  imports: [FormsModule, MaterialImports, TranslocoDirective],
 })
 export class CreateColumnModalComponent {
   private _dialogRef = inject(MatDialogRef<CreateColumnModalComponent>)
