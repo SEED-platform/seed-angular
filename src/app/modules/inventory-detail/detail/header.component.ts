@@ -8,7 +8,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, take, tap } from 'rxjs'
 import type { AccessLevelInstance, Cycle, Label, Organization } from '@seed/api'
-import { CycleService, InventoryService } from '@seed/api'
+import { AuditTemplateService, CycleService, InventoryService } from '@seed/api'
 import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService, ConfirmationService } from '@seed/services'
@@ -42,6 +42,7 @@ export class HeaderComponent implements OnInit, OnChanges {
   @Output() refreshDetail = new EventEmitter<null>()
   private _configService = inject(ConfigService)
   private _confirmationService = inject(ConfirmationService)
+  private _auditTemplateService = inject(AuditTemplateService)
   private _cycleService = inject(CycleService)
   private _dialog = inject(MatDialog)
   private _inventoryService = inject(InventoryService)
@@ -99,10 +100,8 @@ export class HeaderComponent implements OnInit, OnChanges {
       },
       {
         name: 'Export Audit Template File (XML)',
-        action: () => {
-          this.tempAction()
-        },
-        disabled: true,
+        action: () => { this.exportAuditTemplateXml() },
+        disabled: !isProperties,
       },
       {
         name: 'Export BuildingSync',
@@ -242,6 +241,20 @@ export class HeaderComponent implements OnInit, OnChanges {
       data: { orgId: this.org.id, type: this.type, viewIds: [this.selectedView.id] },
     })
     this.afterClosed(dialogRef)
+  }
+
+  exportAuditTemplateXml(): void {
+    this._auditTemplateService
+      .exportBuildingSyncAtFile(this.org.id, this.selectedView.id)
+      .pipe(take(1))
+      .subscribe((xml) => {
+        const blob = new Blob([xml], { type: 'application/xml;charset=utf-8;' })
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = `buildingsync_at_property_${this.selectedView.id}.xml`
+        a.click()
+        URL.revokeObjectURL(a.href)
+      })
   }
 
   openAuditTemplateExportModal(): void {
