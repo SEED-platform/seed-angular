@@ -37,10 +37,15 @@
       <div class="mt-5">
         <mat-divider></mat-divider>
         <div class="flex justify-between">
-          <div class="my-5 ml-4 flex items-center text-lg font-medium">
+          <button class="my-5 ml-4 flex items-center gap-2 text-lg font-medium" (click)="readingsCollapsed = !readingsCollapsed" mat-button>
             <mat-icon svgIcon="fa-solid:table-list"></mat-icon>
-            <span class="ml-4">Readings</span>
-          </div>
+            <span>Readings</span>
+            <mat-icon
+              class="transition-transform icon-size-4"
+              [class.rotate-180]="readingsCollapsed"
+              svgIcon="fa-solid:chevron-down"
+            ></mat-icon>
+          </button>
           <!-- Interval select -->
           <div class="m-1 my-auto flex flex-row gap-4">
             <mat-label class="text-secondary my-auto">Interval</mat-label>
@@ -56,7 +61,7 @@
           </div>
         </div>
 
-        @if (readingData.length) {
+        @if (readingData.length && !readingsCollapsed) {
           <ag-grid-angular
             [columnDefs]="readingDefs"
             [defaultColDef]="defaultColDef"
@@ -68,10 +73,23 @@
             [theme]="gridTheme$ | async"
             (gridReady)="onReadingGridReady($event)"
           ></ag-grid-angular>
-        } @else {
+        } @else if (!readingData.length && !readingsCollapsed) {
           <seed-not-found message="No Readings Found" icon="fa-solid:triangle-exclamation"></seed-not-found>
         }
       </div>
+
+      @if (interval !== 'Exact' && readingData.length) {
+        <div class="mt-5">
+          <mat-divider></mat-divider>
+          <div class="my-5 ml-4 flex items-center text-lg font-medium">
+            <mat-icon svgIcon="fa-solid:chart-line"></mat-icon>
+            <span class="ml-4">Readings Chart</span>
+          </div>
+          <div class="bg-card rounded-lg p-4">
+            <canvas #metersChart></canvas>
+          </div>
+        </div>
+      }
     }
   </div>
 </seed-page>
