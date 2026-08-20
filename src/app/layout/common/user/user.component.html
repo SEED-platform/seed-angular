@@ -1,7 +1,7 @@
 <button [matMenuTriggerFor]="userActions" mat-icon-button>
   <span class="relative flex items-center justify-center">
     @if (showAvatar() && avatarUrl) {
-      <img class="h-7 w-7 rounded-full" [src]="avatarUrl" alt="User avatar" />
+      <img class="h-7 w-7 rounded-full" [src]="avatarUrl" (error)="avatarUrl = null" alt="User avatar" />
     } @else {
       <mat-icon svgIcon="fa-regular:circle-user"></mat-icon>
     }

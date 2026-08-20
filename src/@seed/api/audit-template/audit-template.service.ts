@@ -110,4 +110,12 @@ export class AuditTemplateService {
       }),
     )
   }
+  exportBuildingSyncAtFile(orgId: number, viewId: number): Observable<string> {
+    const url = '/api/v3/audit_template/export_buildingsync_at_file/'
+    return this._httpClient.get(url, { params: { organization_id: orgId, view_id: viewId }, responseType: 'text' }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error exporting Audit Template XML')
+      }),
+    )
+  }
 }

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { Chart } from 'chart.js/auto'
 import { filter, type Observable, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle, Dataset, GroupService, Meter, MeterUsage } from '@seed/api'
 import { CycleService, DatasetService, GroupsService, MeterService, OrganizationService, UserService } from '@seed/api'
@@ -35,7 +36,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   datasets: Dataset[]
   excludedIds: number[] = []
   gridTheme$ = this._configService.gridTheme$
-  interval: 'Exact' | 'Year' | 'Month' = 'Exact'
+  interval: 'Exact' | 'Year' | 'Month' = 'Month'
   groupIds: number[]
   meterDefs: ColDef[] = []
   meterData: Record<string, unknown>[] = []
@@ -47,10 +48,13 @@ export class MetersComponent implements OnDestroy, OnInit {
   readingData: Record<string, unknown>[] = []
   readingGridApi: GridApi
   readingGridHeight = 0
+  readingsCollapsed = false
   services: GroupService[] = []
   view: ViewResponse
   viewId: number
   viewDisplayField$: Observable<string>
+  @ViewChild('metersChart') private _chartCanvas?: ElementRef<HTMLCanvasElement>
+  private _chart: Chart | null = null
 
   defaultColDef = {
     sortable: true,
@@ -157,8 +161,7 @@ export class MetersComponent implements OnDestroy, OnInit {
   }
 
   setReadingGrid() {
-    this.setReadingData()
-    this.setReadingColumnDefs()
+    this.applyMeterFilter()
   }
 
   setMeterColumnDefs() {
@@ -190,18 +193,6 @@ export class MetersComponent implements OnDestroy, OnInit {
     `
   }
 
-  setReadingColumnDefs() {
-    if (!this.meterReadings) return
-
-    const nameMap: Record<string, string> = { end_time: 'End Time', start_time: 'Start Time' }
-    this.readingDefs = this.meterReadings.column_defs.map((col: { field: string; displayName?: string }) => {
-      return {
-        field: col.field,
-        headerName: nameMap[col.field] ?? col.displayName,
-      }
-    })
-  }
-
   setMeterData() {
     this.meterData = this.meters.map((m: Meter) => {
       const serviceName = this.services.find((s) => s.id === m.config.service_id)?.name || ''
@@ -218,6 +209,76 @@ export class MetersComponent implements OnDestroy, OnInit {
     if (!this.meterReadings) return
     this.readingData = this.meterReadings.readings
     this.getReadingGridHeight()
+    setTimeout(() => {
+      this.buildChart()
+    })
+  }
+
+  // Client-side filter readings and column defs to match selected meters (matches legacy filterByMeterSelections)
+  applyMeterFilter() {
+    if (!this.meterReadings) return
+    const timeFields = new Set(['start_time', 'end_time', 'month', 'year'])
+    const nameMap: Record<string, string> = { end_time: 'End Time', start_time: 'Start Time' }
+
+    const gridSelectedRows = (this.meterGridApi?.getSelectedRows() as Meter[] | undefined) ?? []
+    const selectedRows = (gridSelectedRows.length ? gridSelectedRows : this.meters) ?? []
+    const selectedLabels = new Set(selectedRows.map((m) => `${m.type} - ${m.source ?? 'None'} - ${m.source_id ?? 'None'}`))
+    const selectedLabelsArray = [...selectedLabels]
+
+    this.readingDefs = this.meterReadings.column_defs
+      .filter((col) => timeFields.has(col.field) || selectedLabels.size === 0 || selectedLabels.has(col.field))
+      .map((col) => ({ field: col.field, headerName: nameMap[col.field] ?? col.displayName }))
+
+    this.readingData
+      = selectedLabels.size === 0
+        ? this.meterReadings.readings
+        : this.meterReadings.readings.filter((row) => selectedLabelsArray.some((label) => label in row))
+    this.getReadingGridHeight()
+    setTimeout(() => {
+      this.buildChart()
+    })
+  }
+
+  buildChart(): void {
+    this._chart?.destroy()
+    this._chart = null
+    if (this.interval === 'Exact' || !this.readingData.length || !this.readingDefs.length) return
+    const canvas = this._chartCanvas?.nativeElement
+    if (!canvas) return
+
+    const colors = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a']
+    const timeFields = new Set(['start_time', 'end_time', 'month', 'year'])
+    const labelField = this.interval.toLowerCase()
+    const labels = this.readingData.map((d) => String((d[labelField] as string | number) ?? (d.start_time as string | number) ?? ''))
+    const scales: Record<string, unknown> = {}
+    const datasets = this.readingDefs
+      .filter((col) => !timeFields.has(col.field) && col.field !== labelField)
+      .map((col, i) => {
+        const unit = /\(([^)]+)\)$/.exec(col.headerName ?? col.field)?.[1] ?? 'Value'
+        if (!scales[unit]) {
+          scales[unit] = {
+            type: 'linear',
+            position: Object.keys(scales).length === 0 ? 'left' : 'right',
+            title: { display: true, text: unit },
+          }
+        }
+        const color = colors[i % colors.length]
+        return {
+          label: col.headerName ?? col.field,
+          data: this.readingData.map((d) => d[col.field] as number | null),
+          yAxisID: unit,
+          backgroundColor: color,
+          borderColor: color,
+          tension: 0.1,
+          fill: false,
+        }
+      })
+
+    this._chart = new Chart(canvas, {
+      type: 'line',
+      data: { labels, datasets },
+      options: { responsive: true, scales, plugins: { legend: { position: 'top' } } },
+    })
   }
 
   get meterGridHeight() {
@@ -303,11 +364,8 @@ export class MetersComponent implements OnDestroy, OnInit {
   meterSelectionChanged() {
     const allIds = this.meters.map((m: Meter) => m.id)
     const selectedIds = this.meterGridApi.getSelectedRows().map((r: { id: number }) => r.id)
-    const newExcludedIds = allIds.filter((id) => !selectedIds.includes(id))
-    if (newExcludedIds.length === this.excludedIds.length) return
-
-    this.excludedIds = newExcludedIds
-    this._meterService.listReadings(this.orgId, this.viewId, this.interval, this.excludedIds)
+    this.excludedIds = allIds.filter((id) => !selectedIds.includes(id))
+    this.applyMeterFilter()
   }
 
   destroyGrids() {
@@ -324,5 +382,6 @@ export class MetersComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+    this._chart?.destroy()
   }
 }
