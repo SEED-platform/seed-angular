@@ -220,14 +220,17 @@ export class MetersComponent implements OnDestroy, OnInit {
     const timeFields = new Set(['start_time', 'end_time', 'month', 'year'])
     const nameMap: Record<string, string> = { end_time: 'End Time', start_time: 'Start Time' }
 
-    const selectedRows = (this.meterGridApi?.getSelectedRows() ?? this.meters) as Meter[]
+    const gridSelectedRows = (this.meterGridApi?.getSelectedRows() as Meter[] | undefined) ?? []
+    const selectedRows = (gridSelectedRows.length ? gridSelectedRows : this.meters) ?? []
     const selectedLabels = new Set(selectedRows.map((m) => `${m.type} - ${m.source ?? 'None'} - ${m.source_id ?? 'None'}`))
+    const selectedLabelsArray = [...selectedLabels]
 
     this.readingDefs = this.meterReadings.column_defs
-      .filter((col) => timeFields.has(col.field) || selectedLabels.has(col.field))
+      .filter((col) => timeFields.has(col.field) || selectedLabels.size === 0 || selectedLabels.has(col.field))
       .map((col) => ({ field: col.field, headerName: nameMap[col.field] ?? col.displayName }))
 
-    this.readingData = this.meterReadings.readings.filter((row) => [...selectedLabels].some((label) => label in row))
+    this.readingData =
+      selectedLabels.size === 0 ? this.meterReadings.readings : this.meterReadings.readings.filter((row) => selectedLabelsArray.some((label) => label in row))
     this.getReadingGridHeight()
     setTimeout(() => {
       this.buildChart()
