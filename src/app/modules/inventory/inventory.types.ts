@@ -261,8 +261,8 @@ export type InventoryFormCreateState = {
 }
 
 export type InventoryFormCreateData = {
-  access_level_instance: number;
-  cycle: number;
+  access_level_instance_id: number;
+  cycle_id: number;
   state: InventoryFormCreateState;
 }
 

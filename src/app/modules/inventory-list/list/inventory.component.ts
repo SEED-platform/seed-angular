@@ -314,6 +314,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
             this.rowData = results
           }),
           map(() => null),
+          catchError(() => of(null)),
         )
       }),
     ) as Observable<null>
