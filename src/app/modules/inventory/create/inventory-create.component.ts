@@ -388,8 +388,8 @@ export class InventoryCreateComponent implements OnInit, OnDestroy {
     }
 
     const config = {
-      access_level_instance: this.configForm.get('access_level_instance').value,
-      cycle: this.configForm.get('cycle').value,
+      access_level_instance_id: this.configForm.get('access_level_instance').value,
+      cycle_id: this.configForm.get('cycle').value,
     }
 
     const relatedState = data[this.related].state

@@ -81,6 +81,7 @@ export class InventoryGridComponent implements OnChanges {
       checkboxes: true,
       headerCheckbox: true,
     },
+    selectionColumnDef: { pinned: 'left', lockPinned: true, lockPosition: 'left' },
     rowClassRules: {
       'even-row': (params) => params.node.rowIndex % 2 === 0,
     },
@@ -145,6 +146,8 @@ export class InventoryGridComponent implements OnChanges {
     return names.map((name) => ({
       field: name,
       headerName: name,
+      // Pinned left so user-pinned columns appear to the right of ALI columns
+      pinned: 'left' as const,
       hide: !this.showAccessLevelInstances,
       filter: true,
       sortable: false,
@@ -180,7 +183,8 @@ export class InventoryGridComponent implements OnChanges {
       this.buildShortcutColumn('groups_indicator', 'Groups', 44, 'workspaces'),
       this.buildLabelsCell(),
     ]
-    return shortcutColumns
+    // Pin shortcuts so user-pinned columns land after them in the pinned area
+    return shortcutColumns.map((c) => ({ ...c, pinned: 'left' as const }))
   }
 
   addHeaderMenu() {

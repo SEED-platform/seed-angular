@@ -294,12 +294,17 @@ export class InventoryService {
     inventoryType: InventoryType,
     viewId: number | null = null,
   ): Observable<FormCreateResponse> {
-    const url = `/api/v3/${inventoryType}/form_create/`
+    const url = `/api/v3/${inventoryType}/`
     const params: Record<string, number> = { organization_id: this.orgId }
     if (viewId !== null) {
       params.related_view_id = viewId
     }
-    return this._httpClient.post<FormCreateResponse>(url, data, { params }).pipe(
+    return this._httpClient.post<Record<string, unknown>>(url, data, { params }).pipe(
+      map((r) => ({
+        status: r.status as string,
+        // normalize property_view_id / taxlot_view_id to view_id
+        view_id: (r.property_view_id ?? r.taxlot_view_id ?? r.view_id ?? null) as number | null,
+      })),
       catchError((error: HttpErrorResponse) => {
         return this._errorService.handleError(error, `Error creating ${inventoryType === 'taxlots' ? 'tax lot' : 'property'}`)
       }),
