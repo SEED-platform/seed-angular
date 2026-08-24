@@ -90,8 +90,14 @@ export class InventoryGridComponent implements OnChanges {
     },
   }
 
+  // Raw API column defs — kept separate so getColumnDefs() doesn't clobber them by overwriting this.columnDefs
+  private _apiColumnDefs: ColDef[] = []
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.rowData) {
+    if (changes.columnDefs) {
+      this._apiColumnDefs = this.columnDefs ?? []
+    }
+    if (changes.rowData || changes.columnDefs) {
       this.getColumnDefs()
     }
   }
@@ -188,7 +194,7 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   addHeaderMenu() {
-    const stateColumns = this.columnDefs.map((c) => ({
+    const stateColumns = this._apiColumnDefs.map((c) => ({
       ...c,
       headerComponent: CellHeaderMenuComponent,
       headerComponentParams: {

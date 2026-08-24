@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs'
 import type { BriefOrganization, CurrentUser } from '@seed/api'
 import { OrganizationService, UserService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
+import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-organization-selector',
@@ -14,6 +15,7 @@ import { MaterialImports } from '@seed/materials'
 })
 export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
+  private _snackBar = inject(SnackBarService)
   private _userService = inject(UserService)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -29,8 +31,12 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
     })
   }
 
-  selectOrganization(organizationId: number) {
-    this._userService.setDefaultOrganization(organizationId).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
+  selectOrganization(org: BriefOrganization) {
+    if (!org.user_role) {
+      this._snackBar.alert(`You are not a member of "${org.name}" and cannot switch to it.`)
+      return
+    }
+    this._userService.setDefaultOrganization(org.id).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
   }
 
   ngOnDestroy(): void {
