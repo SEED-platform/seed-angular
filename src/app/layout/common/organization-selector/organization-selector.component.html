@@ -7,6 +7,12 @@
 
 <mat-menu #orgMenu="matMenu" xPosition="before">
   @for (org of organizations; track org.id) {
-    <button (click)="selectOrganization(org.id)" mat-menu-item>{{ org.name }}</button>
+    <button
+      (click)="selectOrganization(org)"
+      [class.bg-red-100]="!org.user_role"
+      [class.dark:bg-red-950]="!org.user_role"
+      [title]="!org.user_role ? 'You are not a member of this organization' : ''"
+      mat-menu-item
+    >{{ org.name }}</button>
   }
 </mat-menu>
