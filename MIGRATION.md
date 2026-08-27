@@ -111,10 +111,6 @@ against this app's route files. Update this table as pages move between columns.
 
 - [ ] **Salesforce login callback** — Angular implementation exists in PR #56, but callback
       success/failure landing behavior still needs parity verification.
-- [ ] **Public Data Sharing** — Angular implementation exists in PR #77, with reviewer request
-      `kflemin`; verify API behavior, permissions, translations, and real-data save/reload.
-- [ ] **Portfolio Summary enhancement** — PR #56 remains in progress; verify goals, cycles,
-      partner approvals, Salesforce behavior, and remaining source-audit TODOs.
 
 The older “Not yet migrated” entries above are retained as historical route references; the daily
 source-audit table below is the current classification.
@@ -181,20 +177,21 @@ its line to "Won't migrate" with a reason instead.
 
 ## Daily source-code parity snapshot
 
-Snapshot refreshed **2026-08-03 04:07 PDT** from the legacy route/template inventory, the current
-Angular source tree, local worktrees, and refreshed remote refs. Shared fragments and modal HTML
-remain counted under their owning page rather than as separate pages.
+Snapshot refreshed **2026-08-27 09:58 MDT** from the legacy route/template inventory, current GitHub
+PR metadata, and refreshed branch refs. Local remote-tracking refs match the current core
+`develop` and Angular `main` heads;
+shared fragments and modal HTML remain counted under their owning page rather than as separate pages.
 
 | Inventory / status | Current count | Evidence |
 |---|---:|---|
 | Legacy partial HTML files | **166** | `seed/static/seed/partials/**/*.html` |
 | Unique route-owned legacy templates | **59** | 63 legacy states in `seed.js` collapse to 59 unique `partials/*.html` references |
 | Shared/modal legacy fragments | **107** | Parent-page burndown; 86 filenames contain `modal` |
-| Angular application HTML templates | **198** | `src/app/**/*.html` |
+| Angular application HTML templates | **216** | `src/app/**/*.html` on refreshed `origin/main` |
 | Angular shared HTML templates | **33** | `src/@seed/**/*.html` |
-| Baseline migrated | **51 / 59** | Route/component exists on the baseline, subject to full parity sign-off |
-| Ported but incomplete | **3 / 59** | Salesforce login, Public Data Sharing, Portfolio Summary enhancement |
-| Needs port | **2 / 59** | Personal two-factor setup and full Program Setup |
+| Baseline migrated | **54 / 59** | Includes merged Public Data Sharing (#77), Personal Two-Factor (#80), and Portfolio Summary improvements (#79/#83) |
+| Ported but incomplete | **1 / 59** | Salesforce login callback |
+| Needs port | **1 / 59** | Full Program Setup |
 | Won't migrate | **3 / 59** | Pairing settings, Inventory Plots, Sub-organizations |
 
 ```mermaid
@@ -202,8 +199,23 @@ xychart-beta
     title "Legacy route-template migration burndown"
     x-axis ["Baseline migrated", "Incomplete", "Needs port", "Won't migrate"]
     y-axis "Unique route templates" 0 --> 59
-    bar [51, 3, 2, 3]
+    bar [54, 1, 1, 3]
 ```
+
+### Current source walkthrough and next action
+
+Shared and modal HTML remains owned by the parent page and is not double-counted.
+
+| Page | Legacy source surface | Angular source/evidence | Status |
+|---|---|---|---|
+| Salesforce login callback | `partials/salesforce_login.html`, `salesforce_login_controller.js`, Salesforce/user services, callback parameters and return navigation | `src/app/modules/salesforce-login/salesforce-login.component.ts/.html`; success/failure banners, retry behavior, invalid parameters, redirects, translations, and backend contract still need verification | **Ported, incomplete** |
+| Full Program Setup | `partials/program_setup.html`, `program_setup_controller.js`, `programs`/`program_setup` states, compliance metric services, org-settings permissions/navigation | `ProgramConfigComponent` only covers the embedded Insights picker; no full organization-level CRUD route/component | **Needs port** |
+| Portfolio Summary | `partials/portfolio_summary.html`, controller, goal/cycle/Salesforce/bulk-note/partner-approval modal partials and services | `src/app/modules/insights/portfolio-summary/`; merged #79 and #83 added saved-goal selection, searchable goals, filters, Building Elements, and ECM improvements; no remaining TODO/logout gap found in current source audit | **Baseline migrated** |
+
+**Recommended next page: Salesforce login callback.** It is the only remaining incomplete route and has
+an existing Angular implementation, so close parity with a bounded callback-contract and real-data test
+pass before starting the larger Program Setup port. Current highest-priority review flag is **NLLONG:
+SEED core #5303**.
 
 ### Cross Cycles parity walkthrough
 

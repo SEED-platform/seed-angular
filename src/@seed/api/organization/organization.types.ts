@@ -125,6 +125,7 @@ export type OrganizationUser = {
 
 export type OrganizationUserSettings = {
   [key: string]: unknown;
+  colorScheme?: 'dark' | 'light';
   cycleId?: number;
   sorts?: UserSettingsSorts;
   filters?: UserSettingsFilters;
