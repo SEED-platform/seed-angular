@@ -32,6 +32,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
   alert: Alert
   allowSignUp = false
   showAlert = false
+  termsPreviouslyAccepted = false
   twoFactorStep = false
   twoFactorMethod: 'email' | 'token' = 'token'
   signInForm: FormGroup<{
@@ -51,6 +52,14 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
+    })
+
+    this.signInForm.controls.email.valueChanges.pipe(takeUntil(this._unsubscribeAll$)).subscribe((email) => {
+      const accepted = !this.signInForm.controls.email.hasError('email') && this._termsOfServiceService.hasAcceptedTerms(email)
+      if (accepted !== this.termsPreviouslyAccepted) {
+        this.termsPreviouslyAccepted = accepted
+        this.signInForm.controls.terms.setValue(accepted)
+      }
     })
 
     this.otpForm = new FormGroup({
@@ -104,6 +113,8 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
 
         const redirectURL = this._route.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
 
+        this._recordTermsAcceptance()
+
         // Navigate to the redirect url
         void this._router.navigateByUrl(redirectURL)
       },
@@ -111,7 +122,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
         // Re-enable the form
         this.signInForm.enable()
 
-        this.signInForm.reset()
+        this.signInForm.reset({ email: '', password: '', terms: this.termsPreviouslyAccepted })
 
         // Set the alert
         this.alert = {
@@ -137,6 +148,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
     this._authService.signIn({ ...this._pendingCredentials, otp_token }).subscribe({
       next: () => {
         const redirectURL = this._route.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
+        this._recordTermsAcceptance()
         void this._router.navigateByUrl(redirectURL)
       },
       error: () => {
@@ -170,5 +182,12 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
     this._pendingCredentials = null
     this.otpForm.reset()
     this.showAlert = false
+  }
+
+  private _recordTermsAcceptance(): void {
+    if (this.termsPreviouslyAccepted) return
+
+    this._termsOfServiceService.recordTermsAcceptance(this.signInForm.value.email!)
+    this.termsPreviouslyAccepted = true
   }
 }

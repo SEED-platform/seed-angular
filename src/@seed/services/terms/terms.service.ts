@@ -1,9 +1,31 @@
 import { inject, Injectable } from '@angular/core'
 import { ConfirmationService } from '../confirmation'
 
+const NLR_TERMS_ACCEPTED_AT_KEY = 'nlrTermsAcceptedAt'
+const NLR_TERMS_ACCEPTANCE_DAYS = 90
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
+
 @Injectable({ providedIn: 'root' })
 export class TermsService {
   private _confirmationService = inject(ConfirmationService)
+
+  hasAcceptedTerms(email: string): boolean {
+    const key = `${NLR_TERMS_ACCEPTED_AT_KEY}:${email.toLowerCase().trim()}`
+    const acceptedAt = Number(localStorage.getItem(key))
+    const acceptanceAge = Date.now() - acceptedAt
+
+    return (
+      Number.isFinite(acceptedAt)
+      && acceptedAt > 0
+      && acceptanceAge >= 0
+      && acceptanceAge < NLR_TERMS_ACCEPTANCE_DAYS * MILLISECONDS_PER_DAY
+    )
+  }
+
+  recordTermsAcceptance(email: string): void {
+    const key = `${NLR_TERMS_ACCEPTED_AT_KEY}:${email.toLowerCase().trim()}`
+    localStorage.setItem(key, Date.now().toString())
+  }
 
   showTermsOfService(): void {
     this._confirmationService.open({

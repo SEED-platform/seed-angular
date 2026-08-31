@@ -3,6 +3,7 @@ import { AdminComponent } from 'app/modules/profile/admin/admin.component'
 import { ProfileDeveloperComponent } from 'app/modules/profile/developer/developer.component'
 import { ProfileInfoComponent } from 'app/modules/profile/info/info.component'
 import { ProfileSecurityComponent } from 'app/modules/profile/security/security.component'
+import { ProfileSettingsComponent } from 'app/modules/profile/settings/settings.component'
 import { ProfileTwoFactorComponent } from 'app/modules/profile/two-factor/two-factor.component'
 
 export default [
@@ -35,5 +36,10 @@ export default [
     path: 'admin',
     title: 'Admin',
     component: AdminComponent,
+  },
+  {
+    path: 'display',
+    title: 'Display',
+    component: ProfileSettingsComponent,
   },
 ] satisfies Routes
