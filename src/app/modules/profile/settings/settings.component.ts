@@ -4,6 +4,7 @@ import type { Observable } from 'rxjs'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api'
 import { OrganizationService, UserService } from '@seed/api'
+import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import type { Scheme } from '@seed/services'
 import { ConfigService } from '@seed/services'
@@ -14,7 +15,7 @@ type ColorScheme = Exclude<Scheme, 'auto'>
 @Component({
   selector: 'seed-profile-settings',
   templateUrl: './settings.component.html',
-  imports: [MaterialImports],
+  imports: [MaterialImports, SharedImports],
 })
 export class ProfileSettingsComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
