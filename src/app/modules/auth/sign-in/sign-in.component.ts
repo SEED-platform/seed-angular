@@ -48,11 +48,18 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
       this.allowSignUp = allowSignUp
     })
 
-    this.termsPreviouslyAccepted = this._termsOfServiceService.hasAcceptedTerms()
     this.signInForm = this._formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      terms: [this.termsPreviouslyAccepted, Validators.requiredTrue],
+      terms: [false, Validators.requiredTrue],
+    })
+
+    this.signInForm.controls.email.valueChanges.pipe(takeUntil(this._unsubscribeAll$)).subscribe((email) => {
+      const accepted = !this.signInForm.controls.email.hasError('email') && this._termsOfServiceService.hasAcceptedTerms(email)
+      if (accepted !== this.termsPreviouslyAccepted) {
+        this.termsPreviouslyAccepted = accepted
+        this.signInForm.controls.terms.setValue(accepted)
+      }
     })
 
     this.otpForm = new FormGroup({
@@ -180,7 +187,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
   private _recordTermsAcceptance(): void {
     if (this.termsPreviouslyAccepted) return
 
-    this._termsOfServiceService.recordTermsAcceptance()
+    this._termsOfServiceService.recordTermsAcceptance(this.signInForm.value.email!)
     this.termsPreviouslyAccepted = true
   }
 }

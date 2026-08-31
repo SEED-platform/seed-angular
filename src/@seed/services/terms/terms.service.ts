@@ -9,8 +9,9 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 export class TermsService {
   private _confirmationService = inject(ConfirmationService)
 
-  hasAcceptedTerms(): boolean {
-    const acceptedAt = Number(localStorage.getItem(NLR_TERMS_ACCEPTED_AT_KEY))
+  hasAcceptedTerms(email: string): boolean {
+    const key = `${NLR_TERMS_ACCEPTED_AT_KEY}:${email.toLowerCase().trim()}`
+    const acceptedAt = Number(localStorage.getItem(key))
     const acceptanceAge = Date.now() - acceptedAt
 
     return (
@@ -21,8 +22,9 @@ export class TermsService {
     )
   }
 
-  recordTermsAcceptance(): void {
-    localStorage.setItem(NLR_TERMS_ACCEPTED_AT_KEY, Date.now().toString())
+  recordTermsAcceptance(email: string): void {
+    const key = `${NLR_TERMS_ACCEPTED_AT_KEY}:${email.toLowerCase().trim()}`
+    localStorage.setItem(key, Date.now().toString())
   }
 
   showTermsOfService(): void {
