@@ -89,7 +89,7 @@
           <mat-label>{{ t('Owner') }}</mat-label>
           <mat-select (openedChange)="$event || resetSearch(userSearch)" formControlName="userId">
             <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-              <input [formControl]="userSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search users…" />
+              <input class="h-8 w-full bg-transparent outline-none" [formControl]="userSearch" placeholder="Search users…" />
             </div>
             @for (user of filteredUsers; track user.user_id) {
               <mat-option [value]="user.user_id">{{ user.email }}</mat-option>
@@ -140,9 +140,13 @@
         <div class="flex flex-col gap-x-4 sm:flex-row">
           <mat-form-field class="flex-auto">
             <mat-label>{{ t('Organization') }}</mat-label>
-            <mat-select (openedChange)="$event || resetSearch(orgSearch)" (selectionChange)="onCreateUserOrgChange()" formControlName="organizationId">
+            <mat-select
+              (openedChange)="$event || resetSearch(orgSearch)"
+              (selectionChange)="onCreateUserOrgChange()"
+              formControlName="organizationId"
+            >
               <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                <input [formControl]="orgSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search organizations…" />
+                <input class="h-8 w-full bg-transparent outline-none" [formControl]="orgSearch" placeholder="Search organizations…" />
               </div>
               @for (org of sortedOrganizations; track org.id) {
                 <mat-option [value]="org.id">{{ org.name }}</mat-option>
@@ -171,7 +175,7 @@
             <mat-label>{{ t('Access Level Instance') }}</mat-label>
             <mat-select (openedChange)="$event || resetSearch(aliSearch)" formControlName="accessLevelInstanceId">
               <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                <input [formControl]="aliSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search instances…" />
+                <input class="h-8 w-full bg-transparent outline-none" [formControl]="aliSearch" placeholder="Search instances…" />
               </div>
               @for (ali of filteredAccessLevelInstances; track ali.id) {
                 <mat-option [value]="ali.id">{{ ali.name }}</mat-option>
@@ -202,7 +206,7 @@
             <mat-label>{{ t('Organization') }}</mat-label>
             <mat-select (openedChange)="$event || resetSearch(orgSearch)" formControlName="organizationId">
               <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                <input [formControl]="orgSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search organizations…" />
+                <input class="h-8 w-full bg-transparent outline-none" [formControl]="orgSearch" placeholder="Search organizations…" />
               </div>
               @for (org of sortedOrganizations; track org.id) {
                 <mat-option [value]="org.id">{{ org.name }}</mat-option>
@@ -213,7 +217,7 @@
             <mat-label>{{ t('User') }}</mat-label>
             <mat-select (openedChange)="$event || resetSearch(userSearch)" formControlName="userId">
               <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                <input [formControl]="userSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search users…" />
+                <input class="h-8 w-full bg-transparent outline-none" [formControl]="userSearch" placeholder="Search users…" />
               </div>
               @for (user of filteredUsers; track user.user_id) {
                 <mat-option [value]="user.user_id">{{ user.email }}</mat-option>
@@ -236,9 +240,13 @@
       <div class="flex flex-col gap-4">
         <mat-form-field class="flex-auto">
           <mat-label>{{ t('Organization') }}</mat-label>
-          <mat-select (openedChange)="$event || resetSearch(orgSearch)" [(value)]="selectedRemoveOrgId" (selectionChange)="onRemoveOrgChange()">
+          <mat-select
+            [(value)]="selectedRemoveOrgId"
+            (openedChange)="$event || resetSearch(orgSearch)"
+            (selectionChange)="onRemoveOrgChange()"
+          >
             <div class="px-3 py-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-              <input [formControl]="orgSearch" class="h-8 w-full bg-transparent outline-none" placeholder="Search organizations…" />
+              <input class="h-8 w-full bg-transparent outline-none" [formControl]="orgSearch" placeholder="Search organizations…" />
             </div>
             @for (org of sortedOrganizations; track org.id) {
               <mat-option [value]="org.id">{{ org.name }}</mat-option>

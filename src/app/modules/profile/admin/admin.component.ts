@@ -42,26 +42,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   userSearch = new FormControl('')
   aliSearch = new FormControl('')
 
-  get sortedOrganizations() {
-    const s = (this.orgSearch.value ?? '').toLowerCase()
-    const orgs = [...this.organizations].sort((a, b) => a.name.localeCompare(b.name))
-    return s ? orgs.filter((o) => o.name.toLowerCase().includes(s)) : orgs
-  }
-
-  get filteredUsers() {
-    const s = (this.userSearch.value ?? '').toLowerCase()
-    return s ? this.allUsers.filter((u) => u.email.toLowerCase().includes(s)) : this.allUsers
-  }
-
-  get filteredAccessLevelInstances() {
-    const s = (this.aliSearch.value ?? '').toLowerCase()
-    return s ? this.createUserAccessLevelInstances.filter((a) => a.name.toLowerCase().includes(s)) : this.createUserAccessLevelInstances
-  }
-
-  resetSearch(ctrl: FormControl): void {
-    ctrl.setValue('')
-  }
-
   // Create Organization form
   createOrgForm = new FormGroup({
     organizationName: new FormControl('', Validators.required),
@@ -99,6 +79,26 @@ export class AdminComponent implements OnInit, OnDestroy {
     { value: 'member', label: 'Member' },
     { value: 'viewer', label: 'Viewer' },
   ]
+
+  get sortedOrganizations() {
+    const s = (this.orgSearch.value ?? '').toLowerCase()
+    const orgs = [...this.organizations].sort((a, b) => a.name.localeCompare(b.name))
+    return s ? orgs.filter((o) => o.name.toLowerCase().includes(s)) : orgs
+  }
+
+  get filteredUsers() {
+    const s = (this.userSearch.value ?? '').toLowerCase()
+    return s ? this.allUsers.filter((u) => u.email.toLowerCase().includes(s)) : this.allUsers
+  }
+
+  get filteredAccessLevelInstances() {
+    const s = (this.aliSearch.value ?? '').toLowerCase()
+    return s ? this.createUserAccessLevelInstances.filter((a) => a.name.toLowerCase().includes(s)) : this.createUserAccessLevelInstances
+  }
+
+  resetSearch(ctrl: FormControl): void {
+    ctrl.setValue('')
+  }
 
   ngOnInit(): void {
     this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((user) => {
