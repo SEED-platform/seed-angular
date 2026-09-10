@@ -8,9 +8,10 @@
 <mat-menu #orgMenu="matMenu" xPosition="before">
   @for (org of organizations; track org.id) {
     <button
+      *transloco="let t"
       [class.bg-red-100]="!org.user_role"
       [class.dark:bg-red-950]="!org.user_role"
-      [title]="!org.user_role ? 'You are not a member of this organization' : ''"
+      [title]="!org.user_role ? t('You are not a member of this organization') : ''"
       (click)="selectOrganization(org)"
       mat-menu-item
     >

@@ -4,6 +4,7 @@ import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, type FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
+import { TranslocoService } from '@jsverse/transloco'
 import { Subject, switchMap, takeUntil } from 'rxjs'
 import type { AccessLevelsByDepth, AdminOrganization, CurrentUser, OrganizationUser, UserBrief, UserRole } from '@seed/api'
 import { OrganizationService, ProgressService, UserService } from '@seed/api'
@@ -23,6 +24,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private _progressService = inject(ProgressService)
   private _snackBar = inject(SnackBarService)
   private _dialog = inject(MatDialog)
+  private _transloco = inject(TranslocoService)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   currentUser: CurrentUser
@@ -144,11 +146,11 @@ export class AdminComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.deletingInventory.delete(org.id)
-          this._snackBar.alert(`Failed to remove inventory for ${org.name}`)
+          this._snackBar.alert(this._transloco.translate('Failed to remove inventory for {{orgName}}', { orgName: org.name }))
         },
         complete: () => {
           this.deletingInventory.delete(org.id)
-          this._snackBar.success(`Inventory removed for ${org.name}`)
+          this._snackBar.success(this._transloco.translate('Inventory removed for {{orgName}}', { orgName: org.name }))
           this.loadOrganizations()
         },
       })
@@ -164,7 +166,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       if (confirmed) {
         this._organizationService.deleteOrganization(org.id).subscribe({
           complete: () => {
-            this._snackBar.success(`Organization "${org.name}" deleted`)
+            this._snackBar.success(this._transloco.translate('Organization "{{orgName}}" deleted', { orgName: org.name }))
             this.loadOrganizations()
             this._organizationService.getBrief().subscribe()
           },
@@ -180,7 +182,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       const { organizationName, userId } = this.createOrgForm.value
       this._organizationService.createOrganization(userId, organizationName).subscribe({
         complete: () => {
-          this._snackBar.success(`Organization "${organizationName}" created`)
+          this._snackBar.success(this._transloco.translate('Organization "{{orgName}}" created', { orgName: organizationName }))
           formDirective.resetForm()
           this.loadOrganizations()
           // Refresh the org dropdown in the top-right nav
@@ -228,7 +230,7 @@ export class AdminComponent implements OnInit, OnDestroy {
         })
         .subscribe({
           complete: () => {
-            this._snackBar.success(`User "${email}" created`)
+            this._snackBar.success(this._transloco.translate('User "{{email}}" created', { email }))
             formDirective.resetForm({ role: 'member' })
             this.createUserAccessLevelNames = []
             this.createUserAccessLevelInstances = []
@@ -246,7 +248,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       this._organizationService.addUserToOrganization(organizationId, userId).subscribe({
         complete: () => {
           const user = this.allUsers.find((u) => u.user_id === userId)
-          this._snackBar.success(`User "${user?.email}" added to organization`)
+          this._snackBar.success(this._transloco.translate('User "{{email}}" added to organization', { email: user?.email }))
           formDirective.resetForm()
           this.loadOrganizations()
         },
@@ -277,7 +279,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       if (confirmed) {
         this._organizationService.deleteOrganizationUser(user.user_id, orgId).subscribe({
           complete: () => {
-            this._snackBar.success(`User "${user.email}" removed from organization`)
+            this._snackBar.success(this._transloco.translate('User "{{email}}" removed from organization', { email: user.email }))
             this.onRemoveOrgChange()
             this.loadOrganizations()
           },

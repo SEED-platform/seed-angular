@@ -1,8 +1,10 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { TranslocoService } from '@jsverse/transloco'
 import { Subject, takeUntil } from 'rxjs'
 import type { BriefOrganization, CurrentUser } from '@seed/api'
 import { OrganizationService, UserService } from '@seed/api'
+import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 
@@ -11,11 +13,12 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './organization-selector.component.html',
   encapsulation: ViewEncapsulation.None,
   exportAs: 'organization-selector',
-  imports: [MaterialImports],
+  imports: [MaterialImports, SharedImports],
 })
 export class OrganizationSelectorComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
   private _snackBar = inject(SnackBarService)
+  private _transloco = inject(TranslocoService)
   private _userService = inject(UserService)
 
   private readonly _unsubscribeAll$ = new Subject<void>()
@@ -33,7 +36,9 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
 
   selectOrganization(org: BriefOrganization) {
     if (!org.user_role) {
-      this._snackBar.alert(`You are not a member of "${org.name}" and cannot switch to it.`)
+      this._snackBar.alert(
+        this._transloco.translate('You are not a member of "{{orgName}}" and cannot switch to it.', { orgName: org.name }),
+      )
       return
     }
     this._userService.setDefaultOrganization(org.id).pipe(takeUntil(this._unsubscribeAll$)).subscribe()
