@@ -444,7 +444,12 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
     if (!this.selectedPropertyViewIds.length) return
     const dialogRef = this._matDialog.open(LabelsModalComponent, {
       width: '50rem',
-      data: { orgId: this.organization.id, type: 'properties', viewIds: this.selectedPropertyViewIds },
+      data: {
+        orgId: this.organization.id,
+        type: 'properties',
+        viewIds: this.selectedPropertyViewIds,
+        goalLabelIds: this.goalLabelIdsForSelection(),
+      },
     })
     dialogRef
       .afterClosed()
@@ -452,6 +457,17 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         if (this.currentCycleGoal) this._loadLabels(this.currentCycleGoal)
       })
+  }
+
+  goalLabelIdsForSelection(): number[] {
+    const goalLabelIds = new Set<number>()
+    for (const viewId of this.selectedPropertyViewIds) {
+      const viewLabels = [...(this.baselineLabels.get(viewId) ?? []), ...(this.currentLabels.get(viewId) ?? [])]
+      for (const label of viewLabels) {
+        if (label.goal !== null) goalLabelIds.add(label.statuslabel)
+      }
+    }
+    return [...goalLabelIds]
   }
 
   openBulkEditGoalNotesModal(): void {
