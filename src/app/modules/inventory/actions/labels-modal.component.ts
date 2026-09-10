@@ -5,14 +5,17 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef } from 'ag-grid-community'
-import { Subject, switchMap, takeUntil, tap } from 'rxjs'
+import type { Observable } from 'rxjs'
+import { map, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Label, LabelColor } from '@seed/api'
 import { LabelService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
-import { ConfigService } from '@seed/services'
+import { ConfigService, ConfirmationService } from '@seed/services'
 import { SEEDValidators } from '@seed/validators'
 import type { InventoryType } from '../inventory.types'
+
+type LabelRow = Label & { add: boolean; remove: boolean; isApplied: boolean; isGoalApplied: boolean }
 
 @Component({
   selector: 'seed-labels-modal',
@@ -23,6 +26,7 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   private _unsubscribeAll$ = new Subject<void>()
   private _dialogRef = inject(MatDialogRef<LabelsModalComponent>)
   private _configService = inject(ConfigService)
+  private _confirmationService = inject(ConfirmationService)
   private _labelService = inject(LabelService)
   colors: LabelColor[] = ['red', 'orange', 'blue', 'light blue', 'green', 'gray']
   columnDefs: ColDef[]
@@ -31,9 +35,15 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   gridHeight = 0
   labels: Label[] = []
   newLabel: Label
-  rowData: (Label & { add: boolean; remove: boolean; isApplied: boolean })[] = []
+  rowData: LabelRow[] = []
 
-  data = inject(MAT_DIALOG_DATA) as { orgId: number; type: InventoryType; viewIds: number[]; appliedLabelIds?: number[] }
+  data = inject(MAT_DIALOG_DATA) as {
+    orgId: number;
+    type: InventoryType;
+    viewIds: number[];
+    appliedLabelIds?: number[];
+    goalLabelIds?: number[];
+  }
 
   form = new FormGroup({
     organization_id: new FormControl(this.data.orgId),
@@ -69,11 +79,13 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
 
   setRowData() {
     const appliedIds = this.data.appliedLabelIds
+    const goalIds = this.data.goalLabelIds ?? []
     this.rowData = this.labels.map((label) => ({
       ...label,
       add: label.id === this.newLabel?.id,
       remove: false,
       isApplied: appliedIds ? appliedIds.includes(label.id) : false,
+      isGoalApplied: goalIds.includes(label.id),
     }))
 
     this.newLabel = null
@@ -109,9 +121,14 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
     ]
   }
 
-  labelRenderer({ data }: { data: Label }) {
+  labelRenderer({ data }: { data: LabelRow }) {
+    const goalBadge = data.isGoalApplied
+      ? '<span class="text-secondary ml-2 whitespace-nowrap text-xs italic" title="Applied by a cross-cycle data quality check from the Portfolio Summary page">cross-cycle</span>'
+      : ''
     return `
-      <div class="label ${data.color} whitespace-nowrap px-2">${data.name}</div>
+      <div class="flex items-center">
+        <div class="label ${data.color} whitespace-nowrap px-2">${data.name}</div>${goalBadge}
+      </div>
     `
   }
 
@@ -120,11 +137,31 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
     const { colDef, newValue, node } = event
     const field = colDef.field
     const otherField = field === 'add' ? 'remove' : 'add'
-    const data = node.data as Label & { add: boolean; remove: boolean }
+    const data = node.data as LabelRow
 
     if (newValue && data[otherField]) {
       node.setDataValue(otherField, false)
     }
+
+    if (field === 'remove' && newValue && data.isGoalApplied) {
+      this.confirmGoalLabelRemoval(data.name).subscribe((confirmed) => {
+        if (!confirmed) node.setDataValue('remove', false)
+      })
+    }
+  }
+
+  confirmGoalLabelRemoval(labelName: string): Observable<boolean> {
+    return this._confirmationService
+      .open({
+        title: 'Remove cross-cycle label?',
+        message:
+          `"${labelName}" was applied by a cross-cycle data quality check run from the Portfolio Summary page. `
+          + 'Removing it here deletes that result. It will come back the next time the goal checks are run.',
+        icon: { show: true, name: 'fa-solid:triangle-exclamation', color: 'warn' },
+        actions: { confirm: { label: 'Remove', color: 'warn' } },
+      })
+      .afterClosed()
+      .pipe(map((result) => result === 'confirmed'))
   }
 
   getGridHeight() {

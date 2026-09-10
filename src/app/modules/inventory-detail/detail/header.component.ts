@@ -226,7 +226,13 @@ export class HeaderComponent implements OnInit, OnChanges {
   openLabelsModal(): void {
     const dialogRef = this._dialog.open(LabelsModalComponent, {
       width: '50rem',
-      data: { orgId: this.org.id, type: this.type, viewIds: [this.selectedView.id], appliedLabelIds: this.labels.map((l) => l.id) },
+      data: {
+        orgId: this.org.id,
+        type: this.type,
+        viewIds: [this.selectedView.id],
+        appliedLabelIds: this.labels.map((l) => l.id),
+        goalLabelIds: this.labels.filter((l) => l.is_applied_by_goal?.includes(this.selectedView.id)).map((l) => l.id),
+      },
     })
     this.afterClosed(dialogRef)
   }

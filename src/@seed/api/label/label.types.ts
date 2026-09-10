@@ -5,6 +5,8 @@ export type Label = {
   organization_id: number;
   show_in_list: boolean;
   is_applied?: number[];
+  /** view ids the label was applied to by a goal's cross-cycle data quality check */
+  is_applied_by_goal?: number[];
 }
 
 export type LabelColor = 'red' | 'orange' | 'white' | 'blue' | 'light blue' | 'green' | 'gray'
