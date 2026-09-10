@@ -51,6 +51,10 @@ export class HeaderComponent implements OnInit, OnChanges {
   get groupMappings(): GroupMapping[] {
     return this.view?.property?.group_mappings ?? []
   }
+
+  get shownLabels(): Label[] {
+    return this.labels?.filter((label) => label.show_in_list) ?? []
+  }
   accessLevelInstance: AccessLevelInstance
   aliDataSource = []
   aliColumns: string[] = []

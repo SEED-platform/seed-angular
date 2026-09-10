@@ -3,6 +3,7 @@
         "/^node /tmp/check_translations\\.mjs$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        ".venv/bin/python": true
     }
 }

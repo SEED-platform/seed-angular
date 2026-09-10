@@ -37,6 +37,31 @@ export class AdminComponent implements OnInit, OnDestroy {
   // Progress tracking for inventory deletion
   deletingInventory = new Map<number, number>()
 
+  // Search controls for large selects
+  orgSearch = new FormControl('')
+  userSearch = new FormControl('')
+  aliSearch = new FormControl('')
+
+  get sortedOrganizations() {
+    const s = (this.orgSearch.value ?? '').toLowerCase()
+    const orgs = [...this.organizations].sort((a, b) => a.name.localeCompare(b.name))
+    return s ? orgs.filter((o) => o.name.toLowerCase().includes(s)) : orgs
+  }
+
+  get filteredUsers() {
+    const s = (this.userSearch.value ?? '').toLowerCase()
+    return s ? this.allUsers.filter((u) => u.email.toLowerCase().includes(s)) : this.allUsers
+  }
+
+  get filteredAccessLevelInstances() {
+    const s = (this.aliSearch.value ?? '').toLowerCase()
+    return s ? this.createUserAccessLevelInstances.filter((a) => a.name.toLowerCase().includes(s)) : this.createUserAccessLevelInstances
+  }
+
+  resetSearch(ctrl: FormControl): void {
+    ctrl.setValue('')
+  }
+
   // Create Organization form
   createOrgForm = new FormGroup({
     organizationName: new FormControl('', Validators.required),

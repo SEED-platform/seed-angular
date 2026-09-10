@@ -27,7 +27,7 @@ export class OrganizationSelectorComponent implements OnInit, OnDestroy {
       this.currentUser = currentUser
     })
     this._organizationService.organizations$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((organizations) => {
-      this.organizations = organizations
+      this.organizations = [...organizations].sort((a, b) => a.name.localeCompare(b.name))
     })
   }
 

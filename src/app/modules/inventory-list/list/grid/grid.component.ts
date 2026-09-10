@@ -262,16 +262,17 @@ export class InventoryGridComponent implements OnChanges {
       cellStyle: { paddingLeft: '0', paddingRight: '0' },
       headerComponent: InventoryLabelHeaderComponent,
       valueFormatter: ({ value }: { value: number[] }) => {
-        return value?.length ? value.map((id: number) => this.labelMap[id]?.name).join(', ') : ''
+        return this.getShownLabels(value)
+          .map((label) => label.name)
+          .join(', ')
       },
       cellRenderer: ({ value }: { value: number[] }) => {
-        if (!value?.length) return ''
+        const labels = this.getShownLabels(value)
+        if (!labels.length) return ''
         if (this.labelsExpanded) {
           const container = document.createElement('div')
           container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;'
-          for (const id of value) {
-            const label = this.labelMap[id]
-            if (!label) continue
+          for (const label of labels) {
             const colorClass = label.color === 'light blue' ? 'blue light' : label.color
             const span = document.createElement('span')
             span.className = `label ${colorClass} whitespace-nowrap px-2`
@@ -280,14 +281,11 @@ export class InventoryGridComponent implements OnChanges {
           }
           return container
         }
-        const labelIds = value.slice(0, 4).filter((id: number) => !!this.labelMap[id])
-        if (!labelIds.length) return ''
         const outer = document.createElement('div')
         outer.style.cssText = 'height:100%;display:flex;align-items:center;'
         const inner = document.createElement('div')
         inner.style.cssText = 'display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;'
-        for (const id of labelIds) {
-          const label = this.labelMap[id]
+        for (const label of labels.slice(0, 4)) {
           const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
           const span = document.createElement('span')
           span.style.cssText = `flex:1;min-width:0;background-color:${bg};`
@@ -320,5 +318,10 @@ export class InventoryGridComponent implements OnChanges {
 
   onPageChange(page: number) {
     this.pageChange.emit(page)
+  }
+
+  getShownLabels(labelIds: number[]): Label[] {
+    if (!labelIds?.length) return []
+    return labelIds.map((id) => this.labelMap[id]).filter((label) => label?.show_in_list)
   }
 }
