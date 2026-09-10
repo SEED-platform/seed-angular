@@ -3,6 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
+import { TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -28,6 +29,7 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   private _configService = inject(ConfigService)
   private _confirmationService = inject(ConfirmationService)
   private _labelService = inject(LabelService)
+  private _translocoService = inject(TranslocoService)
   colors: LabelColor[] = ['red', 'orange', 'blue', 'light blue', 'green', 'gray']
   columnDefs: ColDef[]
   existingNames: string[] = []
@@ -98,7 +100,7 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
         field: 'name',
         headerName: 'Label',
         flex: 1,
-        cellRenderer: this.labelRenderer,
+        cellRenderer: (params: { data: LabelRow }) => this.labelRenderer(params),
       },
       {
         field: 'add',
@@ -122,9 +124,12 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   }
 
   labelRenderer({ data }: { data: LabelRow }) {
-    const goalBadge = data.isGoalApplied
-      ? '<span class="text-secondary ml-2 whitespace-nowrap text-xs italic" title="Applied by a cross-cycle data quality check from the Portfolio Summary page">cross-cycle</span>'
-      : ''
+    let goalBadge = ''
+    if (data.isGoalApplied) {
+      const badgeText = this._translocoService.translate('cross-cycle')
+      const badgeTitle = this._translocoService.translate('Applied by a cross-cycle data quality check from the Portfolio Summary page')
+      goalBadge = `<span class="text-secondary ml-2 whitespace-nowrap text-xs italic" title="${badgeTitle}">${badgeText}</span>`
+    }
     return `
       <div class="flex items-center">
         <div class="label ${data.color} whitespace-nowrap px-2">${data.name}</div>${goalBadge}
@@ -151,14 +156,16 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
   }
 
   confirmGoalLabelRemoval(labelName: string): Observable<boolean> {
+    const message = this._translocoService.translate(
+      '"{{labelName}}" was applied by a cross-cycle data quality check run from the Portfolio Summary page. Removing it here deletes that result. It will come back the next time the goal checks are run.',
+      { labelName },
+    )
     return this._confirmationService
       .open({
-        title: 'Remove cross-cycle label?',
-        message:
-          `"${labelName}" was applied by a cross-cycle data quality check run from the Portfolio Summary page. `
-          + 'Removing it here deletes that result. It will come back the next time the goal checks are run.',
+        title: this._translocoService.translate('Remove cross-cycle label?'),
+        message,
         icon: { show: true, name: 'fa-solid:triangle-exclamation', color: 'warn' },
-        actions: { confirm: { label: 'Remove', color: 'warn' } },
+        actions: { confirm: { label: this._translocoService.translate('Remove'), color: 'warn' } },
       })
       .afterClosed()
       .pipe(map((result) => result === 'confirmed'))
