@@ -67,7 +67,7 @@ export class EditModalComponent implements OnInit {
   }
 
   onSubmit() {
-    this._dialogRef.close(this.form.value as ColumnMapping)
+    this._dialogRef.close(this.form.value)
   }
 
   close() {

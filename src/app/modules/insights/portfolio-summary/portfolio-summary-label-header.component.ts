@@ -25,7 +25,7 @@ export class PortfolioSummaryLabelHeaderComponent implements IHeaderAngularComp 
   agInit(params: IHeaderParams<unknown, PortfolioSummaryGridContext>): void {
     this._params = params
     this.displayName = params.displayName
-    this._key = (params.column.getColId() === 'baseline_labels' ? 'baseline' : 'current') as LabelColumnKey
+    this._key = (params.column.getColId() === 'baseline_labels' ? 'baseline' : 'current')
     this.expanded = params.context?.labelsExpanded[this._key] ?? false
   }
 
