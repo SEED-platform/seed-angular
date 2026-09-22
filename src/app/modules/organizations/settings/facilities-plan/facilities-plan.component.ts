@@ -2,7 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { combineLatest, Subject, takeUntil } from 'rxjs'
-import type { Column, FacilitiesPlan, FacilitiesPlanUpsertPayload } from '@seed/api'
+import type { Column, FacilitiesPlan } from '@seed/api'
 import { ColumnService, FacilitiesPlanService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -104,7 +104,7 @@ export class FacilitiesPlanSettingsComponent implements OnDestroy, OnInit {
   save(): void {
     if (this.form.invalid) return
     this.isSaving = true
-    const payload = this.form.getRawValue() as FacilitiesPlanUpsertPayload
+    const payload = this.form.getRawValue()
 
     if (this.isCreating) {
       this._facilitiesPlanService.create(payload).subscribe({

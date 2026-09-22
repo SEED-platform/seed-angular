@@ -512,7 +512,7 @@ export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnI
       to_table_name: rowNode.data.to_table_name,
       is_omitted: rowNode.data.is_omitted,
       from_field_value: rowNode.data.from_field_value,
-    } as ColumnMapping
+    }
   }
 
   private _downloadBlob(blob: Blob, filename: string): void {

@@ -433,7 +433,7 @@ export class MapComponent implements OnDestroy, OnInit {
   // DEVELOPER NOTE: hexBin layer has serious type issues
   setHexBinLayer() {
     this.hexBinLayer = new VectorLayer({
-      source: this.hexBinSource() as VectorSource,
+      source: this.hexBinSource(),
       zIndex: this.layers.hexBinLayer.zIndex,
       opacity: this.hexBinMaxOpacity,
       style: (feature: Feature) => {

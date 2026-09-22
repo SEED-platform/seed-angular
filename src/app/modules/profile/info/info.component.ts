@@ -2,7 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
-import type { CurrentUser, UserUpdateRequest } from '@seed/api'
+import type { CurrentUser } from '@seed/api'
 import { UserService } from '@seed/api'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
@@ -56,7 +56,7 @@ export class ProfileInfoComponent implements OnInit, OnDestroy {
         first_name: this.profileForm.value.firstName,
         last_name: this.profileForm.value.lastName,
         email: this.profileForm.value.email,
-      } as UserUpdateRequest
+      }
 
       this._userService.updateUser(this.user.id, userData).subscribe({
         error: (error) => {

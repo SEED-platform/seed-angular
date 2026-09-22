@@ -245,7 +245,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       filter_groups: [],
       cycles: [],
       parameters: [],
-    } as unknown as CustomReport
+    }
     this.firstAxisAggregations = []
     this.secondAxisAggregations = []
     this.editing = true
