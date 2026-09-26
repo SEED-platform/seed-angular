@@ -120,5 +120,10 @@
   },
   "scarfSettings": {
     "enabled": false
+  },
+  "pnpm": {
+    "overrides": {
+      "less": "^4.9.1"
+    }
   }
 }
