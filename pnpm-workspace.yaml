@@ -13,3 +13,5 @@ onlyBuiltDependencies:
   - lmdb
   - msgpackr-extract
   - unrs-resolver
+overrides:
+  less: ^4.9.1
