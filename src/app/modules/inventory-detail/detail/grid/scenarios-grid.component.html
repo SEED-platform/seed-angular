@@ -20,17 +20,17 @@
             <mat-panel-description class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
               <span class="flex items-center gap-1.5" [matTooltip]="t('Annual electricity savings')">
                 <mat-icon class="text-amber-500 icon-size-4 dark:text-amber-400" svgIcon="fa-solid:bolt"></mat-icon>
-                <span class="font-semibold">{{ (scenario.annual_electricity_savings | number: '1.0-0') ?? t('N/A') }}</span>
+                <span class="font-semibold">{{ (getElectricitySavings(scenario) | number: '1.0-0') ?? t('N/A') }}</span>
                 <span class="text-secondary">{{ t('kBtu') }}</span>
               </span>
               <span class="flex items-center gap-1.5" [matTooltip]="t('Annual peak electricity reduction')">
                 <mat-icon class="text-blue-500 icon-size-4 dark:text-blue-400" svgIcon="fa-solid:arrow-trend-down"></mat-icon>
-                <span class="font-semibold">{{ (scenario.annual_peak_electricity_reduction | number: '1.0-0') ?? t('N/A') }}</span>
+                <span class="font-semibold">{{ (getPeakElectricityReduction(scenario) | number: '1.0-0') ?? t('N/A') }}</span>
                 <span class="text-secondary">{{ t('kW') }}</span>
               </span>
               <span class="flex items-center gap-1.5" [matTooltip]="t('Annual natural gas savings')">
                 <mat-icon class="text-orange-500 icon-size-4 dark:text-orange-400" svgIcon="fa-solid:fire-flame-curved"></mat-icon>
-                <span class="font-semibold">{{ (scenario.annual_natural_gas_savings | number: '1.0-0') ?? t('N/A') }}</span>
+                <span class="font-semibold">{{ (getNaturalGasSavings(scenario) | number: '1.0-0') ?? t('N/A') }}</span>
                 <span class="text-secondary">{{ t('kBtu') }}</span>
               </span>
               <span class="flex items-center gap-1.5" [matTooltip]="t('Total first cost of the scenario\'s measures')">

@@ -2,6 +2,9 @@
 export type Measure = {
   [key: string]: unknown;
   annual_cost_savings: number | null;
+  annual_electricity_savings: number | null;
+  annual_natural_gas_savings: number | null;
+  annual_peak_electricity_reduction: number | null;
   application_scale: string;
   category: string;
   category_affected: string;
@@ -25,9 +28,10 @@ export type Measure = {
 
 export type Scenario = {
   [key: string]: unknown;
-  annual_electricity_savings: number;
-  annual_natural_gas_savings: number;
-  annual_peak_electricity_reduction: number;
+  annual_cost_savings: number | null;
+  annual_electricity_savings: number | null;
+  annual_natural_gas_savings: number | null;
+  annual_peak_electricity_reduction: number | null;
   id: number;
   measures: Measure[];
   name: string;

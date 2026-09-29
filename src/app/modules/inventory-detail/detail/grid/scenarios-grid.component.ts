@@ -99,6 +99,14 @@ export class ScenariosGridComponent implements OnChanges, OnDestroy {
       type: 'numericColumn',
       valueFormatter: (params) => this.formatCurrency(params),
     })
+    const numericColumn = (field: string, headerName: string, minWidth: number): ColDef => ({
+      field,
+      headerName,
+      flex: 1,
+      minWidth,
+      type: 'numericColumn',
+      valueFormatter: (params) => this.formatNumber(params),
+    })
     // Order mirrors the legacy property detail measure table so the two UIs stay comparable
     this.measureColumnDefs = [
       { field: 'category', headerName: t('Category'), flex: 1, minWidth: 130 },
@@ -126,16 +134,12 @@ export class ScenariosGridComponent implements OnChanges, OnDestroy {
       currencyColumn('cost_residual_value', t('Residual Value'), 150),
       currencyColumn('cost_total_first', t('First Cost'), 130),
       currencyColumn('annual_cost_savings', t('Annual Cost Savings'), 180),
+      numericColumn('annual_electricity_savings', t('Electricity Savings (kBtu)'), 200),
+      numericColumn('annual_peak_electricity_reduction', t('Peak Electricity Reduction (kW)'), 230),
+      numericColumn('annual_natural_gas_savings', t('Natural Gas Savings (kBtu)'), 210),
       currencyColumn('cost_capital_replacement', t('Capital Replacement Cost'), 200),
       { field: 'description', headerName: t('Description'), flex: 2, minWidth: 200 },
-      {
-        field: 'useful_life',
-        headerName: t('Useful Life (years)'),
-        flex: 1,
-        minWidth: 160,
-        type: 'numericColumn',
-        valueFormatter: (params) => this.formatNumber(params),
-      },
+      numericColumn('useful_life', t('Useful Life (years)'), 160),
     ]
   }
 
@@ -154,9 +158,31 @@ export class ScenariosGridComponent implements OnChanges, OnDestroy {
     return this.sumMeasureField(scenario, 'cost_total_first')
   }
 
-  // Sum of the scenario's measures' MeasureSavingsAnalysis/AnnualSavingsCost; null when no measure reports savings
+  // BuildingSync reports annual cost savings on the package and/or on each measure
   getTotalAnnualCostSavings(scenario: Scenario): number | null {
-    return this.sumMeasureField(scenario, 'annual_cost_savings')
+    return this.getScenarioOrMeasureTotal(scenario, 'annual_cost_savings')
+  }
+
+  getElectricitySavings(scenario: Scenario): number | null {
+    return this.getScenarioOrMeasureTotal(scenario, 'annual_electricity_savings')
+  }
+
+  getPeakElectricityReduction(scenario: Scenario): number | null {
+    return this.getScenarioOrMeasureTotal(scenario, 'annual_peak_electricity_reduction')
+  }
+
+  getNaturalGasSavings(scenario: Scenario): number | null {
+    return this.getScenarioOrMeasureTotal(scenario, 'annual_natural_gas_savings')
+  }
+
+  /**
+   * Prefer the package-level (scenario) value when BuildingSync provides one, otherwise roll up
+   * the scenario's measures. Audit Template files often report savings at only one of the two levels.
+   */
+  getScenarioOrMeasureTotal(scenario: Scenario, field: string): number | null {
+    const scenarioValue = scenario?.[field]
+    if (typeof scenarioValue === 'number') return scenarioValue
+    return this.sumMeasureField(scenario, field)
   }
 
   sumMeasureField(scenario: Scenario, field: string): number | null {
@@ -212,9 +238,12 @@ export class ScenariosGridComponent implements OnChanges, OnDestroy {
 
   setGrid() {
     this.rowDataEntries = []
-    for (const history of this.view.history) {
-      const date = new Date(history.date_edited).toLocaleString('en-US', {})
-      const entry = { date, rawDate: history.date_edited, rowData: this.getScenariosWithMeasures(history.state.scenarios) }
+    // The API returns the most recently imported state as `state`; `history` only holds *prior*
+    // states, so looking at history alone hides the newest scenarios entirely.
+    const states = [{ date_edited: this.view.date_edited, state: this.view.state }, ...this.view.history]
+    for (const { date_edited, state } of states) {
+      const date = new Date(date_edited).toLocaleString('en-US', {})
+      const entry = { date, rawDate: date_edited, rowData: this.getScenariosWithMeasures(state.scenarios) }
       if (entry.rowData.length) this.rowDataEntries.push(entry)
     }
     this.rowDataEntries.sort((a, b) => b.rawDate - a.rawDate)
