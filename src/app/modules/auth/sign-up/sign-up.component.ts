@@ -3,6 +3,7 @@ import { Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
+import { TranslocoDirective } from '@jsverse/transloco'
 import { take } from 'rxjs'
 import { Animations } from '@seed/animations'
 import type { Alert } from '@seed/components'
@@ -17,7 +18,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-up.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
-  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
+  imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink, TranslocoDirective],
 })
 export class AuthSignUpComponent implements OnInit {
   private _authService = inject(AuthService)

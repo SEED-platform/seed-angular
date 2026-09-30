@@ -59,17 +59,21 @@
   </mat-form-field>
 
   <!-- ToS -->
-  <div class="mt-1.5 inline-flex w-full flex-col">
-    <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms">
-      <span>I agree with the&nbsp;</span>
-      <a class="cursor-pointer text-primary-500 hover:underline focus:underline" (click)="$event.preventDefault(); showTermsOfService()"
-        >Data Terms</a
-      >
-    </mat-checkbox>
-    @if (isTermsInvalid) {
-      <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the Data Terms.</mat-error>
-    }
-  </div>
+  <ng-container *transloco="let t">
+    <div class="mt-1.5 inline-flex w-full flex-col">
+      <mat-checkbox class="-ml-2" [class.mb-5]="!isTermsInvalid" color="primary" formControlName="terms">
+        <span>{{ t('I agree with the') }}&nbsp;</span>
+        <a
+          class="cursor-pointer text-primary-500 hover:underline focus:underline"
+          (click)="$event.preventDefault(); showTermsOfService()"
+          >{{ t('Data Terms') }}</a
+        >
+      </mat-checkbox>
+      @if (isTermsInvalid) {
+        <mat-error class="h-5 text-sm font-medium" @fadeInTop>{{ t('You must accept the Data Terms.') }}</mat-error>
+      }
+    </div>
+  </ng-container>
 
   <!-- Submit button -->
   <button class="seed-mat-button-large mt-6 w-full" [disabled]="signUpForm.disabled" (click)="signUp()" mat-flat-button color="primary">
