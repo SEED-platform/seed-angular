@@ -6,7 +6,7 @@ import { Router } from '@angular/router'
 import type { CellValueChangedEvent, GridApi } from 'ag-grid-community'
 import { BehaviorSubject, of, ReplaySubject } from 'rxjs'
 import type { Column, CycleGoal, Goal, GoalPagination, GoalProperty, Organization, PortfolioSummary, WeightedEUI } from '@seed/api'
-import { ColumnService, GoalService, LabelService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
+import { ColumnService, ConfigService as DeploymentConfigService, GoalService, LabelService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
 import { ConfigService } from '@seed/services'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 import { PortfolioSummaryComponent } from './portfolio-summary.component'
@@ -102,6 +102,7 @@ describe('PortfolioSummaryComponent', () => {
   let fixture: ComponentFixture<PortfolioSummaryComponent>
 
   let orgSubject: ReplaySubject<Organization>
+  let deploymentConfigSubject: BehaviorSubject<{ integrations: { salesforce: boolean; better: boolean } }>
   let goalsSubject: BehaviorSubject<Goal[]>
   let columnsSubject: BehaviorSubject<Column[]>
 
@@ -120,6 +121,7 @@ describe('PortfolioSummaryComponent', () => {
 
   beforeEach(async () => {
     orgSubject = new ReplaySubject<Organization>(1)
+    deploymentConfigSubject = new BehaviorSubject({ integrations: { salesforce: true, better: true } })
     goalsSubject = new BehaviorSubject<Goal[]>([])
     columnsSubject = new BehaviorSubject<Column[]>([])
 
@@ -139,7 +141,10 @@ describe('PortfolioSummaryComponent', () => {
     await TestBed.configureTestingModule({
       imports: [PortfolioSummaryComponent],
       providers: [
-        { provide: OrganizationService, useValue: { currentOrganization$: orgSubject.asObservable() } },
+        {
+          provide: OrganizationService,
+          useValue: { currentOrganization$: orgSubject.asObservable(), updateOrganizationUser: () => of({}) },
+        },
         {
           provide: GoalService,
           useValue: {
@@ -168,6 +173,7 @@ describe('PortfolioSummaryComponent', () => {
         { provide: MatDialog, useValue: { open: dialogOpenSpy } },
         { provide: Router, useValue: { navigate: routerNavigateSpy } },
         { provide: SnackBarService, useValue: { success: jasmine.createSpy('success'), alert: jasmine.createSpy('alert') } },
+        { provide: DeploymentConfigService, useValue: { config$: deploymentConfigSubject.asObservable() } },
         { provide: ConfigService, useValue: { gridTheme$: of(null) } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -195,6 +201,13 @@ describe('PortfolioSummaryComponent', () => {
   // ─── ngOnInit: organization and token ────────────────────────────────────────
 
   describe('ngOnInit — organization loading', () => {
+    it('should skip Salesforce verification when disabled on this deployment', () => {
+      deploymentConfigSubject.next({ integrations: { salesforce: false, better: true } })
+      orgSubject.next(mockOrganization)
+      expect(verifyTokenSpy).not.toHaveBeenCalled()
+      expect(component.isLoggedIntoBbSalesforce).toBeFalse()
+    })
+
     it('should set isLoggedIntoBbSalesforce true when token is valid', () => {
       verifyTokenSpy.and.returnValue(of({ valid: true }))
       orgSubject.next(mockOrganization)

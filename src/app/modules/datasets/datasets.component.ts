@@ -39,6 +39,8 @@ export class DatasetsComponent implements OnDestroy, OnInit {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   orgId: number
+  // Set via the '?create=true' query param (e.g. linked from the dashboard) to auto-open the create dataset dialog
+  private _openCreateOnLoad = false
 
   ngOnInit(): void {
     // Rerun resolver and initializer on org change
@@ -47,6 +49,8 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     //     this._init()
     //   })
     // })
+
+    this._openCreateOnLoad = this._route.snapshot.queryParamMap.get('create') === 'true'
 
     this._userService.currentOrganizationId$
       .pipe(
@@ -63,7 +67,13 @@ export class DatasetsComponent implements OnDestroy, OnInit {
         }),
         takeUntil(this._unsubscribeAll$),
       )
-      .subscribe()
+      .subscribe(() => {
+        if (this._openCreateOnLoad) {
+          this._openCreateOnLoad = false
+          void this._router.navigate([], { relativeTo: this._route, queryParams: {}, replaceUrl: true })
+          this.createDataset()
+        }
+      })
   }
 
   setColumnDefs() {

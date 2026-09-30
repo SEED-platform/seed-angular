@@ -48,7 +48,7 @@
     </div>
 
     <!-- Salesforce banner -->
-    @if (organization && organization.bb_salesforce_enabled) {
+    @if (salesforceEnabled && organization && organization.bb_salesforce_enabled) {
       <div class="flex flex-wrap items-center gap-3 rounded border p-3 text-sm">
         <span>
           {{ t('Salesforce portfolio functionality is enabled.') }}
@@ -240,7 +240,7 @@
                   </button>
                 </mat-menu>
 
-                @if (isLoggedIntoBbSalesforce) {
+                @if (salesforceEnabled && isLoggedIntoBbSalesforce) {
                   <button (click)="reviewAndSyncToSalesforce()" mat-stroked-button>{{ t('Review and Sync to Salesforce') }}</button>
                 }
               </div>

@@ -8,7 +8,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, take, tap } from 'rxjs'
 import type { AccessLevelInstance, Cycle, Label, Organization } from '@seed/api'
-import { AuditTemplateService, CycleService, InventoryService } from '@seed/api'
+import { AuditTemplateService, CycleService, ConfigService as DeploymentConfigService, InventoryService } from '@seed/api'
 import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService, ConfirmationService } from '@seed/services'
@@ -41,6 +41,7 @@ export class HeaderComponent implements OnInit, OnChanges {
   @Output() changeView = new EventEmitter<number>()
   @Output() refreshDetail = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _deploymentConfigService = inject(DeploymentConfigService)
   private _confirmationService = inject(ConfirmationService)
   private _auditTemplateService = inject(AuditTemplateService)
   private _cycleService = inject(CycleService)
@@ -64,8 +65,13 @@ export class HeaderComponent implements OnInit, OnChanges {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   actions: { name: string; action: () => void; disabled: boolean }[] = []
+  salesforceEnabled = true
 
   ngOnInit(): void {
+    this._deploymentConfigService.config$.subscribe(({ integrations }) => {
+      this.salesforceEnabled = integrations.salesforce
+      this.buildActions()
+    })
     this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
     this.setAliGrid()
     this.buildActions()
@@ -181,7 +187,7 @@ export class HeaderComponent implements OnInit, OnChanges {
             },
           ]
         : []),
-      ...(this.org?.bb_salesforce_enabled && isProperties
+      ...(this.salesforceEnabled && this.org?.bb_salesforce_enabled && isProperties
         ? [
             {
               name: 'Update Salesforce',

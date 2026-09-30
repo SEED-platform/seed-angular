@@ -3,7 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router'
 import { filter, Subject, takeUntil, tap } from 'rxjs'
-import { VersionService } from '@seed/api'
+import { ConfigService, VersionService } from '@seed/api'
 import type { NavigationItem } from '@seed/components'
 import { SEEDLoadingBarComponent, SeedNavigationService, VerticalNavigationComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
@@ -33,6 +33,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   private _navigationService = inject(NavigationService)
   private _seedNavigationService = inject(SeedNavigationService)
   private _versionService = inject(VersionService)
+  private _configService = inject(ConfigService)
   private _router = inject(Router)
   private _route = inject(ActivatedRoute)
 
@@ -43,15 +44,21 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   version: string
   sha: string
   type: InventoryType
+  hiddenNavigation: string[] = []
+  brandingLogoUrl = ''
 
   ngOnInit(): void {
-    this.navigation = this._navigationService.navigation
+    this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ hidden_navigation, branding }) => {
+      this.hiddenNavigation = hidden_navigation
+      this.brandingLogoUrl = branding.logo_url
+      this.navigation = this._navigationService.getNavigation(this.hiddenNavigation)
+    })
 
     this._router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         tap(() => {
-          this.navigation = this._navigationService.getNavigation()
+          this.navigation = this._navigationService.getNavigation(this.hiddenNavigation)
         }),
       )
       .subscribe()
@@ -96,5 +103,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
    */
   toggleNavigationAppearance(): void {
     this.navigationAppearance = this.navigationAppearance === 'default' ? 'dense' : 'default'
+    if (this.navigationAppearance === 'dense') {
+      this._seedNavigationService.getComponent<VerticalNavigationComponent>('mainNavigation')?.handleMouseLeave()
+    }
   }
 }
