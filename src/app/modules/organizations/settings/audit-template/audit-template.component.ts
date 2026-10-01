@@ -3,7 +3,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
-import type { AuditTemplateConfig, AuditTemplateReportType, Organization } from '@seed/api'
+import type { AuditTemplateConfig, Organization } from '@seed/api'
 import { AuditTemplateService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -28,7 +28,7 @@ export class AuditTemplateComponent implements OnDestroy, OnInit {
     id: null,
     organization: null,
   }
-  auditTemplateReportTypes: AuditTemplateReportType[]
+  auditTemplateReportTypes: string[]
   auditTemplateForm = new FormGroup({
     at_organization_token: new FormControl(''),
     audit_template_user: new FormControl('', Validators.email),
