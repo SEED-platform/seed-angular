@@ -875,6 +875,7 @@
   "INVALID_XML_ZIP_EXTENSION_ALERT": "<strong>Sorry!<\/strong> SEED doesn't currently support that file format. Only <strong>.xml<\/strong> and <strong>.zip<\/strong> files are supported.",
   "IRREVERSIBLE_OPERATION_WARNING": "This operation is irreversible.",
   "ITEMS_WILL_NOT_CHANGE": "these will not change",
+  "I agree with the": "I agree with the",
   "If Enabled": "If Enabled",
   "If you are unable to scan the QR code, select a different method below.": "If you are unable to scan the QR code, select a different method below.",
   "If you wish to generate stub Audit Template reports from SEED data, select which Audit Template Report Type SEED should generate.": "If you wish to generate stub Audit Template reports from SEED data, select which Audit Template Report Type SEED should generate.",

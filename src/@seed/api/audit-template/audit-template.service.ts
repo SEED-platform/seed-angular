@@ -10,7 +10,7 @@ import type {
   AuditTemplateConfig,
   AuditTemplateConfigCreateResponse,
   AuditTemplateConfigResponse,
-  AuditTemplateReportType,
+  AuditTemplateReportTypesResponse,
 } from './audit-template.types'
 
 @Injectable({ providedIn: 'root' })
@@ -18,39 +18,29 @@ export class AuditTemplateService {
   private _httpClient = inject(HttpClient)
   private _userService = inject(UserService)
   private _errorService = inject(ErrorService)
-  private _reportTypes = new ReplaySubject<AuditTemplateReportType[]>(1)
+  private _reportTypes = new ReplaySubject<string[]>(1)
   private _auditTemplateConfig = new ReplaySubject<AuditTemplateConfig>(1)
   reportTypes$ = this._reportTypes.asObservable()
   auditTemplateConfig$ = this._auditTemplateConfig.asObservable()
 
   constructor() {
-    this._reportTypes.next([
-      { name: 'ASHRAE Level 2 Report' },
-      { name: 'Atlanta Report' },
-      { name: 'Baltimore Energy Audit Report' },
-      { name: 'Berkeley Report' },
-      { name: 'BRICR Phase 0/1' },
-      { name: 'Brisbane Energy Audit Report' },
-      { name: 'DC BEPS Energy Audit Report' },
-      { name: 'DC BEPS RCx Report' },
-      { name: 'Demo City Report' },
-      { name: 'Denver Energy Audit Report' },
-      { name: 'EE-RLF Template' },
-      { name: 'Energy Trust of Oregon Report' },
-      { name: 'Los Angeles Report' },
-      { name: 'Minneapolis Energy Evaluation Report' },
-      { name: 'New York City Energy Efficiency Report' },
-      { name: 'Office of Recapitalization Energy Audit Report' },
-      { name: 'Open Efficiency Report' },
-      { name: 'San Francisco Report' },
-      { name: 'St. Louis RCx Report' },
-      { name: 'St. Louis Report' },
-      { name: 'WA Commerce Clean Buildings - Form D Report' },
-      { name: 'WA Commerce Grants Report' },
-    ])
+    this.getReportTypes().subscribe()
     this._userService.currentOrganizationId$.subscribe((organizationId) => {
       this.getConfigs(organizationId).subscribe()
     })
+  }
+
+  getReportTypes(): Observable<string[]> {
+    const url = '/api/v3/audit_template/report_types/'
+    return this._httpClient.get<AuditTemplateReportTypesResponse>(url).pipe(
+      map((response) => {
+        this._reportTypes.next(response.data)
+        return response.data
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching Audit Template report types')
+      }),
+    )
   }
 
   getConfigs(organizationId: number): Observable<AuditTemplateConfig> {
