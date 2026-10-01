@@ -24,7 +24,15 @@ import type {
   PropertyViewLabel,
   WeightedEUI,
 } from '@seed/api'
-import { ColumnService, ConfigService as DeploymentConfigService, GoalService, LabelService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
+import {
+  ColumnService,
+  ConfigService as DeploymentConfigService,
+  GoalService,
+  LabelService,
+  OrganizationService,
+  SalesforcePortfolioService,
+  UserService,
+} from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'

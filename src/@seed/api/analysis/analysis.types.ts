@@ -34,14 +34,7 @@ export type AnalysisCreateData = {
 }
 
 export type AnalysisServiceType
-  = | 'BSyncr'
-    | 'BETTER'
-    | 'EUI'
-    | 'CO2'
-    | 'EEEJ'
-    | 'Element Statistics'
-    | 'Building Upgrade Recommendation'
-    | 'HVAC Metrics'
+  = 'BSyncr' | 'BETTER' | 'EUI' | 'CO2' | 'EEEJ' | 'Element Statistics' | 'Building Upgrade Recommendation' | 'HVAC Metrics'
 
 // Analysis by View type
 export type View = {
