@@ -71,15 +71,13 @@
         color="primary"
         formControlName="terms"
       >
-        <span>I agree with the</span>
-        <a
-          class="ml-1 cursor-pointer text-primary-500 hover:underline focus:underline"
-          (click)="$event.preventDefault(); showTermsOfService()"
-          >NLR Data Terms</a
+        <span>I agree with the&nbsp;</span>
+        <a class="cursor-pointer text-primary-500 hover:underline focus:underline" (click)="$event.preventDefault(); showTermsOfService()"
+          >Data Terms</a
         >
       </mat-checkbox>
       @if (isTermsInvalid) {
-        <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the NLR Data Terms.</mat-error>
+        <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the Data Terms.</mat-error>
       }
     </div>
 

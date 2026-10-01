@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { AnalysisConfig, AnalysisCreateData, AnalysisServiceType, CurrentUser, Cycle } from '@seed/api'
-import { AnalysisService, CycleService, UserService } from '@seed/api'
+import { AnalysisService, ConfigService, CycleService, UserService } from '@seed/api'
 import { ModalHeaderComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { SEEDValidators } from '@seed/validators'
@@ -28,6 +28,7 @@ import { BetterConfigComponent, BurConfigComponent, HvacConfigComponent, SimpleC
 })
 export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   private _analysisService = inject(AnalysisService)
+  private _configService = inject(ConfigService)
   private _dialogRef = inject(MatDialogRef<AnalysisRunModalComponent>)
   private _cycleService = inject(CycleService)
   private _userService = inject(UserService)
@@ -66,6 +67,9 @@ export class AnalysisRunModalComponent implements OnInit, OnDestroy {
   })
 
   ngOnInit(): void {
+    this._configService.config$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ integrations }) => {
+      if (!integrations.better) this.serviceTypes = this.serviceTypes.filter(({ value }) => value !== 'BETTER')
+    })
     this.getCurrentUser()
     this.getCycles()
     this.getAnalyses()

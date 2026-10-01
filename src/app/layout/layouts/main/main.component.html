@@ -10,9 +10,17 @@
 >
   <!-- Navigation header hook -->
   <ng-container verticalNavigationContentHeader>
-    <div class="flex h-20 cursor-pointer items-center justify-center" [routerLink]="['/']" role="button">
-      <div class="w-14 rounded-md bg-white p-0.5">
-        <img class="pointer-events-none select-none" src="images/logo.svg" alt="SEED Platform logo" />
+    <div class="flex h-20 cursor-pointer items-center justify-center" [routerLink]="['/']" aria-label="Dashboard" role="button">
+      <div
+        class="rounded-md bg-white p-0.5"
+        [class.w-14]="!brandingLogoUrl || navigationAppearance === 'dense'"
+        [class.w-40]="brandingLogoUrl && navigationAppearance === 'default'"
+      >
+        <img
+          class="pointer-events-none max-h-14 w-full select-none object-contain"
+          [src]="brandingLogoUrl || 'images/logo.svg'"
+          [alt]="brandingLogoUrl ? '' : 'SEED Platform logo'"
+        />
       </div>
     </div>
   </ng-container>
@@ -20,7 +28,12 @@
   <!-- Navigation footer hook -->
   <ng-container verticalNavigationFooter>
     <div class="hidden p-5 md:flex">
-      <button (click)="toggleNavigationAppearance()" mat-icon-button>
+      <button
+        [attr.aria-label]="navigationAppearance === 'default' ? 'Collapse navigation' : 'Expand navigation'"
+        [title]="navigationAppearance === 'default' ? 'Collapse navigation' : 'Expand navigation'"
+        (click)="toggleNavigationAppearance()"
+        mat-icon-button
+      >
         <mat-icon svgIcon="heroicons-outline:arrows-right-left"></mat-icon>
       </button>
     </div>

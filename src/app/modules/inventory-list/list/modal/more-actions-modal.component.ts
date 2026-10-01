@@ -2,7 +2,7 @@ import type { OnDestroy } from '@angular/core'
 import { Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, switchMap, take, tap } from 'rxjs'
-import { DataQualityService } from '@seed/api'
+import { ConfigService, DataQualityService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { UploaderService } from '@seed/services/uploader'
@@ -17,6 +17,7 @@ import { RefreshMetadataModalComponent } from 'app/modules/inventory-list/list/a
 })
 export class MoreActionsModalComponent implements OnDestroy {
   private _dataQualityService = inject(DataQualityService)
+  private _deploymentConfigService = inject(ConfigService)
   private _dialog = inject(MatDialog)
   private _uploaderService = inject(UploaderService)
   private _dialogRef = inject(MatDialogRef<MoreActionsModalComponent>)
@@ -63,6 +64,12 @@ export class MoreActionsModalComponent implements OnDestroy {
     { name: 'UBID: Compare', action: this.tempAction, disabled: !this.data.viewIds.length },
     { name: 'UBID: Decode', action: this.tempAction, disabled: !this.data.viewIds.length },
   ]
+
+  constructor() {
+    this._deploymentConfigService.config$.pipe(take(1)).subscribe(({ integrations }) => {
+      if (!integrations.salesforce) this.actionsColumn2 = this.actionsColumn2.filter(({ name }) => name !== 'Salesforce: Update')
+    })
+  }
 
   tempAction() {
     console.log('temp action')

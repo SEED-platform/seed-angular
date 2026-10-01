@@ -10,7 +10,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { filter, map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
+import { combineLatest, filter, map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import type {
   Column,
   CycleGoal,
@@ -24,7 +24,15 @@ import type {
   PropertyViewLabel,
   WeightedEUI,
 } from '@seed/api'
-import { ColumnService, GoalService, LabelService, OrganizationService, SalesforcePortfolioService, UserService } from '@seed/api'
+import {
+  ColumnService,
+  ConfigService as DeploymentConfigService,
+  GoalService,
+  LabelService,
+  OrganizationService,
+  SalesforcePortfolioService,
+  UserService,
+} from '@seed/api'
 import { NotFoundComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -82,6 +90,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvas!: ElementRef<HTMLCanvasElement>
 
   private _columnService = inject(ColumnService)
+  private _deploymentConfigService = inject(DeploymentConfigService)
   private _goalService = inject(GoalService)
   private _labelService = inject(LabelService)
   private _matDialog = inject(MatDialog)
@@ -106,6 +115,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   }
 
   isLoggedIntoBbSalesforce = false
+  salesforceEnabled = true
   goals: Goal[] = []
   currentGoal: Goal | null = null
   goalSearchCtrl = new FormControl('')
@@ -222,12 +232,15 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   showDQBanner = true
 
   ngOnInit(): void {
-    this._organizationService.currentOrganization$
+    combineLatest([this._organizationService.currentOrganization$, this._deploymentConfigService.config$])
       .pipe(
         takeUntil(this._unsubscribeAll$),
-        switchMap((organization) => {
+        switchMap(([organization, config]) => {
           this.organization = organization
-          return this._salesforcePortfolioService.verifyToken(this.organization.id)
+          this.salesforceEnabled = config.integrations.salesforce
+          return this.salesforceEnabled && this.organization.bb_salesforce_enabled
+            ? this._salesforcePortfolioService.verifyToken(this.organization.id)
+            : of({ valid: false })
         }),
       )
       .subscribe((r) => {

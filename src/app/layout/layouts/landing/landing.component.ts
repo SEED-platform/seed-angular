@@ -1,6 +1,8 @@
 import { CdkScrollable } from '@angular/cdk/scrolling'
-import { Component, ViewEncapsulation } from '@angular/core'
+import { AsyncPipe } from '@angular/common'
+import { Component, inject, ViewEncapsulation } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
+import { ConfigService } from '@seed/api'
 import { SEEDLoadingBarComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 
@@ -8,6 +10,8 @@ import { SharedImports } from '@seed/directives'
   selector: 'layout-landing',
   templateUrl: './landing.component.html',
   encapsulation: ViewEncapsulation.None,
-  imports: [CdkScrollable, RouterOutlet, SEEDLoadingBarComponent, SharedImports],
+  imports: [AsyncPipe, CdkScrollable, RouterOutlet, SEEDLoadingBarComponent, SharedImports],
 })
-export class LandingLayoutComponent {}
+export class LandingLayoutComponent {
+  readonly config$ = inject(ConfigService).config$
+}

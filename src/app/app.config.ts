@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import type { ApplicationConfig } from '@angular/core'
 import { inject, Injectable, isDevMode, provideAppInitializer } from '@angular/core'
@@ -8,8 +9,9 @@ import { provideAnimations } from '@angular/platform-browser/animations'
 import type { RouterStateSnapshot } from '@angular/router'
 import { provideRouter, TitleStrategy, UrlSerializer, withInMemoryScrolling, withRouterConfig } from '@angular/router'
 import { provideTransloco, TranslocoService } from '@jsverse/transloco'
-import { firstValueFrom } from 'rxjs'
+import { catchError, firstValueFrom, of, tap } from 'rxjs'
 import { provideSEED } from '@seed'
+import { ConfigService } from '@seed/api'
 import { LowerCaseUrlSerializer } from '@seed/routing/url.serializer'
 import { appRoutes } from 'app/app.routes'
 import { provideAuth } from 'app/core/auth/auth.provider'
@@ -81,6 +83,23 @@ export const appConfig: ApplicationConfig = {
       translocoService.setActiveLang(defaultLang)
 
       return firstValueFrom(translocoService.load(defaultLang))
+    }),
+    provideAppInitializer(() => {
+      const splashLogo = inject(DOCUMENT).querySelector<HTMLImageElement>('seed-splash-screen img')
+      return firstValueFrom(
+        inject(ConfigService).config$.pipe(
+          tap(({ branding }) => {
+            if (!splashLogo) return
+            splashLogo.src = branding.logo_url || 'images/logo.svg'
+            splashLogo.alt = branding.logo_url ? '' : 'SEED Platform logo'
+            splashLogo.hidden = false
+          }),
+          catchError(() => {
+            if (splashLogo) splashLogo.hidden = false
+            return of(null)
+          }),
+        ),
+      )
     }),
     provideAuth(),
     provideIcons(),

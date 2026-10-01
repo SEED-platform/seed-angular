@@ -1,7 +1,8 @@
-import type { AfterViewInit } from '@angular/core'
+import type { AfterViewInit, OnInit } from '@angular/core'
 import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { RouterOutlet } from '@angular/router'
+import { ConfigService } from '@seed/api'
 import type { NavigationItem } from '@seed/components'
 import { DrawerService, VerticalNavigationComponent } from '@seed/components'
 import { ScrollResetDirective } from '@seed/directives'
@@ -14,9 +15,10 @@ import { MaterialImports } from '@seed/materials'
   encapsulation: ViewEncapsulation.None,
   imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
-export class SettingsComponent implements AfterViewInit {
+export class SettingsComponent implements AfterViewInit, OnInit {
   @ViewChild('drawer') drawer!: MatDrawer
   private _drawerService = inject(DrawerService)
+  private _deploymentConfigService = inject(ConfigService)
 
   readonly settingsNavigationMenu: NavigationItem[] = [
     {
@@ -105,6 +107,16 @@ export class SettingsComponent implements AfterViewInit {
       ],
     },
   ]
+
+  ngOnInit() {
+    this._deploymentConfigService.config$.subscribe(({ integrations }) => {
+      if (!integrations.salesforce) {
+        this.settingsNavigationMenu[0].children = this.settingsNavigationMenu[0].children.filter(
+          ({ id }) => id !== 'organizations/settings/salesforce-building-integration',
+        )
+      }
+    })
+  }
 
   ngAfterViewInit() {
     this._drawerService.setDrawer(this.drawer)

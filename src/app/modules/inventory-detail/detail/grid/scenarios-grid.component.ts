@@ -243,15 +243,15 @@ export class ScenariosGridComponent implements OnChanges, OnDestroy {
     const states = [{ date_edited: this.view.date_edited, state: this.view.state }, ...this.view.history]
     for (const { date_edited, state } of states) {
       const date = new Date(date_edited).toLocaleString('en-US', {})
-      const entry = { date, rawDate: date_edited, rowData: this.getScenariosWithMeasures(state.scenarios) }
+      const entry = { date, rawDate: date_edited, rowData: this.getScenarios(state.scenarios) }
       if (entry.rowData.length) this.rowDataEntries.push(entry)
     }
     this.rowDataEntries.sort((a, b) => b.rawDate - a.rawDate)
   }
 
-  // Only PackageOfMeasures scenarios are meaningful here; scenario type isn't stored, so measures are the proxy
-  getScenariosWithMeasures(scenarios: Scenario[]): Scenario[] {
-    return (scenarios ?? []).filter((scenario) => scenario.measures?.length)
+  // Scenario type isn't stored, so retain scenarios that may only have package-level savings
+  getScenarios(scenarios: Scenario[]): Scenario[] {
+    return scenarios ?? []
   }
 
   getMeasuresHeight(measures: Measure[]): number {
