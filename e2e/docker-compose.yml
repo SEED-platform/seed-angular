@@ -1,0 +1,52 @@
+# Backend for the e2e tests: published SEED image, no SEED source checkout needed.
+# SEED_IMAGE pins the backend (default: develop). Web is on http://127.0.0.1:8000.
+x-seed-env: &seed-env
+  POSTGRES_DB: seed
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: seed
+  POSTGRES_PASSWORD: super-secret-password
+  SECRET_KEY: e2e-only-not-a-secret-e2e-only-not-a-secret-e2e-only-not-a-secret
+  DJANGO_SETTINGS_MODULE: config.settings.docker
+
+services:
+  db-postgres:
+    image: timescale/timescaledb-ha:pg18.3-ts2.26.4-oss
+    environment:
+      POSTGRES_DB: seed
+      POSTGRES_USER: seed
+      POSTGRES_PASSWORD: super-secret-password
+    healthcheck:
+      test: pg_isready -U seed -d seed
+      interval: 5s
+      retries: 30
+  db-redis:
+    image: redis:8-alpine
+  web:
+    image: ${SEED_IMAGE:-seedplatform/seed:develop}
+    environment:
+      <<: *seed-env
+      SEED_ADMIN_USER: user@seed-platform.org
+      SEED_ADMIN_PASSWORD: super-secret-password
+      SEED_ADMIN_ORG: default
+      GOOGLE_RECAPTCHA_SITE_KEY: 6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+      GOOGLE_RECAPTCHA_SECRET_KEY: 6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+      db-redis:
+        condition: service_started
+    volumes:
+      - seed_media:/seed/media
+    ports:
+      - "127.0.0.1:8000:80"
+  web-celery:
+    image: ${SEED_IMAGE:-seedplatform/seed:develop}
+    command: /seed/docker/start_celery_docker.sh
+    environment:
+      <<: *seed-env
+    depends_on:
+      - web
+    volumes:
+      - seed_media:/seed/media
+volumes:
+  seed_media:
