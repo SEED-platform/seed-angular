@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { AuditTemplateConfig, Organization } from '@seed/api'
@@ -13,6 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-organizations-settings-audit-template',
   templateUrl: './audit-template.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class AuditTemplateComponent implements OnDestroy, OnInit {

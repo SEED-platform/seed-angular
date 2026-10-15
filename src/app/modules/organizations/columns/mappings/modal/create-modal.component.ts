@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { map } from 'rxjs'
@@ -12,6 +12,7 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
 @Component({
   selector: 'seed-column-mappings-create-modal',
   templateUrl: './create-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule, SharedImports, SeedHeaderAutocompleteComponent],
 })
 export class CreateModalComponent implements OnInit {

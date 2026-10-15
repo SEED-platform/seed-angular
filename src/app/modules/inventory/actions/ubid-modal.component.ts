@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
@@ -15,6 +15,7 @@ import type { InventoryType, InventoryTypeSingular, ViewResponse } from '../inve
 @Component({
   selector: 'seed-ubid-modal',
   templateUrl: './ubid-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class UbidModalComponent implements OnInit, OnDestroy {

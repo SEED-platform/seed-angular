@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop'
-import { Component, type OnInit, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, type OnInit, ViewEncapsulation } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
@@ -11,6 +11,7 @@ import { GeocodingComponent } from './geocoding.component'
   selector: 'seed-organizations-column-geocoding-properties',
   templateUrl: './geocoding.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, CdkDropList, CdkDrag, MaterialImports, ReactiveFormsModule],
 })
 export class GeocodingPropertiesComponent extends GeocodingComponent implements OnInit {

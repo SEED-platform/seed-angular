@@ -2,7 +2,7 @@ import type { FlexibleConnectedPositionStrategyOrigin, OverlayRef } from '@angul
 import { Overlay } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
 import type { AfterViewInit, TemplateRef } from '@angular/core'
-import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { Column, GridApi, IHeaderParams } from 'ag-grid-community'
 import { take } from 'rxjs'
@@ -15,6 +15,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-grid-cell-header-menu',
   templateUrl: './cell-header-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit {

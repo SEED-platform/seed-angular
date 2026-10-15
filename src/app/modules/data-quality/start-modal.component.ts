@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { switchMap, takeUntil, tap } from 'rxjs'
 import { Subject } from 'rxjs/internal/Subject'
@@ -12,6 +12,7 @@ import { DQCResultsModalComponent } from './results-modal.component'
 @Component({
   selector: 'seed-dqc-start-modal',
   templateUrl: './start-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ProgressBarComponent],
 })
 export class DQCStartModalComponent implements OnDestroy, OnInit {

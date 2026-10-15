@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { type Observable, tap } from 'rxjs'
 import { OrganizationService } from '@seed/api'
@@ -11,6 +11,7 @@ import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/
 @Component({
   selector: 'seed-inventory-detail-profiles',
   templateUrl: './column-detail-profiles.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ColumnProfilesComponent, CommonModule, PageComponent],
 })
 export class ColumnDetailProfilesComponent implements OnInit {

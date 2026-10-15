@@ -8,7 +8,7 @@ data management, with key workflows around inventory, insights/reporting, data q
 analyses. Paired with a Django backend in the parent `seed` repo (this repo is a git submodule of
 it), available at `../seed` locally or at https://github.com/SEED-platform/seed.
 
-**Stack:** Angular 21 · TypeScript · RxJS · TailwindCSS · Angular Material · Chart.js · Ag-Grid ·
+**Stack:** Angular 22 · TypeScript 6.0 · RxJS · TailwindCSS · Angular Material · Chart.js · Ag-Grid ·
 Transloco (i18n) · pnpm
 
 **Backend API (`/api/v3/` vs `/api/v4/`):** The Django backend exposes both versioned REST APIs.
@@ -24,7 +24,8 @@ to v4 just because it's newer.
 
 ## Setup & commands
 
-Package manager is **pnpm** (a `preinstall` script fails under npm/yarn). Node >=24, pnpm >=10.
+Package manager is **pnpm** (a `preinstall` script fails under npm/yarn). Node 24.15+ (24.x) or
+26+, pnpm >=12.
 
 ```bash
 pnpm i                    # install
@@ -33,7 +34,7 @@ pnpm watch                # build through Django to ../../collected_static/ng-ap
 pnpm build                # production build (AoT + template typecheck)
 pnpm lint                 # eslint + prettier check + stylelint, in parallel
 pnpm lint:fix             # auto-fix all three
-pnpm test                 # ng test (Karma + Jasmine) — no *.spec.ts files exist yet
+pnpm test                 # ng test (Karma + Jasmine)
 pnpm cspell "**/*"        # spell check (also enforced per-file by eslint via @cspell/eslint-plugin)
 pnpm update-translations  # pull translations from Lokalise (needs .env with LOKALISE_TOKEN)
 ```
@@ -43,7 +44,7 @@ pnpm update-translations  # pull translations from Lokalise (needs .env with LOK
 - Spelling: add legitimate domain-specific words to `.spelling.dic`, not inline ignore comments.
 - **Lokalise is the source of truth** for translations — `update-translations` only *pulls*, it
   never pushes new keys.
-- To run a single spec once specs exist: `ng test --include='**/some.component.spec.ts'`.
+- To run a single spec: `pnpm test --include='**/some.component.spec.ts'`.
 - CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
   `main`; there is no test step in CI today.
 
@@ -91,10 +92,9 @@ dynamic `:id` routes so they aren't swallowed by the id matcher, and add a match
 Luxon-based Material `DateAdapter`, `provideAuth()`, `provideIcons()`, and `provideSEED(...)`
 (defined in `src/@seed/seed.provider.ts`), which registers SEED-wide providers (confirmation
 dialogs, loading/media/platform/splash-screen services, HTTP interceptors) and optionally the
-mock-API interceptor for local dev without a live Django backend. No TS path aliases are configured
-(`tsconfig.json` sets `baseUrl: "./src"`), so `@seed/...` and `app/...` imports resolve because
-those directories are literally named `@seed` and `app` under `src/`. Avoid deep relative
-(`../../..`) imports across that boundary.
+mock-API interceptor for local dev without a live Django backend. `tsconfig.json` defines explicit
+path aliases for `@seed`, `@seed/*`, and `app/*` under `src/` without the deprecated `baseUrl`
+option. Avoid deep relative (`../../..`) imports across that boundary.
 
 ### State & organization context
 No NgRx/store — state lives in services via `BehaviorSubject`/`ReplaySubject` streams; components
@@ -143,6 +143,9 @@ hand-formatting.
 ### TypeScript & Angular
 - **Standalone components only** (`@Component({ imports: [...] })`), with separate `.html`/`.scss`
   files and kebab-case selectors prefixed `seed`/`auth`/`layout`.
+- Angular v22 defaults to OnPush change detection. Existing components explicitly using
+  `ChangeDetectionStrategy.Eager` preserve pre-v22 behavior; don't remove it without making their
+  state updates compatible with OnPush.
 - **Never use `any`** — use explicit types or generics. Use `type` (not `interface`) for shapes.
 - Inject dependencies with `inject()` at the field level, not constructor params; prefix private
   fields with `_` (e.g. `private _cycleService = inject(CycleService)`).

@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, Input, ViewChild, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input, ViewChild, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
@@ -32,6 +32,7 @@ import type { LabelSelections } from './grid/filter-group/filter-group-selector.
   templateUrl: './inventory.component.html',
   encapsulation: ViewEncapsulation.None,
   host: { class: 'flex flex-col flex-auto min-h-0' },
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     ActionsComponent,
     ConfigSelectorComponent,

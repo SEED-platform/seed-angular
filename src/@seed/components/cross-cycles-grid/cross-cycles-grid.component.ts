@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -34,6 +34,7 @@ const DECIMAL_DATA_TYPES = new Set<Column['data_type']>(['number', 'float', 'are
 @Component({
   selector: 'seed-cross-cycles-grid',
   templateUrl: './cross-cycles-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, TranslocoDirective],
 })
 export class CrossCyclesGridComponent implements OnChanges, OnDestroy {

@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
@@ -20,6 +20,7 @@ const QUESTION_OPTIONS = [
 @Component({
   selector: 'seed-bulk-edit-goal-notes-modal',
   templateUrl: './bulk-edit-goal-notes-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class BulkEditGoalNotesModalComponent implements OnDestroy {

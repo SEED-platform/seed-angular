@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, take, takeUntil } from 'rxjs'
@@ -16,6 +16,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileSecurityComponent implements OnInit, OnDestroy {

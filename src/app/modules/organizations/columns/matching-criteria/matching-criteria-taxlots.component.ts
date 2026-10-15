@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, type OnInit, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { AgGridAngular } from 'ag-grid-angular'
 import { combineLatest, takeUntil } from 'rxjs'
@@ -11,6 +11,7 @@ import { MatchingCriteriaComponent } from './matching-criteria.component'
   selector: 'seed-organizations-column-matching-criteria-taxlots',
   templateUrl: './matching-criteria.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class MatchingCriteriaTaxlotsComponent extends MatchingCriteriaComponent implements OnInit {

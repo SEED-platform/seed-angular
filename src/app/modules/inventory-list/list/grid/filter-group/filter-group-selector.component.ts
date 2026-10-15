@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
@@ -20,6 +20,7 @@ export type LabelSelections = {
 @Component({
   selector: 'seed-filter-group-selector',
   templateUrl: './filter-group-selector.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports],
 })
 export class FilterGroupSelectorComponent implements OnDestroy, OnInit {

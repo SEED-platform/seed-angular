@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -22,6 +22,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-inventory-detail-history',
   templateUrl: './history-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class HistoryGridComponent implements OnChanges, OnDestroy {

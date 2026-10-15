@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import type { ProgressBarMode } from '@angular/material/progress-bar'
 import { ActivatedRoute, Router } from '@angular/router'
 import { type Feature, Overlay } from 'ol'
@@ -38,6 +38,7 @@ type Layer = VectorLayer | TileLayer
   selector: 'seed-inventory-list-map',
   templateUrl: './map.component.html',
   imports: [NgTemplateOutlet, LabelsComponent, MaterialImports, NotFoundComponent, PageComponent, ProgressBarComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
   host: { class: 'flex flex-col flex-auto min-h-0' },
 })
 export class MapComponent implements OnDestroy, OnInit {

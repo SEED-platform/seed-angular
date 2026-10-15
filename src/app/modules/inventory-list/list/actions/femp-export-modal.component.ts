@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, tap } from 'rxjs'
@@ -12,6 +12,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-femp-export-modal',
   templateUrl: './femp-export-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class FempExportModalComponent implements OnDestroy {

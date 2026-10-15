@@ -1,11 +1,12 @@
 import { Clipboard } from '@angular/cdk/clipboard'
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from '../../../app/core/snack-bar/snack-bar.service'
 
 @Component({
   selector: 'seed-clipboard',
   templateUrl: './clipboard.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class ClipboardComponent {

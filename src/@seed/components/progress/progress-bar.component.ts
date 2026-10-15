@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-progress-bar',
   templateUrl: './progress-bar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports],
 })
 export class ProgressBarComponent {

@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent, ITooltipParams } from 'ag-grid-community'
 import { forkJoin, map } from 'rxjs'
@@ -12,6 +12,7 @@ import { ConfigService } from '@seed/services'
 @Component({
   selector: 'seed-inventory-detail-building-elements-grid',
   templateUrl: './building-elements-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AsyncPipe, MaterialImports],
 })
 export class BuildingElementsGridComponent implements OnChanges {

@@ -1,5 +1,5 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import type { GridApi } from 'ag-grid-community'
@@ -37,6 +37,7 @@ import {
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MenuItemComponent, MaterialImports],
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {

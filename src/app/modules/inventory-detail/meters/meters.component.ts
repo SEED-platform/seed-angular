@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -19,6 +19,7 @@ import { GreenButtonUploadModalComponent } from './modal/green-button-upload-mod
 @Component({
   selector: 'seed-inventory-detail-meters',
   templateUrl: './meters.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class MetersComponent implements OnDestroy, OnInit {

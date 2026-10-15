@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
@@ -15,6 +15,7 @@ import type { InventoryType, Profile, ProfileColumn } from 'app/modules/inventor
 @Component({
   selector: 'seed-copy-to-cycle-modal',
   templateUrl: './copy-to-cycle-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, TranslocoDirective],
 })
 export class CopyToCycleModalComponent implements OnInit, OnDestroy {

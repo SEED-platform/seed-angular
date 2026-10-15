@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -18,6 +18,7 @@ import { FormModalComponent } from './inventory/modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-data-quality',
   templateUrl: './data-quality.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     DataQualityGoalTableComponent,
     DataQualityInventoryTableComponent,

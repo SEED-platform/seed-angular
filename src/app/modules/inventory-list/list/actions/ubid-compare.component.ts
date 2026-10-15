@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { forkJoin, Subject, switchMap, take, tap } from 'rxjs'
@@ -12,6 +12,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-ubid-compare-modal',
   templateUrl: './ubid-compare.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class UbidCompareComponent implements OnInit, OnDestroy {

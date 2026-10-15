@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { DesType, EvseType, GroupSystem, SystemType } from '@seed/api'
@@ -9,6 +9,7 @@ import type { SystemDialogData } from '../dialog-types'
 @Component({
   selector: 'seed-system-dialog',
   templateUrl: './system-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports],
 })
 export class SystemDialogComponent {

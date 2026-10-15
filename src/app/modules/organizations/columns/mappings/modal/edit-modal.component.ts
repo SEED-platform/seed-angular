@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { Column, ColumnMapping, ColumnMappingProfile } from '@seed/api'
@@ -10,6 +10,7 @@ import { SeedHeaderAutocompleteComponent } from './seed-header-autocomplete.comp
 @Component({
   selector: 'seed-column-mappings-edit-modal',
   templateUrl: './edit-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule, SeedHeaderAutocompleteComponent],
 })
 export class EditModalComponent implements OnInit {

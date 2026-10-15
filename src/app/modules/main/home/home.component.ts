@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api'
@@ -12,6 +12,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-home',
   templateUrl: './home.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe, MaterialImports, RouterLink, SharedImports],
 })
 export class HomeComponent implements OnDestroy, OnInit {

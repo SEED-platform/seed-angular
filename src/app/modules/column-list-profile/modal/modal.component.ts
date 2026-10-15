@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { EMPTY, finalize, switchMap, tap } from 'rxjs'
@@ -12,6 +12,7 @@ import type { InventoryDisplayType, InventoryType, Profile, ProfileLocation, Pro
 @Component({
   selector: 'seed-column-list-profile-modal',
   templateUrl: './modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class ModalComponent {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnDestroy } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -18,6 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-meter-data-upload-modal',
   templateUrl: './meter-upload-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class MeterDataUploadModalComponent implements AfterViewInit, OnDestroy {

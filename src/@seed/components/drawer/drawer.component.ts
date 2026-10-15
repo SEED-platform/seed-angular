@@ -3,6 +3,7 @@ import { animate, AnimationBuilder, style } from '@angular/animations'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostBinding,
@@ -23,6 +24,7 @@ import type { DrawerMode, DrawerPosition } from './drawer.types'
   templateUrl: './drawer.component.html',
   styleUrl: './drawer.component.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   exportAs: 'seedDrawer',
 })
 export class DrawerComponent implements OnChanges, OnInit, OnDestroy {

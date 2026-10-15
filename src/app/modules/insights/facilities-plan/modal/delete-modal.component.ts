@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { take } from 'rxjs'
@@ -9,6 +9,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-facilities-plan-delete-modal',
   templateUrl: './delete-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, TranslocoDirective],
 })
 export class DeleteModalComponent {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, Theme } from 'ag-grid-community'
@@ -15,6 +15,7 @@ import { SensorsUploadModalComponent } from './modal/sensors-upload.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-data-loggers-grid',
   templateUrl: './data-loggers-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class DataLoggersGridComponent implements OnChanges {

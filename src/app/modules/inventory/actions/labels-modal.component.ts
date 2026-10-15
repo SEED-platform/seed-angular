@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoService } from '@jsverse/transloco'
@@ -21,6 +21,7 @@ type LabelRow = Label & { add: boolean; remove: boolean; isApplied: boolean; isG
 @Component({
   selector: 'seed-labels-modal',
   templateUrl: './labels-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class LabelsModalComponent implements OnInit, OnDestroy {

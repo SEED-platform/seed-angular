@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import type { MatSelectChange } from '@angular/material/select'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -19,6 +19,7 @@ type CellRendererParams = { value: string; data: { derived_column: number; is_ex
 @Component({
   selector: 'seed-column-profiles',
   templateUrl: './column-profiles.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class ColumnProfilesComponent implements OnDestroy, OnInit {

@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { booleanAttribute, Component, inject, input, ViewEncapsulation } from '@angular/core'
+import { booleanAttribute, ChangeDetectionStrategy, Component, inject, input, ViewEncapsulation } from '@angular/core'
 import { MatProgressBarModule } from '@angular/material/progress-bar'
 import { asyncScheduler, observeOn, Subject, takeUntil } from 'rxjs'
 import { LoadingService } from '@seed/services'
@@ -11,6 +11,7 @@ import { LoadingService } from '@seed/services'
   styleUrl: './loading-bar.component.scss',
   encapsulation: ViewEncapsulation.None,
   exportAs: 'seedLoadingBar',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe, MatProgressBarModule],
 })
 export class SEEDLoadingBarComponent implements OnInit, OnDestroy {

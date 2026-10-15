@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -20,6 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-data',
   templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent],
 })
 export class DatasetsComponent implements OnDestroy, OnInit {

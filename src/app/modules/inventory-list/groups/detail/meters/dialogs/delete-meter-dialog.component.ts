@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { GroupsService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -16,6 +16,7 @@ export type DeleteMeterDialogData = {
 @Component({
   selector: 'seed-delete-meter-dialog',
   templateUrl: './delete-meter-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class DeleteMeterDialogComponent {

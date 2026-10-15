@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { map } from 'rxjs'
@@ -11,6 +11,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-building-files-grid',
   templateUrl: './building-files-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class BuildingFilesGridComponent implements OnInit {

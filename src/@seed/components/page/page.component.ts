@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
-import { Component, inject, Input, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
@@ -16,6 +16,7 @@ import type { Config } from './page.types'
   templateUrl: './page.component.html',
   imports: [CommonModule, MaterialImports, InventoryTabComponent, SharedImports],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: ':host { @apply flex; @apply flex-auto }',
 })
 export class PageComponent implements OnDestroy {

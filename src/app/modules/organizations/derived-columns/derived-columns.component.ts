@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -17,6 +17,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-organizations-derived-columns',
   templateUrl: './derived-columns.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [InventoryTabComponent, MaterialImports, PageComponent, SharedImports, TableContainerComponent],
 })
 export class DerivedColumnsComponent implements OnDestroy, OnInit {

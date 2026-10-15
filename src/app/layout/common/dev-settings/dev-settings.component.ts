@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
 import { Subject, takeUntil } from 'rxjs'
 import { DrawerComponent } from '@seed/components'
@@ -12,6 +12,7 @@ import { ConfigService } from '@seed/services'
   templateUrl: './dev-settings.component.html',
   styleUrl: './dev-settings.component.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DrawerComponent, MaterialImports],
 })
 export class DevSettingsComponent implements OnInit, OnDestroy {

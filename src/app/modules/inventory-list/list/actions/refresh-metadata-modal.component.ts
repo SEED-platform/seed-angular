@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { combineLatest, filter, finalize, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { InventoryService } from '@seed/api'
@@ -12,6 +12,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-refresh-metadata-modal',
   templateUrl: './refresh-metadata-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class RefreshMetadataModalComponent implements OnInit, OnDestroy {

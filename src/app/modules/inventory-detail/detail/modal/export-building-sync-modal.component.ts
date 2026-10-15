@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { take } from 'rxjs'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-export-building-sync-modal',
   templateUrl: './export-building-sync-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ModalHeaderComponent],
 })
 export class ExportBuildingSyncModalComponent implements OnInit {

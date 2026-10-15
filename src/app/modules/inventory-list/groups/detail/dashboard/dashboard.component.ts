@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Chart } from 'chart.js/auto'
 import { Flow, SankeyController } from 'chartjs-chart-sankey'
@@ -25,6 +25,7 @@ const SANKEY_COLORS: Record<string, string> = {
 @Component({
   selector: 'seed-group-dashboard',
   templateUrl: './dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, PageComponent],
 })
 export class GroupDashboardComponent implements OnDestroy, OnInit {

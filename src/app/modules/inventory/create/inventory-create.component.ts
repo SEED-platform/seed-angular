@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -39,6 +39,7 @@ type FormColumnRow = {
 @Component({
   selector: 'seed-inventory-create',
   templateUrl: './inventory-create.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, CommonModule, FormsModule, MaterialImports, PageComponent, ReactiveFormsModule, TranslocoDirective],
 })
 export class InventoryCreateComponent implements OnInit, OnDestroy {

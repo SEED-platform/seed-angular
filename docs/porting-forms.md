@@ -1,7 +1,7 @@
 # Porting Forms from Legacy AngularJS → SEED Angular
 
 A repeatable recipe for porting a legacy AngularJS form/screen from
-[`SEED-platform/seed`](https://github.com/SEED-platform/seed) into this Angular v19 app.
+[`SEED-platform/seed`](https://github.com/SEED-platform/seed) into this Angular v22 app.
 
 > Read [`DEVELOPER.md`](../DEVELOPER.md) first for the general coding standards, and
 > [`MIGRATION.md`](../MIGRATION.md) for the page/route-level migration playbook and checklist.
@@ -265,7 +265,7 @@ Both must pass for the files you touched. Common gotchas:
   Narrow with `typeof x === 'string'` first, or extract a helper that always returns the wanted type.
 - **`no-base-to-string`:** don't `.toString()` a possibly-object value; use an explicit accessor.
 - **Member ordering / naming:** fields before methods, public before private, `_` prefix on privates.
-- Use **pnpm** (there is a `pnpm-lock.yaml`); Node 22+ works (repo prefers 24 — warning only).
+- Use **pnpm 12+** (there is a `pnpm-lock.yaml`); Node 24.15+ (24.x) or 26+ is required.
 
 **Lint and build are not the finish line.** Neither one executes the component, so neither can
 catch a missing ag-grid module registration, a wrong assumption about a live API response's

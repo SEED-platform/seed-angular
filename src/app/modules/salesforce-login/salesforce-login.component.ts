@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { combineLatest, Subject, switchMap, takeUntil } from 'rxjs'
@@ -12,6 +12,7 @@ type AuthState = 'pending' | 'success' | 'failure'
 @Component({
   selector: 'seed-salesforce-login',
   imports: [MaterialImports, TranslocoDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './salesforce-login.component.html',
 })
 export class SalesforceLoginComponent implements OnDestroy, OnInit {

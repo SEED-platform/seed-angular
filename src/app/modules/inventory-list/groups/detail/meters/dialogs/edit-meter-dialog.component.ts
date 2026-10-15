@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { GroupMeterConfig, GroupService, GroupSystem } from '@seed/api'
@@ -24,6 +24,7 @@ export type EditMeterDialogData = {
 @Component({
   selector: 'seed-edit-meter-dialog',
   templateUrl: './edit-meter-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports],
 })
 export class EditMeterDialogComponent implements OnInit {
