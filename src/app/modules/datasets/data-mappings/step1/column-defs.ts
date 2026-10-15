@@ -49,6 +49,7 @@ export const buildColumnDefs = (
   seedHeaderChange: (event: CellValueChangedEvent) => void,
   dataTypeChange: (event: CellValueChangedEvent) => void,
   validateData: (event?: CellValueChangedEvent) => void,
+  mappingSuggestionsReady: boolean,
 ): (ColDef | ColGroupDef)[] => {
   const seedCols: ColDef[] = [
     { field: 'isExtraData', hide: true },
@@ -59,7 +60,7 @@ export const buildColumnDefs = (
       field: 'omit',
       headerName: 'Omit',
       cellEditor: 'agCheckboxCellEditor',
-      editable: true,
+      editable: mappingSuggestionsReady,
       width: 70,
       onCellValueChanged: validateData,
     },
@@ -75,7 +76,7 @@ export const buildColumnDefs = (
         values: ['Property', 'Tax Lot'],
       },
       cellRenderer: dropdownRenderer,
-      editable: true,
+      editable: mappingSuggestionsReady,
       cellClass: canEditClass,
     },
     // SEED HEADER
@@ -91,7 +92,7 @@ export const buildColumnDefs = (
         name: 'SEED Header',
       },
       onCellValueChanged: seedHeaderChange,
-      editable: true,
+      editable: mappingSuggestionsReady,
       cellClass: canEditClass,
     },
   ]
@@ -112,12 +113,12 @@ export const buildColumnDefs = (
       cellRenderer: dropdownRenderer,
       editable: (params) => {
         const data = params?.data as { isNewColumn: boolean }
-        return canEdit(null, 'to_data_type', data.isNewColumn)
+        return mappingSuggestionsReady && canEdit(null, 'to_data_type', data.isNewColumn)
       },
       onCellValueChanged: dataTypeChange,
       cellClass: (params) => {
         const data = params?.data as { isNewColumn: boolean }
-        return canEdit(null, 'to_data_type', data.isNewColumn) ? canEditClass : ''
+        return mappingSuggestionsReady && canEdit(null, 'to_data_type', data.isNewColumn) ? canEditClass : ''
       },
     },
     /* UNITS: Only editable for Area, EUI, GHG, GHGI, Water use, WUI
@@ -139,11 +140,11 @@ export const buildColumnDefs = (
       cellRenderer: dropdownRenderer,
       editable: (params) => {
         const data = params?.data as { to_data_type: string }
-        return canEdit(data.to_data_type, 'from_units', null)
+        return mappingSuggestionsReady && canEdit(data.to_data_type, 'from_units', null)
       },
       cellClass: (params) => {
         const data = params?.data as { to_data_type: string }
-        return canEdit(data.to_data_type, 'from_units', null) ? canEditClass : ''
+        return mappingSuggestionsReady && canEdit(data.to_data_type, 'from_units', null) ? canEditClass : ''
       },
     },
     { field: 'from_field', headerName: 'Data File Header' },

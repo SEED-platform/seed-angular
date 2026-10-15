@@ -84,6 +84,8 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   inventoryType: InventoryType = 'properties'
   mappingResultsResponse: MappingResultsResponse
   mappingSuggestions: MappingSuggestionsResponse
+  mappingSuggestionsLoading = true
+  mappingSuggestionsReady = false
   matchingPropertyColumnDisplayNames = ''
   matchingPropertyColumns: string[] = []
   matchingTaxLotColumnDisplayNames = ''
@@ -132,17 +134,29 @@ export class DataMappingComponent implements OnDestroy, OnInit {
   }
 
   getMappingData() {
+    this._mappingService
+      .mappingSuggestions(this.orgId, this.fileId)
+      .pipe(take(1), takeUntil(this._unsubscribeAll$))
+      .subscribe({
+        next: (mappingSuggestions) => {
+          this.mappingSuggestions = mappingSuggestions
+          this.mappingSuggestionsLoading = false
+          this.mappingSuggestionsReady = true
+        },
+        error: () => {
+          this.mappingSuggestionsLoading = false
+        },
+      })
+
     return forkJoin([
       this._cycleService.getCycle(this.orgId, this.importFile.cycle),
       this._mappingService.firstFiveRows(this.orgId, this.fileId),
-      this._mappingService.mappingSuggestions(this.orgId, this.fileId),
       this._mappingService.rawColumnNames(this.orgId, this.fileId),
     ]).pipe(
       take(1),
-      tap(([cycle, firstFiveRows, mappingSuggestions, rawColumnNames]) => {
+      tap(([cycle, firstFiveRows, rawColumnNames]) => {
         this.cycle = cycle
         this.firstFiveRows = firstFiveRows
-        this.mappingSuggestions = mappingSuggestions
         this.rawColumnNames = rawColumnNames
       }),
     )

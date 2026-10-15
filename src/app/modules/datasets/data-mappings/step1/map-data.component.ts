@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
+import { TranslocoDirective } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, RowClassParams, RowNode } from 'ag-grid-community'
 import { Subject, switchMap, take } from 'rxjs'
@@ -32,7 +33,7 @@ import { CreateProfileComponent } from './modal/create-profile.component'
   selector: 'seed-map-data',
   templateUrl: './map-data.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ReactiveFormsModule, FormsModule],
+  imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ReactiveFormsModule, FormsModule, TranslocoDirective],
 })
 export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() orgId: number
@@ -40,7 +41,9 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   @Input() columnMappingProfiles: ColumnMappingProfile[]
   @Input() cycle: Cycle
   @Input() firstFiveRows: Record<string, unknown>[]
+  @Input() mappingSuggestionsLoading = true
   @Input() mappingSuggestions: MappingSuggestionsResponse
+  @Input() mappingSuggestionsReady = false
   @Input() rawColumnNames: string[]
   @Input() matchingPropertyColumns: string[]
   @Input() matchingTaxLotColumns: string[]
@@ -94,6 +97,11 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       this.setColumns()
       this.setGrid()
     }
+
+    if (changes.mappingSuggestionsReady) {
+      this.setColumns()
+      if (this.gridApi) this.setColumnDefs()
+    }
   }
 
   setGrid() {
@@ -118,6 +126,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
       this.seedHeaderChange.bind(this),
       this.dataTypeChange.bind(this),
       this.validateData.bind(this),
+      this.mappingSuggestionsReady,
     )
   }
 
@@ -152,6 +161,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   setAllInventoryType(value: InventoryDisplayType) {
+    if (!this.mappingSuggestionsReady) return
+
     this.defaultInventoryType = value
     this.defaultInventoryTypeChange.emit(value)
     this.gridApi.forEachNode((node) => node.setDataValue('to_table_name', value))
@@ -210,6 +221,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   copyHeadersToSeed() {
+    if (!this.mappingSuggestionsReady) return
+
     this.gridApi.forEachNode((node: RowNode<{ from_field: string }>) => {
       const fileHeader = node.data.from_field
       node.setDataValue('to_field_display_name', fileHeader)
@@ -217,6 +230,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   applyProfile() {
+    if (!this.mappingSuggestionsReady) return
+
     const toTableMap = { TaxLotState: 'Tax Lot', PropertyState: 'Property' }
     const mappingsMap = Object.fromEntries(this.profile.mappings.map((m) => [m.from_field, m]))
     const columnNameMap = Object.fromEntries(this.getColumns().map((c) => [c.column_name, c.display_name]))
@@ -234,6 +249,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   saveProfile() {
+    if (!this.mappingSuggestionsReady) return
+
     // overwrite the existing profile
     this.profile.mappings = this.getMappingsFromGrid()
     this._columnMappingProfileService.update(this.orgId, this.profile).subscribe()
@@ -262,6 +279,8 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   }
 
   createProfile() {
+    if (!this.mappingSuggestionsReady) return
+
     const profileType: ColumnMappingProfileType = this.importFile.source_type === 'BuildingSync' ? 'BuildingSync Custom' : 'Normal'
     const profileTypes: ColumnMappingProfileType[]
       = profileType === 'BuildingSync Custom' ? ['BuildingSync Default', 'BuildingSync Custom'] : ['Normal']
@@ -286,7 +305,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
 
   // Format data for backend consumption
   mapData() {
-    if (!this.dataValid) return
+    if (!this.mappingSuggestionsReady || !this.dataValid) return
 
     this.gridApi.forEachNode(({ data }: { data: DataMappingRow }) => {
       if (data.omit) return // skip omitted rows
