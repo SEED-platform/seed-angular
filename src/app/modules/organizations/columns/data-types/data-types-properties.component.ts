@@ -1,4 +1,4 @@
-import { type AfterViewInit, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import { type AfterViewInit, ChangeDetectionStrategy, Component, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { MatPaginator } from '@angular/material/paginator'
 import { map, takeUntil } from 'rxjs'
@@ -12,6 +12,7 @@ import { DataTypesComponent } from './data-types.component'
   selector: 'seed-organizations-column-data-types-properties',
   templateUrl: './data-types.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, TableContainerComponent, MaterialImports, MatPaginator, ReactiveFormsModule],
 })
 export class DataTypesPropertiesComponent extends DataTypesComponent implements AfterViewInit, OnInit {

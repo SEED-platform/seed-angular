@@ -1,5 +1,5 @@
 import type { AfterViewInit, OnDestroy } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
 import { catchError, EMPTY, Subject, switchMap, take, takeUntil } from 'rxjs'
@@ -13,6 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-export-building-sync-xlsx-modal',
   templateUrl: './export-building-sync-xlsx-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, ProgressBarComponent],
 })
 export class ExportBuildingSyncXlsxModalComponent implements AfterViewInit, OnDestroy {

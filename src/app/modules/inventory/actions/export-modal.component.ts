@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
@@ -15,6 +15,7 @@ import type { InventoryExportData, InventoryType } from '../inventory.types'
 @Component({
   selector: 'seed-export-modal',
   templateUrl: './export-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, ReactiveFormsModule],
 })
 export class ExportModalComponent implements OnDestroy {

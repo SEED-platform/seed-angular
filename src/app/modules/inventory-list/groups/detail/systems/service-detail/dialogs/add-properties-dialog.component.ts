@@ -1,4 +1,4 @@
-import { Component, inject, type OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { tap } from 'rxjs'
@@ -16,6 +16,7 @@ export type AddPropertiesDialogData = {
 @Component({
   selector: 'seed-add-properties-dialog',
   templateUrl: './add-properties-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule],
 })
 export class AddPropertiesDialogComponent implements OnInit {

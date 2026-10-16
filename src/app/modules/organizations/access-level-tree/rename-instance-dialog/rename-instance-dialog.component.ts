@@ -1,5 +1,5 @@
 import { A11yModule } from '@angular/cdk/a11y'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import type { ValidationErrors, ValidatorFn } from '@angular/forms'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
@@ -13,6 +13,7 @@ import type { RenameInstanceData } from '..'
   selector: 'seed-rename-instance-dialog',
   templateUrl: './rename-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [A11yModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class RenameInstanceDialogComponent {

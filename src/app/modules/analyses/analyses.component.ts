@@ -1,5 +1,5 @@
 import type { AfterViewInit, OnDestroy } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { filter, Subject, tap } from 'rxjs'
 import type { Analysis, Cycle } from '@seed/api'
 import { AnalysisService, CycleService, UserService } from '@seed/api'
@@ -8,6 +8,7 @@ import { AnalysesGridComponent, NotFoundComponent, PageComponent } from '@seed/c
 @Component({
   selector: 'seed-analyses',
   templateUrl: './analyses.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AnalysesGridComponent, NotFoundComponent, PageComponent],
 })
 export class AnalysesComponent implements AfterViewInit, OnDestroy {

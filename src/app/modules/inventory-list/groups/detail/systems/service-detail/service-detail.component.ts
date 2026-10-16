@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
@@ -14,6 +14,7 @@ import { AddPropertiesDialogComponent } from './dialogs/add-properties-dialog.co
 @Component({
   selector: 'seed-service-detail',
   templateUrl: './service-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, RouterLink],
 })
 export class ServiceDetailComponent implements OnDestroy, OnInit {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize, take, tap } from 'rxjs'
@@ -10,6 +10,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-report-config-modal',
   templateUrl: './report-config-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class ReportConfigModalComponent {

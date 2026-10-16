@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import type { ParamMap } from '@angular/router'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -18,6 +18,7 @@ import { ProgramConfigComponent } from '../config'
 @Component({
   selector: 'seed-program-overview',
   templateUrl: './program-overview.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, PageComponent, ProgressBarComponent, NotFoundComponent],
 })
 export class ProgramOverviewComponent implements OnDestroy, OnInit {

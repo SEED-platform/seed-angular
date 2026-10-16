@@ -1,6 +1,6 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { catchError, EMPTY, forkJoin, Subject, switchMap, tap } from 'rxjs'
 import { GeocodeService } from '@seed/api'
@@ -13,6 +13,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-geocode-modal',
   templateUrl: './geocode-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, MaterialImports, ModalHeaderComponent, ProgressBarComponent, SharedImports],
 })
 export class GeocodeModalComponent implements OnInit, OnDestroy {

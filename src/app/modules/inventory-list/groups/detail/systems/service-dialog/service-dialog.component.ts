@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { GroupsService } from '@seed/api'
@@ -8,6 +8,7 @@ import type { ServiceDialogData } from '../dialog-types'
 @Component({
   selector: 'seed-service-dialog',
   templateUrl: './service-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports],
 })
 export class ServiceDialogComponent {

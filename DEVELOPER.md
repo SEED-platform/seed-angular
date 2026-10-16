@@ -1,6 +1,6 @@
 # SEED Angular Developer Guide
 
-This document provides coding conventions and best practices for the SEED Angular app, which is built using **Angular v19**, **TypeScript**, **RxJS**, and **TailwindCSS**.
+This document provides coding conventions and best practices for the SEED Angular app, which is built using **Angular v22**, **TypeScript 6.0**, **RxJS**, and **TailwindCSS**.
 
 Following these guidelines helps keep the codebase clean, maintainable, and scalable.
 

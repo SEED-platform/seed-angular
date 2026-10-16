@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
@@ -26,6 +26,7 @@ const LABEL_COLOR_MAP: Record<string, string> = {
 @Component({
   selector: 'seed-inventory-grid',
   templateUrl: './grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, InventoryGridControlsComponent],
 })
 export class InventoryGridComponent implements OnChanges {

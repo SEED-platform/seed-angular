@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent, RowNode, Theme } from 'ag-grid-community'
@@ -13,6 +13,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-sensors-grid',
   templateUrl: './sensors-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class SensorsGridComponent implements OnChanges {

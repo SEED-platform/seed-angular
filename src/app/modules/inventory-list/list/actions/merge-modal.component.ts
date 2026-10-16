@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
@@ -17,6 +17,7 @@ import type { FilterResponse, InventoryType, State } from 'app/modules/inventory
 @Component({
   selector: 'seed-merge-modal',
   templateUrl: './merge-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ModalHeaderComponent, ProgressBarComponent, SharedImports],
 })
 export class MergeModalComponent implements OnInit, OnDestroy {

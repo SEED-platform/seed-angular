@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { NgxWigModule } from 'ngx-wig'
@@ -15,6 +15,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-email-templates',
   templateUrl: './email-templates.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, NgxWigModule, NotFoundComponent, PageComponent, ReactiveFormsModule],
 })
 export class EmailTemplatesComponent implements OnDestroy, OnInit {

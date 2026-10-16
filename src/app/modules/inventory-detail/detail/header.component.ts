@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { type MatSelect } from '@angular/material/select'
 import { Router } from '@angular/router'
@@ -26,6 +26,7 @@ import { UpdateWithEspmModalComponent } from './modal/update-with-espm-modal.com
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports],
 })
 export class HeaderComponent implements OnInit, OnChanges {

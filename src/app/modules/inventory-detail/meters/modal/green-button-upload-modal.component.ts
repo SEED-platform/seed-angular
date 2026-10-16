@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { MatStepper } from '@angular/material/stepper'
@@ -19,6 +19,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-detail-green-button-upload-modal',
   templateUrl: './green-button-upload-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, FormsModule, MaterialImports, ProgressBarComponent, ReactiveFormsModule],
 })
 export class GreenButtonUploadModalComponent implements OnDestroy {

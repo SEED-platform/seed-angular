@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -19,6 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-detail-ubids',
   templateUrl: './ubids.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MapComponent, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class UbidsComponent implements OnDestroy, OnInit {

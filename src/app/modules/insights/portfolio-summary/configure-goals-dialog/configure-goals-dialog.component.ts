@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Router } from '@angular/router'
@@ -25,6 +25,7 @@ import type { ConfigureGoalsData } from '../portfolio-summary.types'
 @Component({
   selector: 'seed-configure-goals-dialog',
   templateUrl: './configure-goals-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule, SharedImports],
 })
 export class ConfigureGoalsDialogComponent implements OnInit, OnDestroy {

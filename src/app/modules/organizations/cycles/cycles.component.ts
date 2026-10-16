@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { Subject, takeUntil } from 'rxjs'
@@ -13,6 +13,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-organizations-cycles',
   templateUrl: './cycles.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, TableContainerComponent],
 })
 export class CyclesComponent implements OnDestroy, OnInit {

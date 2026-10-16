@@ -1,6 +1,6 @@
 import { CdkScrollable } from '@angular/cdk/scrolling'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router'
 import { filter, Subject, takeUntil, tap } from 'rxjs'
 import { ConfigService, VersionService } from '@seed/api'
@@ -17,6 +17,7 @@ import { type InventoryType } from 'app/modules/inventory/inventory.types'
   selector: 'layout-main',
   templateUrl: './main.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CdkScrollable,
     MaterialImports,

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
@@ -15,6 +15,7 @@ type BulkEditModalData = {
 @Component({
   selector: 'seed-facilities-plan-bulk-edit-modal',
   templateUrl: './bulk-edit-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, TranslocoDirective],
 })
 export class BulkEditModalComponent {

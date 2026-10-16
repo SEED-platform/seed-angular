@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
@@ -17,6 +17,7 @@ import { ResetPasswordsModalComponent } from './modal/reset-passwords-modal.comp
 @Component({
   selector: 'seed-organizations-members',
   templateUrl: './members.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, SharedImports, TableContainerComponent],
 })
 export class MembersComponent implements OnDestroy, OnInit {

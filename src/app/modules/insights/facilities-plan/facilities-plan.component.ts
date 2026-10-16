@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -28,6 +28,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   templateUrl: './facilities-plan.component.html',
   encapsulation: ViewEncapsulation.None,
   host: { class: 'flex flex-col flex-auto min-h-0' },
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AsyncPipe, MaterialImports, PageComponent, SharedImports],
 })
 export class FacilitiesPlanComponent implements OnInit, OnDestroy {

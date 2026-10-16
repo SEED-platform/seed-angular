@@ -1,6 +1,6 @@
 import { AsyncPipe, CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import type { MatSelectChange } from '@angular/material/select'
@@ -72,6 +72,7 @@ const LABEL_COLOR_MAP: Record<string, string> = {
 @Component({
   selector: 'seed-portfolio-summary',
   templateUrl: './portfolio-summary.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     AgGridAngular,
     AsyncPipe,

@@ -1,7 +1,7 @@
 import type { KeyValue } from '@angular/common'
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -18,6 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-analyses-analysis',
   templateUrl: './analysis.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent, SharedImports],
 })
 export class AnalysisComponent implements OnDestroy, OnInit {

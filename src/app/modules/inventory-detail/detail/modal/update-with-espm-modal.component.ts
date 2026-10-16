@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
@@ -13,6 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-update-with-espm-modal',
   templateUrl: './update-with-espm-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ModalHeaderComponent, TranslocoDirective],
 })
 export class UpdateWithEspmModalComponent implements OnInit {

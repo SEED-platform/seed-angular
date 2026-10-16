@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -15,6 +15,7 @@ import { SystemDialogComponent } from './system-dialog/system-dialog.component'
 @Component({
   selector: 'seed-group-systems',
   templateUrl: './systems.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, MatTooltipModule, PageComponent],
 })
 export class GroupSystemsComponent implements OnDestroy, OnInit {

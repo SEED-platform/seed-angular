@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -18,6 +18,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-inventory-list-groups',
   templateUrl: './groups.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, NotFoundComponent, PageComponent],
 })
 export class GroupsComponent implements OnDestroy, OnInit {

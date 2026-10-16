@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
 import type { ProgressResponse } from '@seed/api'
@@ -12,6 +12,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-columns-update-modal',
   templateUrl: './update-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, MaterialImports],
 })
 export class UpdateModalComponent implements OnDestroy, OnInit {

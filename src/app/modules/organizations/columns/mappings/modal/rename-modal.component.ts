@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { type ColumnMappingProfile, ColumnMappingProfileService } from '@seed/api'
@@ -8,6 +8,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-column-mappings-rename-modal',
   templateUrl: './rename-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule],
 })
 export class RenameModalComponent implements OnInit {

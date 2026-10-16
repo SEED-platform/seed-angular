@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core'
 import { type Column } from '@seed/api'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -7,6 +7,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-matching-criteria-list',
   templateUrl: './criteria-list.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, MaterialImports],
 })
 export class CriteriaListComponent {

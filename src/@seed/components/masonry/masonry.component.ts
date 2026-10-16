@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, SimpleChanges, TemplateRef } from '@angular/core'
-import { Component, input, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input, ViewEncapsulation } from '@angular/core'
 import { Animations } from '@seed/animations'
 
 @Component({
@@ -9,6 +9,7 @@ import { Animations } from '@seed/animations'
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
   exportAs: 'seedMasonry',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule],
 })
 export class MasonryComponent implements OnChanges, AfterViewInit {

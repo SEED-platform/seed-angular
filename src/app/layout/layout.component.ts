@@ -1,6 +1,6 @@
 import { OverlayContainer } from '@angular/cdk/overlay'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { combineLatest, filter, map, Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api'
@@ -16,6 +16,7 @@ import { MainLayoutComponent } from './layouts/main/main.component'
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DevSettingsComponent, EmptyLayoutComponent, LandingLayoutComponent, MainLayoutComponent],
 })
 export class LayoutComponent implements OnInit, OnDestroy {

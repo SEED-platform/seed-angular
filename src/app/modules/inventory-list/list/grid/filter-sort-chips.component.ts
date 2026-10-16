@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Column, OrganizationUserSettings } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -9,6 +9,7 @@ import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports],
 })
 export class FilterSortChipsComponent implements OnChanges {

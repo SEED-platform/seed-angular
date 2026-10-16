@@ -1,5 +1,5 @@
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import type { GridApi } from 'ag-grid-community'
 import { take, tap } from 'rxjs'
 import type { CurrentUser, OrganizationUserSettings } from '@seed/api'
@@ -11,6 +11,7 @@ import type { Pagination } from '../../../inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-grid-controls',
   templateUrl: './grid-controls.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class InventoryGridControlsComponent implements OnChanges, OnInit {

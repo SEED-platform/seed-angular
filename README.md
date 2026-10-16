@@ -1,11 +1,11 @@
 # SEED Angular
 
 ## Prerequisites
-- Node v22+
-- [pnpm](https://pnpm.io/installation)
+- Node v24.15+ (24.x) or v26+
+- [pnpm](https://pnpm.io/installation) v12+ (the exact version is pinned in `package.json`)
 
 ## Setup
-1. Install Node v22 or newer
+1. Install a supported Node version (see Prerequisites)
 2. Install pnpm globally: `npm i -g pnpm`
 3. Install the project dependencies: `pnpm i`
 4. Create a `.env` file in the root of the project directory that matches the format of [`.env.example`](.env.example)

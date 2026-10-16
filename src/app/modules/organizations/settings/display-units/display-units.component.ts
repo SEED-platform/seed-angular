@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { MeterWithUnits, Organization } from '@seed/api'
@@ -12,6 +12,7 @@ import * as UnitOptions from './units.types'
 @Component({
   selector: 'seed-organizations-settings-display-units',
   templateUrl: './display-units.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class DisplayUnitsComponent implements OnDestroy, OnInit {

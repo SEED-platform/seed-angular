@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { IHeaderParams } from 'ag-grid-community'
 
@@ -17,6 +17,7 @@ type LabelGridContext = {
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class InventoryLabelHeaderComponent implements IHeaderAngularComp {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { take } from 'rxjs'
 import { InventoryService } from '@seed/api'
@@ -9,6 +9,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-update-with-building-sync-modal',
   templateUrl: './update-with-building-sync-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, MaterialImports, ModalHeaderComponent],
 })
 export class UpdateWithBuildingSyncModalComponent {

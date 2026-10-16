@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import type { FormControl, FormGroup } from '@angular/forms'
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterLink } from '@angular/router'
@@ -18,6 +18,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './reset-password.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink],
 })
 export class AuthResetPasswordComponent implements OnInit {

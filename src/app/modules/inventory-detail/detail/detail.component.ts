@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { forkJoin, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
@@ -24,6 +24,7 @@ import {
 @Component({
   selector: 'seed-inventory-detail',
   templateUrl: './detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     BuildingElementsGridComponent,
     BuildingFilesGridComponent,

@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { SalesforceMapping } from '@seed/api'
 import { SalesforceService } from '@seed/api'
@@ -8,6 +8,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-salesforce-delete-modal',
   templateUrl: './delete-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class DeleteModalComponent implements OnInit {

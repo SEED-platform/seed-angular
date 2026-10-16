@@ -5,6 +5,7 @@ allowBuilds:
   esbuild: true
   lmdb: true
   msgpackr-extract: true
+  unrs-resolver: true
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@scarf/scarf'

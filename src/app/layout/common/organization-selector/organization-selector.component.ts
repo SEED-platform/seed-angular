@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { TranslocoService } from '@jsverse/transloco'
 import { Subject, takeUntil } from 'rxjs'
 import type { BriefOrganization, CurrentUser } from '@seed/api'
@@ -13,6 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
   templateUrl: './organization-selector.component.html',
   encapsulation: ViewEncapsulation.None,
   exportAs: 'organization-selector',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, SharedImports],
 })
 export class OrganizationSelectorComponent implements OnInit, OnDestroy {

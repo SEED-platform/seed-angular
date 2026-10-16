@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { MaterialImports } from '@seed/materials'
 import { ModalHeaderComponent } from '../modal'
@@ -7,6 +7,7 @@ import { ModalHeaderComponent } from '../modal'
   standalone: true,
   selector: 'seed-delete-modal',
   templateUrl: './delete-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent],
 })
 export class DeleteModalComponent {

@@ -1,4 +1,4 @@
-import { Component, inject, type OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { tap } from 'rxjs'
@@ -14,6 +14,7 @@ export type CreateMeterDialogData = {
 @Component({
   selector: 'seed-create-meter-dialog',
   templateUrl: './create-meter-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule],
 })
 export class CreateMeterDialogComponent implements OnInit {

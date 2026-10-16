@@ -53,6 +53,8 @@ export default tseslint.config(
         prefix: ['seed', 'auth', 'layout'],
         style: 'kebab-case',
       }],
+      // Existing Eager components retain pre-v22 change detection behavior.
+      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
       '@stylistic/lines-between-class-members': 'off',
       '@stylistic/member-delimiter-style': ['error', {
         multiline: {

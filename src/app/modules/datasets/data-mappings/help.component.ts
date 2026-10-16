@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 
 @Component({
   selector: 'seed-data-mapping-help',
   templateUrl: './help.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [],
 })
 export class HelpComponent {
