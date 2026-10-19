@@ -111,6 +111,7 @@
           <span class="text-sm">Census Tracts</span>
         </mat-checkbox>
         <mat-checkbox
+          [class.opacity-40]="!layers?.censusTractLayer?.visible"
           [checked]="highlightDACs"
           [disabled]="!layers?.censusTractLayer?.visible"
           (change)="toggleHighlightDACs()"

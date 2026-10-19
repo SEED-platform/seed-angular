@@ -23,7 +23,7 @@ import Style from 'ol/style/Style'
 import Text from 'ol/style/Text'
 import View from 'ol/View'
 import HexBin from 'ol-ext/source/HexBin'
-import { filter, finalize, last, map, mergeMap, of, range, scan, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { filter, finalize, firstValueFrom, last, map, mergeMap, of, range, scan, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { CurrentUser, Label, LabelOperator, OrgCycle } from '@seed/api'
 import { ColumnService, GroupsService, InventoryService, LabelService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent, PageComponent, ProgressBarComponent } from '@seed/components'
@@ -332,11 +332,11 @@ export class MapComponent implements OnDestroy, OnInit {
       source: await this.censusTractSource(),
       zIndex: this.layers.censusTractLayer.zIndex,
       style: (feature: Feature) => {
-        const tractId = feature.get('GEOID10') as number
+        const tractId = feature.get('GEOID10') as string
         const isDisadvantaged = this._mapService.isDisadvantaged(tractId)
         return new Style({
           stroke: new Stroke({ color: '#185189', width: 2 }),
-          fill: isDisadvantaged && this.highlightDACs ? new Fill({ color: '#45829b' }) : undefined,
+          fill: isDisadvantaged && this.highlightDACs ? new Fill({ color: 'rgba(69, 130, 155, 0.4)' }) : undefined,
         })
       },
     })
@@ -525,7 +525,6 @@ export class MapComponent implements OnDestroy, OnInit {
     return new VectorSource({ features })
   }
 
-  // this is async. how to handle?
   async censusTractSource() {
     let geojson = { type: 'FeatureCollection', features: [] }
 
@@ -536,11 +535,8 @@ export class MapComponent implements OnDestroy, OnInit {
         const [west, south, east, north] = transformExtent(extents, this.map.getView().getProjection(), 'EPSG:4326')
         const url = `https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/usa_november_2022/FeatureServer/0/query?where=1%3D1&outFields=GEOID10&geometry=${west}%2C${south}%2C${east}%2C${north}&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&f=geojson`
         geojson = (await (await fetch(url)).json()) as { type: string; features: { properties: { GEOID10: string } }[] }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const tractIds = geojson.features.reduce((acc: string[], feature: { properties: { GEOID10: string } }) => {
-          return acc.concat(feature.properties.GEOID10)
-        }, [])
-        this._mapService.checkDisadvantagedStatus(tractIds as number[])
+        const tractIds = geojson.features.map((feature: { properties: { GEOID10: string } }) => feature.properties.GEOID10)
+        await firstValueFrom(this._mapService.checkDisadvantagedStatus(tractIds))
       }
     } catch (e) {
       console.error(e)
@@ -615,6 +611,7 @@ export class MapComponent implements OnDestroy, OnInit {
 
   toggleHighlightDACs() {
     this.highlightDACs = !this.highlightDACs
+    this.censusTractLayer.changed()
   }
 
   navigateToDetail(viewId: number) {
