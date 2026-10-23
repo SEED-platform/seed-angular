@@ -27,6 +27,22 @@ import {
 } from './grid'
 import type { LabelSelections } from './grid/filter-group/filter-group-selector.component'
 
+export function applyColumnProfile(profile: Profile, columnDefs: ColDef[]): ColDef[] {
+  if (!profile?.columns) return columnDefs
+
+  const profileColumns = new Map(profile.columns.map((column) => [`${column.column_name}_${column.id}`, column]))
+  return columnDefs
+    .map((column) => {
+      const profileColumn = profileColumns.get(column.field)
+      return profileColumn ? { ...column, pinned: profileColumn.pinned ? 'left' as const : null } : column
+    })
+    .sort((first, second) => {
+      const firstOrder = profileColumns.get(first.field)?.order ?? Number.MAX_SAFE_INTEGER
+      const secondOrder = profileColumns.get(second.field)?.order ?? Number.MAX_SAFE_INTEGER
+      return firstOrder - secondOrder
+    })
+}
+
 @Component({
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
@@ -311,7 +327,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
           tap(({ pagination, results, column_defs }: AgFilterResponse) => {
             this.pagination = pagination
             this.inventory = results
-            this.columnDefs = column_defs
+            this.columnDefs = this.applyProfileColumns(column_defs)
             this.rowData = results
           }),
           map(() => null),
@@ -326,6 +342,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const settingsCycleId = this.userSettings?.cycleId
     if (!settingsCycleId) return
     if (settingsCycleId !== this.cycleId) this.cycleId = settingsCycleId
+  }
+
+  applyProfileColumns(columnDefs: ColDef[]): ColDef[] {
+    return applyColumnProfile(this.profile, columnDefs)
   }
 
   /*
