@@ -101,9 +101,11 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
         takeUntil(this._unsubscribeAll$),
         switchMap((data) => this._inventoryService.updateColumnListProfile(this.orgId, this.currentProfile.id, data)),
         tap((profile) => {
-          this.currentProfile = profile
           this.profiles = this.profiles.map((existing) => (existing.id === profile.id ? profile : existing))
-          this.setGrid()
+          if (this.currentProfile?.id === profile.id) {
+            this.currentProfile = profile
+            this.setGrid()
+          }
         }),
       )
       .subscribe()
