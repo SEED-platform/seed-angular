@@ -233,7 +233,9 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
 
     button.addEventListener('click', (event) => {
       event.stopPropagation()
-      this.togglePinned(row, (selected) => {
+      const currentRow = params.node.data
+      if (!currentRow) return
+      this.togglePinned(currentRow, (selected) => {
         params.node.setSelected(selected)
       })
     })
