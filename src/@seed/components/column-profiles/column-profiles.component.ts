@@ -168,6 +168,13 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
         filter: false,
         resizable: false,
         cellRenderer: this.profileType === 'list' ? this.pinRenderer : undefined,
+        suppressKeyboardEvent: (params) => {
+          const row = params.node.data as ProfileColumn | undefined
+          if (!row) return false
+          return this.onPinCellKeyDown(params.event, row, (selected) => {
+            params.node.setSelected(selected)
+          })
+        },
       },
       { field: 'drag', headerName: '', rowDrag: true, width: 44, maxWidth: 44, sortable: false, filter: false, resizable: false },
       { field: 'column_name', hide: true },
@@ -241,6 +248,15 @@ export class ColumnProfilesComponent implements OnDestroy, OnInit {
     })
 
     return button
+  }
+
+  onPinCellKeyDown(event: KeyboardEvent, row: ProfileColumn, setSelected: (selected: boolean) => void): boolean {
+    if (event.key !== 'Enter' && event.key !== ' ') return false
+
+    event.preventDefault()
+    event.stopPropagation()
+    this.togglePinned(row, setSelected)
+    return true
   }
 
   togglePinned(row: ProfileColumn, setSelected: (selected: boolean) => void) {

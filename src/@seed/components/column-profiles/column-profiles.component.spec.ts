@@ -6,6 +6,7 @@ import { of } from 'rxjs'
 import type { Column } from '@seed/api'
 import { ColumnService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { ConfigService } from '@seed/services'
+import type { ProfileColumn } from 'app/modules/inventory/inventory.types'
 import { ColumnProfilesComponent } from './column-profiles.component'
 
 describe('ColumnProfilesComponent profile settings', () => {
@@ -103,6 +104,42 @@ describe('ColumnProfilesComponent profile settings', () => {
     expect(row.pinned).toBeTrue()
     expect(component.getSelectedProfileColumns().map((column) => column.id)).toContain(row.id)
     expect(component.setRowData).toHaveBeenCalledWith(new Set([row.id]), component.rowData)
+  })
+
+  it('pins the focused pin cell with Enter or Space and suppresses grid shortcuts', () => {
+    component.setRowData(new Set([1]))
+    component.gridApi = {
+      getSelectedRows: () => [],
+    } as unknown as GridApi
+    spyOn(component, 'setRowData')
+
+    for (const key of ['Enter', ' ']) {
+      const row = { ...component.rowData[0] }
+      const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key })
+      const setSelected = jasmine.createSpy('setSelected')
+      spyOn(event, 'stopPropagation')
+
+      const suppressed = component.onPinCellKeyDown(event, row, setSelected)
+
+      expect(suppressed).toBeTrue()
+      expect(event.defaultPrevented).toBeTrue()
+      expect(event.stopPropagation).toHaveBeenCalled()
+      expect(setSelected).toHaveBeenCalledOnceWith(true)
+      expect(row.pinned).toBeTrue()
+    }
+  })
+
+  it('does not suppress other pin-cell keyboard events', () => {
+    const event = new KeyboardEvent('keydown', { key: 'ArrowDown' })
+    const setSelected = jasmine.createSpy('setSelected')
+    spyOn(component, 'togglePinned')
+
+    const suppressed = component.onPinCellKeyDown(event, {} as ProfileColumn, setSelected)
+
+    expect(suppressed).toBeFalse()
+    expect(event.defaultPrevented).toBeFalse()
+    expect(setSelected).not.toHaveBeenCalled()
+    expect(component.togglePinned).not.toHaveBeenCalled()
   })
 
   it('captures deselection and clears pins before the delayed refresh', () => {
