@@ -3,9 +3,19 @@ import type { ComponentFixture } from '@angular/core/testing'
 import { TestBed } from '@angular/core/testing'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
-import type { CellValueChangedEvent, GridApi } from 'ag-grid-community'
+import type { CellValueChangedEvent, GridApi, SelectionChangedEvent } from 'ag-grid-community'
 import { BehaviorSubject, of, ReplaySubject } from 'rxjs'
-import type { Column, CycleGoal, Goal, GoalPagination, GoalProperty, Organization, PortfolioSummary, WeightedEUI } from '@seed/api'
+import type {
+  Column,
+  CycleGoal,
+  Goal,
+  GoalPagination,
+  GoalProperty,
+  Organization,
+  PortfolioSummary,
+  PropertyViewLabel,
+  WeightedEUI,
+} from '@seed/api'
 import {
   ColumnService,
   ConfigService as DeploymentConfigService,
@@ -118,6 +128,7 @@ describe('PortfolioSummaryComponent', () => {
   let getWeightedEUIsSpy: jasmine.Spy
   let getCycleGoalsSpy: jasmine.Spy
   let getPropertiesSpy: jasmine.Spy
+  let getPropertyViewIdsSpy: jasmine.Spy
   let deleteCycleGoalSpy: jasmine.Spy
   let editGoalSpy: jasmine.Spy
   let updateGoalNoteSpy: jasmine.Spy
@@ -137,6 +148,7 @@ describe('PortfolioSummaryComponent', () => {
     getWeightedEUIsSpy = jasmine.createSpy('getWeightedEUIs').and.returnValue(of({ status: 'success', results: mockWeightedEUIs }))
     getCycleGoalsSpy = jasmine.createSpy('getCycleGoals').and.returnValue(of([mockCycleGoal, mockOlderCycleGoal]))
     getPropertiesSpy = jasmine.createSpy('getProperties').and.returnValue(of(mockPropertiesResponse))
+    getPropertyViewIdsSpy = jasmine.createSpy('getPropertyViewIds').and.returnValue(of([201]))
     deleteCycleGoalSpy = jasmine.createSpy('deleteCycleGoal').and.returnValue(of({}))
     editGoalSpy = jasmine.createSpy('editGoal').and.returnValue(of({ ...mockGoal }))
     updateGoalNoteSpy = jasmine.createSpy('updateGoalNote').and.returnValue(of({}))
@@ -161,6 +173,7 @@ describe('PortfolioSummaryComponent', () => {
             getWeightedEUIs: getWeightedEUIsSpy,
             getCycleGoals: getCycleGoalsSpy,
             getProperties: getPropertiesSpy,
+            getPropertyViewIds: getPropertyViewIdsSpy,
             deleteCycleGoal: deleteCycleGoalSpy,
             editGoal: editGoalSpy,
             updateGoalNote: updateGoalNoteSpy,
@@ -335,6 +348,22 @@ describe('PortfolioSummaryComponent', () => {
     it('should fetch properties for the new cycle', () => {
       component.selectCycleGoal(mockCycleGoal)
       expect(getPropertiesSpy).toHaveBeenCalledWith(1, 10, 2, 1)
+    })
+
+    it('should show only labels associated with the selected goal', () => {
+      const labels: PropertyViewLabel[] = [
+        { id: 1, propertyview: 201, statuslabel: 10, goal: 1, name: 'Goal label', color: 'red', show_in_list: true },
+        { id: 2, propertyview: 201, statuslabel: 11, goal: 2, name: 'Other goal label', color: 'blue', show_in_list: true },
+        { id: 3, propertyview: 201, statuslabel: 12, goal: null, name: 'Unattached label', color: 'green', show_in_list: true },
+        { id: 4, propertyview: 202, statuslabel: 10, goal: 1, name: 'Goal label', color: 'red', show_in_list: true },
+        { id: 5, propertyview: 202, statuslabel: 12, goal: null, name: 'Unattached label', color: 'green', show_in_list: true },
+      ]
+      listByCycleGoalSpy.and.returnValue(of(labels))
+
+      component.selectCycleGoal(mockCycleGoal)
+
+      expect(component.baselineLabels.get(201)).toEqual([labels[0]])
+      expect(component.currentLabels.get(202)).toEqual([labels[3]])
     })
 
     it('should populate goalProperties from the API response', () => {
@@ -556,24 +585,25 @@ describe('PortfolioSummaryComponent', () => {
 
   describe('selectAllProperties / selectNoProperties', () => {
     const mockGridApi = {
-      selectAll: jasmine.createSpy('selectAll'),
       deselectAll: jasmine.createSpy('deselectAll'),
       getSelectedRows: jasmine.createSpy('getSelectedRows').and.returnValue([mockGoalProperty]),
+      forEachNode: jasmine.createSpy('forEachNode'),
     }
 
     beforeEach(() => {
       component.propertyGridApi = mockGridApi as unknown as GridApi
       component.goalProperties = [mockGoalProperty]
+      component.currentGoal = mockGoal
+      component.currentCycleGoal = mockCycleGoal
+      component.organization = mockOrganization
+      component.propertiesPagination = mockPagination
     })
 
-    it('selectAllProperties should call selectAll on the grid', () => {
+    it('selectAllProperties should load all goal properties, not only the current page', () => {
+      getPropertyViewIdsSpy.and.returnValue(of([201, 202]))
       component.selectAllProperties()
-      expect(mockGridApi.selectAll).toHaveBeenCalled()
-    })
-
-    it('selectAllProperties should populate selectedPropertyViewIds', () => {
-      component.selectAllProperties()
-      expect(component.selectedPropertyViewIds).toEqual([201])
+      expect(getPropertyViewIdsSpy).toHaveBeenCalledWith(mockGoal.id, mockCycleGoal.id, mockOrganization.id)
+      expect(component.selectedPropertyViewIds).toEqual([201, 202])
     })
 
     it('selectNoProperties should call deselectAll on the grid', () => {
@@ -585,6 +615,26 @@ describe('PortfolioSummaryComponent', () => {
       component.selectedPropertyViewIds = [201]
       component.selectNoProperties()
       expect(component.selectedPropertyViewIds).toEqual([])
+    })
+
+    it('preserves selections from other pages when a row changes on this page', () => {
+      component.selectedPropertyViewIds = [101]
+      component.goalProperties = [{ ...mockGoalProperty, baseline_view_id: 201 }]
+      mockGridApi.getSelectedRows.and.returnValue([{ ...mockGoalProperty, baseline_view_id: 201 }])
+
+      component.onPropertySelectionChanged({ source: 'checkboxSelected' } as SelectionChangedEvent)
+
+      expect(component.selectedPropertyViewIds).toEqual([101, 201])
+    })
+
+    it('treats the grid header select-all as a request to select across all pages', () => {
+      getPropertyViewIdsSpy.and.returnValue(of([201, 202]))
+      mockGridApi.getSelectedRows.and.returnValue([mockGoalProperty])
+
+      component.onPropertySelectionChanged({ source: 'uiSelectAll' } as SelectionChangedEvent)
+
+      expect(getPropertyViewIdsSpy).toHaveBeenCalledWith(mockGoal.id, mockCycleGoal.id, mockOrganization.id)
+      expect(component.selectedPropertyViewIds).toEqual([201, 202])
     })
   })
 

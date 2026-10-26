@@ -7,10 +7,10 @@ import type { MatSelectChange } from '@angular/material/select'
 import { Router, RouterLink } from '@angular/router'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, CellValueChangedEvent, ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, CellValueChangedEvent, ColDef, GridApi, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community'
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
-import { combineLatest, filter, map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
+import { combineLatest, filter, finalize, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type {
   Column,
   CycleGoal,
@@ -194,6 +194,8 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
     },
   ]
 
+  cycleGoalSummaryDefaultColDef: ColDef = { ...this.defaultColDef, floatingFilter: false }
+
   // Goal summary EUI table
   goalSummaryData: WeightedEUI[] = []
   goalSummaryColumnDefs: ColDef[] = [
@@ -215,7 +217,10 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   propertyPage = 1
   propertyGridApi: GridApi | null = null
   selectedPropertyViewIds: number[] = []
+  isSelectingAllProperties = false
   propertyColumnDefs: ColDef[] = []
+  private _selectionRequestId = 0
+  private _syncingPropertySelection = false
 
   // Label columns
   baselineLabels = new Map<number, PropertyViewLabel[]>()
@@ -377,6 +382,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   }
 
   selectCycleGoal(cycleGoal: CycleGoal): void {
+    this.selectNoProperties()
     this.currentCycleGoal = cycleGoal
     this.propertyPage = 1
 
@@ -398,6 +404,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   onPropertyGridReady(event: GridReadyEvent): void {
     this.propertyGridApi = event.api
     this.propertyGridApi.addEventListener('cellClicked', this.onPropertyCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    this._syncPropertyGridSelection()
   }
 
   onPropertyCellClicked(event: CellClickedEvent): void {
@@ -445,13 +452,37 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   }
 
   selectAllProperties(): void {
-    this.propertyGridApi?.selectAll()
-    this.selectedPropertyViewIds = this.goalProperties.map((p) => p.baseline_view_id).filter((id): id is number => id != null)
+    if (!this.currentGoal || !this.currentCycleGoal || !this.propertiesPagination?.total || this.isSelectingAllProperties) return
+
+    const requestId = ++this._selectionRequestId
+    this.isSelectingAllProperties = true
+    this._goalService
+      .getPropertyViewIds(this.currentGoal.id, this.currentCycleGoal.id, this.organization.id)
+      .pipe(
+        take(1),
+        takeUntil(this._unsubscribeAll$),
+        tap((propertyViewIds) => {
+          if (requestId !== this._selectionRequestId) return
+          this.selectedPropertyViewIds = propertyViewIds
+          this._syncPropertyGridSelection()
+        }),
+        finalize(() => {
+          if (requestId === this._selectionRequestId) this.isSelectingAllProperties = false
+        }),
+      )
+      .subscribe()
   }
 
   selectNoProperties(): void {
-    this.propertyGridApi?.deselectAll()
+    this._selectionRequestId += 1
+    this.isSelectingAllProperties = false
     this.selectedPropertyViewIds = []
+    this._syncingPropertySelection = true
+    try {
+      this.propertyGridApi?.deselectAll()
+    } finally {
+      this._syncingPropertySelection = false
+    }
   }
 
   openLabelsModal(): void {
@@ -498,12 +529,33 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       })
   }
 
-  onPropertySelectionChanged(): void {
-    if (!this.propertyGridApi) return
-    this.selectedPropertyViewIds = this.propertyGridApi
+  onPropertySelectionChanged(event: SelectionChangedEvent): void {
+    if (!this.propertyGridApi || this._syncingPropertySelection) return
+
+    if (event.source.startsWith('uiSelectAll')) {
+      if (this.propertyGridApi.getSelectedRows().length) {
+        this.selectAllProperties()
+      } else {
+        this.selectNoProperties()
+      }
+      return
+    }
+
+    const currentPageIds = new Set(
+      this.goalProperties.map((property) => this._propertyViewId(property)).filter((id): id is number => id !== null),
+    )
+    const selectedIds = new Set(this.selectedPropertyViewIds.filter((id) => !currentPageIds.has(id)))
+    for (const row of this.propertyGridApi
       .getSelectedRows()
-      .map((row: GoalProperty) => row.baseline_view_id)
-      .filter((id): id is number => id != null)
+      .map((selectedRow: GoalProperty) => this._propertyViewId(selectedRow))
+      .filter((id): id is number => id !== null)) {
+      selectedIds.add(row)
+    }
+    this.selectedPropertyViewIds = [...selectedIds]
+  }
+
+  onPropertyGridModelUpdated(): void {
+    this._syncPropertyGridSelection()
   }
 
   toggleAccessLevelInstances(): void {
@@ -676,6 +728,25 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       })
   }
 
+  private _propertyViewId(property: GoalProperty): number | null {
+    return property.baseline_view_id ?? property.current_view_id
+  }
+
+  private _syncPropertyGridSelection(): void {
+    if (!this.propertyGridApi) return
+    const selectedIds = new Set(this.selectedPropertyViewIds)
+    this._syncingPropertySelection = true
+    try {
+      this.propertyGridApi.forEachNode((node) => {
+        const row = node.data as GoalProperty
+        const viewId = this._propertyViewId(row)
+        node.setSelected(viewId !== null && selectedIds.has(viewId))
+      })
+    } finally {
+      this._syncingPropertySelection = false
+    }
+  }
+
   private _reloadPortfolioSummary(): void {
     if (!this.currentGoal || !this.currentCycleGoal) return
     this._goalService
@@ -700,7 +771,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe((labels) => {
           this.baselineLabels = new Map<number, PropertyViewLabel[]>()
-          for (const label of labels) {
+          for (const label of labels.filter((item) => item.goal === goalId)) {
             const arr = this.baselineLabels.get(label.propertyview) ?? []
             arr.push(label)
             this.baselineLabels.set(label.propertyview, arr)
@@ -714,7 +785,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((labels) => {
         this.currentLabels = new Map<number, PropertyViewLabel[]>()
-        for (const label of labels) {
+        for (const label of labels.filter((item) => item.goal === goalId)) {
           const arr = this.currentLabels.get(label.propertyview) ?? []
           arr.push(label)
           this.currentLabels.set(label.propertyview, arr)
@@ -724,6 +795,7 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   }
 
   private _applyGoalSelection(goalId: number): void {
+    this.selectNoProperties()
     this.currentGoal = this.goals.find((g) => g.id === goalId) ?? null
     if (!this.currentGoal) return
 

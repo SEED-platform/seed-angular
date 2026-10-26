@@ -1,6 +1,7 @@
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <div
-    class="bg-card flex flex-0 flex-col border-b p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8 dark:bg-transparent"
+    class="bg-card flex flex-0 flex-col border-b px-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 dark:bg-transparent"
+    [ngClass]="config.compactHeader ? 'py-3 sm:py-4' : 'py-6 sm:py-8'"
     [style.padding-bottom]="config.tabs ? '15px !important' : null"
   >
     <div class="min-w-0 flex-1">

@@ -195,6 +195,16 @@ export class GoalService {
     )
   }
 
+  getPropertyViewIds(goalId: number, cycleGoalId: number, orgId: number): Observable<number[]> {
+    const url = `/api/v4/goals/${goalId}/cycles/${cycleGoalId}/property_view_ids/?organization_id=${orgId}`
+    return this._httpClient.get<{ property_view_ids: number[] }>(url).pipe(
+      map(({ property_view_ids }) => property_view_ids),
+      catchError((error: HttpErrorResponse) => {
+        return this._errorService.handleError(error, 'Error fetching property view IDs')
+      }),
+    )
+  }
+
   updateHistoricalNote(propertyId: number, historicalNoteId: number, data: { text: string }): Observable<HistoricalNote> {
     const url = `/api/v3/properties/${propertyId}/historical_notes/${historicalNoteId}/?organization_id=${this.orgId}`
     const payload = { id: historicalNoteId, property: propertyId, text: data.text }

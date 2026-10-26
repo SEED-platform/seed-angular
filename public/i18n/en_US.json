@@ -1176,6 +1176,7 @@
   "OVERWRITE_COLUMN_DATA_QUESTION": "Overwrite data?",
   "Occupied Floor Area": "Occupied Floor Area",
   "Only Show Populated Columns": "Only Show Populated Columns",
+  "Only cross-cycle labels for the selected goal are shown here; other property labels are omitted.": "Only cross-cycle labels for the selected goal are shown here; other property labels are omitted.",
   "Only one terms of service is allowed to be active": "Only one terms of service is allowed to be active",
   "Only properties belonging to this Access Level Instance will be included.": "Only properties belonging to this Access Level Instance will be included.",
   "Open the public HTML feed in a new tab": "Open the public HTML feed in a new tab",

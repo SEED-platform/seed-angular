@@ -12,6 +12,26 @@
 
 }
 
+seed-page.portfolio-summary-compact-buttons {
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-outlined-button,
+  .mat-mdc-unelevated-button {
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    padding: 0 16px !important;
+    font-size: 0.8125rem !important;
+  }
+
+  .mat-mdc-icon-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+}
+
 .mat-mdc-snack-bar-container {
   &.success-snackbar {
     --mat-snack-bar-button-color: #fff;
