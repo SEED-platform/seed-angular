@@ -1,7 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
-import { switchMap, takeUntil, tap } from 'rxjs'
+import { switchMap, takeUntil } from 'rxjs'
 import { Subject } from 'rxjs/internal/Subject'
 import { DataQualityService } from '@seed/api'
 import { ProgressBarComponent } from '@seed/components'
@@ -23,32 +23,29 @@ export class DQCStartModalComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   progressBarObj = this._uploaderService.defaultProgressBarObj
-  uniqueId: number
 
   data = inject(MAT_DIALOG_DATA) as {
     orgId: number;
     type: InventoryType;
     viewIds: number[];
+    goalId?: number;
   }
 
   ngOnInit() {
     const [propertyViewIds, taxlotViewIds] = this.data.type === 'properties' ? [this.data.viewIds, []] : [[], this.data.viewIds]
     this._dataQualityService
-      .startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, null)
+      .startDataQualityCheckForOrg(this.data.orgId, propertyViewIds, taxlotViewIds, this.data.goalId ?? null)
       .pipe(
         switchMap(({ progress_key }) => {
           return this._uploaderService.checkProgressLoop({
             progressKey: progress_key,
-            successFn: () => {
-              this.openDataQualityResultsModal(this.uniqueId)
+            successFn: ({ unique_id }) => {
+              this.openDataQualityResultsModal(unique_id)
             },
             progressBarObj: this.progressBarObj,
           })
         }),
         takeUntil(this._unsubscribeAll$),
-        tap(({ unique_id }) => {
-          this.uniqueId = unique_id
-        }),
       )
       .subscribe()
   }

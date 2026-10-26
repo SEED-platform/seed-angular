@@ -517,16 +517,19 @@ export class PortfolioSummaryComponent implements OnInit, OnDestroy {
   // ─── Actions ───────────────────────────────────────────────────────
 
   runDataQualityChecks(): void {
-    if (!this.organization) return
+    if (!this.organization || !this.currentGoal) return
     const dialogRef = this._matDialog.open(DQCStartModalComponent, {
       width: '40rem',
-      data: { orgId: this.organization.id, type: 'properties', viewIds: [] },
+      data: { orgId: this.organization.id, type: 'properties', viewIds: [], goalId: this.currentGoal.id },
     })
     dialogRef
       .afterClosed()
       .pipe(take(1))
       .subscribe((ran) => {
-        if (ran && this.currentCycleGoal) this._loadProperties(this.propertyPage)
+        if (ran && this.currentCycleGoal) {
+          this._reloadPortfolioSummary()
+          this._loadProperties(this.propertyPage)
+        }
       })
   }
 

@@ -343,6 +343,25 @@ describe('PortfolioSummaryComponent', () => {
     })
   })
 
+  describe('runDataQualityChecks', () => {
+    beforeEach(() => {
+      orgSubject.next(mockOrganization)
+      goalsSubject.next([mockGoal])
+      dialogOpenSpy.and.returnValue({ afterClosed: () => of(true) })
+      getPortfolioSummarySpy.calls.reset()
+      getPropertiesSpy.calls.reset()
+    })
+
+    it('passes the selected goal and refreshes summary and properties after checks', () => {
+      component.runDataQualityChecks()
+
+      const dialogConfig = dialogOpenSpy.calls.mostRecent().args[1] as { data: { goalId: number } }
+      expect(dialogConfig.data.goalId).toBe(mockGoal.id)
+      expect(getPortfolioSummarySpy).toHaveBeenCalledWith(mockGoal.id, mockCycleGoal.id, mockOrganization.id)
+      expect(getPropertiesSpy).toHaveBeenCalledWith(mockGoal.id, mockCycleGoal.id, mockOrganization.id, 1)
+    })
+  })
+
   // ─── changePage ──────────────────────────────────────────────────────────────
 
   describe('changePage', () => {

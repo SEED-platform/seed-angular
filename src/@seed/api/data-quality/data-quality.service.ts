@@ -94,7 +94,7 @@ export class DataQualityService {
     orgId: number,
     property_view_ids: number[],
     taxlot_view_ids: number[],
-    goal_id: number,
+    goal_id: number | null,
   ): Observable<FullProgressResponse> {
     const url = `/api/v3/data_quality_checks/${orgId}/start/`
     const data = {
