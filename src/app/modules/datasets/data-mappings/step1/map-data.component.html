@@ -60,6 +60,10 @@
   <div *transloco="let t">
     <seed-alert class="mb-4" type="info" showIcon="false">{{ t('Loading data...') }}</seed-alert>
   </div>
+} @else if (!mappingSuggestionsReady) {
+  <div *transloco="let t">
+    <seed-alert class="mb-4" type="error">{{ t('There was an error loading the page') }}</seed-alert>
+  </div>
 }
 <div class="flex items-center justify-between">
   <div class="mx-3 my-2 flex gap-4">
