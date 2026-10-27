@@ -1,10 +1,13 @@
 <seed-inventory-grid-controls
   [currentUser]="currentUser"
   [gridApi]="gridApi"
+  [pageRowCount]="rowData?.length ?? 0"
   [pagination]="pagination"
   [selectedViewIds]="selectedViewIds"
   (pageChange)="onPageChange($event)"
+  (selectAllMatching)="selectAllMatching.emit()"
 >
+  <ng-content></ng-content>
 </seed-inventory-grid-controls>
 
 <ag-grid-angular

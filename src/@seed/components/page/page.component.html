@@ -5,7 +5,7 @@
     [style.padding-bottom]="tabsPaddingBottom"
   >
     <div class="min-w-0 flex-1">
-      <div class="flex" [class]="config.sideNavToggle ? '-ml-10 -mt-3' : ''">
+      <div class="flex" [class]="sideNavToggleClass">
         @if (config.sideNavToggle) {
           <button (click)="toggleDrawer()" mat-icon-button>
             <mat-icon>menu</mat-icon>
@@ -46,7 +46,7 @@
       </div>
     </div>
     <!-- Actions -->
-    <div class="flex justify-end">
+    <div class="flex justify-end" [ngClass]="actionsClass">
       @if (config.action2) {
         <div class="mt-6 flex shrink-0 items-center sm:ml-4 sm:mt-0">
           @if (config.action2Icon && !config.action2Text) {
@@ -90,7 +90,7 @@
       <div class="flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
         <!-- Tabs -->
         <seed-page-inventory-tab
-          [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this), dense: config.dense }"
+          [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this), dense: dense }"
         ></seed-page-inventory-tab>
       </div>
     </div>

@@ -2,6 +2,7 @@ import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
+import { TranslocoDirective } from '@jsverse/transloco'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, take, takeUntil, tap } from 'rxjs'
 import type { CurrentUser, FilterGroup, FilterGroupInventoryType, Label } from '@seed/api'
@@ -12,21 +13,7 @@ import { LABEL_COLOR_MAP } from '../grid.component'
 import type { FilterGroupModalData } from './filter-group-modal.component'
 import { FilterGroupModalComponent } from './filter-group-modal.component'
 
-type LabelOperator = 'and' | 'or' | 'exclude'
-
-type SelectedLabelChip = {
-  id: number;
-  name: string;
-  operator: LabelOperator;
-  prefix: string;
-  classes: string;
-}
-
-const CHIP_STYLES: Record<LabelOperator, { prefix: string; classes: string }> = {
-  and: { prefix: 'AND', classes: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' },
-  or: { prefix: 'OR', classes: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' },
-  exclude: { prefix: 'Exclude', classes: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' },
-}
+export type LabelOperator = 'and' | 'or' | 'exclude'
 
 export type LabelSelections = {
   andLabels: number[];
@@ -38,7 +25,7 @@ export type LabelSelections = {
   selector: 'seed-filter-group-selector',
   templateUrl: './filter-group-selector.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [FormsModule, MaterialImports],
+  imports: [FormsModule, MaterialImports, TranslocoDirective],
 })
 export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -266,23 +253,6 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
 
   getLabelDotColor(color: string): string {
     return LABEL_COLOR_MAP[color] ?? LABEL_COLOR_MAP.gray
-  }
-
-  get selectedLabelChips(): SelectedLabelChip[] {
-    const operators: LabelOperator[] = ['and', 'or', 'exclude']
-    return operators.flatMap((operator) =>
-      this._getLabelList(operator).map((id) => ({
-        id,
-        operator,
-        name: this.labels.find((label) => label.id === id)?.name ?? `${id}`,
-        ...CHIP_STYLES[operator],
-      })),
-    )
-  }
-
-  get filterCount(): number {
-    const model = this.selectedFilterGroup?.query_dict
-    return model ? Object.keys(model).length : 0
   }
 
   // --- Private ---

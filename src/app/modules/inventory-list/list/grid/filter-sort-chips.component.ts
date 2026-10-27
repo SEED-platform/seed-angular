@@ -1,16 +1,27 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { TranslocoDirective } from '@jsverse/transloco'
 import type { ColDef, GridApi } from 'ag-grid-community'
-import type { Column, OrganizationUserSettings } from '@seed/api'
+import type { Column, Label, OrganizationUserSettings } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
+import type { LabelOperator, LabelSelections } from './filter-group/filter-group-selector.component'
+
+export type LabelChip = {
+  id: number;
+  name: string;
+  operator: LabelOperator;
+  prefix: string;
+}
+
+const LABEL_PREFIXES: Record<LabelOperator, string> = { and: 'AND', or: 'OR', exclude: 'Exclude' }
 
 @Component({
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [CommonModule, MaterialImports],
+  imports: [CommonModule, MaterialImports, TranslocoDirective],
 })
 export class FilterSortChipsComponent implements OnChanges {
   @Input() columns: Column[]
@@ -18,14 +29,21 @@ export class FilterSortChipsComponent implements OnChanges {
   @Input() gridApi: GridApi
   @Input() userSettings: OrganizationUserSettings
   @Input() type: InventoryType
+  @Input() labels: Label[] = []
+  @Input() labelSelections: LabelSelections
+  @Output() labelRemoved = new EventEmitter<LabelChip>()
   filterChips: FilterSortChip[] = []
+  labelChips: LabelChip[] = []
   sortChips: FilterSortChip[] = []
 
   ngOnChanges(changes: SimpleChanges) {
-    const { userSettings, columnDefs } = changes
+    const { userSettings, columnDefs, labels, labelSelections } = changes
     if (userSettings?.currentValue || columnDefs?.currentValue) {
       this.getFilterChips()
       this.getSortChips()
+    }
+    if (labels || labelSelections) {
+      this.getLabelChips()
     }
   }
 
@@ -56,6 +74,23 @@ export class FilterSortChipsComponent implements OnChanges {
         })
       }
     }
+  }
+
+  getLabelChips() {
+    const { andLabels = [], orLabels = [], excludeLabels = [] } = this.labelSelections ?? {}
+    const idsByOperator: [LabelOperator, number[]][] = [
+      ['and', andLabels],
+      ['or', orLabels],
+      ['exclude', excludeLabels],
+    ]
+    this.labelChips = idsByOperator.flatMap(([operator, ids]) =>
+      ids.map((id) => ({
+        id,
+        operator,
+        name: this.labels?.find((label) => label.id === id)?.name ?? `${id}`,
+        prefix: LABEL_PREFIXES[operator],
+      })),
+    )
   }
 
   getSortChips() {
@@ -118,6 +153,10 @@ export class FilterSortChipsComponent implements OnChanges {
     const currentFilters = this.gridApi.getFilterModel()
     Reflect.deleteProperty(currentFilters, columnName)
     this.gridApi.setFilterModel(currentFilters)
+  }
+
+  removeLabel(chip: LabelChip): void {
+    this.labelRemoved.emit(chip)
   }
 
   removeSort(sortToRemove: string): void {

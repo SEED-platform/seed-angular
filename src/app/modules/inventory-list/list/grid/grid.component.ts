@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, CellKeyDownEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { map } from 'rxjs'
 import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
@@ -15,8 +16,17 @@ import { IconHeaderComponent } from './icon-header.component'
 import { InventoryLabelHeaderComponent } from './label-header.component'
 
 const SHORTCUT_COLUMN_WIDTH = 34
-const SHORTCUT_ICON_SIZE_PX = 18
 const SHORTCUT_COLUMN_PADDING = { paddingLeft: '0', paddingRight: '0' }
+
+type ShortcutAction = 'detail' | 'notes' | 'meters'
+
+// Shortcut columns whose icon navigates somewhere (by click, or Enter/Space when the cell has keyboard focus)
+const SHORTCUT_ACTIONS: Record<string, ShortcutAction> = {
+  property_view_id: 'detail',
+  taxlot_view_id: 'detail',
+  notes_count: 'notes',
+  meters_exist_indicator: 'meters',
+}
 
 export const LABEL_COLOR_MAP: Record<string, string> = {
   red: '#b91c1c',
@@ -52,15 +62,18 @@ export class InventoryGridComponent implements OnChanges {
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
+  @Output() selectAllMatching = new EventEmitter<void>()
   @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
   private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
+  private _transloco = inject(TranslocoService)
 
   agPageSize = 100
   gridApi!: GridApi
   darkMode: boolean
-  gridTheme$ = this._configService.gridTheme$.pipe(map((theme) => theme.withParams({ cellHorizontalPadding: 8 })))
+  // rowHeight trims ~3px off the top and bottom of the default 42px row so more records fit on screen
+  gridTheme$ = this._configService.gridTheme$.pipe(map((theme) => theme.withParams({ cellHorizontalPadding: 8, rowHeight: 36 })))
   showAccessLevelInstances = true
   labelsExpanded = false
 
@@ -114,25 +127,38 @@ export class InventoryGridComponent implements OnChanges {
     this.gridReady.emit(this.gridApi)
     this.gridApi.autoSizeAllColumns()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    this.gridApi.addEventListener('cellKeyDown', this.onCellKeyDown.bind(this) as (event: CellKeyDownEvent) => void)
   }
 
   onCellClicked(event: CellClickedEvent) {
-    const clickableField = new Set(['property_view_id', 'taxlot_view_id', 'notes_count', 'meters_exist_indicator'])
-    if (!clickableField.has(event.colDef.field)) return
+    if (!SHORTCUT_ACTIONS[event.colDef.field]) return
 
     const target = event.event.target as HTMLElement
-    const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
+    const action = target.getAttribute('data-action') as ShortcutAction | null
     if (!action) return
-    const { property_view_id, taxlot_view_id } = event.data as { property_view_id: string; taxlot_view_id: string }
-    const viewId = property_view_id || taxlot_view_id
+    this.navigateToShortcut(action, event.data as Record<string, unknown>)
+  }
 
-    const urlMap = {
+  // Keyboard equivalent of clicking a shortcut icon
+  onCellKeyDown(event: CellKeyDownEvent) {
+    const { key } = event.event as KeyboardEvent
+    if (key !== 'Enter' && key !== ' ') return
+
+    const action = SHORTCUT_ACTIONS[event.colDef.field]
+    if (!action || !event.value) return
+    event.event.preventDefault()
+    this.navigateToShortcut(action, event.data as Record<string, unknown>)
+  }
+
+  navigateToShortcut(action: ShortcutAction, data: Record<string, unknown>) {
+    const viewId = data.property_view_id || data.taxlot_view_id
+    const urlMap: Record<ShortcutAction, unknown[]> = {
       detail: [`/${this.inventoryType}`, viewId],
       notes: [`/${this.inventoryType}`, viewId, 'notes'],
       meters: [`/${this.inventoryType}`, viewId, 'meters'],
     }
 
-    return void this._router.navigate(urlMap[action])
+    void this._router.navigate(urlMap[action])
   }
 
   onSelectionChanged() {
@@ -219,7 +245,7 @@ export class InventoryGridComponent implements OnChanges {
       sortable: false,
       suppressMovable: true,
       cellClass: 'overflow-hidden',
-      cellRenderer: ({ value }) => this.actionRenderer(value, icon, action),
+      cellRenderer: ({ value }) => this.actionRenderer({ value, icon, action, label: headerName }),
     }
   }
 
@@ -238,17 +264,21 @@ export class InventoryGridComponent implements OnChanges {
       maxWidth: SHORTCUT_COLUMN_WIDTH,
       cellStyle: SHORTCUT_COLUMN_PADDING,
       headerStyle: SHORTCUT_COLUMN_PADDING,
-      cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
+      cellRenderer: ({ value }) => this.actionRenderer({ value, icon: 'info', action: 'detail', label: 'Info' }),
     }
   }
 
-  actionRenderer = (value, icon: string, action: string) => {
+  actionRenderer = ({ value, icon, action, label }: { value: unknown; icon: string; action: string | null; label: string }) => {
     if (!value) return ''
 
+    // Clickable icons are announced as buttons; indicator-only icons as images. Both carry a text alternative.
     const cursorClass = action ? 'cursor-pointer' : ''
+    const role = action ? 'button' : 'img'
+    const ariaLabel = this._transloco.translate(label)
+    // Same size and centering as IconHeaderComponent so row icons line up with their headers
     return `
-      <div class="flex gap-2 mt-2 align-center">
-        <span class="material-icons-outlined ${cursorClass}" style="font-size:${SHORTCUT_ICON_SIZE_PX}px" data-action="${action}">${icon}</span>
+      <div class="flex h-full items-center justify-center">
+        <span class="material-icons-outlined text-base ${cursorClass}" role="${role}" aria-label="${ariaLabel}" data-action="${action}">${icon}</span>
       </div>
     `
   }

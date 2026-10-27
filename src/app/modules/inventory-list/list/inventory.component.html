@@ -30,7 +30,7 @@
         [selectedViewIds]="selectedViewIds"
         [type]="type"
         (refreshInventory)="onRefreshInventory($event)"
-        (selectedAll)="onSelectAll($event)"
+        (selectedAll)="selectAllMatching()"
         (toggleAccessLevels)="onToggleAccessLevelInstances()"
       ></seed-inventory-grid-actions>
 
@@ -61,17 +61,6 @@
       }
     </div>
 
-    <!-- Filter and Sort chips -->
-    @if (gridApi && columnDefs) {
-      <seed-inventory-filter-sort-chips
-        [columns]="columns"
-        [columnDefs]="columnDefs"
-        [gridApi]="gridApi"
-        [type]="type"
-        [userSettings]="userSettings"
-      ></seed-inventory-filter-sort-chips>
-    }
-
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid
@@ -91,6 +80,21 @@
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"
       (selectionChanged)="onSelectionChanged()"
-    ></seed-inventory-grid>
+      (selectAllMatching)="selectAllMatching()"
+    >
+      <!-- Filter, label, and sort badges (rendered next to the reset grid icon) -->
+      @if (gridApi && columnDefs) {
+        <seed-inventory-filter-sort-chips
+          [columns]="columns"
+          [columnDefs]="columnDefs"
+          [gridApi]="gridApi"
+          [labels]="labels"
+          [labelSelections]="labelSelections"
+          [type]="type"
+          [userSettings]="userSettings"
+          (labelRemoved)="onLabelChipRemoved($event)"
+        ></seed-inventory-filter-sort-chips>
+      }
+    </seed-inventory-grid>
   </div>
 </div>

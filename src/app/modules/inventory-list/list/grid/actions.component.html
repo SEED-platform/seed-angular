@@ -1,18 +1,30 @@
-<div class="text-secondary text-sm">
-  Actions
-  <div
-    class="mr-1 flex w-50 cursor-pointer items-center justify-between rounded border border-gray-500 px-2"
+<div class="text-secondary text-sm" *transloco="let t">
+  <span id="inventory-actions-label">{{ t('Actions') }}</span>
+  <button
+    class="bg-card mr-1 flex w-50 cursor-pointer items-center justify-between rounded border border-gray-500 px-2"
     [matMenuTriggerFor]="menu"
-    mat-button
+    aria-labelledby="inventory-actions-label"
+    type="button"
   >
-    <div class="text-secondary text-sm">Select Action</div>
+    <span class="text-secondary text-sm">{{ t('Select Action') }}</span>
     <mat-icon class="scale-50" svgIcon="fa-solid:chevron-down"></mat-icon>
-  </div>
+  </button>
 </div>
 
 <mat-menu class="menu-compact w-80 rounded border text-sm" #menu="matMenu">
   <seed-menu-item (action)="selectAll()" label="Select All"></seed-menu-item>
   <seed-menu-item (action)="deselectAll()" label="Select None"></seed-menu-item>
+  <!-- Labels (kept near the top since it's one of the most-used actions) -->
+  <mat-divider class="my-0"></mat-divider>
+  <span class="text-secondary text-sm">Labels</span>
+  <div>
+    <seed-menu-item
+      [disabled]="!hasSelection"
+      [label]="groupMode ? 'Add / Remove (applies to inventory, not group)' : 'Add / Remove'"
+      (action)="openLabelsModal()"
+    >
+    </seed-menu-item>
+  </div>
   <mat-divider></mat-divider>
   @if (!groupMode) {
     <seed-menu-item [disabled]="!hasSelection" (action)="deleteStates()" label="Delete" icon="fa-solid:trash-can"></seed-menu-item>
@@ -91,17 +103,6 @@
       <seed-menu-item [disabled]="!hasSelection" (action)="openGroupsModal()" label="Add / Remove"> </seed-menu-item>
     </div>
   }
-  <!-- Labels -->
-  <mat-divider class="my-0"></mat-divider>
-  <span class="text-secondary text-sm">Labels</span>
-  <div>
-    <seed-menu-item
-      [disabled]="!hasSelection"
-      [label]="groupMode ? 'Add / Remove (applies to inventory, not group)' : 'Add / Remove'"
-      (action)="openLabelsModal()"
-    >
-    </seed-menu-item>
-  </div>
   <mat-divider class="my-0"></mat-divider>
   <!-- MISC / OTHER -->
   <mat-divider class="my-0"></mat-divider>
