@@ -34,7 +34,7 @@ export function applyColumnProfile(profile: Profile, columnDefs: ColDef[]): ColD
   return columnDefs
     .map((column) => {
       const profileColumn = profileColumns.get(column.field)
-      return profileColumn ? { ...column, pinned: profileColumn.pinned ? 'left' as const : null } : column
+      return profileColumn ? { ...column, pinned: profileColumn.pinned ? ('left' as const) : null } : column
     })
     .sort((first, second) => {
       const firstOrder = profileColumns.get(first.field)?.order ?? Number.MAX_SAFE_INTEGER

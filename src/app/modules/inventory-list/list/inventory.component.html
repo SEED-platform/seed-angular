@@ -4,6 +4,8 @@
       title: pageTitle,
       titleIcon: 'fa-solid:building',
       tabs: ['properties', 'taxlots'],
+      dense: true,
+      switchLink: true,
     }"
   >
   </seed-page>
@@ -11,9 +13,9 @@
 
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <!-- Main -->
-  <div class="z-1 -mt-px flex-auto border-t pt-2">
+  <div class="z-1 -mt-px flex min-h-0 flex-auto flex-col border-t">
     <!-- GRID CONFIG -->
-    <div class="relative m-2 flex items-start">
+    <div class="relative mx-2 mb-1 mt-1 flex items-start">
       <!-- Actions -->
       <seed-inventory-grid-actions
         [cycleId]="cycleId"

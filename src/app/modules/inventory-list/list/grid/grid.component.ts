@@ -3,7 +3,8 @@ import type { OnChanges, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { map } from 'rxjs'
 import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
@@ -13,7 +14,11 @@ import { InventoryGridControlsComponent } from './grid-controls.component'
 import { IconHeaderComponent } from './icon-header.component'
 import { InventoryLabelHeaderComponent } from './label-header.component'
 
-const LABEL_COLOR_MAP: Record<string, string> = {
+const SHORTCUT_COLUMN_WIDTH = 34
+const SHORTCUT_ICON_SIZE_PX = 18
+const SHORTCUT_COLUMN_PADDING = { paddingLeft: '0', paddingRight: '0' }
+
+export const LABEL_COLOR_MAP: Record<string, string> = {
   red: '#b91c1c',
   orange: '#fb923c',
   gray: '#57534e',
@@ -28,6 +33,7 @@ const LABEL_COLOR_MAP: Record<string, string> = {
   templateUrl: './grid.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, InventoryGridControlsComponent],
+  host: { class: 'flex flex-col flex-auto min-h-0' },
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() accessLevelNames: string[] = []
@@ -54,7 +60,7 @@ export class InventoryGridComponent implements OnChanges {
   agPageSize = 100
   gridApi!: GridApi
   darkMode: boolean
-  gridTheme$ = this._configService.gridTheme$
+  gridTheme$ = this._configService.gridTheme$.pipe(map((theme) => theme.withParams({ cellHorizontalPadding: 8 })))
   showAccessLevelInstances = true
   labelsExpanded = false
 
@@ -135,15 +141,7 @@ export class InventoryGridComponent implements OnChanges {
 
   getColumnDefs() {
     const stateColumns = this.addHeaderMenu()
-    const groups: ColGroupDef[] = [{ headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef]
-
-    const accessLevelCols = this.getAccessLevelColumns()
-    if (accessLevelCols.length) {
-      groups.push({ headerName: 'Access Level', children: accessLevelCols } as ColGroupDef)
-    }
-
-    groups.push({ headerName: 'Details', children: stateColumns } as ColGroupDef)
-    this.columnDefs = groups
+    this.columnDefs = [...this.getShortcutColumns(), ...this.getAccessLevelColumns(), ...stateColumns]
   }
 
   getAccessLevelColumns(): ColDef[] {
@@ -176,7 +174,7 @@ export class InventoryGridComponent implements OnChanges {
   toggleLabels(): void {
     this.labelsExpanded = !this.labelsExpanded
     this.gridContext.labelsExpanded = this.labelsExpanded
-    this.gridApi?.setColumnWidths([{ key: 'labels', newWidth: this.labelsExpanded ? 320 : 44 }])
+    this.gridApi?.setColumnWidths([{ key: 'labels', newWidth: this.labelsExpanded ? 320 : SHORTCUT_COLUMN_WIDTH }])
     this.gridApi?.refreshHeader()
     this.gridApi?.refreshCells({ force: true, columns: ['labels'] })
   }
@@ -184,10 +182,10 @@ export class InventoryGridComponent implements OnChanges {
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 44, 'merge'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 44, 'bolt', 'meters'),
-      this.buildShortcutColumn('notes_count', 'Notes', 44, 'mode_comment', 'notes'),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 44, 'workspaces'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', SHORTCUT_COLUMN_WIDTH, 'merge'),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', SHORTCUT_COLUMN_WIDTH, 'bolt', 'meters'),
+      this.buildShortcutColumn('notes_count', 'Notes', SHORTCUT_COLUMN_WIDTH, 'mode_comment', 'notes'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', SHORTCUT_COLUMN_WIDTH, 'workspaces'),
       this.buildLabelsCell(),
     ]
     // Pin shortcuts so user-pinned columns land after them in the pinned area
@@ -215,6 +213,8 @@ export class InventoryGridComponent implements OnChanges {
       headerComponentParams: { icon, tooltip: headerName },
       width: maxWidth,
       maxWidth,
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
       filter: false,
       sortable: false,
       suppressMovable: true,
@@ -234,8 +234,10 @@ export class InventoryGridComponent implements OnChanges {
       filter: false,
       sortable: false,
       suppressMovable: true,
-      width: 44,
-      maxWidth: 44,
+      width: SHORTCUT_COLUMN_WIDTH,
+      maxWidth: SHORTCUT_COLUMN_WIDTH,
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
       cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
     }
   }
@@ -246,7 +248,7 @@ export class InventoryGridComponent implements OnChanges {
     const cursorClass = action ? 'cursor-pointer' : ''
     return `
       <div class="flex gap-2 mt-2 align-center">
-        <span class="material-icons-outlined ${cursorClass}" data-action="${action}">${icon}</span>
+        <span class="material-icons-outlined ${cursorClass}" style="font-size:${SHORTCUT_ICON_SIZE_PX}px" data-action="${action}">${icon}</span>
       </div>
     `
   }
@@ -256,11 +258,12 @@ export class InventoryGridComponent implements OnChanges {
       colId: 'labels',
       field: 'labels',
       headerName: 'Labels',
-      width: 44,
+      width: SHORTCUT_COLUMN_WIDTH,
       filter: false,
       sortable: false,
       suppressMovable: true,
-      cellStyle: { paddingLeft: '0', paddingRight: '0' },
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
       headerComponent: InventoryLabelHeaderComponent,
       valueFormatter: ({ value }: { value: number[] }) => {
         return this.getShownLabels(value)
@@ -272,11 +275,13 @@ export class InventoryGridComponent implements OnChanges {
         if (!labels.length) return ''
         if (this.labelsExpanded) {
           const container = document.createElement('div')
-          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;'
+          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;align-content:center;height:100%;'
           for (const label of labels) {
             const colorClass = label.color === 'light blue' ? 'blue light' : label.color
             const span = document.createElement('span')
-            span.className = `label ${colorClass} whitespace-nowrap px-2`
+            span.className = `label ${colorClass} whitespace-nowrap`
+            // Override the global .label padding/margin and the cell's tall line-height
+            span.style.cssText = 'display:inline-flex;align-items:center;height:20px;padding:0 8px;margin:0;line-height:1;'
             span.textContent = label.name
             container.appendChild(span)
           }
@@ -285,7 +290,7 @@ export class InventoryGridComponent implements OnChanges {
         const outer = document.createElement('div')
         outer.style.cssText = 'height:100%;display:flex;align-items:center;'
         const inner = document.createElement('div')
-        inner.style.cssText = 'display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;'
+        inner.style.cssText = 'display:flex;width:26px;height:14px;border-radius:3px;overflow:hidden;'
         for (const label of labels.slice(0, 4)) {
           const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
           const span = document.createElement('span')

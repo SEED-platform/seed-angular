@@ -42,6 +42,24 @@ export class PageComponent implements OnDestroy {
     })
   }
 
+  get headerPaddingClass(): string {
+    if (this.config.dense) return 'pt-2'
+    return this.config.compactHeader ? 'py-3 sm:py-4' : 'py-6 sm:py-8'
+  }
+
+  get tabsPaddingBottom(): string | null {
+    if (this.config.dense) return '0 !important'
+    return this.config.tabs ? '15px !important' : null
+  }
+
+  get otherInventoryType(): InventoryType | undefined {
+    return this.config.tabs?.find((tab) => tab !== this.type)
+  }
+
+  get titleClass(): string {
+    return this.config.dense ? 'text-3xl leading-8' : 'text-3xl leading-7 sm:leading-10 md:text-4xl'
+  }
+
   toggleDrawer() {
     this._drawerService.toggle()
   }

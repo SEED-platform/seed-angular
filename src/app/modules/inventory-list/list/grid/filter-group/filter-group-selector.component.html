@@ -2,7 +2,7 @@
   <mat-label class="text-secondary text-sm">Filter Group</mat-label>
   <div class="flex h-8 items-center gap-1">
     <mat-select
-      class="h-6 w-50 rounded border border-gray-500 p-3 text-sm"
+      class="h-6 w-50 self-start rounded border border-gray-500 p-3 text-sm"
       [(value)]="selectedFilterGroupId"
       (selectionChange)="onFilterGroupChange($event.value)"
       placeholder="None"
@@ -18,56 +18,69 @@
     }
 
     @if (isAliRoot) {
-      <button
-        class="!size-8 !min-w-0"
-        [disabled]="!selectedFilterGroup || !modified"
-        (click)="saveFilterGroup()"
-        mat-icon-button
-        matTooltip="Save"
-      >
-        <mat-icon class="scale-75 text-green-600" svgIcon="fa-solid:floppy-disk" />
-      </button>
-      <button class="!size-8 !min-w-0" [disabled]="!selectedFilterGroup" (click)="renameFilterGroup()" mat-icon-button matTooltip="Rename">
-        <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil" />
-      </button>
-      <button class="!size-8 !min-w-0" [disabled]="!selectedFilterGroup" (click)="deleteFilterGroup()" mat-icon-button matTooltip="Delete">
-        <mat-icon class="scale-75 text-red-500" svgIcon="fa-solid:trash" />
-      </button>
-      <button class="!size-8 !min-w-0" (click)="newFilterGroup()" mat-icon-button matTooltip="New Filter Group">
-        <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus" />
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          class="!size-8 !min-w-0"
+          [disabled]="!selectedFilterGroup || !modified"
+          (click)="saveFilterGroup()"
+          mat-icon-button
+          matTooltip="Save"
+        >
+          <mat-icon class="scale-75 text-green-600" svgIcon="fa-solid:floppy-disk" />
+        </button>
+        <button
+          class="!size-8 !min-w-0"
+          [disabled]="!selectedFilterGroup"
+          (click)="renameFilterGroup()"
+          mat-icon-button
+          matTooltip="Rename"
+        >
+          <mat-icon class="scale-75 fill-cyan-600" svgIcon="fa-solid:pencil" />
+        </button>
+        <button
+          class="!size-8 !min-w-0"
+          [disabled]="!selectedFilterGroup"
+          (click)="deleteFilterGroup()"
+          mat-icon-button
+          matTooltip="Delete"
+        >
+          <mat-icon class="scale-75 text-red-500" svgIcon="fa-solid:trash" />
+        </button>
+        <button class="!size-8 !min-w-0" (click)="newFilterGroup()" mat-icon-button matTooltip="New Filter Group">
+          <mat-icon class="scale-75 fill-primary-700" svgIcon="fa-solid:plus" />
+        </button>
+      </div>
     }
 
     <!-- Label toggle -->
-    <button class="!size-8 !min-w-0" (click)="showLabelPanel = !showLabelPanel" mat-icon-button matTooltip="Labels">
-      <mat-icon class="!text-blue-600" [class.!text-blue-800]="hasLabelSelections" fontIcon="label" />
+    <button
+      class="ml-1 flex h-8 items-center gap-1 rounded px-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+      [attr.aria-expanded]="showLabelPanel"
+      (click)="showLabelPanel = !showLabelPanel"
+      type="button"
+    >
+      <mat-icon class="!text-blue-600 icon-size-5" [class.!text-blue-800]="hasLabelSelections" fontIcon="label" />
+      <span>Filter by labels</span>
     </button>
   </div>
 
-  <!-- Filter group summary chips -->
-  @if (selectedFilterGroup) {
+  <!-- Filter group and label summary chips -->
+  @if (selectedFilterGroup || hasLabelSelections) {
     <div class="mt-1 flex flex-wrap items-center gap-1 text-xs">
       @if (filterCount > 0) {
         <span class="rounded bg-blue-100 px-1.5 py-0.5 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
           {{ filterCount }} filter{{ filterCount > 1 ? 's' : '' }}
         </span>
       }
-      @if (andLabels.length > 0) {
-        <span class="rounded bg-green-100 px-1.5 py-0.5 text-green-800 dark:bg-green-900 dark:text-green-200">
-          AND: {{ andLabels.length }} label{{ andLabels.length > 1 ? 's' : '' }}
+      @for (chip of selectedLabelChips; track chip.id + chip.operator) {
+        <span class="flex items-center gap-0.5 rounded px-1.5 py-0.5" [class]="chip.classes">
+          {{ chip.prefix }}: {{ chip.name }}
+          <button class="flex" [attr.aria-label]="'Remove label ' + chip.name" (click)="toggleLabel(chip.id, chip.operator)" type="button">
+            <mat-icon class="icon-size-3" fontIcon="close" />
+          </button>
         </span>
       }
-      @if (orLabels.length > 0) {
-        <span class="rounded bg-amber-100 px-1.5 py-0.5 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-          OR: {{ orLabels.length }} label{{ orLabels.length > 1 ? 's' : '' }}
-        </span>
-      }
-      @if (excludeLabels.length > 0) {
-        <span class="rounded bg-red-100 px-1.5 py-0.5 text-red-800 dark:bg-red-900 dark:text-red-200">
-          Exclude: {{ excludeLabels.length }} label{{ excludeLabels.length > 1 ? 's' : '' }}
-        </span>
-      }
-      @if (filterCount === 0 && !hasLabelSelections) {
+      @if (selectedFilterGroup && filterCount === 0 && !hasLabelSelections) {
         <span class="text-secondary italic">No filters or labels</span>
       }
     </div>
@@ -92,10 +105,7 @@
         @for (label of labels; track label.id) {
           <div class="grid grid-cols-[minmax(0,1fr)_5rem_5rem_5rem] items-center gap-2 border-t py-1">
             <div class="flex items-center gap-1 text-xs">
-              <span
-                class="inline-block size-2.5 shrink-0 rounded-full"
-                [style.background-color]="label.color === 'white' ? '#e5e7eb' : label.color"
-              ></span>
+              <span class="inline-block size-2.5 shrink-0 rounded-full" [style.background-color]="getLabelDotColor(label.color)"></span>
               <span class="truncate">{{ label.name }}</span>
             </div>
             <label class="flex cursor-pointer items-center justify-center text-xs">

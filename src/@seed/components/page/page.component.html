@@ -1,8 +1,8 @@
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <div
     class="bg-card flex flex-0 flex-col border-b px-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 dark:bg-transparent"
-    [ngClass]="config.compactHeader ? 'py-3 sm:py-4' : 'py-6 sm:py-8'"
-    [style.padding-bottom]="config.tabs ? '15px !important' : null"
+    [ngClass]="headerPaddingClass"
+    [style.padding-bottom]="tabsPaddingBottom"
   >
     <div class="min-w-0 flex-1">
       <div class="flex" [class]="config.sideNavToggle ? '-ml-10 -mt-3' : ''">
@@ -27,7 +27,7 @@
 
       <div [ngClass]="{ 'mt-2': config.breadcrumbs?.length > 0 }">
         <div class="flex">
-          <h2 class="truncate text-3xl font-bold capitalize leading-7 tracking-tight sm:leading-10 md:text-4xl">
+          <h2 class="truncate font-bold capitalize tracking-tight" [ngClass]="titleClass">
             @if (config.titleIcon) {
               <mat-icon class="text-primary-900 icon-size-6 dark:text-primary-300" [svgIcon]="config.titleIcon"></mat-icon>
             }
@@ -36,6 +36,12 @@
               <span class="text-secondary ml-2 text-2xl font-normal">({{ config.subTitle }})</span>
             }
           </h2>
+          @if (config.switchLink && otherInventoryType) {
+            <button class="ml-4 self-center capitalize" (click)="toggleInventoryType(otherInventoryType)" mat-button>
+              <mat-icon class="mr-0.5 icon-size-4" svgIcon="heroicons-outline:arrows-right-left"></mat-icon>
+              {{ t('Switch to') }} {{ t(otherInventoryType) }}
+            </button>
+          }
         </div>
       </div>
     </div>
@@ -79,11 +85,13 @@
       }
     </div>
   </div>
-  @if (config.tabs) {
+  @if (config.tabs && !config.switchLink) {
     <div class="bg-card">
       <div class="flex w-full max-w-screen-xl flex-col px-6 sm:px-8">
         <!-- Tabs -->
-        <seed-page-inventory-tab [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this) }"></seed-page-inventory-tab>
+        <seed-page-inventory-tab
+          [config]="{ tabs: config.tabs, action: toggleInventoryType.bind(this), dense: config.dense }"
+        ></seed-page-inventory-tab>
       </div>
     </div>
   }

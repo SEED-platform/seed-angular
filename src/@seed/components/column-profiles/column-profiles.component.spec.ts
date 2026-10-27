@@ -79,7 +79,11 @@ describe('ColumnProfilesComponent profile settings', () => {
 
     component.onRowDragEnd()
 
-    expect(component.getSelectedProfileColumns().map((row) => [row.id, row.order])).toEqual([[3, 1], [1, 2], [2, 3]])
+    expect(component.getSelectedProfileColumns().map((row) => [row.id, row.order])).toEqual([
+      [3, 1],
+      [1, 2],
+      [2, 3],
+    ])
   })
 
   it('supports numeric keyboard ordering within the selected columns', () => {
@@ -156,6 +160,9 @@ describe('ColumnProfilesComponent profile settings', () => {
       { id: 2, order: 1, pinned: true },
       { id: 1, order: 2, pinned: false },
     ])
-    expect(component.getSelectedProfileColumns().map((row) => [row.id, row.pinned])).toEqual([[2, false], [1, false]])
+    expect(component.getSelectedProfileColumns().map((row) => [row.id, row.pinned])).toEqual([
+      [2, false],
+      [1, false],
+    ])
   })
 })

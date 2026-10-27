@@ -8,8 +8,25 @@ import type { CurrentUser, FilterGroup, FilterGroupInventoryType, Label } from '
 import { FilterGroupService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { LABEL_COLOR_MAP } from '../grid.component'
 import type { FilterGroupModalData } from './filter-group-modal.component'
 import { FilterGroupModalComponent } from './filter-group-modal.component'
+
+type LabelOperator = 'and' | 'or' | 'exclude'
+
+type SelectedLabelChip = {
+  id: number;
+  name: string;
+  operator: LabelOperator;
+  prefix: string;
+  classes: string;
+}
+
+const CHIP_STYLES: Record<LabelOperator, { prefix: string; classes: string }> = {
+  and: { prefix: 'AND', classes: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' },
+  or: { prefix: 'OR', classes: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' },
+  exclude: { prefix: 'Exclude', classes: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' },
+}
 
 export type LabelSelections = {
   andLabels: number[];
@@ -225,7 +242,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
 
   // --- Label management ---
 
-  toggleLabel(labelId: number, operator: 'and' | 'or' | 'exclude'): void {
+  toggleLabel(labelId: number, operator: LabelOperator): void {
     const wasSelected = this.isLabelSelected(labelId, operator)
 
     // Remove from all lists first
@@ -239,12 +256,28 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     this._emitLabelSelections()
   }
 
-  isLabelSelected(labelId: number, operator: 'and' | 'or' | 'exclude'): boolean {
+  isLabelSelected(labelId: number, operator: LabelOperator): boolean {
     return this._getLabelList(operator).includes(labelId)
   }
 
   get hasLabelSelections(): boolean {
     return this.andLabels.length > 0 || this.orLabels.length > 0 || this.excludeLabels.length > 0
+  }
+
+  getLabelDotColor(color: string): string {
+    return LABEL_COLOR_MAP[color] ?? LABEL_COLOR_MAP.gray
+  }
+
+  get selectedLabelChips(): SelectedLabelChip[] {
+    const operators: LabelOperator[] = ['and', 'or', 'exclude']
+    return operators.flatMap((operator) =>
+      this._getLabelList(operator).map((id) => ({
+        id,
+        operator,
+        name: this.labels.find((label) => label.id === id)?.name ?? `${id}`,
+        ...CHIP_STYLES[operator],
+      })),
+    )
   }
 
   get filterCount(): number {
@@ -285,7 +318,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     })
   }
 
-  private _getLabelList(operator: 'and' | 'or' | 'exclude'): number[] {
+  private _getLabelList(operator: LabelOperator): number[] {
     switch (operator) {
       case 'and':
         return this.andLabels
