@@ -1176,6 +1176,7 @@
   "OVERWRITE_COLUMN_DATA_QUESTION": "¿Sobreescribir datos?",
   "Occupied Floor Area": "Superficie ocupada",
   "Only Show Populated Columns": "Mostrar sólo columnas rellenas",
+  "Only cross-cycle labels for the selected goal are shown here; other property labels are omitted.": "Aquí solo se muestran las etiquetas de ciclo cruzado para el objetivo seleccionado; se omiten las demás etiquetas de propiedades.",
   "Only one terms of service is allowed to be active": "Sólo se permite que esté activa una condición de servicio",
   "Only properties belonging to this Access Level Instance will be included.": "Solo se incluirán las propiedades que pertenezcan a esta instancia de nivel de acceso.",
   "Open the public HTML feed in a new tab": "Abrir la fuente HTML pública en una pestaña nueva",
