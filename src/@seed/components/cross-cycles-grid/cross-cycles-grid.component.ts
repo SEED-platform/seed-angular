@@ -53,7 +53,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   private _detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
   private _expandedLinkingIds = new Set<number>()
   columnDefs: ColDef[] = []
-  columnMap = new Map<string, string>()
+  columnMap = new Map<number, Column>()
   columns: Column[] = []
   currentUser: CurrentUser
   cycles: Cycle[] = []
@@ -131,8 +131,9 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       tap(([currentUser, cycles, profiles, matchingColumns, columns]: [CurrentUser, Cycle[], Profile[], string[], Column[]]) => {
         this.currentUser = currentUser
         this.cycles = cycles
-        this.columns = columns
-        this.columnMap = new Map(columns.map((c) => [c.column_name, c.name]))
+        // filter_by_cycle only returns this inventory type's own columns, not related (e.g. tax lot) ones
+        this.columns = columns.filter((c) => !c.related)
+        this.columnMap = new Map(this.columns.map((c) => [c.id, c]))
         this.matchingColumns = new Set(matchingColumns)
         this.profiles = profiles
           .filter((p) => p.inventory_type === this.displayType && p.profile_location === 'List View Profile')
@@ -193,8 +194,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     const dataColumns = this.profile
       ? [...this.profile.columns]
           .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map((c) => this.buildColumnDef(c.column_name, c.display_name, c.pinned))
-      : this.columns.filter((c) => !c.is_extra_data).map((c) => this.buildColumnDef(c.column_name, c.display_name, false))
+          .map((c) => this.buildColumnDef(c.id, c.display_name, c.pinned))
+      : this.columns.filter((c) => !c.is_extra_data).map((c) => this.buildColumnDef(c.id, c.display_name, false))
 
     this.columnDefs = [
       ...(this.mode === 'list' ? [this.buildExpandColumnDef()] : []),
@@ -206,21 +207,20 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     ]
   }
 
-  buildColumnDef(columnName: string, displayName: string, pinned: boolean): ColDef | null {
-    const field = this.columnMap.get(columnName)
-    if (!field) return null
+  buildColumnDef(columnId: number, displayName: string, pinned: boolean): ColDef | null {
+    const column = this.columnMap.get(columnId)
+    if (!column) return null
 
-    const isMatching = this.matchingColumns.has(columnName)
+    const isMatching = this.matchingColumns.has(column.column_name)
     const colDef: ColDef = {
-      field,
+      field: column.name,
       headerName: isMatching ? `${displayName}*` : displayName,
       headerTooltip: isMatching ? this._transloco.translate('Matching criteria columns are given sort priority') : displayName,
       pinned: isMatching || pinned ? 'left' : null,
       width: 150,
     }
 
-    const column = this.columns.find((c) => c.column_name === columnName)
-    this.applyDataTypeFormatting(colDef, column?.data_type)
+    this.applyDataTypeFormatting(colDef, column.data_type)
     return colDef
   }
 
@@ -357,7 +357,10 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     this.rowData = sortedIds.map((id) => {
       const detailRows = this._detailRowsByLinkingId.get(id) ?? []
       const count = detailRows.length
+      // Show the latest cycle's values on the collapsed row so column filters and sorts can match it
+      const latest = detailRows.reduce((a, b) => (((b.cycle_start as string) ?? '') > ((a.cycle_start as string) ?? '') ? b : a))
       return {
+        ...latest,
         id,
         _isGroup: true,
         _cycleCount: count,
@@ -425,7 +428,10 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   updateOrgUserSettings() {
-    return this._organizationService.updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
+    // A failed settings save is already reported by the service; still reload the grid
+    return this._organizationService
+      .updateOrganizationUser(this.currentUser.org_user_id, this.orgId, this.currentUser.settings)
+      .pipe(catchError(() => of(null)))
   }
 
   ngOnDestroy(): void {
