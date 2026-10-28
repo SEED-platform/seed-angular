@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -50,6 +51,11 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   private _transloco = inject(TranslocoService)
   private _userService = inject(UserService)
   private readonly _unsubscribeAll$ = new Subject<void>()
+  private readonly _reload$ = new Subject<void>()
+  // shortcut: a save that never settles blocks later reloads, add a timeout if hung saves are seen
+  private _pendingSaves = 0
+  private _loadedCycleIds: number[] = []
+  private _savedSinceReload = false
   private _detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
   private _expandedLinkingIds = new Set<number>()
   private _showingFlatRows = false
@@ -87,6 +93,16 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     floatingFilter: true,
     resizable: true,
     minWidth: 75,
+  }
+
+  constructor() {
+    // Lives outside initPage's subscriptions; switchMap drops an older reload so its response can't overwrite a newer one
+    this._reload$
+      .pipe(
+        switchMap(() => this.setGrid()),
+        takeUntilDestroyed(),
+      )
+      .subscribe()
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -167,6 +183,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   setGrid(): Observable<unknown> {
+    this._loadedCycleIds = this.selectedCycleIds
     if (!this.selectedCycleIds.length) {
       this.rowData = []
       this.columnDefs = []
@@ -429,19 +446,26 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   onSelectCycleClosed(): void {
+    const cycleIds = this.selectedCycleIds
+    const loaded = this._loadedCycleIds
+    if (!this._pendingSaves && loaded.length === cycleIds.length && loaded.every((id) => cycleIds.includes(id))) return
+
     const previousCycleIds = this.currentUser.settings.crossCycles[this.type]
-    this.currentUser.settings.crossCycles[this.type] = this.selectedCycleIds
+    this.currentUser.settings.crossCycles[this.type] = cycleIds
     this.saveSettingsAndReload(() => {
+      if (this.currentUser.settings.crossCycles[this.type] !== cycleIds) return
       this.currentUser.settings.crossCycles[this.type] = previousCycleIds
       this.selectedCycleIds = this.getSelectedCycleIds()
     })
   }
 
   onSelectProfile(): void {
+    const profileId = this.selectedProfileId
     const previousProfileId = this.currentUser.settings.profile.list[this.type]
-    this.currentUser.settings.profile.list[this.type] = this.selectedProfileId
-    this.profile = this.profiles.find((p) => p.id === this.selectedProfileId)
+    this.currentUser.settings.profile.list[this.type] = profileId
+    this.profile = this.profiles.find((p) => p.id === profileId)
     this.saveSettingsAndReload(() => {
+      if (this.currentUser.settings.profile.list[this.type] !== profileId) return
       this.currentUser.settings.profile.list[this.type] = previousProfileId
       this.selectedProfileId = previousProfileId
       this.profile = this.profiles.find((p) => p.id === previousProfileId)
@@ -451,15 +475,24 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   /*
    * currentUser.settings is shared app-wide and is changed before saving, so a failed save must undo
    * that change (the service already reports the error) and leave the grid on its current data.
+   * An undo is skipped once a newer change has replaced the value, and the grid reloads once all
+   * overlapping saves settle. If an older and then a newer save both fail, the newer undo restores the
+   * older, never-saved value.
    */
   saveSettingsAndReload(undoChange: () => void): void {
+    this._pendingSaves++
     this.updateOrgUserSettings()
       .pipe(
+        tap(() => (this._savedSinceReload = true)),
         catchError(() => {
           undoChange()
           return EMPTY
         }),
-        switchMap(() => this.setGrid()),
+        finalize(() => {
+          if (--this._pendingSaves || !this._savedSinceReload) return
+          this._savedSinceReload = false
+          this._reload$.next()
+        }),
       )
       .subscribe()
   }
