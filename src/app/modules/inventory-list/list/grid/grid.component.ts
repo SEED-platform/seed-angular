@@ -2,18 +2,33 @@ import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { Router } from '@angular/router'
+import { TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
-import type { CellClickedEvent, ColDef, ColGroupDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import type { CellClickedEvent, CellKeyDownEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { map } from 'rxjs'
 import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory'
+import type { FiltersSorts, InventoryType, Pagination, State } from '../../../inventory'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 import { IconHeaderComponent } from './icon-header.component'
 import { InventoryLabelHeaderComponent } from './label-header.component'
 
-const LABEL_COLOR_MAP: Record<string, string> = {
+const SHORTCUT_COLUMN_WIDTH = 34
+const SHORTCUT_COLUMN_PADDING = { paddingLeft: '0', paddingRight: '0' }
+
+type ShortcutAction = 'detail' | 'notes' | 'meters'
+
+// Shortcut columns whose icon navigates somewhere (by click, or Enter/Space when the cell has keyboard focus)
+const SHORTCUT_ACTIONS: Record<string, ShortcutAction> = {
+  property_view_id: 'detail',
+  taxlot_view_id: 'detail',
+  notes_count: 'notes',
+  meters_exist_indicator: 'meters',
+}
+
+export const LABEL_COLOR_MAP: Record<string, string> = {
   red: '#b91c1c',
   orange: '#fb923c',
   gray: '#57534e',
@@ -28,6 +43,7 @@ const LABEL_COLOR_MAP: Record<string, string> = {
   templateUrl: './grid.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, InventoryGridControlsComponent],
+  host: { class: 'flex flex-col flex-auto min-h-0' },
 })
 export class InventoryGridComponent implements OnChanges {
   @Input() accessLevelNames: string[] = []
@@ -46,15 +62,18 @@ export class InventoryGridComponent implements OnChanges {
   @Output() filterSortChange = new EventEmitter<FiltersSorts>()
   @Output() gridReady = new EventEmitter<GridApi>()
   @Output() selectionChanged = new EventEmitter<null>()
+  @Output() selectAllMatching = new EventEmitter<void>()
   @Output() gridReset = new EventEmitter<null>()
   private _configService = inject(ConfigService)
   private _organizationService = inject(OrganizationService)
   private _router = inject(Router)
+  private _transloco = inject(TranslocoService)
 
   agPageSize = 100
   gridApi!: GridApi
   darkMode: boolean
-  gridTheme$ = this._configService.gridTheme$
+  // rowHeight trims ~3px off the top and bottom of the default 42px row so more records fit on screen
+  gridTheme$ = this._configService.gridTheme$.pipe(map((theme) => theme.withParams({ cellHorizontalPadding: 8, rowHeight: 36 })))
   showAccessLevelInstances = true
   labelsExpanded = false
 
@@ -89,61 +108,81 @@ export class InventoryGridComponent implements OnChanges {
     onSelectionChanged: () => {
       this.onSelectionChanged()
     },
+    onRowDataUpdated: () => {
+      this._syncSelectedRows()
+      this._updatingRowData = false
+    },
   }
 
   // Raw API column defs — kept separate so getColumnDefs() doesn't clobber them by overwriting this.columnDefs
   private _apiColumnDefs: ColDef[] = []
+  private _syncingSelection = false
+  private _updatingRowData = false
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes.rowData) {
+      this._updatingRowData = true
+    }
     if (changes.columnDefs) {
       this._apiColumnDefs = this.columnDefs ?? []
     }
     if (changes.rowData || changes.columnDefs) {
       this.getColumnDefs()
     }
+    if (changes.selectedViewIds && this.gridApi) {
+      this._syncSelectedRows()
+    }
   }
 
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
+    this._syncSelectedRows()
+    this._updatingRowData = false
     this.gridApi.autoSizeAllColumns()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    this.gridApi.addEventListener('cellKeyDown', this.onCellKeyDown.bind(this) as (event: CellKeyDownEvent) => void)
   }
 
   onCellClicked(event: CellClickedEvent) {
-    const clickableField = new Set(['property_view_id', 'taxlot_view_id', 'notes_count', 'meters_exist_indicator'])
-    if (!clickableField.has(event.colDef.field)) return
+    if (!SHORTCUT_ACTIONS[event.colDef.field]) return
 
     const target = event.event.target as HTMLElement
-    const action = target.getAttribute('data-action') as 'detail' | 'notes' | 'meters' | null
+    const action = target.getAttribute('data-action') as ShortcutAction | null
     if (!action) return
-    const { property_view_id, taxlot_view_id } = event.data as { property_view_id: string; taxlot_view_id: string }
-    const viewId = property_view_id || taxlot_view_id
+    this.navigateToShortcut(action, event.data as Record<string, unknown>)
+  }
 
-    const urlMap = {
+  // Keyboard equivalent of clicking a shortcut icon
+  onCellKeyDown(event: CellKeyDownEvent) {
+    const { key } = event.event as KeyboardEvent
+    if (key !== 'Enter' && key !== ' ') return
+
+    const action = SHORTCUT_ACTIONS[event.colDef.field]
+    if (!action || !event.value) return
+    event.event.preventDefault()
+    this.navigateToShortcut(action, event.data as Record<string, unknown>)
+  }
+
+  navigateToShortcut(action: ShortcutAction, data: Record<string, unknown>) {
+    const viewId = data.property_view_id || data.taxlot_view_id
+    const urlMap: Record<ShortcutAction, unknown[]> = {
       detail: [`/${this.inventoryType}`, viewId],
       notes: [`/${this.inventoryType}`, viewId, 'notes'],
       meters: [`/${this.inventoryType}`, viewId, 'meters'],
     }
 
-    return void this._router.navigate(urlMap[action])
+    void this._router.navigate(urlMap[action])
   }
 
   onSelectionChanged() {
+    if (this._syncingSelection || this._updatingRowData) return
     this.selectionChanged.emit()
   }
 
   getColumnDefs() {
     const stateColumns = this.addHeaderMenu()
-    const groups: ColGroupDef[] = [{ headerName: 'Shortcuts', children: this.getShortcutColumns() } as ColGroupDef]
-
-    const accessLevelCols = this.getAccessLevelColumns()
-    if (accessLevelCols.length) {
-      groups.push({ headerName: 'Access Level', children: accessLevelCols } as ColGroupDef)
-    }
-
-    groups.push({ headerName: 'Details', children: stateColumns } as ColGroupDef)
-    this.columnDefs = groups
+    this.columnDefs = [...this.getShortcutColumns(), ...this.getAccessLevelColumns(), ...stateColumns]
   }
 
   getAccessLevelColumns(): ColDef[] {
@@ -176,7 +215,7 @@ export class InventoryGridComponent implements OnChanges {
   toggleLabels(): void {
     this.labelsExpanded = !this.labelsExpanded
     this.gridContext.labelsExpanded = this.labelsExpanded
-    this.gridApi?.setColumnWidths([{ key: 'labels', newWidth: this.labelsExpanded ? 320 : 44 }])
+    this.gridApi?.setColumnWidths([{ key: 'labels', newWidth: this.labelsExpanded ? 320 : SHORTCUT_COLUMN_WIDTH }])
     this.gridApi?.refreshHeader()
     this.gridApi?.refreshCells({ force: true, columns: ['labels'] })
   }
@@ -184,10 +223,10 @@ export class InventoryGridComponent implements OnChanges {
   getShortcutColumns(): ColDef[] {
     const shortcutColumns = [
       this.buildInfoCell(),
-      this.buildShortcutColumn('merged_indicator', 'Merged', 44, 'merge'),
-      this.buildShortcutColumn('meters_exist_indicator', 'Meters', 44, 'bolt', 'meters'),
-      this.buildShortcutColumn('notes_count', 'Notes', 44, 'mode_comment', 'notes'),
-      this.buildShortcutColumn('groups_indicator', 'Groups', 44, 'workspaces'),
+      this.buildShortcutColumn('merged_indicator', 'Merged', SHORTCUT_COLUMN_WIDTH, 'merge'),
+      this.buildShortcutColumn('meters_exist_indicator', 'Meters', SHORTCUT_COLUMN_WIDTH, 'bolt', 'meters'),
+      this.buildShortcutColumn('notes_count', 'Notes', SHORTCUT_COLUMN_WIDTH, 'mode_comment', 'notes'),
+      this.buildShortcutColumn('groups_indicator', 'Groups', SHORTCUT_COLUMN_WIDTH, 'workspaces'),
       this.buildLabelsCell(),
     ]
     // Pin shortcuts so user-pinned columns land after them in the pinned area
@@ -215,11 +254,13 @@ export class InventoryGridComponent implements OnChanges {
       headerComponentParams: { icon, tooltip: headerName },
       width: maxWidth,
       maxWidth,
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
       filter: false,
       sortable: false,
       suppressMovable: true,
       cellClass: 'overflow-hidden',
-      cellRenderer: ({ value }) => this.actionRenderer(value, icon, action),
+      cellRenderer: ({ value }) => this.actionRenderer({ value, icon, action, label: headerName }),
     }
   }
 
@@ -234,19 +275,25 @@ export class InventoryGridComponent implements OnChanges {
       filter: false,
       sortable: false,
       suppressMovable: true,
-      width: 44,
-      maxWidth: 44,
-      cellRenderer: ({ value }) => this.actionRenderer(value, 'info', 'detail'),
+      width: SHORTCUT_COLUMN_WIDTH,
+      maxWidth: SHORTCUT_COLUMN_WIDTH,
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
+      cellRenderer: ({ value }) => this.actionRenderer({ value, icon: 'info', action: 'detail', label: 'Info' }),
     }
   }
 
-  actionRenderer = (value, icon: string, action: string) => {
+  actionRenderer = ({ value, icon, action, label }: { value: unknown; icon: string; action: string | null; label: string }) => {
     if (!value) return ''
 
+    // Clickable icons are announced as buttons; indicator-only icons as images. Both carry a text alternative.
     const cursorClass = action ? 'cursor-pointer' : ''
+    const role = action ? 'button' : 'img'
+    const ariaLabel = this._transloco.translate(label)
+    // Same size and centering as IconHeaderComponent so row icons line up with their headers
     return `
-      <div class="flex gap-2 mt-2 align-center">
-        <span class="material-icons-outlined ${cursorClass}" data-action="${action}">${icon}</span>
+      <div class="flex h-full items-center justify-center">
+        <span class="material-icons-outlined text-base ${cursorClass}" role="${role}" aria-label="${ariaLabel}" data-action="${action}">${icon}</span>
       </div>
     `
   }
@@ -256,12 +303,14 @@ export class InventoryGridComponent implements OnChanges {
       colId: 'labels',
       field: 'labels',
       headerName: 'Labels',
-      width: 44,
+      width: SHORTCUT_COLUMN_WIDTH,
       filter: false,
       sortable: false,
       suppressMovable: true,
-      cellStyle: { paddingLeft: '0', paddingRight: '0' },
+      cellStyle: SHORTCUT_COLUMN_PADDING,
+      headerStyle: SHORTCUT_COLUMN_PADDING,
       headerComponent: InventoryLabelHeaderComponent,
+      autoHeight: true,
       valueFormatter: ({ value }: { value: number[] }) => {
         return this.getShownLabels(value)
           .map((label) => label.name)
@@ -269,23 +318,27 @@ export class InventoryGridComponent implements OnChanges {
       },
       cellRenderer: ({ value }: { value: number[] }) => {
         const labels = this.getShownLabels(value)
-        if (!labels.length) return ''
+        if (!labels.length) {
+          const container = document.createElement('div')
+          container.style.minHeight = '36px'
+          return container
+        }
         if (this.labelsExpanded) {
           const container = document.createElement('div')
-          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;'
+          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;align-content:center;min-height:36px;'
           for (const label of labels) {
             const colorClass = label.color === 'light blue' ? 'blue light' : label.color
             const span = document.createElement('span')
-            span.className = `label ${colorClass} whitespace-nowrap px-2`
+            span.className = `label compact ${colorClass} whitespace-nowrap`
             span.textContent = label.name
             container.appendChild(span)
           }
           return container
         }
         const outer = document.createElement('div')
-        outer.style.cssText = 'height:100%;display:flex;align-items:center;'
+        outer.style.cssText = 'min-height:36px;display:flex;align-items:center;'
         const inner = document.createElement('div')
-        inner.style.cssText = 'display:flex;width:36px;height:14px;border-radius:3px;overflow:hidden;'
+        inner.style.cssText = 'display:flex;width:26px;height:14px;border-radius:3px;overflow:hidden;'
         for (const label of labels.slice(0, 4)) {
           const bg = LABEL_COLOR_MAP[label.color] ?? LABEL_COLOR_MAP.gray
           const span = document.createElement('span')
@@ -324,5 +377,23 @@ export class InventoryGridComponent implements OnChanges {
   getShownLabels(labelIds: number[]): Label[] {
     if (!labelIds?.length) return []
     return labelIds.map((id) => this.labelMap[id]).filter((label) => label?.show_in_list)
+  }
+
+  private _syncSelectedRows(): void {
+    if (!this.gridApi) return
+
+    const selectedViewIds = new Set(this.selectedViewIds ?? [])
+    const viewIdField = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
+
+    this._syncingSelection = true
+    try {
+      this.gridApi.forEachNode((node) => {
+        const state = node.data as State | undefined
+        const viewId = state?.[viewIdField]
+        node.setSelected(selectedViewIds.has(viewId), false)
+      })
+    } finally {
+      this._syncingSelection = false
+    }
   }
 }

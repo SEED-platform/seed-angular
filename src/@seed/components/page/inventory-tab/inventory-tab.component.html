@@ -1,7 +1,11 @@
 <div class="flex space-x-1 bg-white dark:bg-gray-800" *transloco="let t">
   @for (tab of config.tabs; track tab) {
     <div
-      class="mb- relative flex cursor-pointer self-start overflow-hidden px-4 pb-3 pt-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+      class="relative flex cursor-pointer self-start overflow-hidden px-4 hover:bg-gray-100 dark:hover:bg-gray-700"
+      [class.pb-2]="config.dense"
+      [class.pb-3]="!config.dense"
+      [class.pt-1]="config.dense"
+      [class.pt-2]="!config.dense"
       [ngClass]="
         type === tab
           ? ['border-b-2', 'border-primary', 'text-primary', 'dark:text-primary-300']

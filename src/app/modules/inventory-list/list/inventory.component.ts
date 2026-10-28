@@ -26,6 +26,7 @@ import {
   InventoryGridComponent,
 } from './grid'
 import type { LabelSelections } from './grid/filter-group/filter-group-selector.component'
+import type { LabelChip } from './grid/filter-sort-chips.component'
 
 export function applyColumnProfile(profile: Profile, columnDefs: ColDef[]): ColDef[] {
   if (!profile?.columns) return columnDefs
@@ -34,13 +35,18 @@ export function applyColumnProfile(profile: Profile, columnDefs: ColDef[]): ColD
   return columnDefs
     .map((column) => {
       const profileColumn = profileColumns.get(column.field)
-      return profileColumn ? { ...column, pinned: profileColumn.pinned ? 'left' as const : null } : column
+      return profileColumn ? { ...column, pinned: profileColumn.pinned ? ('left' as const) : null } : column
     })
     .sort((first, second) => {
       const firstOrder = profileColumns.get(first.field)?.order ?? Number.MAX_SAFE_INTEGER
       const secondOrder = profileColumns.get(second.field)?.order ?? Number.MAX_SAFE_INTEGER
       return firstOrder - secondOrder
     })
+}
+
+export function updatePageSelection(selectedViewIds: number[], pageViewIds: number[], selectedPageViewIds: number[]): number[] {
+  const pageIds = new Set(pageViewIds)
+  return [...new Set([...selectedViewIds.filter((id) => !pageIds.has(id)), ...selectedPageViewIds])]
 }
 
 @Component({
@@ -73,7 +79,9 @@ export class InventoryComponent implements OnDestroy, OnInit {
   readonly type = this._resolveType()
   @Input() groupId?: number
   @ViewChild('grid') gridComponent: InventoryGridComponent
+  @ViewChild(FilterGroupSelectorComponent) filterGroupSelector: FilterGroupSelectorComponent
   private _groupPropertyIds: number[] | null = null
+  private _selectAllRequestId = 0
   accessLevelNames: string[] = []
   chunk = 100
   columns: Column[] = []
@@ -119,7 +127,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   initPage() {
     this._userService.currentOrganizationId$
       .pipe(
-        switchMap((orgId) => this.getDependencies(orgId)),
+        switchMap((orgId) => {
+          this._invalidateSelectAllRequest()
+          return this.getDependencies(orgId)
+        }),
         map((results) => this.setDependencies(results)),
         switchMap((profile_id) => this.getProfile(profile_id)),
         tap(() => {
@@ -182,6 +193,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onRefreshInventory(profileId: number | null) {
+    this._invalidateSelectAllRequest()
     this.refreshInventory$.next(profileId)
   }
 
@@ -298,32 +310,11 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
     return groupIds$.pipe(
       switchMap(() => {
-        const inventory_type = this.type === 'properties' ? 'property' : 'taxlot'
-        const params = new URLSearchParams({
-          cycle: this.cycleId.toString(),
-          ids_only: 'false',
-          include_related: 'true',
-          organization_id: this.orgId.toString(),
-          page: this.page.toString(),
-          per_page: this.chunk.toString(),
-          inventory_type,
-        })
+        const params = this._inventoryParams({ idsOnly: false })
+        params.set('page', this.page.toString())
+        params.set('per_page', this.chunk.toString())
 
-        const { includeViewIds, excludeViewIds } = this._computeLabelViewIds()
-        const data: Record<string, unknown> = {
-          include_property_ids: this._groupPropertyIds,
-          profile_id: this.profileId,
-          filters: this.filters,
-          sorts: this.sorts,
-        }
-        if (includeViewIds) {
-          data.include_view_ids = includeViewIds
-        }
-        if (excludeViewIds) {
-          data.exclude_view_ids = excludeViewIds
-        }
-
-        return this._inventoryService.getAgInventory(params.toString(), data).pipe(
+        return this._inventoryService.getAgInventory(params.toString(), this._inventoryFilterData()).pipe(
           tap(({ pagination, results, column_defs }: AgFilterResponse) => {
             this.pagination = pagination
             this.inventory = results
@@ -366,33 +357,53 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
-    // this.selectedViewIds = this.type === 'taxlots'
-    //   ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
-    //   : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
-
+    this._invalidateSelectAllRequest()
     const selectedRows = this.gridApi.getSelectedRows() as State[]
+    const pageRows = (this.inventory ?? []) as State[]
+    const viewIdForState = (state: State) => (this.type === 'taxlots' ? state.taxlot_view_id : state.property_view_id)
+    this.selectedViewIds = updatePageSelection(
+      this.selectedViewIds,
+      pageRows.map(viewIdForState),
+      selectedRows.map(viewIdForState),
+    )
+
     if (this.type === 'taxlots') {
-      this.selectedViewIds = selectedRows.map((state) => state.taxlot_view_id)
       this.selectedStateIds = selectedRows.map((state) => state.taxlot_state_id)
     } else {
-      this.selectedViewIds = selectedRows.map((state) => state.property_view_id)
       this.selectedStateIds = selectedRows.map((state) => state.property_state_id)
     }
   }
 
-  onSelectAll(selectedViewIds: number[]) {
-    this.selectedViewIds = selectedViewIds
-    this.selectedStateIds
-      = this.type === 'taxlots'
-        ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
-        : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
+  /*
+   * Selects every record matching the current cycle, filters, labels, and group, including those on other pages.
+   * State ids are only known for the rows loaded on this page.
+   */
+  selectAllMatching() {
+    if (!this.gridApi || !this.cycleId || !this.orgId) return
+    this.gridApi.selectAll()
+    const requestId = ++this._selectAllRequestId
+    const params = this._inventoryParams({ idsOnly: true })
+    this._inventoryService
+      .getAgInventory(params.toString(), this._inventoryFilterData())
+      .pipe(take(1))
+      .subscribe(({ results }: { results: number[] }) => {
+        if (requestId !== this._selectAllRequestId) return
+
+        this.selectedViewIds = results
+        this.selectedStateIds
+          = this.type === 'taxlots'
+            ? this.gridApi.getSelectedRows().map((state: State) => state.taxlot_state_id)
+            : this.gridApi.getSelectedRows().map((state: State) => state.property_state_id)
+      })
   }
 
   onProfileChange(id: number) {
+    this._invalidateSelectAllRequest()
     this.profileId$.next(id)
   }
 
   onCycleChange(id: number) {
+    this._invalidateSelectAllRequest()
     this.cycleId = id
     this.cycle = this.cycles.find((cycle) => cycle.id === id)
     this.page = 1
@@ -406,6 +417,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onPageChange(page: number) {
+    this._invalidateSelectAllRequest()
     this.page = page
     this.refreshInventory$.next(null)
   }
@@ -468,6 +480,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onFilterGroupApplied(fg: { query_dict?: Record<string, unknown> } | null): void {
+    this._invalidateSelectAllRequest()
     // Sync filter group's query_dict into userSettings so loadInventory uses consistent filters
     if (fg?.query_dict) {
       this.userSettings = {
@@ -488,6 +501,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onLabelSelectionsChanged(selections: LabelSelections): void {
+    this._invalidateSelectAllRequest()
     this.labelSelections = selections
     this.page = 1
     // Create new userSettings reference to trigger OnChanges in FilterSortChipsComponent
@@ -495,7 +509,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
     this.loadInventory().pipe(take(1)).subscribe()
   }
 
+  onLabelChipRemoved({ id, operator }: LabelChip): void {
+    this.filterGroupSelector?.toggleLabel(id, operator)
+  }
+
   onFilterSortChange({ sorts, filters }: FiltersSorts) {
+    this._invalidateSelectAllRequest()
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
@@ -505,6 +524,38 @@ export class InventoryComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._unsubscribeAll$.next()
     this._unsubscribeAll$.complete()
+  }
+
+  private _inventoryParams({ idsOnly }: { idsOnly: boolean }): URLSearchParams {
+    return new URLSearchParams({
+      cycle: this.cycleId.toString(),
+      ids_only: idsOnly.toString(),
+      include_related: 'true',
+      organization_id: this.orgId.toString(),
+      inventory_type: this.type === 'properties' ? 'property' : 'taxlot',
+    })
+  }
+
+  private _invalidateSelectAllRequest(): void {
+    this._selectAllRequestId++
+  }
+
+  // Request body shared by the paged grid load and the ids-only "select all" so both honor the same filters
+  private _inventoryFilterData(): Record<string, unknown> {
+    const { includeViewIds, excludeViewIds } = this._computeLabelViewIds()
+    const data: Record<string, unknown> = {
+      include_property_ids: this.groupId ? (this._groupPropertyIds?.length ? this._groupPropertyIds : [0]) : null,
+      profile_id: this.profileId,
+      filters: this.filters,
+      sorts: this.sorts,
+    }
+    if (includeViewIds) {
+      data.include_view_ids = includeViewIds
+    }
+    if (excludeViewIds) {
+      data.exclude_view_ids = excludeViewIds
+    }
+    return data
   }
 
   // Compute include/exclude view IDs from label selections and is_applied data
