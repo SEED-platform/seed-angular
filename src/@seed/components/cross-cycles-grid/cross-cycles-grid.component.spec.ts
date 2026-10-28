@@ -13,6 +13,7 @@ describe('CrossCyclesGridComponent', () => {
   let filterPresent: boolean
   let saveSucceeds: boolean
   let filterByCycle: jasmine.Spy
+  let getAgInventory: jasmine.Spy
 
   // Cycle ids deliberately out of start-date order
   const cycles = [
@@ -36,11 +37,15 @@ describe('CrossCyclesGridComponent', () => {
     filterPresent = false
     saveSucceeds = true
     filterByCycle = jasmine.createSpy('filterByCycle').and.returnValue(of(dataByCycle))
+    // a different row per cycle (requested in selectedCycleIds order: 1, then 2)
+    getAgInventory = jasmine
+      .createSpy('getAgInventory')
+      .and.returnValues(of({ results: [{ id: 7, site_eui_56: 10 }] }), of({ results: [{ id: 7, site_eui_56: 20 }] }))
     TestBed.configureTestingModule({
       providers: [
         { provide: ColumnService, useValue: { propertyColumns$: of(columns) } },
         { provide: CycleService, useValue: { cycles$: of(cycles), getCycles: () => undefined } },
-        { provide: InventoryService, useValue: { getColumnListProfiles: () => of([]), filterByCycle } },
+        { provide: InventoryService, useValue: { getColumnListProfiles: () => of([]), filterByCycle, getAgInventory } },
         {
           provide: OrganizationService,
           useValue: {
@@ -113,6 +118,73 @@ describe('CrossCyclesGridComponent', () => {
       [7, true],
       [8, true],
       [8, false],
+    ])
+  })
+
+  const detailParams = (cycle: string) => ({
+    organization_id: '1',
+    cycle,
+    inventory_type: 'property',
+    include_related: 'false',
+    per_page: '1',
+  })
+  const agInventoryCalls = () =>
+    (getAgInventory.calls.allArgs() as [string, unknown][]).map(([params, data]) => [Object.fromEntries(new URLSearchParams(params)), data])
+
+  it('in property detail mode, fetches only the linked property, one filter call per cycle', () => {
+    filterByCycle.calls.reset()
+    component.mode = 'detail'
+    component.linkingId = 7
+    component.setGrid().subscribe()
+
+    expect(filterByCycle).not.toHaveBeenCalled()
+    expect(agInventoryCalls()).toEqual([
+      [detailParams('1'), { include_property_ids: [7], profile_id: undefined }],
+      [detailParams('2'), { include_property_ids: [7], profile_id: undefined }],
+    ])
+    expect(component.rowData.map((r) => [r.id, r.cycle_name, r.site_eui_56])).toEqual([
+      [7, '2022', 20],
+      [7, '2023', 10],
+    ])
+  })
+
+  it('in property detail mode, sends the selected profile_id', () => {
+    component.mode = 'detail'
+    component.linkingId = 7
+    component.selectedProfileId = 3
+    component.setGrid().subscribe()
+
+    expect(agInventoryCalls().map(([, data]) => data)).toEqual([
+      { include_property_ids: [7], profile_id: 3 },
+      { include_property_ids: [7], profile_id: 3 },
+    ])
+  })
+
+  it('in property detail mode, shows the error state when any cycle request fails', () => {
+    getAgInventory.and.returnValues(
+      of({ results: [{ id: 7 }] }),
+      throwError(() => new Error('filter failed')),
+    )
+    component.mode = 'detail'
+    component.linkingId = 7
+    component.setGrid().subscribe()
+
+    expect(component.error).toBeTrue()
+    expect(component.rowData).toEqual([])
+  })
+
+  it('in tax lot detail mode, uses filterByCycle and keeps only the linked record', () => {
+    filterByCycle.calls.reset()
+    component.type = 'taxlots'
+    component.mode = 'detail'
+    component.linkingId = 7
+    component.setGrid().subscribe()
+
+    expect(getAgInventory).not.toHaveBeenCalled()
+    expect(filterByCycle).toHaveBeenCalledOnceWith(1, undefined, [1, 2], 'taxlots')
+    expect(component.rowData.map((r) => [r.id, r.cycle_name])).toEqual([
+      [7, '2022'],
+      [7, '2023'],
     ])
   })
 

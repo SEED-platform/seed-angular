@@ -7,7 +7,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, EMPTY, finalize, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, combineLatest, EMPTY, finalize, forkJoin, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Organization } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent } from '@seed/components'
@@ -175,7 +175,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
     this.loading = true
     this.error = false
-    return this._inventoryService.filterByCycle(this.orgId, this.selectedProfileId, this.selectedCycleIds, this.type).pipe(
+    return this.getDataByCycle().pipe(
       tap((dataByCycle) => {
         this.setColumnDefs()
         this.setRowData(dataByCycle)
@@ -189,6 +189,34 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
         this.loading = false
       }),
     )
+  }
+
+  getDataByCycle(): Observable<CrossCyclesResponse> {
+    // shortcut: the v4 filter has include_property_ids but no tax lot equivalent, so tax lots load the whole org until it gets one
+    if (this.mode === 'detail' && this.type === 'properties') return this.getPropertyDataByCycle()
+    return this._inventoryService.filterByCycle(this.orgId, this.selectedProfileId, this.selectedCycleIds, this.type)
+  }
+
+  // Fetch only this property, one filter call per cycle, instead of filter_by_cycle serializing every record in the org
+  getPropertyDataByCycle(): Observable<CrossCyclesResponse> {
+    return forkJoin(this.selectedCycleIds.map((cycleId) => this.getPropertyRows(cycleId))).pipe(
+      map((entries) => Object.fromEntries(entries)),
+    )
+  }
+
+  getPropertyRows(cycleId: number): Observable<[number, Record<string, unknown>[]]> {
+    const params = new URLSearchParams({
+      organization_id: this.orgId.toString(),
+      cycle: cycleId.toString(),
+      inventory_type: 'property',
+      include_related: 'false',
+      // a property has at most one view per cycle
+      per_page: '1',
+    })
+    const data = { include_property_ids: [this.linkingId], profile_id: this.selectedProfileId }
+    return this._inventoryService
+      .getAgInventory(params.toString(), data)
+      .pipe(map(({ results }) => [cycleId, results as Record<string, unknown>[]]))
   }
 
   setColumnDefs(): void {
