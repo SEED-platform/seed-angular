@@ -295,6 +295,7 @@ export class InventoryGridComponent implements OnChanges {
       cellStyle: SHORTCUT_COLUMN_PADDING,
       headerStyle: SHORTCUT_COLUMN_PADDING,
       headerComponent: InventoryLabelHeaderComponent,
+      autoHeight: true,
       valueFormatter: ({ value }: { value: number[] }) => {
         return this.getShownLabels(value)
           .map((label) => label.name)
@@ -302,10 +303,14 @@ export class InventoryGridComponent implements OnChanges {
       },
       cellRenderer: ({ value }: { value: number[] }) => {
         const labels = this.getShownLabels(value)
-        if (!labels.length) return ''
+        if (!labels.length) {
+          const container = document.createElement('div')
+          container.style.minHeight = '36px'
+          return container
+        }
         if (this.labelsExpanded) {
           const container = document.createElement('div')
-          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;align-content:center;height:100%;'
+          container.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;align-content:center;min-height:36px;'
           for (const label of labels) {
             const colorClass = label.color === 'light blue' ? 'blue light' : label.color
             const span = document.createElement('span')
@@ -318,7 +323,7 @@ export class InventoryGridComponent implements OnChanges {
           return container
         }
         const outer = document.createElement('div')
-        outer.style.cssText = 'height:100%;display:flex;align-items:center;'
+        outer.style.cssText = 'min-height:36px;display:flex;align-items:center;'
         const inner = document.createElement('div')
         inner.style.cssText = 'display:flex;width:26px;height:14px;border-radius:3px;overflow:hidden;'
         for (const label of labels.slice(0, 4)) {
