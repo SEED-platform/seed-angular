@@ -11,6 +11,7 @@ import { CrossCyclesGridComponent } from './cross-cycles-grid.component'
 describe('CrossCyclesGridComponent', () => {
   let component: CrossCyclesGridComponent
   let filterPresent: boolean
+  let sortActive: boolean
   let saveSucceeds: boolean
   let filterByCycle: jasmine.Spy
 
@@ -34,6 +35,7 @@ describe('CrossCyclesGridComponent', () => {
 
   beforeEach(() => {
     filterPresent = false
+    sortActive = false
     saveSucceeds = true
     filterByCycle = jasmine.createSpy('filterByCycle').and.returnValue(of(dataByCycle))
     TestBed.configureTestingModule({
@@ -61,7 +63,11 @@ describe('CrossCyclesGridComponent', () => {
     })
     component = TestBed.runInInjectionContext(() => new CrossCyclesGridComponent())
     component.type = 'properties'
-    component.gridApi = { isAnyFilterPresent: () => filterPresent, refreshCells: () => undefined } as unknown as GridApi
+    component.gridApi = {
+      isAnyFilterPresent: () => filterPresent,
+      getColumnState: () => [{ colId: 'site_eui_56', sort: sortActive ? 'desc' : null }],
+      refreshCells: () => undefined,
+    } as unknown as GridApi
     component.getDependencies({ id: 1, cycles: [1, 2], display_decimal_places: 2 } as unknown as Organization).subscribe()
   })
 
@@ -98,7 +104,7 @@ describe('CrossCyclesGridComponent', () => {
   it('shows every cycle row ungrouped while a filter is active, and regroups when it is cleared', () => {
     component.toggleGroup(8)
     filterPresent = true
-    component.onFilterChanged()
+    component.onFilterOrSortChanged()
 
     expect(component.rowData.map((r) => [r.id, r.cycle_name, r.site_eui_56])).toEqual([
       [7, '2022', 141.8],
@@ -107,12 +113,31 @@ describe('CrossCyclesGridComponent', () => {
     ])
 
     filterPresent = false
-    component.onFilterChanged()
+    component.onFilterOrSortChanged()
 
     expect(component.rowData.map((r) => [r.id, r._isGroup])).toEqual([
       [7, true],
       [8, true],
       [8, false],
+    ])
+  })
+
+  it('shows every cycle row ungrouped while a sort is active, so cycle rows are not split from their group', () => {
+    component.toggleGroup(7)
+    sortActive = true
+    component.onFilterOrSortChanged()
+
+    expect(component.rowData.every((r) => !r._isGroup)).toBeTrue()
+    expect(component.rowData.length).toBe(3)
+
+    sortActive = false
+    component.onFilterOrSortChanged()
+
+    expect(component.rowData.map((r) => [r.id, r._isGroup])).toEqual([
+      [7, true],
+      [7, false],
+      [7, false],
+      [8, true],
     ])
   })
 
