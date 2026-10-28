@@ -52,8 +52,9 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
   private _detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
   private _expandedLinkingIds = new Set<number>()
+  private _showingFlatRows = false
   columnDefs: ColDef[] = []
-  columnMap = new Map<string, string>()
+  columnMap = new Map<number, Column>()
   columns: Column[] = []
   currentUser: CurrentUser
   cycles: Cycle[] = []
@@ -131,8 +132,9 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       tap(([currentUser, cycles, profiles, matchingColumns, columns]: [CurrentUser, Cycle[], Profile[], string[], Column[]]) => {
         this.currentUser = currentUser
         this.cycles = cycles
-        this.columns = columns
-        this.columnMap = new Map(columns.map((c) => [c.column_name, c.name]))
+        // filter_by_cycle only returns this inventory type's own columns, not related (e.g. tax lot) ones
+        this.columns = columns.filter((c) => !c.related)
+        this.columnMap = new Map(this.columns.map((c) => [c.id, c]))
         this.matchingColumns = new Set(matchingColumns)
         this.profiles = profiles
           .filter((p) => p.inventory_type === this.displayType && p.profile_location === 'List View Profile')
@@ -191,10 +193,8 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   setColumnDefs(): void {
     const dataColumns = this.profile
-      ? [...this.profile.columns]
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-          .map((c) => this.buildColumnDef(c.column_name, c.display_name, c.pinned))
-      : this.columns.filter((c) => !c.is_extra_data).map((c) => this.buildColumnDef(c.column_name, c.display_name, false))
+      ? [...this.profile.columns].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map((c) => this.buildColumnDef(c))
+      : this.columns.filter((c) => !c.is_extra_data).map((c) => this.buildColumnDef(c))
 
     this.columnDefs = [
       ...(this.mode === 'list' ? [this.buildExpandColumnDef()] : []),
@@ -206,21 +206,20 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     ]
   }
 
-  buildColumnDef(columnName: string, displayName: string, pinned: boolean): ColDef | null {
-    const field = this.columnMap.get(columnName)
-    if (!field) return null
+  buildColumnDef({ id, display_name, pinned = false }: { id: number; display_name: string; pinned?: boolean }): ColDef | null {
+    const column = this.columnMap.get(id)
+    if (!column) return null
 
-    const isMatching = this.matchingColumns.has(columnName)
+    const isMatching = this.matchingColumns.has(column.column_name)
     const colDef: ColDef = {
-      field,
-      headerName: isMatching ? `${displayName}*` : displayName,
-      headerTooltip: isMatching ? this._transloco.translate('Matching criteria columns are given sort priority') : displayName,
+      field: column.name,
+      headerName: isMatching ? `${display_name}*` : display_name,
+      headerTooltip: isMatching ? this._transloco.translate('Matching criteria columns are given sort priority') : display_name,
       pinned: isMatching || pinned ? 'left' : null,
       width: 150,
     }
 
-    const column = this.columns.find((c) => c.column_name === columnName)
-    this.applyDataTypeFormatting(colDef, column?.data_type)
+    this.applyDataTypeFormatting(colDef, column.data_type)
     return colDef
   }
 
@@ -328,21 +327,25 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   setRowData(dataByCycle: CrossCyclesResponse): void {
     const cycleById = new Map(this.cycles.map((c) => [c.id, c]))
-    const allDetailRows: Record<string, unknown>[] = Object.entries(dataByCycle ?? {}).flatMap(([cycleId, records]) =>
-      records.map((record) => ({
-        ...record,
-        _isGroup: false,
-        cycle_name: cycleById.get(Number(cycleId))?.name ?? '',
-        cycle_start: cycleById.get(Number(cycleId))?.start ?? null,
-      })),
-    )
+    const allDetailRows: Record<string, unknown>[] = Object.entries(dataByCycle ?? {})
+      .flatMap<Record<string, unknown>>(([cycleId, records]) =>
+        records.map((record) => ({
+          ...record,
+          _isGroup: false,
+          cycle_name: cycleById.get(Number(cycleId))?.name ?? '',
+          cycle_start: cycleById.get(Number(cycleId))?.start ?? null,
+        })),
+      )
+      .sort(
+        (a, b) => (a.id as number) - (b.id as number) || ((a.cycle_start as string) ?? '').localeCompare((b.cycle_start as string) ?? ''),
+      )
 
     if (this.mode === 'detail' && this.linkingId) {
       this.rowData = allDetailRows.filter((row) => row.id === this.linkingId)
       return
     }
 
-    // Group by linking ID; start all collapsed
+    // Group by linking ID (rows are already sorted); start all collapsed
     this._detailRowsByLinkingId = new Map<number, Record<string, unknown>[]>()
     this._expandedLinkingIds = new Set<number>()
 
@@ -353,34 +356,50 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       this._detailRowsByLinkingId.set(id, existing)
     }
 
-    const sortedIds = [...this._detailRowsByLinkingId.keys()].sort((a, b) => a - b)
-    this.rowData = sortedIds.map((id) => {
-      const detailRows = this._detailRowsByLinkingId.get(id) ?? []
-      const count = detailRows.length
-      return {
-        id,
-        _isGroup: true,
-        _cycleCount: count,
-        cycle_name: `${count} ${count === 1 ? this._transloco.translate('cycle') : this._transloco.translate('cycles')}`,
-        cycle_start: null,
-      }
-    })
+    this.rowData = this.buildRows()
+  }
+
+  /*
+   * Group rows carry no field values, so a column filter would hide every group. While any filter
+   * is active, show the cycle rows ungrouped so filters match real per-cycle values.
+   */
+  buildRows(): Record<string, unknown>[] {
+    const groups = [...this._detailRowsByLinkingId.entries()]
+    this._showingFlatRows = this.gridApi?.isAnyFilterPresent() ?? false
+    if (this._showingFlatRows) {
+      return groups.flatMap(([, detailRows]) => detailRows)
+    }
+
+    return groups.flatMap(([id, detailRows]) => [
+      this.buildGroupRow(id, detailRows.length),
+      ...(this._expandedLinkingIds.has(id) ? detailRows : []),
+    ])
+  }
+
+  buildGroupRow(id: number, count: number): Record<string, unknown> {
+    return {
+      id,
+      _isGroup: true,
+      _cycleCount: count,
+      cycle_name: `${count} ${count === 1 ? this._transloco.translate('cycle') : this._transloco.translate('cycles')}`,
+      cycle_start: null,
+    }
   }
 
   toggleGroup(linkingId: number): void {
     if (this._expandedLinkingIds.has(linkingId)) {
       this._expandedLinkingIds.delete(linkingId)
-      this.rowData = this.rowData.filter((row) => row._isGroup === true || row.id !== linkingId)
     } else {
       this._expandedLinkingIds.add(linkingId)
-      const detailRows = this._detailRowsByLinkingId.get(linkingId) ?? []
-      const groupIdx = this.rowData.findIndex((row) => row._isGroup === true && row.id === linkingId)
-      if (groupIdx === -1) return
-      const newRowData = [...this.rowData]
-      newRowData.splice(groupIdx + 1, 0, ...detailRows)
-      this.rowData = newRowData
     }
+    this.rowData = this.buildRows()
     this.gridApi?.refreshCells({ columns: ['expand_col'], force: true })
+  }
+
+  onFilterChanged(): void {
+    // Fires on every keystroke; only rebuild when switching between grouped and flat rows
+    if (this.mode !== 'list' || this.gridApi.isAnyFilterPresent() === this._showingFlatRows) return
+    this.rowData = this.buildRows()
   }
 
   onGridReady(params: GridReadyEvent): void {
@@ -410,17 +429,38 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   onSelectCycleClosed(): void {
+    const previousCycleIds = this.currentUser.settings.crossCycles[this.type]
     this.currentUser.settings.crossCycles[this.type] = this.selectedCycleIds
-    this.updateOrgUserSettings()
-      .pipe(switchMap(() => this.setGrid()))
-      .subscribe()
+    this.saveSettingsAndReload(() => {
+      this.currentUser.settings.crossCycles[this.type] = previousCycleIds
+      this.selectedCycleIds = this.getSelectedCycleIds()
+    })
   }
 
   onSelectProfile(): void {
+    const previousProfileId = this.currentUser.settings.profile.list[this.type]
     this.currentUser.settings.profile.list[this.type] = this.selectedProfileId
     this.profile = this.profiles.find((p) => p.id === this.selectedProfileId)
+    this.saveSettingsAndReload(() => {
+      this.currentUser.settings.profile.list[this.type] = previousProfileId
+      this.selectedProfileId = previousProfileId
+      this.profile = this.profiles.find((p) => p.id === previousProfileId)
+    })
+  }
+
+  /*
+   * currentUser.settings is shared app-wide and is changed before saving, so a failed save must undo
+   * that change (the service already reports the error) and leave the grid on its current data.
+   */
+  saveSettingsAndReload(undoChange: () => void): void {
     this.updateOrgUserSettings()
-      .pipe(switchMap(() => this.setGrid()))
+      .pipe(
+        catchError(() => {
+          undoChange()
+          return EMPTY
+        }),
+        switchMap(() => this.setGrid()),
+      )
       .subscribe()
   }
 
