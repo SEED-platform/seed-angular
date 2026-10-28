@@ -372,6 +372,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
    * State ids are only known for the rows loaded on this page.
    */
   selectAllMatching() {
+    if (!this.gridApi || !this.cycleId || !this.orgId) return
     this.gridApi.selectAll()
     const requestId = ++this._selectAllRequestId
     const params = this._inventoryParams({ idsOnly: true })
