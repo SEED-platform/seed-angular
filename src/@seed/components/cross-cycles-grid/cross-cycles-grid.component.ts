@@ -7,7 +7,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'
 import type { Observable } from 'rxjs'
-import { catchError, combineLatest, EMPTY, finalize, of, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { catchError, combineLatest, EMPTY, filter, finalize, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Organization } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent } from '@seed/components'
@@ -111,11 +111,11 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   getDependencies(org: Organization): Observable<unknown> {
     this.org = org
     this.orgId = org.id
-    this._cycleService.getCycles(this.orgId)
+    // Clear the previous org's grid so it doesn't linger while this org's cycles load
+    this.cycles = []
+    this.rowData = []
 
     if (!org.cycles.length) {
-      this.cycles = []
-      this.rowData = []
       return EMPTY
     }
 
@@ -123,7 +123,11 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
     return combineLatest([
       this._userService.currentUser$,
-      this._cycleService.cycles$,
+      // CycleService loads cycles on org change; wait for this org's list once instead of refetching
+      this._cycleService.cycles$.pipe(
+        filter((cycles) => cycles[0]?.organization === this.orgId),
+        take(1),
+      ),
       this._inventoryService.getColumnListProfiles('List View Profile', this.type),
       this._organizationService.getMatchingCriteriaColumns(this.orgId, this.type),
       columns$,
