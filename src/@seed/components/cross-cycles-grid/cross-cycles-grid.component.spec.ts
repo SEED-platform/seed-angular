@@ -64,6 +64,7 @@ describe('CrossCyclesGridComponent', () => {
     component = TestBed.runInInjectionContext(() => new CrossCyclesGridComponent())
     component.type = 'properties'
     component.gridApi = {
+      isDestroyed: () => false,
       isAnyFilterPresent: () => filterPresent,
       getColumnState: () => [{ colId: 'site_eui_56', sort: sortActive ? 'desc' : null }],
       refreshCells: () => undefined,
@@ -137,6 +138,34 @@ describe('CrossCyclesGridComponent', () => {
       [7, true],
       [7, false],
       [7, false],
+      [8, true],
+    ])
+  })
+
+  it('stays flat while a filter and a sort are both active and only one is cleared', () => {
+    filterPresent = true
+    sortActive = true
+    component.onFilterOrSortChanged()
+    filterPresent = false
+    component.onFilterOrSortChanged()
+
+    expect(component.rowData.every((r) => !r._isGroup)).toBeTrue()
+
+    filterPresent = true
+    sortActive = false
+    component.onFilterOrSortChanged()
+
+    expect(component.rowData.every((r) => !r._isGroup)).toBeTrue()
+  })
+
+  it('rebuilds grouped rows when the grid was destroyed (e.g. after deselecting every cycle)', () => {
+    // A destroyed grid's API stub returns undefined from every method but isDestroyed
+    component.gridApi = { isDestroyed: () => true, isAnyFilterPresent: () => undefined, getColumnState: () => undefined } as unknown as GridApi
+    component.setGrid().subscribe()
+
+    expect(component.error).toBeFalse()
+    expect(component.rowData.map((r) => [r.id, r._isGroup])).toEqual([
+      [7, true],
       [8, true],
     ])
   })

@@ -398,7 +398,9 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   shouldShowFlatRows(): boolean {
-    return (this.gridApi?.isAnyFilterPresent() || this.gridApi?.getColumnState().some((c) => c.sort)) ?? false
+    // The template removes the grid when there are no rows, leaving gridApi pointing at a destroyed grid
+    if (!this.gridApi || this.gridApi.isDestroyed()) return false
+    return this.gridApi.isAnyFilterPresent() || this.gridApi.getColumnState().some((c) => c.sort)
   }
 
   onFilterOrSortChanged(): void {
