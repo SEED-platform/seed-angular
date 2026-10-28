@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
-import type { GridApi } from 'ag-grid-community'
+import type { ColDef, GridApi } from 'ag-grid-community'
 import { of, throwError } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Organization } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
@@ -114,6 +114,20 @@ describe('CrossCyclesGridComponent', () => {
       [8, true],
       [8, false],
     ])
+  })
+
+  // Only catches the bug outside UTC (CI runs in UTC): TZ=America/Denver pnpm ng test
+  it('displays and filters date-only values as local calendar dates', () => {
+    const jan1 = new Date(2022, 0, 1)
+    const formatCycleStart = component.buildCycleStartColumnDef().valueFormatter as (p: { value: string }) => string
+    const dateColDef: ColDef = {}
+    component.applyDataTypeFormatting(dateColDef, 'date')
+    const formatDate = dateColDef.valueFormatter as (p: { value: string }) => string
+
+    expect(formatCycleStart({ value: '2022-01-01' })).toBe(jan1.toLocaleDateString())
+    expect(formatDate({ value: '2022-01-01' })).toBe(jan1.toLocaleDateString())
+    expect(component.dateComparator(jan1, '2022-01-01')).toBe(0)
+    expect(formatDate({ value: '2022-02-30' })).toBe('Invalid Date')
   })
 
   it('saves a new cycle selection and reloads the grid', () => {
