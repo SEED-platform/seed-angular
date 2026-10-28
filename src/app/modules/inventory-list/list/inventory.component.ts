@@ -76,6 +76,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   @ViewChild('grid') gridComponent: InventoryGridComponent
   @ViewChild(FilterGroupSelectorComponent) filterGroupSelector: FilterGroupSelectorComponent
   private _groupPropertyIds: number[] | null = null
+  private _selectAllRequestId = 0
   accessLevelNames: string[] = []
   chunk = 100
   columns: Column[] = []
@@ -121,7 +122,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
   initPage() {
     this._userService.currentOrganizationId$
       .pipe(
-        switchMap((orgId) => this.getDependencies(orgId)),
+        switchMap((orgId) => {
+          this._invalidateSelectAllRequest()
+          return this.getDependencies(orgId)
+        }),
         map((results) => this.setDependencies(results)),
         switchMap((profile_id) => this.getProfile(profile_id)),
         tap(() => {
@@ -184,6 +188,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onRefreshInventory(profileId: number | null) {
+    this._invalidateSelectAllRequest()
     this.refreshInventory$.next(profileId)
   }
 
@@ -347,6 +352,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onSelectionChanged() {
+    this._invalidateSelectAllRequest()
     // this.selectedViewIds = this.type === 'taxlots'
     //   ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
     //   : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
@@ -367,11 +373,14 @@ export class InventoryComponent implements OnDestroy, OnInit {
    */
   selectAllMatching() {
     this.gridApi.selectAll()
+    const requestId = ++this._selectAllRequestId
     const params = this._inventoryParams({ idsOnly: true })
     this._inventoryService
       .getAgInventory(params.toString(), this._inventoryFilterData())
       .pipe(take(1))
       .subscribe(({ results }: { results: number[] }) => {
+        if (requestId !== this._selectAllRequestId) return
+
         this.selectedViewIds = results
         this.selectedStateIds
           = this.type === 'taxlots'
@@ -381,10 +390,12 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onProfileChange(id: number) {
+    this._invalidateSelectAllRequest()
     this.profileId$.next(id)
   }
 
   onCycleChange(id: number) {
+    this._invalidateSelectAllRequest()
     this.cycleId = id
     this.cycle = this.cycles.find((cycle) => cycle.id === id)
     this.page = 1
@@ -398,6 +409,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onPageChange(page: number) {
+    this._invalidateSelectAllRequest()
     this.page = page
     this.refreshInventory$.next(null)
   }
@@ -460,6 +472,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onFilterGroupApplied(fg: { query_dict?: Record<string, unknown> } | null): void {
+    this._invalidateSelectAllRequest()
     // Sync filter group's query_dict into userSettings so loadInventory uses consistent filters
     if (fg?.query_dict) {
       this.userSettings = {
@@ -480,6 +493,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onLabelSelectionsChanged(selections: LabelSelections): void {
+    this._invalidateSelectAllRequest()
     this.labelSelections = selections
     this.page = 1
     // Create new userSettings reference to trigger OnChanges in FilterSortChipsComponent
@@ -492,6 +506,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   }
 
   onFilterSortChange({ sorts, filters }: FiltersSorts) {
+    this._invalidateSelectAllRequest()
     this.page = 1
     this.userSettings.filters[this.type] = filters
     this.userSettings.sorts[this.type] = sorts
@@ -511,6 +526,10 @@ export class InventoryComponent implements OnDestroy, OnInit {
       organization_id: this.orgId.toString(),
       inventory_type: this.type === 'properties' ? 'property' : 'taxlot',
     })
+  }
+
+  private _invalidateSelectAllRequest(): void {
+    this._selectAllRequestId++
   }
 
   // Request body shared by the paged grid load and the ids-only "select all" so both honor the same filters
