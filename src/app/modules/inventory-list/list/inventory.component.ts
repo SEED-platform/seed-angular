@@ -517,7 +517,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
   private _inventoryFilterData(): Record<string, unknown> {
     const { includeViewIds, excludeViewIds } = this._computeLabelViewIds()
     const data: Record<string, unknown> = {
-      include_property_ids: this._groupPropertyIds,
+      include_property_ids: this.groupId ? (this._groupPropertyIds?.length ? this._groupPropertyIds : [0]) : null,
       profile_id: this.profileId,
       filters: this.filters,
       sorts: this.sorts,
