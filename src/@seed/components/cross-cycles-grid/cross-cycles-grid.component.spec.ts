@@ -160,7 +160,11 @@ describe('CrossCyclesGridComponent', () => {
 
   it('rebuilds grouped rows when the grid was destroyed (e.g. after deselecting every cycle)', () => {
     // A destroyed grid's API stub returns undefined from every method but isDestroyed
-    component.gridApi = { isDestroyed: () => true, isAnyFilterPresent: () => undefined, getColumnState: () => undefined } as unknown as GridApi
+    component.gridApi = {
+      isDestroyed: () => true,
+      isAnyFilterPresent: () => undefined,
+      getColumnState: () => undefined,
+    } as unknown as GridApi
     component.setGrid().subscribe()
 
     expect(component.error).toBeFalse()
