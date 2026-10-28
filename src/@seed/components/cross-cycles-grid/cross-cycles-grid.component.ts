@@ -360,12 +360,13 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   }
 
   /*
-   * Group rows carry no field values, so a column filter would hide every group. While any filter
-   * is active, show the cycle rows ungrouped so filters match real per-cycle values.
+   * Group rows carry no field values, so a column filter would hide every group and a sort would
+   * split cycle rows from their group. While any filter or sort is active, show the cycle rows
+   * ungrouped so they filter and sort on real per-cycle values.
    */
   buildRows(): Record<string, unknown>[] {
     const groups = [...this._detailRowsByLinkingId.entries()]
-    this._showingFlatRows = this.gridApi?.isAnyFilterPresent() ?? false
+    this._showingFlatRows = this.shouldShowFlatRows()
     if (this._showingFlatRows) {
       return groups.flatMap(([, detailRows]) => detailRows)
     }
@@ -396,9 +397,15 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     this.gridApi?.refreshCells({ columns: ['expand_col'], force: true })
   }
 
-  onFilterChanged(): void {
+  shouldShowFlatRows(): boolean {
+    // The template removes the grid when there are no rows, leaving gridApi pointing at a destroyed grid
+    if (!this.gridApi || this.gridApi.isDestroyed()) return false
+    return this.gridApi.isAnyFilterPresent() || this.gridApi.getColumnState().some((c) => c.sort)
+  }
+
+  onFilterOrSortChanged(): void {
     // Fires on every keystroke; only rebuild when switching between grouped and flat rows
-    if (this.mode !== 'list' || this.gridApi.isAnyFilterPresent() === this._showingFlatRows) return
+    if (this.mode !== 'list' || this.shouldShowFlatRows() === this._showingFlatRows) return
     this.rowData = this.buildRows()
   }
 
