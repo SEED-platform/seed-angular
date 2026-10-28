@@ -22,11 +22,11 @@
       <mat-label>Color</mat-label>
       <mat-select formControlName="color">
         <mat-select-trigger>
-          <div class="label {{ form.controls.color?.value }}">{{ form.controls.color?.value }}</div>
+          <div class="label compact {{ form.controls.color?.value }}">{{ form.controls.color?.value }}</div>
         </mat-select-trigger>
         @for (c of colors; track c) {
           <mat-option [value]="c">
-            <div class="label {{ c }}">{{ c }}</div>
+            <div class="label compact {{ c }}">{{ c }}</div>
           </mat-option>
         }
       </mat-select>

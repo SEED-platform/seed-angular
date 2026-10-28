@@ -329,9 +329,7 @@ export class InventoryGridComponent implements OnChanges {
           for (const label of labels) {
             const colorClass = label.color === 'light blue' ? 'blue light' : label.color
             const span = document.createElement('span')
-            span.className = `label ${colorClass} whitespace-nowrap`
-            // Override the global .label padding/margin and the cell's tall line-height
-            span.style.cssText = 'display:inline-flex;align-items:center;height:20px;padding:0 8px;margin:0;line-height:1;'
+            span.className = `label compact ${colorClass} whitespace-nowrap`
             span.textContent = label.name
             container.appendChild(span)
           }

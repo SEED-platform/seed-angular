@@ -132,8 +132,8 @@ export class LabelsModalComponent implements OnInit, OnDestroy {
       goalBadge = `<span class="text-secondary ml-2 whitespace-nowrap text-xs italic" title="${badgeTitle}">${badgeText}</span>`
     }
     return `
-      <div class="flex items-center">
-        <div class="label ${data.color} whitespace-nowrap px-2">${data.name}</div>${goalBadge}
+      <div class="flex h-full items-center">
+        <div class="label compact ${data.color} whitespace-nowrap">${data.name}</div>${goalBadge}
       </div>
     `
   }

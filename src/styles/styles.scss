@@ -9,7 +9,6 @@
   --warning-text-color: rgb(180 83 9);
   --error-text-color: rgb(185 28 28);
   --header-row-bg: #f2f2f2; /* Light mode background */
-
 }
 
 seed-page.portfolio-summary-compact-buttons {
@@ -64,7 +63,7 @@ seed-page.portfolio-summary-compact-buttons {
 
     button {
       span {
-        color: rgb(20 83 45)
+        color: rgb(20 83 45);
       }
     }
 
@@ -79,7 +78,7 @@ seed-page.portfolio-summary-compact-buttons {
 
     button {
       span {
-        color: rgb(30 58 138)
+        color: rgb(30 58 138);
       }
     }
 
@@ -94,7 +93,7 @@ seed-page.portfolio-summary-compact-buttons {
 
     button {
       span {
-        color: rgb(127 29 29)
+        color: rgb(127 29 29);
       }
     }
 
@@ -109,7 +108,7 @@ seed-page.portfolio-summary-compact-buttons {
 
     button {
       span {
-        color: rgb(120 53 15)
+        color: rgb(120 53 15);
       }
     }
 
@@ -155,6 +154,16 @@ seed-page.portfolio-summary-compact-buttons {
   display: inline;
   width: auto;
 
+  // Tight pill for labels shown in lists and grids (inventory Labels column, Add / Remove Labels modal)
+  &.compact {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 8px;
+    margin: 0;
+    line-height: 1;
+  }
+
   &.orange {
     background-color: theme('colors.orange.400');
   }
@@ -181,13 +190,13 @@ seed-page.portfolio-summary-compact-buttons {
 }
 
 .even-row {
-  @apply bg-gray-100
+  @apply bg-gray-100;
 }
 
 .inventory-grid {
   .ag-header-cell {
     .cell-menu {
-      overflow: visible !important
+      overflow: visible !important;
     }
   }
 
@@ -208,9 +217,8 @@ seed-page.portfolio-summary-compact-buttons {
   }
 }
 
-.seed-chip
-.mat-mdc-chip-action-label {
-  @apply inline !text-gray-700 dark:!text-secondary !text-xs;
+.seed-chip .mat-mdc-chip-action-label {
+  @apply inline !text-xs !text-gray-700 dark:!text-secondary;
 }
 
 .fit-content-select.mat-mdc-select-panel {
@@ -222,11 +230,12 @@ seed-page.portfolio-summary-compact-buttons {
   --header-row-bg: #0f172b;
 
   .even-row {
-    @apply bg-slate-900
+    @apply bg-slate-900;
   }
 
   .mat-mdc-option-active {
-    .mdc-list-item__primary-text, .mat-pseudo-checkbox::after {
+    .mdc-list-item__primary-text,
+    .mat-pseudo-checkbox::after {
       color: lightblue !important;
     }
   }
@@ -258,11 +267,11 @@ seed-page.portfolio-summary-compact-buttons {
 }
 
 .h-full-page {
-  height: calc(100vh - 235px)
+  height: calc(100vh - 235px);
 }
 
 .h-full-page-tabs {
-  height: calc(100vh - 265px)
+  height: calc(100vh - 265px);
 }
 
 .fp-in-plan {
@@ -299,15 +308,15 @@ seed-page.portfolio-summary-compact-buttons {
 }
 
 .menu-option {
-  @apply w-full p-2 flex items-center gap-4 rounded hover:bg-[#F4F5F4] hover:dark:bg-[#2E3B4A] text-sm cursor-pointer
+  @apply flex w-full cursor-pointer items-center gap-4 rounded p-2 text-sm hover:bg-[#F4F5F4] hover:dark:bg-[#2E3B4A];
 }
 
 .vertical-divider {
-  @apply border
+  @apply border;
 }
 
 .mock-button {
-  @apply border border-primary bg-primary py-1 px-2 rounded-full whitespace-nowrap text-white
+  @apply whitespace-nowrap rounded-full border border-primary bg-primary px-2 py-1 text-white;
 }
 
 // Fix Material button color theming (M2 color attribute removed in AM v21)
@@ -320,7 +329,7 @@ seed-page.portfolio-summary-compact-buttons {
 
   &.mat-primary:disabled,
   &[color='primary']:disabled {
-    @apply bg-primary/40 text-white/70 cursor-not-allowed #{'!important'};
+    @apply cursor-not-allowed bg-primary/40 text-white/70 #{'!important'};
   }
 
   &.mat-warn:not(:disabled),
@@ -330,7 +339,7 @@ seed-page.portfolio-summary-compact-buttons {
 
   &.mat-warn:disabled,
   &[color='warn']:disabled {
-    @apply bg-warn/40 text-white/70 cursor-not-allowed #{'!important'};
+    @apply cursor-not-allowed bg-warn/40 text-white/70 #{'!important'};
   }
 }
 
@@ -390,12 +399,12 @@ seed-page.portfolio-summary-compact-buttons {
 }
 
 .border-button-toggle-group {
-  @apply rounded-full w-fit gap-0 !important;
+  @apply w-fit gap-0 rounded-full !important;
 
   border: 1px solid rgb(170 170 170) !important;
 
   .mat-button-toggle {
-    @apply rounded-none m-0 !important;
+    @apply m-0 rounded-none !important;
   }
 
   .mat-button-toggle:not(:first-child) {
@@ -421,13 +430,14 @@ seed-page.portfolio-summary-compact-buttons {
 }
 
 .compact-form {
-  label, span {
+  label,
+  span {
     @apply text-sm !important;
   }
 
   .mat-mdc-form-field-flex,
   .mat-mdc-form-field-infix {
-    @apply text-sm h-10 min-h-10 my-auto !important;
+    @apply my-auto h-10 min-h-10 text-sm !important;
   }
 }
 
@@ -467,7 +477,7 @@ seed-page.portfolio-summary-compact-buttons {
 
 .accordion-sub-tables {
   .mat-expansion-panel {
-    @apply border m-0 !rounded-none;
+    @apply m-0 !rounded-none border;
   }
 
   .mat-expansion-panel-body {
