@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { Router } from '@angular/router'
 import { TranslocoService } from '@jsverse/transloco'
 import type { GridApi } from 'ag-grid-community'
-import { of, throwError } from 'rxjs'
+import { BehaviorSubject, of, throwError } from 'rxjs'
 import type { Column, CurrentUser, Cycle, Organization } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { ConfigService } from '@seed/services'
@@ -13,11 +13,13 @@ describe('CrossCyclesGridComponent', () => {
   let filterPresent: boolean
   let saveSucceeds: boolean
   let filterByCycle: jasmine.Spy
+  let cycleService: { cycles$: BehaviorSubject<Cycle[]> }
+  let userService: { currentUser$: unknown }
 
   // Cycle ids deliberately out of start-date order
   const cycles = [
-    { id: 1, name: '2023', start: '2023-01-01' },
-    { id: 2, name: '2022', start: '2022-01-01' },
+    { id: 1, name: '2023', start: '2023-01-01', organization: 1 },
+    { id: 2, name: '2022', start: '2022-01-01', organization: 1 },
   ] as Cycle[]
   const columns = [
     { id: 5, column_name: 'custom_id_1', name: 'custom_id_1_5', display_name: 'Custom ID 1', data_type: 'string', related: false },
@@ -36,10 +38,14 @@ describe('CrossCyclesGridComponent', () => {
     filterPresent = false
     saveSucceeds = true
     filterByCycle = jasmine.createSpy('filterByCycle').and.returnValue(of(dataByCycle))
+    cycleService = { cycles$: new BehaviorSubject(cycles) }
+    userService = {
+      currentUser$: of({ settings: { profile: { list: {} }, crossCycles: { properties: [1, 2] } } } as unknown as CurrentUser),
+    }
     TestBed.configureTestingModule({
       providers: [
         { provide: ColumnService, useValue: { propertyColumns$: of(columns) } },
-        { provide: CycleService, useValue: { cycles$: of(cycles), getCycles: () => undefined } },
+        { provide: CycleService, useValue: cycleService },
         { provide: InventoryService, useValue: { getColumnListProfiles: () => of([]), filterByCycle } },
         {
           provide: OrganizationService,
@@ -48,12 +54,7 @@ describe('CrossCyclesGridComponent', () => {
             updateOrganizationUser: () => (saveSucceeds ? of({}) : throwError(() => new Error('save failed'))),
           },
         },
-        {
-          provide: UserService,
-          useValue: {
-            currentUser$: of({ settings: { profile: { list: {} }, crossCycles: { properties: [1, 2] } } } as unknown as CurrentUser),
-          },
-        },
+        { provide: UserService, useValue: userService },
         { provide: Router, useValue: {} },
         { provide: ConfigService, useValue: { gridTheme$: of(null) } },
         { provide: TranslocoService, useValue: { translate: (key: string) => key } },
@@ -147,5 +148,40 @@ describe('CrossCyclesGridComponent', () => {
     expect(component.selectedProfileId).toBeUndefined()
     expect(component.profile).toBeUndefined()
     expect(filterByCycle).not.toHaveBeenCalled()
+  })
+
+  describe('while the cycle list is still loading', () => {
+    const org = { id: 1, cycles: [1, 2], display_decimal_places: 2 } as unknown as Organization
+
+    beforeEach(() => {
+      filterByCycle.calls.reset()
+      cycleService.cycles$ = new BehaviorSubject<Cycle[]>([])
+    })
+
+    it('requests filter_by_cycle once, after the cycles arrive', () => {
+      component.getDependencies(org).subscribe()
+      cycleService.cycles$.next(cycles)
+      cycleService.cycles$.next([...cycles])
+
+      expect(filterByCycle).toHaveBeenCalledOnceWith(1, undefined, [1, 2], 'properties')
+    })
+
+    it('defaults to the first cycle without throwing when no cycles were saved', () => {
+      userService.currentUser$ = of({ settings: { profile: { list: {} } } } as unknown as CurrentUser)
+
+      const error = jasmine.createSpy('error')
+      component.getDependencies(org).subscribe({ error })
+      cycleService.cycles$.next(cycles)
+
+      expect(error).not.toHaveBeenCalled()
+      expect(filterByCycle).toHaveBeenCalledOnceWith(1, undefined, [1], 'properties')
+    })
+
+    it("ignores another org's cycles", () => {
+      component.getDependencies(org).subscribe()
+      cycleService.cycles$.next([{ ...cycles[0], organization: 2 }])
+
+      expect(filterByCycle).not.toHaveBeenCalled()
+    })
   })
 })
