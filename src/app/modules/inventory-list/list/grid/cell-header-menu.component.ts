@@ -197,9 +197,9 @@ export class CellHeaderMenuComponent implements IHeaderAngularComp, AfterViewIni
   }
 
   detach() {
+    const restoreFocus = this._openedWithKeyboard || this.overlayRef.overlayElement.contains(document.activeElement)
     this.overlayRef.detach()
-    // Only keyboard users need focus handed back; mouse users would just see a stray focus ring
-    if (this._openedWithKeyboard) {
+    if (restoreFocus) {
       this.params.eGridHeader.focus()
     }
   }
