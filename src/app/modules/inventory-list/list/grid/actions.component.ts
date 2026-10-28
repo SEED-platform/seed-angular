@@ -66,6 +66,10 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   organization: Organization | null = null
   showAccessLevelInstances = true
 
+  get canEmailSelection(): boolean {
+    return this.hasSelection && this.selectedStateIds.length === this.selectedViewIds.length
+  }
+
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((org) => {
       this.organization = org
@@ -255,6 +259,8 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   }
 
   openEmailModal() {
+    if (!this.canEmailSelection) return
+
     const dialogRef = this._dialog.open(EmailModalComponent, {
       width: '40rem',
       data: {

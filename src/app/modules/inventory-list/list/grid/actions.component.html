@@ -107,7 +107,7 @@
   <!-- MISC / OTHER -->
   <mat-divider class="my-0"></mat-divider>
   <span class="text-secondary text-sm">Other</span>
-  <seed-menu-item [disabled]="!hasSelection" (action)="openEmailModal()" label="Email"></seed-menu-item>
+  <seed-menu-item [disabled]="!canEmailSelection" (action)="openEmailModal()" label="Email"></seed-menu-item>
   @if (!groupMode) {
     @if (type === 'properties') {
       <seed-menu-item [disabled]="!hasSelection" (action)="openFempExportModal()" label="FEMP CTS Export"></seed-menu-item>
