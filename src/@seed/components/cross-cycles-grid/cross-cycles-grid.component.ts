@@ -31,6 +31,15 @@ const NUMERIC_DATA_TYPES = new Set<Column['data_type']>([
 ])
 const DECIMAL_DATA_TYPES = new Set<Column['data_type']>(['number', 'float', 'area', 'eui'])
 
+// new Date('YYYY-MM-DD') is UTC midnight (the previous day in US time zones), so read date-only strings as local dates
+const parseDate = (value: string): Date => {
+  const [, y, m, d] = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value) ?? []
+  if (!y) return new Date(value)
+  const date = new Date(+y, +m - 1, +d)
+  // Reject impossible dates like 2022-02-30 instead of rolling them over to another day
+  return date.getMonth() === +m - 1 ? date : new Date(NaN)
+}
+
 @Component({
   selector: 'seed-cross-cycles-grid',
   templateUrl: './cross-cycles-grid.component.html',
@@ -272,7 +281,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
       filter: 'agDateColumnFilter',
       filterParams: { comparator: this.dateComparator },
       ...(this.mode === 'detail' ? { sort: 'asc' as const, sortIndex: 0 } : {}),
-      valueFormatter: ({ value }: { value: string }) => (value ? new Date(value).toLocaleDateString() : ''),
+      valueFormatter: ({ value }: { value: string }) => (value ? parseDate(value).toLocaleDateString() : ''),
       width: 130,
     }
   }
@@ -301,7 +310,10 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
     if (dataType === 'datetime' || dataType === 'date') {
       colDef.filter = 'agDateColumnFilter'
       colDef.filterParams = { comparator: this.dateComparator }
-      colDef.valueFormatter = ({ value }: { value: string }) => (value ? new Date(value).toLocaleString() : '')
+      colDef.valueFormatter = ({ value }: { value: string }) => {
+        if (!value) return ''
+        return dataType === 'date' ? parseDate(value).toLocaleDateString() : parseDate(value).toLocaleString()
+      }
       return
     }
     if (dataType === 'boolean') {
@@ -319,7 +331,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
 
   dateComparator = (filterDate: Date, cellValue: string): number => {
     if (!cellValue) return -1
-    const cellDate = new Date(cellValue)
+    const cellDate = parseDate(cellValue)
     if (cellDate < filterDate) return -1
     if (cellDate > filterDate) return 1
     return 0
