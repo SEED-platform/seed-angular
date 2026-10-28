@@ -44,6 +44,11 @@ export function applyColumnProfile(profile: Profile, columnDefs: ColDef[]): ColD
     })
 }
 
+export function updatePageSelection(selectedViewIds: number[], pageViewIds: number[], selectedPageViewIds: number[]): number[] {
+  const pageIds = new Set(pageViewIds)
+  return [...new Set([...selectedViewIds.filter((id) => !pageIds.has(id)), ...selectedPageViewIds])]
+}
+
 @Component({
   selector: 'seed-inventory',
   templateUrl: './inventory.component.html',
@@ -353,16 +358,18 @@ export class InventoryComponent implements OnDestroy, OnInit {
 
   onSelectionChanged() {
     this._invalidateSelectAllRequest()
-    // this.selectedViewIds = this.type === 'taxlots'
-    //   ? this.gridApi.getSelectedRows().map(({ taxlot_view_id }: { taxlot_view_id: number }) => taxlot_view_id)
-    //   : this.gridApi.getSelectedRows().map(({ property_view_id }: { property_view_id: number }) => property_view_id)
-
     const selectedRows = this.gridApi.getSelectedRows() as State[]
+    const pageRows = (this.inventory ?? []) as State[]
+    const viewIdForState = (state: State) => (this.type === 'taxlots' ? state.taxlot_view_id : state.property_view_id)
+    this.selectedViewIds = updatePageSelection(
+      this.selectedViewIds,
+      pageRows.map(viewIdForState),
+      selectedRows.map(viewIdForState),
+    )
+
     if (this.type === 'taxlots') {
-      this.selectedViewIds = selectedRows.map((state) => state.taxlot_view_id)
       this.selectedStateIds = selectedRows.map((state) => state.taxlot_state_id)
     } else {
-      this.selectedViewIds = selectedRows.map((state) => state.property_view_id)
       this.selectedStateIds = selectedRows.map((state) => state.property_state_id)
     }
   }

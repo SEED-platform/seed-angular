@@ -9,7 +9,7 @@ import { map } from 'rxjs'
 import type { CurrentUser, Label, OrganizationUserSettings } from '@seed/api'
 import { OrganizationService } from '@seed/api'
 import { ConfigService } from '@seed/services'
-import type { FiltersSorts, InventoryType, Pagination } from '../../../inventory'
+import type { FiltersSorts, InventoryType, Pagination, State } from '../../../inventory'
 import { CellHeaderMenuComponent } from './cell-header-menu.component'
 import { InventoryGridControlsComponent } from './grid-controls.component'
 import { IconHeaderComponent } from './icon-header.component'
@@ -108,23 +108,37 @@ export class InventoryGridComponent implements OnChanges {
     onSelectionChanged: () => {
       this.onSelectionChanged()
     },
+    onRowDataUpdated: () => {
+      this._syncSelectedRows()
+      this._updatingRowData = false
+    },
   }
 
   // Raw API column defs — kept separate so getColumnDefs() doesn't clobber them by overwriting this.columnDefs
   private _apiColumnDefs: ColDef[] = []
+  private _syncingSelection = false
+  private _updatingRowData = false
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes.rowData) {
+      this._updatingRowData = true
+    }
     if (changes.columnDefs) {
       this._apiColumnDefs = this.columnDefs ?? []
     }
     if (changes.rowData || changes.columnDefs) {
       this.getColumnDefs()
     }
+    if (changes.selectedViewIds && this.gridApi) {
+      this._syncSelectedRows()
+    }
   }
 
   onGridReady(params: GridReadyEvent) {
     this.gridApi = params.api
     this.gridReady.emit(this.gridApi)
+    this._syncSelectedRows()
+    this._updatingRowData = false
     this.gridApi.autoSizeAllColumns()
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
     this.gridApi.addEventListener('cellKeyDown', this.onCellKeyDown.bind(this) as (event: CellKeyDownEvent) => void)
@@ -162,6 +176,7 @@ export class InventoryGridComponent implements OnChanges {
   }
 
   onSelectionChanged() {
+    if (this._syncingSelection || this._updatingRowData) return
     this.selectionChanged.emit()
   }
 
@@ -364,5 +379,23 @@ export class InventoryGridComponent implements OnChanges {
   getShownLabels(labelIds: number[]): Label[] {
     if (!labelIds?.length) return []
     return labelIds.map((id) => this.labelMap[id]).filter((label) => label?.show_in_list)
+  }
+
+  private _syncSelectedRows(): void {
+    if (!this.gridApi) return
+
+    const selectedViewIds = new Set(this.selectedViewIds ?? [])
+    const viewIdField = this.type === 'taxlots' ? 'taxlot_view_id' : 'property_view_id'
+
+    this._syncingSelection = true
+    try {
+      this.gridApi.forEachNode((node) => {
+        const state = node.data as State | undefined
+        const viewId = state?.[viewIdField]
+        node.setSelected(selectedViewIds.has(viewId), false)
+      })
+    } finally {
+      this._syncingSelection = false
+    }
   }
 }
