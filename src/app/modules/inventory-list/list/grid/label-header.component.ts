@@ -12,7 +12,9 @@ type LabelGridContext = {
   selector: 'seed-inventory-label-header',
   template: `
     <div class="flex w-full cursor-pointer items-center gap-2 overflow-hidden" (click)="toggle()">
-      <span class="material-icons-outlined" style="font-size:14px;line-height:1;" aria-hidden="true">{{ expanded ? 'chevron_left' : 'chevron_right' }}</span>
+      <span class="material-icons-outlined" style="font-size:14px;line-height:1;" aria-hidden="true">{{
+        expanded ? 'chevron_left' : 'chevron_right'
+      }}</span>
       @if (expanded) {
         <span class="my-auto truncate">{{ displayName }}</span>
       }

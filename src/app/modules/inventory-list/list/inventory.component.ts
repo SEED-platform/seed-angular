@@ -361,11 +361,7 @@ export class InventoryComponent implements OnDestroy, OnInit {
     const selectedRows = this.gridApi.getSelectedRows() as State[]
     const pageRows = (this.inventory ?? []) as State[]
     const viewIdForState = (state: State) => (this.type === 'taxlots' ? state.taxlot_view_id : state.property_view_id)
-    this.selectedViewIds = updatePageSelection(
-      this.selectedViewIds,
-      pageRows.map(viewIdForState),
-      selectedRows.map(viewIdForState),
-    )
+    this.selectedViewIds = updatePageSelection(this.selectedViewIds, pageRows.map(viewIdForState), selectedRows.map(viewIdForState))
 
     if (this.type === 'taxlots') {
       this.selectedStateIds = selectedRows.map((state) => state.taxlot_state_id)

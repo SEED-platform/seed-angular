@@ -62,24 +62,32 @@
       >
     </div>
 
-    <div class="mt-1.5 flex w-full flex-col">
-      <mat-checkbox
-        class="-ml-2"
-        #termsCheckbox
-        [class.mb-5]="!isTermsInvalid"
-        (keydown.enter)="termsCheckbox.toggle(); $event.preventDefault()"
-        color="primary"
-        formControlName="terms"
-      >
-        <span>I agree with the&nbsp;</span>
-        <a class="cursor-pointer text-primary-500 hover:underline focus:underline" (click)="$event.preventDefault(); showTermsOfService()"
-          >Data Terms</a
+    @if (termsPreviouslyAccepted) {
+      <div class="text-secondary mt-1.5 flex w-full items-center gap-2">
+        <mat-icon class="text-green-600 icon-size-5" svgIcon="fa-solid:circle-check"></mat-icon>
+        <span>Already accepted Data Terms</span>
+        <button class="text-primary-500" (click)="showTermsOfService()" mat-button type="button">Review terms</button>
+      </div>
+    } @else {
+      <div class="mt-1.5 flex w-full flex-col">
+        <mat-checkbox
+          class="-ml-2"
+          #termsCheckbox
+          [class.mb-5]="!isTermsInvalid"
+          (keydown.enter)="termsCheckbox.toggle(); $event.preventDefault()"
+          color="primary"
+          formControlName="terms"
         >
-      </mat-checkbox>
-      @if (isTermsInvalid) {
-        <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the Data Terms.</mat-error>
-      }
-    </div>
+          <span>I agree with the&nbsp;</span>
+          <a class="cursor-pointer text-primary-500 hover:underline focus:underline" (click)="$event.preventDefault(); showTermsOfService()"
+            >Data Terms</a
+          >
+        </mat-checkbox>
+        @if (isTermsInvalid) {
+          <mat-error class="h-5 text-sm font-medium" @fadeInTop>You must accept the Data Terms.</mat-error>
+        }
+      </div>
+    }
 
     <!-- Submit button -->
     <button class="seed-mat-button-large mt-6 w-full" [disabled]="signInForm.disabled" (click)="signIn()" mat-flat-button color="primary">
