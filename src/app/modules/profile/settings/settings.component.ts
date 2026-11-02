@@ -45,7 +45,7 @@ export class ProfileSettingsComponent implements OnInit, OnDestroy {
   }
 
   setScheme(scheme: ColorScheme): void {
-    if (this.saving || this.currentUser.settings.colorScheme === scheme) return
+    if (this.saving || !this.currentUser?.settings || this.currentUser.settings.colorScheme === scheme) return
 
     const previousScheme = this.currentUser.settings.colorScheme
     const settings = { ...this.currentUser.settings, colorScheme: scheme }
