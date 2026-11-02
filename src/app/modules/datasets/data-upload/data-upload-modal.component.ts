@@ -1,6 +1,6 @@
 import type { HttpErrorResponse } from '@angular/common/http'
 import type { AfterViewInit, ElementRef, OnDestroy } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { type MatStepper } from '@angular/material/stepper'
@@ -18,6 +18,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-data-upload-modal',
   templateUrl: './data-upload-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, ProgressBarComponent, ReactiveFormsModule, RouterModule],
 })
 export class DataUploadModalComponent implements AfterViewInit, OnDestroy {

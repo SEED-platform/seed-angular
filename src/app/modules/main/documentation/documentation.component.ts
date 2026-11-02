@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core'
 import { InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 
@@ -6,6 +6,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-documentation',
   templateUrl: './documentation.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [InnerHTMLExternalLinksDirective, InnerHTMLImageOverlayDirective, MaterialImports, SharedImports],
 })
 export class DocumentationComponent {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
@@ -45,6 +45,7 @@ const COLORS = [
   selector: 'seed-custom-reports',
   templateUrl: './custom-reports.component.html',
   styleUrl: './custom-reports.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, MaterialImports, PageComponent, RouterLink],
 })
 export class CustomReportsComponent implements OnDestroy, OnInit {
@@ -245,7 +246,7 @@ export class CustomReportsComponent implements OnDestroy, OnInit {
       filter_groups: [],
       cycles: [],
       parameters: [],
-    } as unknown as CustomReport
+    }
     this.firstAxisAggregations = []
     this.secondAxisAggregations = []
     this.editing = true

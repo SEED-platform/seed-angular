@@ -1,4 +1,4 @@
-import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -14,6 +14,7 @@ import { RenameModalComponent } from './modal/rename-modal.component'
   selector: 'seed-organizations-columns-list-properties',
   template: '',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports],
 })
 export class ListComponent implements OnDestroy {

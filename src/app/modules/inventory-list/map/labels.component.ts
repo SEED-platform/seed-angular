@@ -1,5 +1,5 @@
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { CurrentUser, Label, LabelOperator } from '@seed/api'
 import { OrganizationService } from '@seed/api'
@@ -9,6 +9,7 @@ import { isOrderedSubset } from '@seed/utils/string-matching.util'
 @Component({
   selector: 'seed-inventory-list-map-labels',
   templateUrl: './labels.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, FormsModule],
 })
 export class LabelsComponent implements OnChanges {

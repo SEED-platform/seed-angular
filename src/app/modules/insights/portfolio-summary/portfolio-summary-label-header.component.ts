@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { IHeaderParams } from 'ag-grid-community'
 import type { LabelColumnKey, PortfolioSummaryGridContext } from './portfolio-summary.types'
@@ -13,6 +13,7 @@ import type { LabelColumnKey, PortfolioSummaryGridContext } from './portfolio-su
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class PortfolioSummaryLabelHeaderComponent implements IHeaderAngularComp {
@@ -25,7 +26,7 @@ export class PortfolioSummaryLabelHeaderComponent implements IHeaderAngularComp 
   agInit(params: IHeaderParams<unknown, PortfolioSummaryGridContext>): void {
     this._params = params
     this.displayName = params.displayName
-    this._key = (params.column.getColId() === 'baseline_labels' ? 'baseline' : 'current') as LabelColumnKey
+    this._key = params.column.getColId() === 'baseline_labels' ? 'baseline' : 'current'
     this.expanded = params.context?.labelsExpanded[this._key] ?? false
   }
 

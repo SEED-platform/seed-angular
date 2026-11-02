@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { type MatSelect } from '@angular/material/select'
 import { Router } from '@angular/router'
@@ -8,7 +8,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
 import { filter, take, tap } from 'rxjs'
 import type { AccessLevelInstance, Cycle, Label, Organization } from '@seed/api'
-import { AuditTemplateService, CycleService, InventoryService } from '@seed/api'
+import { AuditTemplateService, CycleService, ConfigService as DeploymentConfigService, InventoryService } from '@seed/api'
 import { LabelComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService, ConfirmationService } from '@seed/services'
@@ -26,6 +26,7 @@ import { UpdateWithEspmModalComponent } from './modal/update-with-espm-modal.com
 @Component({
   selector: 'seed-inventory-detail-header',
   templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, LabelComponent, MapComponent, MaterialImports],
 })
 export class HeaderComponent implements OnInit, OnChanges {
@@ -41,6 +42,7 @@ export class HeaderComponent implements OnInit, OnChanges {
   @Output() changeView = new EventEmitter<number>()
   @Output() refreshDetail = new EventEmitter<null>()
   private _configService = inject(ConfigService)
+  private _deploymentConfigService = inject(DeploymentConfigService)
   private _confirmationService = inject(ConfirmationService)
   private _auditTemplateService = inject(AuditTemplateService)
   private _cycleService = inject(CycleService)
@@ -51,6 +53,10 @@ export class HeaderComponent implements OnInit, OnChanges {
   get groupMappings(): GroupMapping[] {
     return this.view?.property?.group_mappings ?? []
   }
+
+  get shownLabels(): Label[] {
+    return this.labels?.filter((label) => label.show_in_list) ?? []
+  }
   accessLevelInstance: AccessLevelInstance
   aliDataSource = []
   aliColumns: string[] = []
@@ -60,8 +66,13 @@ export class HeaderComponent implements OnInit, OnChanges {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   actions: { name: string; action: () => void; disabled: boolean }[] = []
+  salesforceEnabled = true
 
   ngOnInit(): void {
+    this._deploymentConfigService.config$.subscribe(({ integrations }) => {
+      this.salesforceEnabled = integrations.salesforce
+      this.buildActions()
+    })
     this.enableMap = Boolean(this.view.state.ubid && this.view.state.bounding_box && this.view.state.centroid)
     this.setAliGrid()
     this.buildActions()
@@ -177,7 +188,7 @@ export class HeaderComponent implements OnInit, OnChanges {
             },
           ]
         : []),
-      ...(this.org?.bb_salesforce_enabled && isProperties
+      ...(this.salesforceEnabled && this.org?.bb_salesforce_enabled && isProperties
         ? [
             {
               name: 'Update Salesforce',
@@ -222,7 +233,13 @@ export class HeaderComponent implements OnInit, OnChanges {
   openLabelsModal(): void {
     const dialogRef = this._dialog.open(LabelsModalComponent, {
       width: '50rem',
-      data: { orgId: this.org.id, type: this.type, viewIds: [this.selectedView.id], appliedLabelIds: this.labels.map((l) => l.id) },
+      data: {
+        orgId: this.org.id,
+        type: this.type,
+        viewIds: [this.selectedView.id],
+        appliedLabelIds: this.labels.map((l) => l.id),
+        goalLabelIds: this.labels.filter((l) => l.is_applied_by_goal?.includes(this.selectedView.id)).map((l) => l.id),
+      },
     })
     this.afterClosed(dialogRef)
   }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, RowDragEndEvent } from 'ag-grid-community'
@@ -16,6 +16,7 @@ import type { InventoryType, Profile, State } from 'app/modules/inventory'
 @Component({
   selector: 'seed-pairing',
   templateUrl: './pairing.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, InventoryTabComponent, MaterialImports, PageComponent, SharedImports],
 })
 export class PairingComponent implements OnDestroy, OnInit {

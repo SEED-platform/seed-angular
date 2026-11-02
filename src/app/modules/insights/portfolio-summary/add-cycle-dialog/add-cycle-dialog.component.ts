@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
@@ -14,6 +14,7 @@ import type { AddCycleData } from '../portfolio-summary.types'
 @Component({
   selector: 'seed-add-cycle-dialog',
   templateUrl: './add-cycle-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, ModalHeaderComponent, SharedImports],
 })
 export class AddCycleDialogComponent implements OnInit, OnDestroy {

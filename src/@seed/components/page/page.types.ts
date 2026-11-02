@@ -10,7 +10,10 @@ export type Config = {
   action2Icon?: string;
   action2Text?: string;
   breadcrumbs?: string[];
+  compactHeader?: boolean;
+  dense?: boolean; // compact header (the default); set false for the roomier legacy header
   subTitle?: string;
+  switchLink?: boolean; // shows a 'switch to <other type>' link beside the title instead of the tab strip
   sideNavToggle?: boolean;
   tabs?: InventoryType[];
   title: string;

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import AdmZip from 'adm-zip'
 import { LokaliseApi } from '@lokalise/node-api'
-import decompress from 'decompress'
 import ora from 'ora'
 
 const branch = 'angular'
@@ -36,7 +36,27 @@ try {
   const zipResponse = await fetch(bundle_url)
 
   const i18nDir = 'public/i18n'
-  await decompress(Buffer.from(await zipResponse.arrayBuffer()), i18nDir, { strip: 1 })
+  const zip = new AdmZip(Buffer.from(await zipResponse.arrayBuffer()))
+  const resolvedI18nDir = path.resolve(i18nDir)
+
+  await Promise.all(
+    zip
+      .getEntries()
+      .filter((entry) => !entry.isDirectory)
+      .map(async (entry) => {
+        // Strip the top-level directory the bundle wraps its files in (equivalent to `strip: 1`)
+        const relativePath = entry.entryName.split('/').slice(1).join('/')
+        if (!relativePath) return
+
+        const destination = path.resolve(resolvedI18nDir, relativePath)
+        if (!destination.startsWith(resolvedI18nDir + path.sep)) {
+          throw new Error(`Refusing to extract entry outside of target directory: ${entry.entryName}`)
+        }
+
+        await fs.mkdir(path.dirname(destination), { recursive: true })
+        await fs.writeFile(destination, entry.getData())
+      }),
+  )
 
   // Fix UTC modified timestamps
   const now = new Date()

@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -12,6 +12,7 @@ import { FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-labels',
   templateUrl: './labels.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [LabelComponent, PageComponent, TableContainerComponent, MaterialImports],
 })
 export class LabelsComponent implements OnInit, OnDestroy {

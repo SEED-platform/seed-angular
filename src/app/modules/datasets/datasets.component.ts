@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -20,6 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-data',
   templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent],
 })
 export class DatasetsComponent implements OnDestroy, OnInit {
@@ -39,6 +40,8 @@ export class DatasetsComponent implements OnDestroy, OnInit {
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   orgId: number
+  // Set via the '?create=true' query param (e.g. linked from the dashboard) to auto-open the create dataset dialog
+  private _openCreateOnLoad = false
 
   ngOnInit(): void {
     // Rerun resolver and initializer on org change
@@ -47,6 +50,8 @@ export class DatasetsComponent implements OnDestroy, OnInit {
     //     this._init()
     //   })
     // })
+
+    this._openCreateOnLoad = this._route.snapshot.queryParamMap.get('create') === 'true'
 
     this._userService.currentOrganizationId$
       .pipe(
@@ -63,7 +68,13 @@ export class DatasetsComponent implements OnDestroy, OnInit {
         }),
         takeUntil(this._unsubscribeAll$),
       )
-      .subscribe()
+      .subscribe(() => {
+        if (this._openCreateOnLoad) {
+          this._openCreateOnLoad = false
+          void this._router.navigate([], { relativeTo: this._route, queryParams: {}, replaceUrl: true })
+          this.createDataset()
+        }
+      })
   }
 
   setColumnDefs() {

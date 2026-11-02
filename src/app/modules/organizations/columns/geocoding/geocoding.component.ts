@@ -1,5 +1,5 @@
 import { CdkDrag, type CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop'
-import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { Subject, takeUntil } from 'rxjs'
@@ -14,6 +14,7 @@ import { UpdateModalComponent } from '../modal/update-modal.component'
   selector: 'seed-organizations-column-geocoding-properties',
   templateUrl: './geocoding.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, CdkDropList, CdkDrag, MaterialImports, ReactiveFormsModule],
 })
 export class GeocodingComponent implements OnDestroy {

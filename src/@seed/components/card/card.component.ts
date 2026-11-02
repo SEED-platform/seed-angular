@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, HostBinding, input, ViewEncapsulation } from '@angular/core'
+import { booleanAttribute, ChangeDetectionStrategy, Component, HostBinding, input, ViewEncapsulation } from '@angular/core'
 import { Animations } from '@seed/animations'
 import type { CardFace } from '@seed/components'
 
@@ -8,6 +8,7 @@ import type { CardFace } from '@seed/components'
   styleUrl: './card.component.scss',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
+  changeDetection: ChangeDetectionStrategy.Eager,
   exportAs: 'card',
 })
 export class CardComponent {

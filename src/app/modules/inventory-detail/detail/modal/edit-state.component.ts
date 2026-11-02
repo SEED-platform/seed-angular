@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
@@ -11,6 +11,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-edit-state',
   templateUrl: './edit-state.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ReactiveFormsModule],
 })
 export class EditStateModalComponent implements OnInit {

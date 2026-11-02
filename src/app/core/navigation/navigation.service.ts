@@ -304,14 +304,14 @@ export class NavigationService {
     this.getNavigation()
   }
 
-  getNavigation(): NavigationItem[] {
+  getNavigation(hiddenNavigation: string[] = []): NavigationItem[] {
     const currentUrl = this._router.url
     if (currentUrl.toLowerCase().startsWith('/properties')) {
       this.navigation[0].children = this.inventoryChildrenProperties
     } else if (currentUrl.toLowerCase().startsWith('/taxlots')) {
       this.navigation[0].children = this.inventoryChildrenTaxlots
     }
-    return this.navigation
+    return this.navigation.filter((item) => !item.id || !hiddenNavigation.includes(item.id))
   }
 
   updateBadge(itemId: string, navigationName: string, title: string | number) {

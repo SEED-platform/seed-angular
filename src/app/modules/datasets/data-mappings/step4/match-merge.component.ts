@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { of, Subject, switchMap, takeUntil } from 'rxjs'
 import type { ProgressResponse, SubProgressResponse } from '@seed/api'
@@ -15,6 +15,7 @@ import { ResultsComponent } from './results.component'
 @Component({
   selector: 'seed-match-merge',
   templateUrl: './match-merge.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ProgressBarComponent, RouterModule, ResultsComponent],
 })
 export class MatchMergeComponent implements OnDestroy {

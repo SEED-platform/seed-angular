@@ -1,5 +1,5 @@
 import type { AfterViewInit, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { ActivatedRoute, RouterOutlet } from '@angular/router'
 import { filter, forkJoin, switchMap, tap } from 'rxjs'
@@ -13,6 +13,7 @@ import type { InventoryType } from '../inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-detail-layout',
   templateUrl: './detail-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class DetailLayoutComponent implements AfterViewInit, OnInit {

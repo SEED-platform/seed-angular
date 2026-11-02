@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api'
@@ -11,6 +11,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-bur-config',
   templateUrl: './bur-config.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, MaterialImports, ReactiveFormsModule],
 })
 // BUR: Building Upgrade Recommendation

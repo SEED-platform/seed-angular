@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { forkJoin, take } from 'rxjs'
 import type { Cycle, OrganizationUser, Scenario } from '@seed/api'
@@ -14,6 +14,7 @@ import type { TimelineCycle, TimelineEvent, TimelineEventsResponse } from './tim
 @Component({
   selector: 'seed-inventory-detail-timeline',
   templateUrl: './timeline.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, PageComponent],
 })
 export class TimelineComponent implements OnInit {

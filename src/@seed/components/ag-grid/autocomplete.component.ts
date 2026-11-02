@@ -1,5 +1,5 @@
 import type { AfterViewInit, ElementRef } from '@angular/core'
-import { Component, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import type { ICellEditorAngularComp } from 'ag-grid-angular'
 import type { ICellEditorParams } from 'ag-grid-community'
@@ -8,6 +8,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-ag-grid-auto-complete-cell',
   templateUrl: './autocomplete.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class AutocompleteCellComponent implements ICellEditorAngularComp, AfterViewInit {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Subject } from 'rxjs'
 import { SharedImports } from '@seed/directives'
@@ -10,6 +10,7 @@ import type { Config } from './inventory-tab.types'
 @Component({
   selector: 'seed-page-inventory-tab',
   templateUrl: './inventory-tab.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, SharedImports],
 })
 export class InventoryTabComponent implements OnChanges, OnDestroy, OnInit {

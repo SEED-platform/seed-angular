@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Column, ProgressResponse } from '@seed/api'
@@ -13,6 +13,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-cycles-delete-modal',
   templateUrl: './delete-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, MaterialImports],
 })
 export class DeleteModalComponent implements OnDestroy {

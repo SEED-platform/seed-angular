@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import type { AfterViewInit, OnInit, Type } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { Title } from '@angular/platform-browser'
 import { Router, RouterOutlet } from '@angular/router'
@@ -20,6 +20,7 @@ type ColumnNavigationItem = NavigationItem & { useTabs: boolean; helpComponent: 
 @Component({
   selector: 'seed-organizations-columns',
   templateUrl: './columns.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, SharedImports, InventoryTabComponent, MaterialImports, PageComponent, VerticalNavigationComponent, RouterOutlet],
 })
 export class ColumnsComponent implements AfterViewInit, OnInit {

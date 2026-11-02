@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { MaterialImports } from '@seed/materials'
 import type { ConfirmationConfig } from '..'
@@ -9,6 +9,7 @@ import type { ConfirmationConfig } from '..'
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports],
 })
 export class ConfirmationDialogComponent {

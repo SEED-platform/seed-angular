@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
@@ -33,6 +33,7 @@ type PastCycleRow = {
 @Component({
   selector: 'seed-sync-salesforce-dialog',
   templateUrl: './sync-salesforce-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, MaterialImports, ModalHeaderComponent, TranslocoDirective],
 })
 export class SyncSalesforceDialogComponent implements OnInit {

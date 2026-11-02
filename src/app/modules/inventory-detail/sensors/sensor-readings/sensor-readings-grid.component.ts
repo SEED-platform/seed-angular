@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { CellClickedEvent, ColDef, GridApi, GridReadyEvent, Theme } from 'ag-grid-community'
@@ -13,6 +13,7 @@ import type { Pagination } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-inventory-detail-sensor-readings-grid',
   templateUrl: './sensor-readings-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, FormsModule],
 })
 export class SensorReadingsGridComponent implements OnChanges {

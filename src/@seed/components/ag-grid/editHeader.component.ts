@@ -1,7 +1,8 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 
 @Component({
   selector: 'seed-edit-header',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="flex items-center gap-2">
       <span>{{ name }}</span>

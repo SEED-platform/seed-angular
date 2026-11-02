@@ -56,6 +56,7 @@ export const appRoutes: Route[] = [
     component: LayoutComponent,
     resolve: {
       initialData: initialDataResolver,
+      config: configResolver,
     },
     children: [
       {

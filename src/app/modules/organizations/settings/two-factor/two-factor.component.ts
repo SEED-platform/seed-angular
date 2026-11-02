@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { Organization } from '@seed/api'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-organizations-settings-two-factor',
   templateUrl: './two-factor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class TwoFactorComponent implements OnDestroy, OnInit {

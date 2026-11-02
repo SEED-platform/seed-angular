@@ -1,4 +1,4 @@
-import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
@@ -18,6 +18,7 @@ type ColumnChangeSet = {
   selector: 'seed-organizations-column-import-settings',
   template: '',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports],
 })
 export class ImportSettingsComponent implements OnDestroy {

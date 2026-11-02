@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { Column, Organization } from '@seed/api'
@@ -12,6 +12,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-organizations-settings-display-fields',
   templateUrl: './display-fields.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class DisplayFieldsComponent implements OnDestroy, OnInit {

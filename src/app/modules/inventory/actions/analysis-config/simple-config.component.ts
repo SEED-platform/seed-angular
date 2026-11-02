@@ -1,5 +1,5 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { AnalysisServiceType, BSyncrModelTypes, Cycle, SelectMetersType } from '@seed/api'
@@ -9,6 +9,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-simple-config',
   templateUrl: './simple-config.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class SimpleConfigComponent implements OnChanges, OnDestroy, OnInit {

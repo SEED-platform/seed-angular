@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import type { ParamMap } from '@angular/router'
@@ -40,6 +40,7 @@ import { ProgramConfigComponent } from '../config'
 @Component({
   selector: 'seed-property-insights',
   templateUrl: './property-insights.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     AgGridAngular,
     CommonModule,

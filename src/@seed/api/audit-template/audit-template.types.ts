@@ -1,5 +1,6 @@
-export type AuditTemplateReportType = {
-  name: string;
+export type AuditTemplateReportTypesResponse = {
+  status: string;
+  data: string[];
 }
 
 export type AuditTemplateConfig = {

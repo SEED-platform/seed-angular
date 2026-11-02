@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { combineLatest, Subject, take, takeUntil, tap } from 'rxjs'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-ali-change-modal',
   templateUrl: './ali-change-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ModalHeaderComponent, ReactiveFormsModule],
 })
 export class AliChangeModalComponent implements OnInit, OnDestroy {

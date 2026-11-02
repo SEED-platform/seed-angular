@@ -1,4 +1,4 @@
-import { Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnDestroy, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
@@ -13,6 +13,7 @@ import { DataTypes } from './data-types.constants'
   selector: 'seed-organizations-column-data-types-properties',
   template: '',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports],
 })
 export class DataTypesComponent implements OnDestroy {

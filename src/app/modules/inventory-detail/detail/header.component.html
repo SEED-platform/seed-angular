@@ -49,10 +49,10 @@
     }
 
     <!-- Labels -->
-    @if (labels && labels.length) {
+    @if (shownLabels.length) {
       <div class="text-secondary m-1 mt-2 flex">
         <span class="mr-8 w-12">Labels</span>
-        @for (label of labels; track $index) {
+        @for (label of shownLabels; track $index) {
           <seed-label [label]="label"></seed-label>
         }
       </div>

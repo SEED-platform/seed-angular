@@ -1,7 +1,8 @@
 import type { OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
+import { TranslocoDirective } from '@jsverse/transloco'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import type { Cycle, Organization } from '@seed/api'
@@ -37,7 +38,8 @@ import {
 @Component({
   selector: 'seed-inventory-grid-actions',
   templateUrl: './actions.component.html',
-  imports: [MenuItemComponent, MaterialImports],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [MenuItemComponent, MaterialImports, TranslocoDirective],
 })
 export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() cycleId: number
@@ -52,7 +54,7 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   @Input() selectedViewIds: number[]
   @Input() type: InventoryType
   @Output() refreshInventory = new EventEmitter<number | null>()
-  @Output() selectedAll = new EventEmitter<number[]>()
+  @Output() selectedAll = new EventEmitter<void>()
   @Output() toggleAccessLevels = new EventEmitter<void>()
   private _auditTemplateService = inject(AuditTemplateService)
   private _inventoryService = inject(InventoryService)
@@ -63,6 +65,10 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   hasSelection: boolean
   organization: Organization | null = null
   showAccessLevelInstances = true
+
+  get canEmailSelection(): boolean {
+    return this.hasSelection && this.selectedStateIds.length === this.selectedViewIds.length
+  }
 
   ngOnInit(): void {
     this._organizationService.currentOrganization$.pipe(takeUntil(this._unsubscribeAll$)).subscribe((org) => {
@@ -119,21 +125,9 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
     this.toggleAccessLevels.emit()
   }
 
+  // The parent fetches every matching id so filters, labels, and groups are respected
   selectAll() {
-    this.gridApi.selectAll()
-    const inventory_type = this.type === 'taxlots' ? 'taxlot' : 'property'
-    const params = new URLSearchParams({
-      cycle: this.cycleId?.toString(),
-      ids_only: 'true',
-      include_related: 'true',
-      organization_id: this.orgId.toString(),
-      inventory_type,
-    })
-    const paramString = params.toString()
-    this._inventoryService.getAgInventory(paramString, {}).subscribe(({ results }: { results: number[] }) => {
-      this.selectedViewIds = results
-      this.selectedAll.emit(this.selectedViewIds)
-    })
+    this.selectedAll.emit()
   }
 
   deselectAll() {
@@ -265,6 +259,8 @@ export class ActionsComponent implements OnDestroy, OnChanges, OnInit {
   }
 
   openEmailModal() {
+    if (!this.canEmailSelection) return
+
     const dialogRef = this._dialog.open(EmailModalComponent, {
       width: '40rem',
       data: {

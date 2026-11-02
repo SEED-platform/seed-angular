@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, takeUntil } from 'rxjs'
@@ -16,6 +16,7 @@ import type { EditAccessLevelsData } from '..'
   selector: 'seed-edit-access-levels-dialog',
   templateUrl: './edit-access-levels-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, CommonModule, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class EditAccessLevelsDialogComponent implements OnInit, OnDestroy {

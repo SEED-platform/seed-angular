@@ -156,8 +156,8 @@
               <mat-label>{{ t('Audit Template Report Type') }}</mat-label>
               <mat-select formControlName="audit_template_report_type">
                 <mat-option value="">None</mat-option>
-                @for (atrt of auditTemplateReportTypes; track atrt.name) {
-                  <mat-option [value]="atrt.name">{{ atrt.name }}</mat-option>
+                @for (atrt of auditTemplateReportTypes; track atrt) {
+                  <mat-option [value]="atrt">{{ atrt }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>

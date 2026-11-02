@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
@@ -17,6 +17,7 @@ import type { Organization } from 'app/modules/organizations/organizations.types
 @Component({
   selector: 'seed-program-config',
   templateUrl: './program-config.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ModalHeaderComponent, FormsModule, ReactiveFormsModule, RouterModule],
 })
 export class ProgramConfigComponent implements OnInit, OnDestroy {

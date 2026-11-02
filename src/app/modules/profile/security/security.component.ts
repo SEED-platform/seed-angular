@@ -1,9 +1,9 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import type { FormGroup } from '@angular/forms'
 import { FormBuilder, FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, take, takeUntil } from 'rxjs'
-import type { CurrentUser, PasswordUpdateRequest } from '@seed/api'
+import type { CurrentUser } from '@seed/api'
 import { UserService } from '@seed/api'
 import type { Alert } from '@seed/components'
 import { AlertComponent } from '@seed/components'
@@ -16,6 +16,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-profile-security',
   templateUrl: './security.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileSecurityComponent implements OnInit, OnDestroy {
@@ -69,7 +70,7 @@ export class ProfileSecurityComponent implements OnInit, OnDestroy {
         current_password: this.passwordForm.value.currentPassword,
         password_1: this.passwordForm.value.newPassword,
         password_2: this.passwordForm.value.confirmNewPassword,
-      } as PasswordUpdateRequest
+      }
 
       this._userService.updatePassword(passwordData).subscribe({
         error: (error: { error?: { message?: string } }) => {

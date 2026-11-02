@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -18,6 +18,7 @@ import { MeterDataUploadModalComponent } from '../data-upload/meter-upload-modal
 @Component({
   selector: 'seed-dataset',
   templateUrl: './dataset.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, PageComponent],
 })
 export class DatasetComponent implements OnDestroy, OnInit {

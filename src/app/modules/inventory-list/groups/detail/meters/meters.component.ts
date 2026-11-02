@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -28,6 +28,7 @@ ModuleRegistry.registerModules([AllCommunityModule])
 @Component({
   selector: 'seed-group-meters',
   templateUrl: './meters.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AsyncPipe, MaterialImports, PageComponent],
 })
 export class GroupMetersComponent implements OnDestroy, OnInit {

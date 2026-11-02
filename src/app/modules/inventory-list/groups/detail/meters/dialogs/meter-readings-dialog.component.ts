@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common'
-import { Component, inject, type OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, type OnInit } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef } from 'ag-grid-community'
@@ -46,6 +46,7 @@ export type MeterReadingsDialogData = {
       <button mat-stroked-button mat-dialog-close>Close</button>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AsyncPipe, MaterialImports],
 })
 export class MeterReadingsDialogComponent implements OnInit {

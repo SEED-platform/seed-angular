@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import type { OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { catchError, of, switchMap, tap } from 'rxjs'
 import { GroupsService, OrganizationService } from '@seed/api'
@@ -20,6 +20,7 @@ export type UploadReadingsDialogData = {
 @Component({
   selector: 'seed-upload-readings-dialog',
   templateUrl: './upload-readings-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class UploadReadingsDialogComponent implements OnInit {

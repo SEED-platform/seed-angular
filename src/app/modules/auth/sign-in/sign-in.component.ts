@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { TranslocoDirective } from '@jsverse/transloco'
@@ -17,6 +17,7 @@ import { AuthService } from 'app/core/auth/auth.service'
   templateUrl: './sign-in.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: Animations,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, RouterLink, TranslocoDirective],
 })
 export class AuthSignInComponent implements OnInit, OnDestroy {
@@ -187,7 +188,7 @@ export class AuthSignInComponent implements OnInit, OnDestroy {
   private _recordTermsAcceptance(): void {
     if (this.termsPreviouslyAccepted) return
 
-    this._termsOfServiceService.recordTermsAcceptance(this.signInForm.value.email!)
+    this._termsOfServiceService.recordTermsAcceptance(this.signInForm.value.email)
     this.termsPreviouslyAccepted = true
   }
 }

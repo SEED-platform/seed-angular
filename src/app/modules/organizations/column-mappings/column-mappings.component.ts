@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { InventoryTabComponent, PageComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
@@ -9,6 +9,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
   selector: 'seed-organizations-column-mappings',
   templateUrl: './column-mappings.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [InventoryTabComponent, PageComponent, SharedImports],
 })
 export class ColumnMappingsComponent implements OnInit {

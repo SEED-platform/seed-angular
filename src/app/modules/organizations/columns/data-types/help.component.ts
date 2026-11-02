@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 
@@ -6,6 +6,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-organizations-column-data-types-help',
   templateUrl: './help.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, MaterialImports],
 })
 export class ColumnDataTypesHelpComponent {}
