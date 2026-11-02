@@ -42,6 +42,41 @@ export class PageComponent implements OnDestroy {
     })
   }
 
+  // Every page uses the compact header unless its config opts out with `dense: false`
+  get dense(): boolean {
+    return this.config.dense ?? true
+  }
+
+  get headerPaddingClass(): string {
+    if (this.dense) return 'pt-2.5'
+    return this.config.compactHeader ? 'py-3 sm:py-4' : 'py-6 sm:py-8'
+  }
+
+  get tabsPaddingBottom(): string | null {
+    // Just enough room under the title row for a header action button
+    if (this.dense) return '3px !important'
+    return this.config.tabs ? '15px !important' : null
+  }
+
+  // The dense header has 10px top / 3px bottom padding, so nudge header buttons up 3px to sit visually centered
+  get actionsClass(): string {
+    return this.dense ? 'sm:relative sm:-top-[3px]' : ''
+  }
+
+  get otherInventoryType(): InventoryType | undefined {
+    return this.config.tabs?.find((tab) => tab !== this.type)
+  }
+
+  // Pulls the toggle up beside the breadcrumbs, but never above the header's top padding
+  get sideNavToggleClass(): string {
+    if (!this.config.sideNavToggle) return ''
+    return this.dense ? '-ml-10 -mt-2.5' : '-ml-10 -mt-3'
+  }
+
+  get titleClass(): string {
+    return this.dense ? 'text-3xl leading-8' : 'text-3xl leading-7 sm:leading-10 md:text-4xl'
+  }
+
   toggleDrawer() {
     this._drawerService.toggle()
   }

@@ -47,6 +47,7 @@ pnpm update-translations  # pull translations from Lokalise (needs .env with LOK
 - To run a single spec: `pnpm test --include='**/some.component.spec.ts'`.
 - CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
   `main`; there is no test step in CI today.
+- Tell me what keys to add to Lokalise in a simple list and I will add them and run update-translations so the public/i18n/*.json files are updated.
 
 ---
 
