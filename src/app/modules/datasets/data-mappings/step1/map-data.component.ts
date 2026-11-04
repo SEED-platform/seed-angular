@@ -288,6 +288,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   mapData() {
     if (!this.dataValid) return
 
+    this.mappedData.mappings = [] // reset so returning via "Back to Mapping" doesn't resend old rows
     this.gridApi.forEachNode(({ data }: { data: DataMappingRow }) => {
       if (data.omit) return // skip omitted rows
 
