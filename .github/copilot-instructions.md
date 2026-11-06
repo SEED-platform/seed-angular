@@ -256,10 +256,6 @@ This app is actively replacing the legacy AngularJS 1.x frontend (`seed/static/s
 `seed` repo), often by several agents in parallel. Don't re-derive conventions from scratch each
 time — follow the docs below and copy the canonical examples they reference:
 
-- **[`MIGRATION.md`](../MIGRATION.md)** — the **canonical, tracked** page/route checklist (what's
-  done, what's left, what won't be ported) plus the page-level playbook (finding the legacy route,
-  converting the template, reusing translations). This is the source of truth for migration status;
-  update it in the same PR when you move a page between states.
 - **[`docs/porting-forms.md`](../docs/porting-forms.md)** — the form-specific recipe: canonical
   full-page/modal form components to copy, the reusable service integration points (`CycleService`,
   `ColumnService`, `SnackBarService`, `ErrorService`, …), the validation/confirm/save flow, and the
@@ -273,19 +269,13 @@ time — follow the docs below and copy the canonical examples they reference:
 Don't reimplement backend logic — the API usually already exists in `SEED-platform/seed`. When a
 legacy page's own settings/config mechanism (e.g. a bespoke `localStorage`-backed column picker)
 duplicates something this app already provides (e.g. the List View Profile selector), reuse the
-existing mechanism and record that decision in MIGRATION.md's "Won't migrate" list with a one-line
-rationale.
-
-### Quick status snapshot (see MIGRATION.md for the authoritative list)
+existing mechanism.
 
 Largely at parity: auth, dashboard, profile, inventory list + detail, inventory groups, datasets +
 data mapping, **data pairing**, analyses, insights (portfolio summary, program overview, property
 insights, program config, default + custom reports), **facilities plan**, the full organizations
 settings/people/columns/rules family (including **Public Data Sharing**), and the API
 docs/Swagger page.
-
-Still to port (highlights — MIGRATION.md is authoritative): the Salesforce login callback and
-org-level **program setup**.
 
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
