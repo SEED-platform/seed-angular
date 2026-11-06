@@ -28,6 +28,3 @@ and never drifts between agents.
 - **[`../docs/porting-forms.md`](../docs/porting-forms.md)** — the form/modal porting recipe.
 - **[`../docs/local-testing.md`](../docs/local-testing.md)** — stand up a throwaway backend + seed
   data and click through your change with the Playwright MCP tools before calling it done.
-
-> Everything that previously lived in this file now lives in `.github/copilot-instructions.md`.
-> Keep a single source of truth rather than duplicating guidance across agent files.

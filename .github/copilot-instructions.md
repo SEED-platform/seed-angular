@@ -282,8 +282,8 @@ insights, program config, default + custom reports), **facilities plan**, the fu
 settings/people/columns/rules family (including **Public Data Sharing**), and the API
 docs/Swagger page.
 
-Still to port (highlights — MIGRATION.md is authoritative): personal two-factor setup, the
-Salesforce login callback, and org-level **program setup**.
+Still to port (highlights — MIGRATION.md is authoritative): the Salesforce login callback and
+org-level **program setup**.
 
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
