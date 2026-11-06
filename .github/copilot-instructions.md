@@ -45,8 +45,8 @@ pnpm update-translations  # pull translations from Lokalise (needs .env with LOK
 - **Lokalise is the source of truth** for translations — `update-translations` only *pulls*, it
   never pushes new keys.
 - To run a single spec: `pnpm test --include='**/some.component.spec.ts'`.
-- CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
-  `main`; there is no test step in CI today.
+- CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, headless `pnpm test`, and
+  `pnpm build` on push/PR to `main`.
 - Tell me what keys to add to Lokalise in a simple list and I will add them and run update-translations so the public/i18n/*.json files are updated.
 
 ---
@@ -198,9 +198,10 @@ file is a flat `Record<string, string>` (no nesting).
   `<div *transloco="let t"><h2>{{ t('My Heading') }}</h2></div>`.
 - **In components** import `TranslocoDirective` (not `TranslocoModule`); for programmatic strings
   (snackbars, titles) inject `TranslocoService` and call `.translate('My string')`.
-- **Workflow:** add new keys to `public/i18n/en_US.json` (key = English string, value = same
-  string), then run `pnpm update-translations` to sync to Lokalise. `en_US.json`/`es.json`/`fr_CA.json` are
-  Lokalise-managed — don't edit them manually.
+- **Workflow:** new keys (key = English string, value = same string) must be registered in
+  Lokalise; `pnpm update-translations` then pulls them and regenerates `public/i18n/*.json`. For
+  local dev you can add a key to `public/i18n/en_US.json`, but the next pull overwrites that file,
+  so report every key you added in the list described under Setup (see `docs/porting-forms.md` §9).
 - Every user-facing string needs a key. `pnpm lint` does **not** catch missing keys — audit
   manually and **flag** any missing ones rather than silently shipping untranslated strings. When
   asked to list strings that lack translations, print a plain list (no quotation marks or colons)
@@ -229,12 +230,13 @@ file is a flat `Record<string, string>` (no nesting).
 
 ```bash
 pnpm lint      # eslint + prettier + stylelint (use pnpm lint:fix to auto-fix)
+pnpm test      # Karma + Jasmine (CI runs it headless)
 pnpm build     # AoT build + template typecheck
 ```
 
-Both must pass for the files you touched. For anything interactive or backend-driven (a new page,
-form, grid, drag-and-drop, filter, etc.) that isn't a pure refactor/style change, lint + build are
-necessary but **not sufficient** — neither runs the code, so neither catches a missing ag-grid
+All three must pass for the files you touched. For anything interactive or backend-driven (a new page,
+form, grid, drag-and-drop, filter, etc.) that isn't a pure refactor/style change, these checks are
+necessary but **not sufficient** — lint and build don't run the code and the unit tests don't hit a real backend, so none of them catches a missing ag-grid
 module registration, a wrong assumption about an API response's field names/shape, a route-param
 reactivity bug, or a layout that only breaks with real data. Actually load the page against a live
 backend with real seeded data and click through it with the Playwright MCP tools before calling the
@@ -254,10 +256,6 @@ This app is actively replacing the legacy AngularJS 1.x frontend (`seed/static/s
 `seed` repo), often by several agents in parallel. Don't re-derive conventions from scratch each
 time — follow the docs below and copy the canonical examples they reference:
 
-- **[`MIGRATION.md`](../MIGRATION.md)** — the **canonical, tracked** page/route checklist (what's
-  done, what's left, what won't be ported) plus the page-level playbook (finding the legacy route,
-  converting the template, reusing translations). This is the source of truth for migration status;
-  update it in the same PR when you move a page between states.
 - **[`docs/porting-forms.md`](../docs/porting-forms.md)** — the form-specific recipe: canonical
   full-page/modal form components to copy, the reusable service integration points (`CycleService`,
   `ColumnService`, `SnackBarService`, `ErrorService`, …), the validation/confirm/save flow, and the
@@ -271,19 +269,7 @@ time — follow the docs below and copy the canonical examples they reference:
 Don't reimplement backend logic — the API usually already exists in `SEED-platform/seed`. When a
 legacy page's own settings/config mechanism (e.g. a bespoke `localStorage`-backed column picker)
 duplicates something this app already provides (e.g. the List View Profile selector), reuse the
-existing mechanism and record that decision in MIGRATION.md's "Won't migrate" list with a one-line
-rationale.
-
-### Quick status snapshot (see MIGRATION.md for the authoritative list)
-
-Largely at parity: auth, dashboard, profile, inventory list + detail, inventory groups, datasets +
-data mapping, **data pairing**, analyses, insights (portfolio summary, program overview, property
-insights, program config, default + custom reports), **facilities plan**, the full organizations
-settings/people/columns/rules family (including **Public Data Sharing**), and the API
-docs/Swagger page.
-
-Still to port (highlights — MIGRATION.md is authoritative): personal two-factor setup, the
-Salesforce login callback, and org-level **program setup**.
+existing mechanism.
 
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
