@@ -271,12 +271,6 @@ legacy page's own settings/config mechanism (e.g. a bespoke `localStorage`-backe
 duplicates something this app already provides (e.g. the List View Profile selector), reuse the
 existing mechanism.
 
-Largely at parity: auth, dashboard, profile, inventory list + detail, inventory groups, datasets +
-data mapping, **data pairing**, analyses, insights (portfolio summary, program overview, property
-insights, program config, default + custom reports), **facilities plan**, the full organizations
-settings/people/columns/rules family (including **Public Data Sharing**), and the API
-docs/Swagger page.
-
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
   fixed 2×2 grid of hardcoded scatter plots); superseded by the Insights module.
