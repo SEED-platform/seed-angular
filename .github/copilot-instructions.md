@@ -45,8 +45,8 @@ pnpm update-translations  # pull translations from Lokalise (needs .env with LOK
 - **Lokalise is the source of truth** for translations — `update-translations` only *pulls*, it
   never pushes new keys.
 - To run a single spec: `pnpm test --include='**/some.component.spec.ts'`.
-- CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, `pnpm build` on push/PR to
-  `main`; there is no test step in CI today.
+- CI (`.github/workflows/ci.yml`) runs `pnpm install`, `pnpm lint`, headless `pnpm test`, and
+  `pnpm build` on push/PR to `main`.
 - Tell me what keys to add to Lokalise in a simple list and I will add them and run update-translations so the public/i18n/*.json files are updated.
 
 ---
@@ -198,9 +198,10 @@ file is a flat `Record<string, string>` (no nesting).
   `<div *transloco="let t"><h2>{{ t('My Heading') }}</h2></div>`.
 - **In components** import `TranslocoDirective` (not `TranslocoModule`); for programmatic strings
   (snackbars, titles) inject `TranslocoService` and call `.translate('My string')`.
-- **Workflow:** add new keys to `public/i18n/en_US.json` (key = English string, value = same
-  string), then run `pnpm update-translations` to sync to Lokalise. `en_US.json`/`es.json`/`fr_CA.json` are
-  Lokalise-managed — don't edit them manually.
+- **Workflow:** new keys (key = English string, value = same string) must be registered in
+  Lokalise; `pnpm update-translations` then pulls them and regenerates `public/i18n/*.json`. For
+  local dev you can add a key to `public/i18n/en_US.json`, but the next pull overwrites that file,
+  so report every key you added in the list described under Setup (see `docs/porting-forms.md` §9).
 - Every user-facing string needs a key. `pnpm lint` does **not** catch missing keys — audit
   manually and **flag** any missing ones rather than silently shipping untranslated strings. When
   asked to list strings that lack translations, print a plain list (no quotation marks or colons)
@@ -229,12 +230,13 @@ file is a flat `Record<string, string>` (no nesting).
 
 ```bash
 pnpm lint      # eslint + prettier + stylelint (use pnpm lint:fix to auto-fix)
+pnpm test      # Karma + Jasmine (CI runs it headless)
 pnpm build     # AoT build + template typecheck
 ```
 
-Both must pass for the files you touched. For anything interactive or backend-driven (a new page,
-form, grid, drag-and-drop, filter, etc.) that isn't a pure refactor/style change, lint + build are
-necessary but **not sufficient** — neither runs the code, so neither catches a missing ag-grid
+All three must pass for the files you touched. For anything interactive or backend-driven (a new page,
+form, grid, drag-and-drop, filter, etc.) that isn't a pure refactor/style change, these checks are
+necessary but **not sufficient** — lint and build don't run the code and the unit tests don't hit a real backend, so none of them catches a missing ag-grid
 module registration, a wrong assumption about an API response's field names/shape, a route-param
 reactivity bug, or a layout that only breaks with real data. Actually load the page against a live
 backend with real seeded data and click through it with the Playwright MCP tools before calling the
@@ -282,8 +284,8 @@ insights, program config, default + custom reports), **facilities plan**, the fu
 settings/people/columns/rules family (including **Public Data Sharing**), and the API
 docs/Swagger page.
 
-Still to port (highlights — MIGRATION.md is authoritative): personal two-factor setup, the
-Salesforce login callback, and org-level **program setup**.
+Still to port (highlights — MIGRATION.md is authoritative): the Salesforce login callback and
+org-level **program setup**.
 
 **Intentionally not implementing:**
 - **Inventory Plots** (`/{type}/plots`) — was unlinked and effectively unused in the old UI (a
