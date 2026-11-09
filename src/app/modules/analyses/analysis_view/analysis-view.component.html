@@ -2,7 +2,11 @@
   [config]="{
     title: 'Analysis View',
     titleIcon: 'fa-solid:chart-bar',
-    breadcrumbs: ['Analyses', 'View'],
+    breadcrumbs: [
+      { label: 'Analyses', link: '/analyses' },
+      { label: analysis?.name, link: '/analyses/' + analysisId, translate: false },
+      'Analysis View',
+    ],
   }"
 >
   <div class="h-full-page p-5" id="content">

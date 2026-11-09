@@ -3,7 +3,11 @@
     title: pageTitle,
     subTitle: importFile?.uploaded_filename,
     titleIcon: 'fa-solid:link',
-    breadcrumbs: ['Data Sets', importFile?.dataset?.name],
+    breadcrumbs: [
+      { label: 'Data', link: '/data' },
+      { label: importFile?.dataset?.name, link: importFile?.dataset?.id ? '/data/' + importFile.dataset.id : null, translate: false },
+      'Pairing',
+    ],
   }"
 >
   <div class="flex flex-col gap-4 p-5" id="content" *transloco="let t">

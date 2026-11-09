@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject, Input, ViewEncapsulation } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subject, takeUntil } from 'rxjs'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
@@ -9,12 +9,12 @@ import { LoadingService } from '@seed/services'
 import type { InventoryType } from 'app/modules/inventory'
 import { DrawerService } from '../drawer'
 import { InventoryTabComponent } from './inventory-tab'
-import type { Config } from './page.types'
+import type { BreadcrumbItem, Config } from './page.types'
 
 @Component({
   selector: 'seed-page',
   templateUrl: './page.component.html',
-  imports: [CommonModule, MaterialImports, InventoryTabComponent, SharedImports],
+  imports: [CommonModule, MaterialImports, InventoryTabComponent, RouterLink, SharedImports],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Eager,
   styles: ':host { @apply flex; @apply flex-auto }',
@@ -61,6 +61,12 @@ export class PageComponent implements OnDestroy {
   // The dense header has 10px top / 3px bottom padding, so nudge header buttons up 3px to sit visually centered
   get actionsClass(): string {
     return this.dense ? 'sm:relative sm:-top-[3px]' : ''
+  }
+
+  // Normalizes plain-string crumbs to items, and drops empty labels (e.g. a name that hasn't loaded yet)
+  get breadcrumbs(): BreadcrumbItem[] {
+    const crumbs = this.config.breadcrumbs ?? []
+    return crumbs.map((crumb) => (typeof crumb === 'string' ? { label: crumb } : crumb)).filter((crumb) => Boolean(crumb.label))
   }
 
   get otherInventoryType(): InventoryType | undefined {

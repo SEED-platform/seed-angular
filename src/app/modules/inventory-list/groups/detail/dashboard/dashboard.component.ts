@@ -10,6 +10,7 @@ import { GroupsService, MeterTypesService, OrganizationService } from '@seed/api
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
+import { GroupDetailLayoutComponent } from '../group-detail-layout.component'
 
 Chart.register(SankeyController, Flow)
 
@@ -40,6 +41,7 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
   private _isDark = false
 
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
+  layout = inject(GroupDetailLayoutComponent) // parent route component; supplies breadcrumb links
   orgId: number
   cycleId: number
   cycles: OrgCycle[] = []

@@ -3,7 +3,7 @@
     title: displayName,
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:note-sticky',
-    breadcrumbs: [displayName, 'Notes'],
+    breadcrumbs: [{ label: type === 'taxlots' ? 'Tax Lots' : 'Properties', link: '/' + type }, 'Notes'],
     sideNavToggle: true,
     actionIcon: 'fa-solid:plus',
     actionText: 'Create a Note',

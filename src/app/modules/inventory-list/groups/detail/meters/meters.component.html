@@ -1,6 +1,11 @@
 <seed-page
   [config]="{
     title: 'Meters',
+    breadcrumbs: [
+      { label: 'Groups', link: layout.groupsLink },
+      { label: layout.group?.name, link: layout.groupLink, translate: false },
+      'Meters',
+    ],
     titleIcon: 'fa-solid:bolt',
   }"
 >

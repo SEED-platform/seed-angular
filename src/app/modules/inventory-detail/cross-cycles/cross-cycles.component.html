@@ -3,7 +3,7 @@
     title: displayName,
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:shuffle',
-    breadcrumbs: [displayName, 'Cross Cycles'],
+    breadcrumbs: [{ label: type === 'taxlots' ? 'Tax Lots' : 'Properties', link: '/' + type }, 'Cross Cycles'],
     sideNavToggle: true,
   }"
 >

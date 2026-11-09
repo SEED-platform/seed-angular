@@ -3,7 +3,10 @@
     title: 'Analysis',
     titleIcon: 'fa-solid:chart-bar',
     subTitle: analysis?.name,
-    breadcrumbs: ['Analyses', 'Detail'],
+    breadcrumbs: [
+      { label: 'Analyses', link: '/analyses' },
+      { label: analysis?.name, translate: false },
+    ],
   }"
 >
   <div class="h-full-page m-5" id="content">
