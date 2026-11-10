@@ -1,6 +1,11 @@
 <seed-page
   [config]="{
     title: 'Systems & Services',
+    breadcrumbs: [
+      { label: 'Groups', link: layout.groupsLink },
+      { label: layout.group?.name, link: layout.groupLink, translate: false },
+      'Systems & Services',
+    ],
     titleIcon: 'fa-solid:gears',
   }"
 >

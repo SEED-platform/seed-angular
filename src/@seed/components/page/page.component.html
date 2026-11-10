@@ -11,21 +11,31 @@
             <mat-icon>menu</mat-icon>
           </button>
         }
-        @if (config.breadcrumbs?.length > 0) {
-          <div class="flex flex-wrap items-center gap-x-1 font-medium">
-            @for (breadcrumb of config.breadcrumbs; track $index) {
-              <div class="flex items-center gap-x-1 whitespace-nowrap">
-                @if (!$first) {
-                  <mat-icon class="text-secondary icon-size-3" svgIcon="fa-solid:chevron-right"></mat-icon>
-                }
-                <span class="text-secondary">{{ breadcrumb }}</span>
-              </div>
-            }
-          </div>
+        @if (breadcrumbs.length > 0) {
+          <nav [attr.aria-label]="t('Breadcrumb')">
+            <ol class="flex flex-wrap items-center gap-x-1 font-medium">
+              @for (crumb of breadcrumbs; track $index) {
+                <li class="flex items-center gap-x-1 whitespace-nowrap">
+                  @if (!$first) {
+                    <mat-icon class="text-secondary icon-size-3" aria-hidden="true" svgIcon="fa-solid:chevron-right"></mat-icon>
+                  }
+                  @if (crumb.link) {
+                    <a
+                      class="rounded-sm text-primary hover:underline focus-visible:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:text-primary-400 dark:focus-visible:outline-primary-400"
+                      [routerLink]="crumb.link"
+                      >{{ crumb.translate === false ? crumb.label : t(crumb.label) }}</a
+                    >
+                  } @else {
+                    <span class="text-secondary">{{ crumb.translate === false ? crumb.label : t(crumb.label) }}</span>
+                  }
+                </li>
+              }
+            </ol>
+          </nav>
         }
       </div>
 
-      <div [ngClass]="{ 'mt-2': config.breadcrumbs?.length > 0 }">
+      <div [ngClass]="{ 'mt-2': breadcrumbs.length > 0 }">
         <div class="flex">
           <h2 class="truncate font-bold capitalize tracking-tight" [ngClass]="titleClass">
             @if (config.titleIcon) {

@@ -32,6 +32,15 @@ export class GroupDetailLayoutComponent implements AfterViewInit, OnDestroy, OnI
 
   navigationMenu: NavigationItem[] = []
 
+  // Used by the child pages' breadcrumbs
+  get groupsLink(): string {
+    return `/${this.type}/groups`
+  }
+
+  get groupLink(): string {
+    return `${this.groupsLink}/${this.groupId}`
+  }
+
   ngOnInit() {
     this._organizationService.currentOrganization$
       .pipe(

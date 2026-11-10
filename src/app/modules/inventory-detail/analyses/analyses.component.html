@@ -3,7 +3,7 @@
     title: 'Property',
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:chart-simple',
-    breadcrumbs: ['Property', 'Analyses'],
+    breadcrumbs: [{ label: type === 'taxlots' ? 'Tax Lots' : 'Properties', link: '/' + type }, 'Analyses'],
     sideNavToggle: true,
     action: isViewer ? undefined : createAnalysis,
     actionIcon: isViewer ? undefined : 'fa-solid:plus',
