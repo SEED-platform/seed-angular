@@ -63,7 +63,8 @@
         [rowData]="rowData"
         [theme]="gridTheme$ | async"
         (gridReady)="onGridReady($event)"
-        (filterChanged)="onFilterChanged()"
+        (filterChanged)="onFilterOrSortChanged()"
+        (sortChanged)="onFilterOrSortChanged()"
         style="width: 100%; height: 100%"
       ></ag-grid-angular>
     }
