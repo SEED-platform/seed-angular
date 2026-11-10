@@ -9,7 +9,7 @@
         mat-flat-button
         color="primary"
       >
-        {{ saving ? t('Saving…') : t('Save Changes') }}
+        {{ saving ? t('Saving...') : t('Save Changes') }}
       </button>
       <span
         [class.text-warn]="!saving"
@@ -18,7 +18,7 @@
         [attr.aria-hidden]="announce ? null : 'true'"
       >
         @if (saving) {
-          {{ t('Saving…') }}
+          {{ t('Saving...') }}
         } @else if (hasUnsavedChanges) {
           {{ t('You have unsaved changes') }}
         }
