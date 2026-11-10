@@ -1196,6 +1196,7 @@
   "Organization": "Organization",
   "Organization \"{{orgName}}\" created": "Organization \"{{orgName}}\" created",
   "Organization \"{{orgName}}\" deleted": "Organization \"{{orgName}}\" deleted",
+  "Organization Columns": "Organization Columns",
   "Organization Name": "Organization Name",
   "Organization Name required": "Organization Name required",
   "Organization Name:": "Organization Name:",
