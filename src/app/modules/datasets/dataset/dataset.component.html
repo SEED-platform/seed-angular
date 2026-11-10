@@ -3,7 +3,10 @@
     title: 'Dataset',
     subTitle: datasetName$ | async,
     titleIcon: 'fa-solid:sitemap',
-    breadcrumbs: ['Dataset', 'Detail'],
+    breadcrumbs: [
+      { label: 'Data', link: '/data' },
+      { label: dataset?.name, translate: false },
+    ],
     action: addDataFile,
     actionIcon: 'fa-solid:plus',
     actionText: 'Data File',

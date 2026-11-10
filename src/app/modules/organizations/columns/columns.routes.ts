@@ -37,11 +37,13 @@ export default [
     path: 'geocoding/properties',
     title: 'Geocoding Order',
     component: GeocodingPropertiesComponent,
+    canDeactivate: [PendingChangesGuard],
   },
   {
     path: 'geocoding/taxlots',
     title: 'Geocoding Order',
     component: GeocodingTaxlotsComponent,
+    canDeactivate: [PendingChangesGuard],
   },
   {
     path: 'data-types',

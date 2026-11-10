@@ -12,6 +12,7 @@ import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
+import { GroupDetailLayoutComponent } from '../group-detail-layout.component'
 import type { CreateMeterDialogData } from './dialogs/create-meter-dialog.component'
 import { CreateMeterDialogComponent } from './dialogs/create-meter-dialog.component'
 import type { DeleteMeterDialogData } from './dialogs/delete-meter-dialog.component'
@@ -42,6 +43,7 @@ export class GroupMetersComponent implements OnDestroy, OnInit {
 
   gridTheme$ = this._configService.gridTheme$
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
+  layout = inject(GroupDetailLayoutComponent) // parent route component; supplies breadcrumb links
   inventoryType = this._getInventoryType()
   orgId: number
   meters: GroupMeter[] = []

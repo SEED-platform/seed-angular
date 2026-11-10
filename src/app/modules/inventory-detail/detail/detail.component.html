@@ -3,7 +3,7 @@
     title: viewDisplayField$ | async,
     subTitle: displayName,
     titleIcon: 'fa-solid:building',
-    breadcrumbs: [displayName, 'Detail'],
+    breadcrumbs: [{ label: type === 'taxlots' ? 'Tax Lots' : 'Properties', link: '/' + type }, 'Detail'],
     sideNavToggle: true,
   }"
 >
