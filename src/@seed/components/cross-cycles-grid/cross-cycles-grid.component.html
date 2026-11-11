@@ -70,6 +70,8 @@
         [theme]="gridTheme$ | async"
         (filterChanged)="setFilterChips()"
         (gridReady)="onGridReady($event)"
+        (filterChanged)="onFilterOrSortChanged()"
+        (sortChanged)="onFilterOrSortChanged()"
         (newColumnsLoaded)="setFilterChips()"
         style="width: 100%; height: 100%"
       ></ag-grid-angular>
