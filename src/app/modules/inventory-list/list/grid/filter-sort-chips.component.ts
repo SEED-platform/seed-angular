@@ -4,8 +4,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { TranslocoDirective } from '@jsverse/transloco'
 import type { ColDef, GridApi } from 'ag-grid-community'
 import type { Column, Label, OrganizationUserSettings } from '@seed/api'
+import { buildFilterChips, FilterChipsComponent, removeGridFilter } from '@seed/components/filter-chips'
 import { MaterialImports } from '@seed/materials'
-import type { AgFilter, FilterSortChip, FilterType, InventoryType } from '../../../inventory/inventory.types'
+import type { FilterSortChip, InventoryType } from '../../../inventory/inventory.types'
 import type { LabelOperator, LabelSelections } from './filter-group/filter-group-selector.component'
 
 export type LabelChip = {
@@ -21,7 +22,7 @@ const LABEL_PREFIXES: Record<LabelOperator, string> = { and: 'AND', or: 'OR', ex
   selector: 'seed-inventory-filter-sort-chips',
   templateUrl: './filter-sort-chips.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [CommonModule, MaterialImports, TranslocoDirective],
+  imports: [CommonModule, FilterChipsComponent, MaterialImports, TranslocoDirective],
 })
 export class FilterSortChipsComponent implements OnChanges {
   @Input() columns: Column[]
@@ -56,24 +57,7 @@ export class FilterSortChipsComponent implements OnChanges {
   }
 
   getFilterChips() {
-    this.filterChips = []
-    for (const columnName of Object.keys(this.filters)) {
-      const colDef = this.columnDefs.find(({ field }) => field === columnName)
-      if (colDef) {
-        this.filterChips.push({
-          field: colDef.field,
-          displayName: this.buildFilterDisplayName(colDef, this.filters[columnName]),
-          original: columnName,
-        })
-      } else {
-        const column = this.columns.find((c) => c.name === columnName)
-        this.filterChips.push({
-          field: columnName,
-          displayName: column?.display_name ?? columnName,
-          original: columnName,
-        })
-      }
-    }
+    this.filterChips = buildFilterChips({ filterModel: this.filters, columnDefs: this.columnDefs, columns: this.columns })
   }
 
   getLabelChips() {
@@ -117,42 +101,8 @@ export class FilterSortChipsComponent implements OnChanges {
     }
   }
 
-  buildFilterDisplayName(colDef: ColDef, filterModel: AgFilter): string {
-    type FilterArgs = { filter?: string | number; filterTo?: string | number }
-    const filterMap: Record<FilterType, (args: FilterArgs) => string> = {
-      contains: ({ filter }) => `contains ${filter}`,
-      notContains: ({ filter }) => `does not contain ${filter}`,
-      equals: ({ filter }) => `= ${filter}`,
-      notEqual: ({ filter }) => `!= ${filter}`,
-      startsWith: ({ filter }) => `starts with ${filter}`,
-      endsWith: ({ filter }) => `ends with ${filter}`,
-      blank: () => 'is blank',
-      notBlank: () => 'is not blank',
-      greaterThan: ({ filter }) => `> ${filter}`,
-      greaterThanOrEqual: ({ filter }) => `>= ${filter}`,
-      lessThan: ({ filter }) => `< ${filter}`,
-      lessThanOrEqual: ({ filter }) => `<= ${filter}`,
-      between: ({ filter, filterTo }) => `is between ${filter} and ${filterTo}`,
-    }
-
-    const { conditions, type, operator } = filterModel
-    const header = colDef.headerName
-
-    if (conditions) {
-      const [c1, c2] = conditions
-      const str1 = filterMap[c1.type](c1)
-      const str2 = filterMap[c2.type](c2)
-      return `${header} ${str1} ${operator.toLowerCase()} ${str2}`
-    }
-
-    const str1 = filterMap[type](filterModel)
-    return `${header} ${str1}`
-  }
-
   removeFilter(columnName: string): void {
-    const currentFilters = this.gridApi.getFilterModel()
-    Reflect.deleteProperty(currentFilters, columnName)
-    this.gridApi.setFilterModel(currentFilters)
+    removeGridFilter(this.gridApi, columnName)
   }
 
   removeLabel(chip: LabelChip): void {
