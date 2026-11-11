@@ -12,10 +12,11 @@ import { catchError, combineLatest, EMPTY, filter, finalize, forkJoin, map, of, 
 import type { Column, CurrentUser, Cycle, Organization } from '@seed/api'
 import { ColumnService, CycleService, InventoryService, OrganizationService, UserService } from '@seed/api'
 import { NotFoundComponent } from '@seed/components'
+import { buildFilterChips, FilterChipsComponent, removeGridFilter } from '@seed/components/filter-chips'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
 import { naturalSort } from '@seed/utils'
-import type { CrossCyclesResponse, InventoryDisplayType, InventoryType, Profile } from 'app/modules/inventory/inventory.types'
+import type { CrossCyclesResponse, FilterSortChip, InventoryDisplayType, InventoryType, Profile } from 'app/modules/inventory/inventory.types'
 
 ModuleRegistry.registerModules([AllCommunityModule])
 
@@ -45,7 +46,7 @@ const parseDate = (value: string): Date => {
   selector: 'seed-cross-cycles-grid',
   templateUrl: './cross-cycles-grid.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, TranslocoDirective],
+  imports: [AgGridAngular, CommonModule, FilterChipsComponent, MaterialImports, NotFoundComponent, TranslocoDirective],
 })
 export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) type!: InventoryType
@@ -75,6 +76,7 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   cycles: Cycle[] = []
   displayType: InventoryDisplayType
   error = false
+  filterChips: FilterSortChip[] = []
   gridApi: GridApi
   gridTheme$ = this._configService.gridTheme$
   loading = false
@@ -473,6 +475,20 @@ export class CrossCyclesGridComponent implements OnChanges, OnDestroy {
   onGridReady(params: GridReadyEvent): void {
     this.gridApi = params.api
     this.gridApi.addEventListener('cellClicked', this.onCellClicked.bind(this) as (event: CellClickedEvent) => void)
+    this.setFilterChips()
+  }
+
+  /* Rebuilds the filter badges; also runs when filters or the column set (e.g. a new profile) change */
+  setFilterChips(): void {
+    if (!this.gridApi || this.gridApi.isDestroyed()) {
+      this.filterChips = []
+      return
+    }
+    this.filterChips = buildFilterChips({ filterModel: this.gridApi.getFilterModel(), columnDefs: this.columnDefs })
+  }
+
+  onRemoveFilter(chip: FilterSortChip): void {
+    removeGridFilter(this.gridApi, chip.original)
   }
 
   onCellClicked(event: CellClickedEvent): void {

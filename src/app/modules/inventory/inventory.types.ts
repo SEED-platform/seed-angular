@@ -107,6 +107,8 @@ export type AgFilter = {
   filterType?: string;
   filter?: string | number;
   filterTo?: string | number;
+  dateFrom?: string | null;
+  dateTo?: string | null;
   type?: FilterType;
   contains?: AgFilter;
   operator?: 'OR' | 'AND';

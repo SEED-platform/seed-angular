@@ -55,6 +55,12 @@
     } @else if (!loading && !rowData.length) {
       <seed-not-found [message]="t('No data found for the selected cycles')" icon="fa-solid:triangle-exclamation"></seed-not-found>
     } @else {
+      @if (filterChips.length) {
+        <!-- Active filter badges; each X clears only that filter -->
+        <div class="mb-2 flex min-w-0 flex-wrap items-center gap-1 text-xs">
+          <seed-filter-chips [chips]="filterChips" (removed)="onRemoveFilter($event)"></seed-filter-chips>
+        </div>
+      }
       <ag-grid-angular
         class="filter-border w-full flex-1"
         [columnDefs]="columnDefs"
@@ -62,9 +68,11 @@
         [gridOptions]="gridOptions"
         [rowData]="rowData"
         [theme]="gridTheme$ | async"
+        (filterChanged)="setFilterChips()"
         (gridReady)="onGridReady($event)"
         (filterChanged)="onFilterOrSortChanged()"
         (sortChanged)="onFilterOrSortChanged()"
+        (newColumnsLoaded)="setFilterChips()"
         style="width: 100%; height: 100%"
       ></ag-grid-angular>
     }
