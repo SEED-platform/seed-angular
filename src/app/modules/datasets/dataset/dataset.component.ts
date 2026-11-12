@@ -11,7 +11,6 @@ import type { Cycle, Dataset, ImportFile } from '@seed/api'
 import { CycleService, DatasetService, UserService } from '@seed/api'
 import { DeleteModalComponent, PageComponent } from '@seed/components'
 import { ConfigService } from '@seed/services'
-import { naturalSort } from '@seed/utils'
 import { DataUploadModalComponent } from '../data-upload/data-upload-modal.component'
 import { MeterDataUploadModalComponent } from '../data-upload/meter-upload-modal.component'
 
@@ -76,7 +75,13 @@ export class DatasetComponent implements OnDestroy, OnInit {
   formatImportFiles(dataset: Dataset) {
     const { importfiles } = dataset
     this.importFiles = importfiles.map((f) => ({ ...f, cycle_name: this.cyclesMap[f.cycle] }))
-    this.importFiles.sort((a, b) => naturalSort(b.created, a.created))
+    this.importFiles.sort((a, b) => this.toTimestamp(b.created) - this.toTimestamp(a.created))
+  }
+
+  // Sort by the full timestamp (not the display string), treating missing/invalid dates as oldest
+  toTimestamp(value: string): number {
+    const time = value ? new Date(value).getTime() : NaN
+    return Number.isNaN(time) ? 0 : time
   }
 
   setColumnDefs() {
@@ -86,7 +91,8 @@ export class DatasetComponent implements OnDestroy, OnInit {
       {
         field: 'created',
         headerName: 'Date Imported',
-        valueFormatter: ({ value }: { value: string }) => new Date(value).toLocaleDateString(),
+        valueFormatter: ({ value }: { value: string }) => (value ? new Date(value).toLocaleString() : ''),
+        comparator: (a: string, b: string) => this.toTimestamp(a) - this.toTimestamp(b),
       },
       { field: 'source_type', headerName: 'Source Type' },
       { field: 'num_rows', headerName: 'Record Count' },
@@ -96,7 +102,7 @@ export class DatasetComponent implements OnDestroy, OnInit {
   }
 
   actionsRenderer({ data }: { data: ImportFile }) {
-    const enableMapping = data.num_rows > 0 && data.cached_second_to_fifth_row.length > 0
+    const enableMapping = data.num_rows > 0 && Boolean(data.cached_second_to_fifth_row?.length)
     const enablePairing = data.num_rows > 0 && data.mapping_done && data.matching_done && data.cycle_name !== undefined
 
     const mappingSpan = `<span class="inline-flex items-center gap-1 border rounded-full bg-primary text-white h-8 mt-1 px-3 hover:bg-primary-800 ${enableMapping ? 'cursor-pointer' : 'opacity-25'}" title="Data Mapping" ${enableMapping ? 'data-action="dataMapping"' : ''}>`
