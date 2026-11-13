@@ -1,0 +1,85 @@
+name: Browser tests (Playwright)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 7 * * *' # nightly against seedplatform/seed:develop, full a11y scan
+  workflow_dispatch:
+    inputs:
+      seed_image:
+        description: 'Backend image'
+        default: 'seedplatform/seed:develop'
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SEED_IMAGE: ${{ inputs.seed_image || 'seedplatform/seed:develop' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Start backend
+        run: |
+          docker compose -f e2e/docker-compose.yml pull
+          docker compose -f e2e/docker-compose.yml up -d
+
+      - name: Migrate, create user, seed inventory
+        run: |
+          SEED="docker compose -f e2e/docker-compose.yml exec -T web ./manage.py"
+          for i in $(seq 1 30); do $SEED check >/dev/null 2>&1 && break; sleep 5; done
+          $SEED migrate
+          $SEED create_default_user --username=user@seed-platform.org --password=super-secret-password --organization=default
+          $SEED shell < e2e/seed-data.py
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/api/health_check/ && exit 0; sleep 5; done
+          docker compose -f e2e/docker-compose.yml logs web --tail 100
+          exit 1
+
+      - name: Start Angular dev server
+        run: |
+          pnpm install --frozen-lockfile
+          SEED_HOST=http://127.0.0.1:8000 nohup pnpm start --host 127.0.0.1 --port 4200 > /tmp/ng.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:4200/ng-app/ && exit 0; sleep 5; done
+          tail -50 /tmp/ng.log
+          exit 1
+
+      - name: Install Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run tests
+        working-directory: e2e
+        env:
+          SEED_E2E_A11Y_ALL: ${{ github.event_name == 'schedule' && '1' || '' }}
+        run: npx playwright test
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 14
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          docker compose -f e2e/docker-compose.yml logs --tail 200 web web-celery || true
+          tail -100 /tmp/ng.log || true
