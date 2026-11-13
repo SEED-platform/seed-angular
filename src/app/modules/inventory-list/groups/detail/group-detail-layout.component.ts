@@ -1,5 +1,5 @@
 import type { AfterViewInit, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { ActivatedRoute, RouterOutlet } from '@angular/router'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
@@ -14,6 +14,7 @@ import type { InventoryType } from 'app/modules/inventory/inventory.types'
 @Component({
   selector: 'seed-group-detail-layout',
   templateUrl: './group-detail-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class GroupDetailLayoutComponent implements AfterViewInit, OnDestroy, OnInit {
@@ -30,6 +31,15 @@ export class GroupDetailLayoutComponent implements AfterViewInit, OnDestroy, OnI
   group: InventoryGroup
 
   navigationMenu: NavigationItem[] = []
+
+  // Used by the child pages' breadcrumbs
+  get groupsLink(): string {
+    return `/${this.type}/groups`
+  }
+
+  get groupLink(): string {
+    return `${this.groupsLink}/${this.groupId}`
+  }
 
   ngOnInit() {
     this._organizationService.currentOrganization$

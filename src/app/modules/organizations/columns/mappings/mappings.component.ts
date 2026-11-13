@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, inject, type OnDestroy, type OnInit, ViewEncapsulation } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -43,6 +43,7 @@ type RenderMapping = ColumnMapping & {
   selector: 'seed-organizations-column-mappings',
   templateUrl: './mappings.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, SharedImports, MaterialImports, ReactiveFormsModule],
 })
 export class MappingsComponent implements ComponentCanDeactivate, OnDestroy, OnInit {

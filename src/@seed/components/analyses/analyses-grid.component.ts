@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -15,6 +15,7 @@ import { ConfigService } from '@seed/services'
 @Component({
   selector: 'seed-analyses-grid',
   templateUrl: './analyses-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports],
 })
 export class AnalysesGridComponent implements AfterViewInit, OnChanges {

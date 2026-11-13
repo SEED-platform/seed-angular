@@ -1,4 +1,12 @@
-import { type AfterViewInit, Component, type OnDestroy, type OnInit, ViewChild, ViewEncapsulation } from '@angular/core'
+import {
+  type AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  type OnDestroy,
+  type OnInit,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core'
 import { MatPaginator } from '@angular/material/paginator'
 import { combineLatest, takeUntil } from 'rxjs'
 import { TableContainerComponent } from '@seed/components'
@@ -11,6 +19,7 @@ import { ListComponent } from './list.component'
   selector: 'seed-organizations-columns-list-properties',
   templateUrl: './list.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [SharedImports, MaterialImports, TableContainerComponent],
 })
 export class ListPropertiesComponent extends ListComponent implements AfterViewInit, OnDestroy, OnInit {

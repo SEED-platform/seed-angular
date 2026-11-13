@@ -4,6 +4,8 @@
       title: pageTitle,
       titleIcon: 'fa-solid:building',
       tabs: ['properties', 'taxlots'],
+      dense: true,
+      switchLink: true,
     }"
   >
   </seed-page>
@@ -11,9 +13,9 @@
 
 <div class="flex min-w-0 flex-auto flex-col" *transloco="let t">
   <!-- Main -->
-  <div class="z-1 -mt-px flex-auto border-t pt-2">
+  <div class="z-1 -mt-px flex min-h-0 flex-auto flex-col border-t">
     <!-- GRID CONFIG -->
-    <div class="relative m-2 flex items-start">
+    <div class="relative mx-2 mb-1 mt-1 flex items-start">
       <!-- Actions -->
       <seed-inventory-grid-actions
         [cycleId]="cycleId"
@@ -28,7 +30,7 @@
         [selectedViewIds]="selectedViewIds"
         [type]="type"
         (refreshInventory)="onRefreshInventory($event)"
-        (selectedAll)="onSelectAll($event)"
+        (selectedAll)="selectAllMatching()"
         (toggleAccessLevels)="onToggleAccessLevelInstances()"
       ></seed-inventory-grid-actions>
 
@@ -59,17 +61,6 @@
       }
     </div>
 
-    <!-- Filter and Sort chips -->
-    @if (gridApi && columnDefs) {
-      <seed-inventory-filter-sort-chips
-        [columns]="columns"
-        [columnDefs]="columnDefs"
-        [gridApi]="gridApi"
-        [type]="type"
-        [userSettings]="userSettings"
-      ></seed-inventory-filter-sort-chips>
-    }
-
     <!-- INVENTORY GRID -->
     <seed-inventory-grid
       #grid
@@ -89,6 +80,21 @@
       (filterSortChange)="onFilterSortChange($event)"
       (gridReady)="onGridReady($event)"
       (selectionChanged)="onSelectionChanged()"
-    ></seed-inventory-grid>
+      (selectAllMatching)="selectAllMatching()"
+    >
+      <!-- Filter, label, and sort badges (rendered next to the reset grid icon) -->
+      @if (gridApi && columnDefs) {
+        <seed-inventory-filter-sort-chips
+          [columns]="columns"
+          [columnDefs]="columnDefs"
+          [gridApi]="gridApi"
+          [labels]="labels"
+          [labelSelections]="labelSelections"
+          [type]="type"
+          [userSettings]="userSettings"
+          (labelRemoved)="onLabelChipRemoved($event)"
+        ></seed-inventory-filter-sort-chips>
+      }
+    </seed-inventory-grid>
   </div>
 </div>

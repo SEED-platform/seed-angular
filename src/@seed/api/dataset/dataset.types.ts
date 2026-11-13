@@ -1,7 +1,7 @@
 // Subset type
 export type ImportFile = {
-  cached_first_row: string;
-  cached_second_to_fifth_row: string;
+  cached_first_row: string | null;
+  cached_second_to_fifth_row: string | null;
   created: string;
   cycle: number;
   cycle_name?: string; // used in dataset.component ag-grid

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { finalize } from 'rxjs'
 import { OrganizationService } from '@seed/api'
@@ -11,6 +11,7 @@ import type { DeleteInstanceData } from '..'
   selector: 'seed-delete-instance-dialog',
   templateUrl: './delete-instance-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, SharedImports],
 })
 export class DeleteInstanceDialogComponent {

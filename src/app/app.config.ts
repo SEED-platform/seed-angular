@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common'
-import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClient, withXhr } from '@angular/common/http'
 import type { ApplicationConfig } from '@angular/core'
 import { inject, Injectable, isDevMode, provideAppInitializer } from '@angular/core'
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core'
@@ -31,11 +31,11 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAnimations(),
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     provideRouter(
       appRoutes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
-      withRouterConfig({ onSameUrlNavigation: 'reload' }),
+      withRouterConfig({ onSameUrlNavigation: 'reload', paramsInheritanceStrategy: 'emptyOnly' }),
     ),
     { provide: UrlSerializer, useClass: LowerCaseUrlSerializer },
     { provide: TitleStrategy, useClass: TemplatePageTitleStrategy },

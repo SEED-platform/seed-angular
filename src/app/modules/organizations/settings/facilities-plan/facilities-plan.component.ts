@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { combineLatest, Subject, takeUntil } from 'rxjs'
 import type { Column, FacilitiesPlan } from '@seed/api'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-organizations-settings-facilities-plan',
   templateUrl: './facilities-plan.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class FacilitiesPlanSettingsComponent implements OnDestroy, OnInit {

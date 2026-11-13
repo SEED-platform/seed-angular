@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectorRef, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { CurrentUser } from '@seed/api'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
 @Component({
   selector: 'seed-profile-info',
   templateUrl: './info.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileInfoComponent implements OnInit, OnDestroy {

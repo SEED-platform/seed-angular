@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
@@ -31,6 +31,7 @@ import { CreateProfileComponent } from './modal/create-profile.component'
 @Component({
   selector: 'seed-map-data',
   templateUrl: './map-data.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, AlertComponent, CommonModule, MaterialImports, ReactiveFormsModule, FormsModule],
 })
 export class MapDataComponent implements OnChanges, OnDestroy {
@@ -287,6 +288,7 @@ export class MapDataComponent implements OnChanges, OnDestroy {
   mapData() {
     if (!this.dataValid) return
 
+    this.mappedData.mappings = [] // reset so returning via "Back to Mapping" doesn't resend old rows
     this.gridApi.forEachNode(({ data }: { data: DataMappingRow }) => {
       if (data.omit) return // skip omitted rows
 

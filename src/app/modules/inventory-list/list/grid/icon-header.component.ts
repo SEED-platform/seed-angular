@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { IHeaderParams } from 'ag-grid-community'
 
@@ -10,6 +10,7 @@ type IconHeaderParams = IHeaderParams & {
 @Component({
   selector: 'seed-icon-header',
   template: ' <span class="material-icons-outlined text-base" [title]="tooltip" [attr.aria-label]="tooltip" role="img">{{ icon }}</span> ',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: `
     :host {
       display: flex;

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
@@ -17,6 +17,7 @@ import { SensorsGridComponent } from './sensors/sensors-grid.component'
 @Component({
   selector: 'seed-inventory-detail-sensors',
   templateUrl: './sensors.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, DataLoggersGridComponent, NotFoundComponent, PageComponent, SensorsGridComponent, SensorReadingsGridComponent],
 })
 export class SensorsComponent implements OnDestroy, OnInit {

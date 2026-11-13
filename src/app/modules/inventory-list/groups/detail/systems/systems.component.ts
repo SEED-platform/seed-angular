@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTooltipModule } from '@angular/material/tooltip'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -8,6 +8,7 @@ import type { GroupService, GroupSystem } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
+import { GroupDetailLayoutComponent } from '../group-detail-layout.component'
 import type { ServiceDialogData, SystemDialogData } from './dialog-types'
 import { ServiceDialogComponent } from './service-dialog/service-dialog.component'
 import { SystemDialogComponent } from './system-dialog/system-dialog.component'
@@ -15,6 +16,7 @@ import { SystemDialogComponent } from './system-dialog/system-dialog.component'
 @Component({
   selector: 'seed-group-systems',
   templateUrl: './systems.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, MatTooltipModule, PageComponent],
 })
 export class GroupSystemsComponent implements OnDestroy, OnInit {
@@ -26,6 +28,7 @@ export class GroupSystemsComponent implements OnDestroy, OnInit {
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
+  layout = inject(GroupDetailLayoutComponent) // parent route component; supplies breadcrumb links
   orgId: number
   systemsByType: Record<string, GroupSystem[]> = {}
   systemTypeKeys: string[] = []

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA } from '@angular/material/dialog'
 import { MaterialImports } from '@seed/materials'
 import type { ImageOverlayData } from '../image-overlay.types'
@@ -7,6 +7,7 @@ import type { ImageOverlayData } from '../image-overlay.types'
   selector: 'seed-image-overlay',
   templateUrl: './image-overlay.component.html',
   imports: [MaterialImports],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: ':host { @apply flex }',
 })
 export class OverlayImageComponent {

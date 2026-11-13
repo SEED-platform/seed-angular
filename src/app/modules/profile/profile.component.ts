@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import type { NavigationItem } from '@seed/components'
 import { HorizontalNavigationComponent } from '@seed/components/navigation/horizontal/horizontal.component'
@@ -8,10 +8,11 @@ import { SharedImports } from '@seed/directives'
   selector: 'seed-profile',
   templateUrl: './profile.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [HorizontalNavigationComponent, SharedImports, RouterOutlet],
 })
 export class ProfileComponent {
-  tabs = ['Profile Info', 'Security', 'Two Factor Profile', 'Developer', 'Admin']
+  tabs = ['Profile Info', 'Security', 'Two Factor Profile', 'Developer', 'Admin', 'Display']
 
   readonly navigation: NavigationItem[] = [
     {
@@ -48,6 +49,13 @@ export class ProfileComponent {
       type: 'basic',
       icon: 'fa-solid:user-gear',
       link: '/profile/admin',
+    },
+    {
+      id: 'display',
+      title: 'Display',
+      type: 'basic',
+      icon: 'fa-solid:gear',
+      link: '/profile/display',
     },
   ]
 }

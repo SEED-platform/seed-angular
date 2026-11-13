@@ -1,5 +1,5 @@
 import type { OnDestroy } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { finalize, Subject, switchMap, take, tap } from 'rxjs'
 import { ConfigService, DataQualityService } from '@seed/api'
@@ -13,6 +13,7 @@ import { RefreshMetadataModalComponent } from 'app/modules/inventory-list/list/a
 @Component({
   selector: 'seed-inventory-more-actions-modal',
   templateUrl: './more-actions-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, ProgressBarComponent, DQCResultsModalComponent],
 })
 export class MoreActionsModalComponent implements OnDestroy {

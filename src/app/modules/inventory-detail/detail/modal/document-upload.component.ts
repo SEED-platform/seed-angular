@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { InventoryService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
@@ -7,6 +7,7 @@ import type { PropertyDocumentExtension, PropertyDocumentType } from 'app/module
 @Component({
   selector: 'seed-detail-document-upload',
   templateUrl: './document-upload.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class DocumentUploadModalComponent {

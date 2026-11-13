@@ -1,7 +1,12 @@
 <seed-page
   [config]="{
     title: 'Systems & Services',
-    titleIcon: 'fa-solid:cogs',
+    breadcrumbs: [
+      { label: 'Groups', link: layout.groupsLink },
+      { label: layout.group?.name, link: layout.groupLink, translate: false },
+      'Systems & Services',
+    ],
+    titleIcon: 'fa-solid:gears',
   }"
 >
 </seed-page>

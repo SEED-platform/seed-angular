@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, HostListener, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent, TextMatcherParams } from 'ag-grid-community'
@@ -77,6 +77,7 @@ const STAT_COLUMN_CONFIGS: StatColumnConfig[] = [
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent],
 })
 export class SummaryComponent implements OnDestroy, OnInit {

@@ -1,5 +1,5 @@
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { Router, RouterLink } from '@angular/router'
@@ -45,6 +45,7 @@ const UNIT_MAPPINGS: Record<string, string> = {
 @Component({
   selector: 'seed-default-reports',
   templateUrl: './default-reports.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ProgressBarComponent, ReactiveFormsModule, RouterLink],
 })
 export class DefaultReportsComponent implements OnInit, OnDestroy {

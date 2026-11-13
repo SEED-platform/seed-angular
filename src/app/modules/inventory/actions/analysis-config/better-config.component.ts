@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { BenchmarkDataType, Cycle, SavingsTarget, SelectMetersType } from '@seed/api'
@@ -9,6 +9,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-better-config',
   templateUrl: './better-config.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class BetterConfigComponent implements OnInit, OnDestroy {

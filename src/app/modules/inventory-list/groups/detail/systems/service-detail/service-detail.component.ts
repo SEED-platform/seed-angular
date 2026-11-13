@@ -1,19 +1,21 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { filter, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
 import type { GroupServiceDetail } from '@seed/api'
 import { GroupsService, OrganizationService } from '@seed/api'
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import type { InventoryType } from 'app/modules/inventory/inventory.types'
+import { GroupDetailLayoutComponent } from '../../group-detail-layout.component'
 import type { AddPropertiesDialogData } from './dialogs/add-properties-dialog.component'
 import { AddPropertiesDialogComponent } from './dialogs/add-properties-dialog.component'
 
 @Component({
   selector: 'seed-service-detail',
   templateUrl: './service-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, RouterLink],
 })
 export class ServiceDetailComponent implements OnDestroy, OnInit {
@@ -21,10 +23,10 @@ export class ServiceDetailComponent implements OnDestroy, OnInit {
   private _groupsService = inject(GroupsService)
   private _organizationService = inject(OrganizationService)
   private _route = inject(ActivatedRoute)
-  private _router = inject(Router)
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   groupId: number
+  layout = inject(GroupDetailLayoutComponent) // parent route component; supplies breadcrumb links
   systemId: number
   serviceId: number
   orgId: number
@@ -90,11 +92,6 @@ export class ServiceDetailComponent implements OnDestroy, OnInit {
         switchMap(() => this.loadService()),
       )
       .subscribe()
-  }
-
-  goBackToSystems() {
-    // Build absolute path: /:inventoryType/groups/:groupId/systems
-    void this._router.navigate(['/', this.inventoryType, 'groups', this.groupId, 'systems'])
   }
 
   ngOnDestroy() {

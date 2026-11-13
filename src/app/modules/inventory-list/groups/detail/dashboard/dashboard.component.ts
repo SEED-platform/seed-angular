@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { ElementRef, OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Chart } from 'chart.js/auto'
 import { Flow, SankeyController } from 'chartjs-chart-sankey'
@@ -10,6 +10,7 @@ import { GroupsService, MeterTypesService, OrganizationService } from '@seed/api
 import { PageComponent } from '@seed/components'
 import { MaterialImports } from '@seed/materials'
 import { ConfigService } from '@seed/services'
+import { GroupDetailLayoutComponent } from '../group-detail-layout.component'
 
 Chart.register(SankeyController, Flow)
 
@@ -25,6 +26,7 @@ const SANKEY_COLORS: Record<string, string> = {
 @Component({
   selector: 'seed-group-dashboard',
   templateUrl: './dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, MaterialImports, PageComponent],
 })
 export class GroupDashboardComponent implements OnDestroy, OnInit {
@@ -39,6 +41,7 @@ export class GroupDashboardComponent implements OnDestroy, OnInit {
   private _isDark = false
 
   groupId = parseInt(this._route.parent.snapshot.paramMap.get('groupId'))
+  layout = inject(GroupDetailLayoutComponent) // parent route component; supplies breadcrumb links
   orgId: number
   cycleId: number
   cycles: OrgCycle[] = []

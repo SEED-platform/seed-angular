@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Subject, takeUntil } from 'rxjs'
 import type { Organization } from '@seed/api'
@@ -12,6 +12,7 @@ import { BetterApiKeyValidator } from './better-api-key.validator'
 @Component({
   selector: 'seed-organizations-settings-api-keys',
   templateUrl: './api-keys.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class ApiKeysComponent implements OnDestroy, OnInit {

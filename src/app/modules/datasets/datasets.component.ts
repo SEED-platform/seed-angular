@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -20,6 +20,7 @@ import { FormModalComponent } from './modal/form-modal.component'
   selector: 'seed-data',
   templateUrl: './datasets.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, PageComponent],
 })
 export class DatasetsComponent implements OnDestroy, OnInit {
@@ -85,11 +86,19 @@ export class DatasetsComponent implements OnDestroy, OnInit {
         field: 'updated_at',
         headerName: 'Updated At',
         flex: 0.5,
-        valueGetter: ({ data }: { data: Dataset }) => new Date(data.updated_at).toLocaleDateString(),
+        minWidth: 180,
+        valueFormatter: ({ value }: { value: string }) => (value ? new Date(value).toLocaleString() : ''),
+        comparator: (a: string, b: string) => this.toTimestamp(a) - this.toTimestamp(b),
       },
       { field: 'last_modified_by', headerName: 'Last Modified By' },
       { field: 'actions', headerName: 'Actions', cellRenderer: this.actionsRenderer, flex: 1 },
     ]
+  }
+
+  // Sort by the full timestamp (not the display string), treating missing/invalid dates as oldest
+  toTimestamp(value: string): number {
+    const time = value ? new Date(value).getTime() : NaN
+    return Number.isNaN(time) ? 0 : time
   }
 
   nameRenderer({ value }: { value: string }) {

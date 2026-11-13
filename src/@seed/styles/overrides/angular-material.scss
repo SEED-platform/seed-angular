@@ -164,6 +164,25 @@
   }
 }
 
+/* Slightly compact primary filled actions across the app. */
+.mat-mdc-raised-button.mat-primary:not(.seed-mat-button-large),
+.mat-mdc-raised-button[color='primary']:not(.seed-mat-button-large),
+.mat-mdc-unelevated-button.mat-primary:not(.seed-mat-button-large),
+.mat-mdc-unelevated-button[color='primary']:not(.seed-mat-button-large) {
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  padding: 0 16px !important;
+  font-size: 0.8125rem;
+
+  --mat-button-filled-container-height: 36px;
+  --mat-button-filled-horizontal-padding: 16px;
+  --mat-button-filled-label-text-size: 0.8125rem;
+  --mat-button-protected-container-height: 36px;
+  --mat-button-protected-horizontal-padding: 16px;
+  --mat-button-protected-label-text-size: 0.8125rem;
+}
+
 /* Adjust the focus, ripple and icon colors of colored background buttons */
 .mat-mdc-raised-button,
 .mat-mdc-unelevated-button,

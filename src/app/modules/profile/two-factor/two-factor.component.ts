@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { TranslocoService } from '@jsverse/transloco'
@@ -16,6 +16,7 @@ import { QrCodeModalComponent } from './modal/qr-code-modal.component'
 @Component({
   selector: 'seed-profile-two-factor',
   templateUrl: './two-factor.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class ProfileTwoFactorComponent implements OnInit, OnDestroy {

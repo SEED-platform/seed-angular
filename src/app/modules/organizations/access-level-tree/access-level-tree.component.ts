@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs'
 import type { AccessLevelInstance, AccessLevelTree, CurrentUser } from '@seed/api'
@@ -28,6 +28,7 @@ import { UploadInstancesDialogComponent } from './upload-instances-dialog'
   templateUrl: './access-level-tree.component.html',
   imports: [CommonModule, ImageOverlayDirective, MaterialImports, PageComponent, SharedImports],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: `
     seed-organizations-access-level-tree .mat-drawer-inner-container {
       overflow-y: auto !important;

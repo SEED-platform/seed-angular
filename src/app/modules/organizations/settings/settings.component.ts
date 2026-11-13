@@ -1,5 +1,5 @@
 import type { AfterViewInit, OnInit } from '@angular/core'
-import { Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewEncapsulation } from '@angular/core'
 import type { MatDrawer } from '@angular/material/sidenav'
 import { RouterOutlet } from '@angular/router'
 import { ConfigService } from '@seed/api'
@@ -13,6 +13,7 @@ import { MaterialImports } from '@seed/materials'
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, RouterOutlet, ScrollResetDirective, VerticalNavigationComponent],
 })
 export class SettingsComponent implements AfterViewInit, OnInit {

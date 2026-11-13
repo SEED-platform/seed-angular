@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
 import { VersionService } from '@seed/api'
 import { PageComponent } from '@seed/components'
@@ -10,6 +10,7 @@ import { TermsService } from '@seed/services'
   selector: 'seed-about',
   templateUrl: './about.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [PageComponent, SharedImports],
 })
 export class AboutComponent implements OnInit, OnDestroy {

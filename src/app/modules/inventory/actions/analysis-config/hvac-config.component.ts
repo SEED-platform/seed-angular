@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Subject, takeUntil, tap } from 'rxjs'
 import type { Column } from '@seed/api'
@@ -10,6 +10,7 @@ import { naturalSort } from '@seed/utils'
 @Component({
   selector: 'seed-hvac-config',
   templateUrl: './hvac-config.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class HvacConfigComponent implements OnInit, OnDestroy {

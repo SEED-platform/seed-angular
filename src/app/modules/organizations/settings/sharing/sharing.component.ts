@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import type { Observable } from 'rxjs'
@@ -23,6 +23,7 @@ type SharableField = {
 @Component({
   selector: 'seed-organizations-settings-sharing',
   templateUrl: './sharing.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, FormsModule, MaterialImports, PageComponent, ReactiveFormsModule, RouterLink, SharedImports],
 })
 export class SharingComponent implements OnDestroy, OnInit {

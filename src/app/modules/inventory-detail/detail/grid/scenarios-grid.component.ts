@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent, ICellRendererParams } from 'ag-grid-community'
@@ -40,6 +40,7 @@ const statusChipHtml = (status: string, label: string): string => {
 @Component({
   selector: 'seed-inventory-detail-scenarios-grid',
   templateUrl: './scenarios-grid.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, AgGridAngular, MaterialImports, TranslocoDirective],
 })
 export class ScenariosGridComponent implements OnChanges, OnDestroy {

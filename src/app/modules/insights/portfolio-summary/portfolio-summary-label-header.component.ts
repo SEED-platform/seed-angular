@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { IHeaderParams } from 'ag-grid-community'
 import type { LabelColumnKey, PortfolioSummaryGridContext } from './portfolio-summary.types'
@@ -13,6 +13,7 @@ import type { LabelColumnKey, PortfolioSummaryGridContext } from './portfolio-su
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class PortfolioSummaryLabelHeaderComponent implements IHeaderAngularComp {

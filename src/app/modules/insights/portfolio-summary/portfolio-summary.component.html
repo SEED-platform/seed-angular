@@ -1,15 +1,16 @@
 <seed-page
-  class="flex flex-auto flex-col"
+  class="portfolio-summary-compact-buttons flex flex-auto flex-col"
   *transloco="let t"
   [config]="{
     title: 'Portfolio Summary',
     titleIcon: 'fa-solid:square-poll-horizontal',
+    compactHeader: true,
     action: openConfigureGoals.bind(this),
     actionIcon: 'fa-solid:gear',
     actionText: 'Configure Goals',
   }"
 >
-  <div class="mx-5 my-4 flex flex-col gap-4">
+  <div class="mx-5 my-1 flex flex-col gap-3">
     <!-- Intro text -->
     <p class="text-secondary text-sm">
       {{
@@ -20,61 +21,57 @@
     </p>
 
     <!-- Goal selector -->
-    <div class="mb-1 flex items-center gap-3">
-      <mat-label class="text-secondary shrink-0 text-sm">{{ t('Goal') }}:</mat-label>
-      <mat-form-field class="w-72" subscriptSizing="dynamic">
-        <mat-select
-          [value]="currentGoal?.id"
-          [placeholder]="t('(select a goal)')"
-          (selectionChange)="selectGoal($event)"
-          (openedChange)="onGoalDropdownOpened($event)"
-        >
-          <mat-select-trigger>{{ currentGoal?.name ?? t('(select a goal)') }}</mat-select-trigger>
-          <!-- Search input pinned at top of dropdown -->
-          <div class="px-4 py-1">
-            <input
-              class="h-8 w-full bg-transparent outline-none"
-              [formControl]="goalSearchCtrl"
-              [placeholder]="t('Search\u2026')"
-              (click)="$event.stopPropagation()"
-              (keydown)="$event.stopPropagation()"
-            />
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-3">
+        <mat-label class="text-secondary shrink-0 text-sm">{{ t('Goal') }}:</mat-label>
+        <mat-form-field class="w-72" subscriptSizing="dynamic">
+          <mat-select
+            [value]="currentGoal?.id"
+            [placeholder]="t('(select a goal)')"
+            (selectionChange)="selectGoal($event)"
+            (openedChange)="onGoalDropdownOpened($event)"
+          >
+            <mat-select-trigger>{{ currentGoal?.name ?? t('(select a goal)') }}</mat-select-trigger>
+            <!-- Search input pinned at top of dropdown -->
+            <div class="px-4 py-1">
+              <input
+                class="h-8 w-full bg-transparent outline-none"
+                [formControl]="goalSearchCtrl"
+                [placeholder]="t('Search\u2026')"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+            @for (goal of filteredGoals; track goal.id) {
+              <mat-option [value]="goal.id">{{ goal.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (salesforceEnabled && organization && organization.bb_salesforce_enabled) {
+        <div class="flex flex-wrap items-center gap-2 rounded border px-3 py-1 text-sm">
+          <span class="text-secondary">{{ t('Salesforce') }}</span>
+          <a class="cursor-pointer text-primary-600 underline dark:text-primary-400" (click)="toSettings()">{{ t('Settings') }}</a>
+          <div class="flex items-center gap-2">
+            <span class="text-secondary">{{ t('Connection:') }}</span>
+            @if (isLoggedIntoBbSalesforce) {
+              <mat-icon class="text-green-500 icon-size-4">check_circle</mat-icon>
+              <button (click)="loginToSalesforce()" mat-stroked-button>{{ t('Logout') }}</button>
+            } @else {
+              <mat-icon class="text-red-500 icon-size-4">cancel</mat-icon>
+              <button (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Login') }}</button>
+            }
           </div>
-          @for (goal of filteredGoals; track goal.id) {
-            <mat-option [value]="goal.id">{{ goal.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        </div>
+      }
     </div>
 
-    <!-- Salesforce banner -->
-    @if (salesforceEnabled && organization && organization.bb_salesforce_enabled) {
-      <div class="flex flex-wrap items-center gap-3 rounded border p-3 text-sm">
-        <span>
-          {{ t('Salesforce portfolio functionality is enabled.') }}
-          <a class="cursor-pointer text-primary-600 underline dark:text-primary-400" (click)="toSettings()">{{
-            t('Configure in Salesforce settings')
-          }}</a
-          >.
-        </span>
-        <div class="flex items-center gap-2">
-          <span class="text-secondary">{{ t('Connection:') }}</span>
-          @if (isLoggedIntoBbSalesforce) {
-            <mat-icon class="text-green-500 icon-size-4">check_circle</mat-icon>
-            <button (click)="loginToSalesforce()" mat-stroked-button>{{ t('Logout') }}</button>
-          } @else {
-            <mat-icon class="text-red-500 icon-size-4">cancel</mat-icon>
-            <button (click)="loginToSalesforce()" mat-flat-button color="primary">{{ t('Login') }}</button>
-          }
-        </div>
-      </div>
-    }
-
     @if (currentGoal) {
-      <div class="-mx-5 -mb-4 flex flex-col gap-4 bg-white px-5 pb-8 pt-2 dark:bg-gray-900">
+      <div class="-mx-5 -mb-4 flex flex-col gap-3 bg-white px-5 pb-4 pt-2 dark:bg-gray-900">
         <div class="flex flex-wrap gap-4">
           <!-- Goal details card: 2 true side-by-side columns -->
-          <div class="flex-1 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+          <div class="flex-1 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div class="flex gap-6 text-sm">
               <dl class="grid flex-1 grid-cols-[auto_1fr] gap-x-4 gap-y-1">
                 <dt>{{ t('Type') }}</dt>
@@ -96,7 +93,7 @@
           </div>
 
           <!-- Cycle stats card (always shown once goal is selected; values fill in once a cycle is picked) -->
-          <div class="flex-1 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+          <div class="flex-1 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div class="flex gap-6 text-sm">
               <dl class="grid flex-1 grid-cols-[auto_1fr] gap-x-4 gap-y-1">
                 <dt>{{ t('Commitment (Sq Ft)') }}</dt>
@@ -209,21 +206,23 @@
               [theme]="gridTheme$ | async"
               [rowData]="cycleGoalSummaryData"
               [columnDefs]="cycleGoalSummaryColumnDefs"
-              [defaultColDef]="defaultColDef"
+              [defaultColDef]="cycleGoalSummaryDefaultColDef"
             />
           </div>
 
           <!-- Actions row + property grid -->
           <div class="flex flex-col gap-3">
             <div class="flex flex-wrap items-center justify-between gap-3">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <!-- Actions menu -->
                 <button [matMenuTriggerFor]="actionsMenu" mat-stroked-button>
                   <mat-icon class="icon-size-4" svgIcon="fa-solid:chevron-down"></mat-icon>
                   <span class="ml-1">{{ t('Actions') }}</span>
                 </button>
                 <mat-menu #actionsMenu="matMenu">
-                  <button (click)="selectAllProperties()" mat-menu-item>{{ t('Select All') }}</button>
+                  <button [disabled]="isSelectingAllProperties" (click)="selectAllProperties()" mat-menu-item>
+                    {{ t('Select All') }}
+                  </button>
                   <button (click)="selectNoProperties()" mat-menu-item>{{ t('Select None') }}</button>
                   <mat-divider></mat-divider>
                   <button (click)="runDataQualityChecks()" mat-menu-item>{{ t('Data Quality Check') }}</button>
@@ -239,6 +238,9 @@
                     {{ showAccessLevelInstances ? t('Hide Access Levels') : t('Show Access Levels') }}
                   </button>
                 </mat-menu>
+                <span class="text-secondary text-xs">
+                  {{ t('Only cross-cycle labels for the selected goal are shown here; other property labels are omitted.') }}
+                </span>
 
                 @if (salesforceEnabled && isLoggedIntoBbSalesforce) {
                   <button (click)="reviewAndSyncToSalesforce()" mat-stroked-button>{{ t('Review and Sync to Salesforce') }}</button>
@@ -248,6 +250,13 @@
               <!-- Pagination -->
               @if (propertiesPagination && propertiesPagination.total > 0) {
                 <div class="text-secondary flex items-center gap-2 text-sm">
+                  @if (isSelectingAllProperties) {
+                    <span aria-live="polite">{{ t('Loading...') }}</span>
+                  } @else if (selectedPropertyViewIds.length) {
+                    <span aria-live="polite"
+                      >{{ t('Selected') }}: {{ selectedPropertyViewIds.length }} / {{ propertiesPagination.total }}</span
+                    >
+                  }
                   <span>{{ propertiesPagination.start }}–{{ propertiesPagination.end }} of {{ propertiesPagination.total }}</span>
                   <button [disabled]="!propertiesPagination.has_previous" (click)="changePage(propertyPage - 1)" mat-icon-button>
                     <mat-icon class="icon-size-4" svgIcon="fa-solid:chevron-left"></mat-icon>
@@ -271,8 +280,9 @@
                 [rowSelection]="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true }"
                 [selectionColumnDef]="{ pinned: 'left', lockPinned: true }"
                 (gridReady)="onPropertyGridReady($event)"
+                (modelUpdated)="onPropertyGridModelUpdated()"
                 (cellValueChanged)="onPropertyCellValueChanged($event)"
-                (selectionChanged)="onPropertySelectionChanged()"
+                (selectionChanged)="onPropertySelectionChanged($event)"
               />
             </div>
           </div>
@@ -295,34 +305,44 @@
         <!-- Partner notes -->
         <div class="flex flex-col gap-3 border-t pt-4">
           <div class="text-base font-semibold">{{ t('Partner Notes') }}</div>
-          <form [formGroup]="partnerNoteForm">
-            <mat-form-field class="w-full">
-              <mat-label>{{ t('Note') }}</mat-label>
-              <textarea matInput formControlName="text" placeholder="{{ t('Partner notes…') }}" rows="4"></textarea>
-            </mat-form-field>
-          </form>
-          @if (partnerNoteForm.disabled) {
-            <div>
-              <button (click)="setEditingPartnerNote(true)" color="primary" mat-flat-button>{{ t('Edit Note') }}</button>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="flex min-w-0 flex-col gap-2">
+              <form [formGroup]="partnerNoteForm">
+                <mat-form-field class="w-full">
+                  <mat-label>{{ t('Note') }}</mat-label>
+                  <textarea matInput formControlName="text" placeholder="{{ t('Partner notes…') }}" rows="4"></textarea>
+                </mat-form-field>
+              </form>
+              @if (partnerNoteForm.disabled) {
+                <div>
+                  <button (click)="setEditingPartnerNote(true)" color="primary" mat-flat-button>{{ t('Edit Note') }}</button>
+                </div>
+              } @else {
+                <div>
+                  <button (click)="savePartnerNote()" color="primary" mat-flat-button>{{ t('Save Note') }}</button>
+                </div>
+              }
             </div>
-          } @else {
-            <div>
-              <button (click)="savePartnerNote()" color="primary" mat-flat-button>{{ t('Save Note') }}</button>
+            <div class="flex min-w-0 flex-col gap-3">
+              <p class="text-secondary text-sm">
+                {{
+                  t(
+                    'If your organization requires partner approval for notes, please ensure that the appropriate stakeholders are notified. Partner: once you have reviewed and edited the note above, please check the box below to indicate your approval.'
+                  )
+                }}
+              </p>
+              <mat-checkbox
+                [checked]="currentGoal.partner_note_approval"
+                (change)="changePartnerNoteApproval($event.checked)"
+                color="primary"
+              >
+                {{ t('Partner Approval') }}
+              </mat-checkbox>
+              @if (currentGoal.partner_note_approval) {
+                <div class="text-secondary text-sm">{{ partnerNoteApprovalLabel }}</div>
+              }
             </div>
-          }
-          <p class="text-secondary text-sm">
-            {{
-              t(
-                'If your organization requires partner approval for notes, please ensure that the appropriate stakeholders are notified. Partner: once you have reviewed and edited the note above, please check the box below to indicate your approval.'
-              )
-            }}
-          </p>
-          <mat-checkbox [checked]="currentGoal.partner_note_approval" (change)="changePartnerNoteApproval($event.checked)" color="primary">
-            {{ t('Partner Approval') }}
-          </mat-checkbox>
-          @if (currentGoal.partner_note_approval) {
-            <div class="text-secondary text-sm">{{ partnerNoteApprovalLabel }}</div>
-          }
+          </div>
         </div>
 
         <!-- Goal summary table + Export -->

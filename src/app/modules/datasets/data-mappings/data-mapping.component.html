@@ -1,7 +1,11 @@
 <seed-page
   [config]="{
     title: 'Data Mapping',
-    breadcrumbs: ['Datasets', 'Data Mapping'],
+    breadcrumbs: [
+      { label: 'Data', link: '/data' },
+      { label: importFile?.dataset?.name, link: datasetId ? '/data/' + datasetId : null, translate: false },
+      'Data Mapping',
+    ],
     titleIcon: 'fa-solid:map',
     action: toggleHelp,
     actionIcon: 'fa-solid:circle-question',

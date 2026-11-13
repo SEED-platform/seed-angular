@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
@@ -14,6 +14,7 @@ import { BetterConfigComponent, BurConfigComponent, HvacConfigComponent, SimpleC
 @Component({
   selector: 'seed-analysis-run-modal',
   templateUrl: './analysis-run-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     BetterConfigComponent,
     BurConfigComponent,

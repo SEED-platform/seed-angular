@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, type FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
@@ -16,6 +16,7 @@ import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
 @Component({
   selector: 'seed-admin',
   templateUrl: './admin.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DatePipe, MaterialImports, ReactiveFormsModule, SharedImports],
 })
 export class AdminComponent implements OnInit, OnDestroy {

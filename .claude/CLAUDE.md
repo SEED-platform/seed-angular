@@ -10,6 +10,15 @@ and never drifts between agents.
   conventions (TypeScript/Angular, RxJS, CSS & UI, translations, empty/loading states,
   accessibility), change discipline, and the definition of done. **Read this first and follow it.**
 
+## Additional rules
+
+- When working on the new UI, don't alter existing v3 views. If completely necessary for performance or updated patterns, add a v4 endpoint.
+- When I say that everything looks good, can you run the precommit / linting rules (from the repo's CI configs) to ensure none of those tests will fail when pushed to github
+- When making changes, please consider section 508 accessibility rules
+- Always report untranslated items so I can add them to Lokalise
+
+-Be consistent with visual elements (looks of buttons, badges, etc.)
+
 ## Deeper references (all linked from the file above)
 
 - **[`../DEVELOPER.md`](../DEVELOPER.md)** — the full human coding-standards guide

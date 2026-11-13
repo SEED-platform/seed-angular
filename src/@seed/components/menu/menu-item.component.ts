@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { MaterialImports } from '@seed/materials'
 
 @Component({
   selector: 'seed-menu-item',
   templateUrl: './menu-item.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class MenuItemComponent {

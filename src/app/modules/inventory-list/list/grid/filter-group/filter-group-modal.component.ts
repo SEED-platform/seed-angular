@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { ModalHeaderComponent } from '@seed/components'
@@ -14,6 +14,7 @@ export type FilterGroupModalData = {
 @Component({
   selector: 'seed-filter-group-modal',
   templateUrl: './filter-group-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ModalHeaderComponent],
 })
 export class FilterGroupModalComponent {

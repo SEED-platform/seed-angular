@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
 import { Subject, switchMap, take, takeUntil, tap } from 'rxjs'
@@ -12,6 +12,7 @@ import type { InventoryDisplayType, InventoryType } from 'app/modules/inventory/
 @Component({
   selector: 'seed-inventory-detail-cross-cycles',
   templateUrl: './cross-cycles.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AsyncPipe, CrossCyclesGridComponent, PageComponent],
 })
 export class CrossCyclesComponent implements OnDestroy, OnInit {

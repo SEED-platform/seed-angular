@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { AfterViewInit, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import type { MatDialogRef } from '@angular/material/dialog'
 import { MatDialog } from '@angular/material/dialog'
@@ -19,6 +19,7 @@ import { FormModalComponent } from './modal/form-modal.component'
 @Component({
   selector: 'seed-data-quality-inventory-table',
   templateUrl: './inventory-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, FormsModule, LabelComponent, MaterialImports],
 })
 export class DataQualityInventoryTableComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {

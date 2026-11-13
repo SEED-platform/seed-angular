@@ -1,9 +1,9 @@
 import { OverlayContainer } from '@angular/cdk/overlay'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, isDevMode, Renderer2, ViewEncapsulation } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { combineLatest, filter, map, Subject, takeUntil } from 'rxjs'
-import { VersionService } from '@seed/api'
+import { UserService, VersionService } from '@seed/api'
 import type { Scheme, SEEDConfig } from '@seed/services'
 import { ConfigService, MediaWatcherService, PlatformService } from '@seed/services'
 import { DevSettingsComponent } from './common/dev-settings/dev-settings.component'
@@ -16,6 +16,7 @@ import { MainLayoutComponent } from './layouts/main/main.component'
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [DevSettingsComponent, EmptyLayoutComponent, LandingLayoutComponent, MainLayoutComponent],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
@@ -27,6 +28,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private _platformService = inject(PlatformService)
   private _renderer = inject(Renderer2)
   private _router = inject(Router)
+  private _userService = inject(UserService)
   private _versionService = inject(VersionService)
 
   config: SEEDConfig
@@ -37,6 +39,11 @@ export class LayoutComponent implements OnInit, OnDestroy {
   private readonly _unsubscribeAll$ = new Subject<void>()
 
   ngOnInit(): void {
+    this._userService.currentUser$.pipe(takeUntil(this._unsubscribeAll$)).subscribe(({ settings }) => {
+      const { colorScheme } = settings
+      this._configService.config = { scheme: colorScheme === 'dark' || colorScheme === 'light' ? colorScheme : 'auto' }
+    })
+
     // Set the theme and scheme based on the configuration
     combineLatest([
       this._configService.config$,

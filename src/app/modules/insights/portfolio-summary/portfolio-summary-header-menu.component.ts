@@ -2,7 +2,7 @@ import type { FlexibleConnectedPositionStrategyOrigin, OverlayRef } from '@angul
 import { Overlay } from '@angular/cdk/overlay'
 import { TemplatePortal } from '@angular/cdk/portal'
 import type { AfterViewInit, OnDestroy, TemplateRef } from '@angular/core'
-import { Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewContainerRef } from '@angular/core'
 import type { IHeaderAngularComp } from 'ag-grid-angular'
 import type { Column, GridApi, IHeaderParams } from 'ag-grid-community'
 import { Subject } from 'rxjs'
@@ -13,6 +13,7 @@ import { ConfigService } from '@seed/services'
 @Component({
   selector: 'seed-portfolio-summary-header-menu',
   templateUrl: './portfolio-summary-header-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports],
 })
 export class PortfolioSummaryHeaderMenuComponent implements IHeaderAngularComp, AfterViewInit, OnDestroy {

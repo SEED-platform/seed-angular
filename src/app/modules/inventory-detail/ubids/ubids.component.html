@@ -3,7 +3,7 @@
     title: 'Property',
     subTitle: viewDisplayField$ | async,
     titleIcon: 'fa-solid:building',
-    breadcrumbs: ['Property', 'UBIDs'],
+    breadcrumbs: [{ label: type === 'taxlots' ? 'Tax Lots' : 'Properties', link: '/' + type }, 'UBIDs'],
     sideNavToggle: true,
     action: createUbid,
     actionIcon: 'fa-solid:plus',

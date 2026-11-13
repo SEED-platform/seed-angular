@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http'
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http'
 import type { EnvironmentProviders, Provider } from '@angular/core'
 import { importProvidersFrom, inject, provideAppInitializer, provideEnvironmentInitializer } from '@angular/core'
 import { MatDialogModule } from '@angular/material/dialog'
@@ -49,7 +49,7 @@ export const provideSEED = (config: SEEDProviderConfig): (Provider | Environment
     importProvidersFrom(MatDialogModule),
     provideEnvironmentInitializer(() => inject(ConfirmationService)),
 
-    provideHttpClient(withInterceptors([loadingInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([loadingInterceptor])),
     provideEnvironmentInitializer(() => inject(LoadingService)),
     provideEnvironmentInitializer(() => inject(MediaWatcherService)),
     provideEnvironmentInitializer(() => inject(PlatformService)),
@@ -59,7 +59,7 @@ export const provideSEED = (config: SEEDProviderConfig): (Provider | Environment
   // Mock Api services
   if (config.mockApi?.enabled) {
     providers.push(
-      provideHttpClient(withInterceptors([mockApiInterceptor])),
+      provideHttpClient(withXhr(), withInterceptors([mockApiInterceptor])),
       provideAppInitializer(() => {
         inject(MockApiService)
       }),

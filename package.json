@@ -1,6 +1,6 @@
 {
   "name": "seed",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "Standard Energy Efficiency Data (SEED) Platform™",
   "license": "SEE LICENSE IN LICENSE.md",
   "repository": {
@@ -11,10 +11,10 @@
     "url": "https://github.com/SEED-platform/seed/issues"
   },
   "engines": {
-    "node": ">=24",
-    "pnpm": ">=10"
+    "node": "^24.15.0 || >=26.0.0",
+    "pnpm": ">=12"
   },
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@12.11.2",
   "private": true,
   "scripts": {
     "preinstall": "node -e \"const ua = process.env.npm_config_user_agent || ''; const execpath = process.env.npm_execpath || ''; if (!ua.startsWith('pnpm/') && !execpath.includes('pnpm')) { console.error('Use pnpm install for installation in this project.'); process.exit(1); }\"",
@@ -36,17 +36,17 @@
     "update-translations": "node --env-file=.env --no-warnings update-translations.mts"
   },
   "dependencies": {
-    "@angular/animations": "^21.2.23",
-    "@angular/cdk": "^21.2.14",
-    "@angular/common": "^21.2.23",
-    "@angular/compiler": "^21.2.23",
-    "@angular/core": "^21.2.23",
-    "@angular/forms": "^21.2.23",
-    "@angular/material": "^21.2.14",
-    "@angular/material-luxon-adapter": "^21.2.14",
-    "@angular/platform-browser": "^21.2.23",
-    "@angular/platform-browser-dynamic": "^21.2.23",
-    "@angular/router": "^21.2.23",
+    "@angular/animations": "^22.2.2",
+    "@angular/cdk": "^22.2.2",
+    "@angular/common": "^22.2.2",
+    "@angular/compiler": "^22.2.2",
+    "@angular/core": "^22.2.2",
+    "@angular/forms": "^22.2.2",
+    "@angular/material": "^22.2.2",
+    "@angular/material-luxon-adapter": "^22.2.2",
+    "@angular/platform-browser": "^22.2.2",
+    "@angular/platform-browser-dynamic": "^22.2.2",
+    "@angular/router": "^22.2.2",
     "@fontsource-variable/fira-code": "^5.3.0",
     "@fontsource-variable/inter": "^5.3.0",
     "@jsverse/transloco": "^8.4.0",
@@ -62,7 +62,7 @@
     "lodash-es": "^4.18.1",
     "luxon": "^3.7.2",
     "material-icons": "^1.13.14",
-    "ngx-wig": "^21.0.0",
+    "ngx-wig": "^22.0.0",
     "ol": "^10.10.0",
     "ol-ext": "^4.0.38",
     "perfect-scrollbar": "^1.5.6",
@@ -72,9 +72,9 @@
     "zone.js": "~0.16.3"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.24",
-    "@angular/cli": "^21.2.24",
-    "@angular/compiler-cli": "^21.2.23",
+    "@angular/build": "^22.2.2",
+    "@angular/cli": "^22.2.2",
+    "@angular/compiler-cli": "^22.2.2",
     "@cspell/cspell-types": "^9.8.0",
     "@cspell/eslint-plugin": "^9.8.0",
     "@dotenvx/dotenvx": "^1.75.1",
@@ -91,7 +91,7 @@
     "@types/node": "^24.13.6",
     "@types/ol-ext": "npm:@siedlerchr/types-ol-ext@^3.6.8",
     "adm-zip": "^0.6.1",
-    "angular-eslint": "^21.4.0",
+    "angular-eslint": "^22.6.0",
     "autoprefixer": "^10.6.1",
     "chroma-js": "^3.2.0",
     "eslint": "^9.39.5",
@@ -100,6 +100,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-perfectionist": "^5.11.1",
     "eslint-plugin-unused-imports": "^4.4.1",
+    "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "~6.1.0",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",
@@ -115,15 +116,10 @@
     "stylelint": "^17.15.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "tailwindcss": "^3.4.19",
-    "typescript": "~5.9.3",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1"
   },
   "scarfSettings": {
     "enabled": false
-  },
-  "pnpm": {
-    "overrides": {
-      "less": "^4.9.1"
-    }
   }
 }

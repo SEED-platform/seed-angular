@@ -268,7 +268,7 @@ export class OrganizationService {
     const formData = new FormData()
     formData.append('file', file, file.name)
     return this._httpClient.put<UploadAccessLevelInstancesResponse>(url, formData, {
-      reportProgress: true,
+      reportUploadProgress: true,
       observe: 'events',
     })
   }

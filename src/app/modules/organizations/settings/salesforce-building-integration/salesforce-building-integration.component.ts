@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
@@ -15,6 +15,7 @@ import { DeleteModalComponent, FormModalComponent } from './modal'
 @Component({
   selector: 'seed-organizations-settings-salesforce-building-integration',
   templateUrl: './salesforce-building-integration.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MaterialImports, PageComponent, ReactiveFormsModule, SharedImports],
 })
 export class SalesforceBuildingIntegrationComponent implements OnDestroy, OnInit {

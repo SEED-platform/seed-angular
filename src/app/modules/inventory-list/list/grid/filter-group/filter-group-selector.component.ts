@@ -1,15 +1,19 @@
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
+import { TranslocoDirective } from '@jsverse/transloco'
 import type { GridApi } from 'ag-grid-community'
 import { filter, Subject, take, takeUntil, tap } from 'rxjs'
 import type { CurrentUser, FilterGroup, FilterGroupInventoryType, Label } from '@seed/api'
 import { FilterGroupService } from '@seed/api'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import { LABEL_COLOR_MAP } from '../grid.component'
 import type { FilterGroupModalData } from './filter-group-modal.component'
 import { FilterGroupModalComponent } from './filter-group-modal.component'
+
+export type LabelOperator = 'and' | 'or' | 'exclude'
 
 export type LabelSelections = {
   andLabels: number[];
@@ -20,7 +24,8 @@ export type LabelSelections = {
 @Component({
   selector: 'seed-filter-group-selector',
   templateUrl: './filter-group-selector.component.html',
-  imports: [FormsModule, MaterialImports],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [FormsModule, MaterialImports, TranslocoDirective],
 })
 export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
   private _dialog = inject(MatDialog)
@@ -224,7 +229,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
 
   // --- Label management ---
 
-  toggleLabel(labelId: number, operator: 'and' | 'or' | 'exclude'): void {
+  toggleLabel(labelId: number, operator: LabelOperator): void {
     const wasSelected = this.isLabelSelected(labelId, operator)
 
     // Remove from all lists first
@@ -238,7 +243,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     this._emitLabelSelections()
   }
 
-  isLabelSelected(labelId: number, operator: 'and' | 'or' | 'exclude'): boolean {
+  isLabelSelected(labelId: number, operator: LabelOperator): boolean {
     return this._getLabelList(operator).includes(labelId)
   }
 
@@ -246,9 +251,8 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     return this.andLabels.length > 0 || this.orLabels.length > 0 || this.excludeLabels.length > 0
   }
 
-  get filterCount(): number {
-    const model = this.selectedFilterGroup?.query_dict
-    return model ? Object.keys(model).length : 0
+  getLabelDotColor(color: string): string {
+    return LABEL_COLOR_MAP[color] ?? LABEL_COLOR_MAP.gray
   }
 
   // --- Private ---
@@ -284,7 +288,7 @@ export class FilterGroupSelectorComponent implements OnDestroy, OnInit {
     })
   }
 
-  private _getLabelList(operator: 'and' | 'or' | 'exclude'): number[] {
+  private _getLabelList(operator: LabelOperator): number[] {
     switch (operator) {
       case 'and':
         return this.andLabels

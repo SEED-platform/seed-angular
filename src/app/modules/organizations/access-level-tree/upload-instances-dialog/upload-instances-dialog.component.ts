@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import type { HttpResponse } from '@angular/common/http'
 import { HttpEventType } from '@angular/common/http'
 import type { OnDestroy } from '@angular/core'
-import { Component, inject, ViewEncapsulation } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { TranslocoDirective } from '@jsverse/transloco'
 import { filter, last, Subject, switchMap, takeUntil, tap } from 'rxjs'
@@ -17,6 +17,7 @@ import type { UploadInstancesData } from '../access-level-tree.types'
   templateUrl: './upload-instances-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
   styleUrl: './upload-instances-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AlertComponent, CommonModule, MaterialImports, TranslocoDirective],
 })
 export class UploadInstancesDialogComponent implements OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import type { ColumnMapping, ColumnMappingProfile, ColumnMappingProfileType } from '@seed/api'
@@ -9,6 +9,7 @@ import { SEEDValidators } from '@seed/validators'
 @Component({
   selector: 'seed-data-mapping-create-profile',
   templateUrl: './create-profile.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, MaterialImports, ReactiveFormsModule],
 })
 export class CreateProfileComponent {

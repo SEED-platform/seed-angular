@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
 import type { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community'
@@ -17,6 +17,7 @@ import type { InventoryType } from 'app/modules/inventory'
 @Component({
   selector: 'seed-analysis-view',
   templateUrl: './analysis-view.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, NotFoundComponent, PageComponent, RouterModule, SafeUrlPipe],
 })
 export class AnalysisViewComponent implements OnDestroy, OnInit {

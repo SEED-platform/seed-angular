@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, type OnChanges, type OnInit, type SimpleChanges } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, type OnChanges, type OnInit, type SimpleChanges } from '@angular/core'
 import { forwardRef } from '@angular/core'
 import { type FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms'
 import { map, type Observable, startWith } from 'rxjs'
@@ -11,6 +11,7 @@ import { MaterialImports } from '@seed/materials'
   selector: 'seed-header-autocomplete',
   templateUrl: './seed-header-autocomplete.component.html',
   imports: [CommonModule, SharedImports, MaterialImports, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
-import { ChangeDetectorRef, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute } from '@angular/router'
 import type { Observable } from 'rxjs'
@@ -15,6 +15,7 @@ import type { InventoryType, ViewResponse } from 'app/modules/inventory/inventor
 @Component({
   selector: 'seed-inventory-detail-analyses',
   templateUrl: './analyses.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AnalysesGridComponent, CommonModule, NotFoundComponent, PageComponent, SharedImports],
 })
 export class AnalysesComponent implements OnInit, OnDestroy {

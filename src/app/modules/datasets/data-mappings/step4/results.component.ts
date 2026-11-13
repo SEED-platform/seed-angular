@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import type { OnChanges, OnDestroy, SimpleChanges } from '@angular/core'
-import { Component, inject, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { RouterModule } from '@angular/router'
 import { AgGridAngular } from 'ag-grid-angular'
@@ -17,6 +17,7 @@ import { MeterDataUploadModalComponent } from '../../data-upload/meter-upload-mo
 @Component({
   selector: 'seed-match-merge-results',
   templateUrl: './results.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [AgGridAngular, CommonModule, MaterialImports, RouterModule],
 })
 export class ResultsComponent implements OnChanges, OnDestroy {
