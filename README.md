@@ -1,5 +1,8 @@
 # SEED Angular
 
+> [!IMPORTANT]
+> This repo has been archived now that the code has been migrated to the main SEED repo
+
 ## Prerequisites
 - Node v24.15+ (24.x) or v26+
 - [pnpm](https://pnpm.io/installation) v12+ (the exact version is pinned in `package.json`)
