@@ -1931,7 +1931,7 @@
   "User": "Usuario",
   "User \"{{email}}\" added to organization": "Usuario \"{{email}}\"añadido a la organización",
   "User \"{{email}}\" created": "Usuario \"{{email}}\" creado",
-  "User \"{{email}}\" created as owner of new organization \"{{orgName}}\"": "Usuario \"{{email}} \"creado como propietario de una nueva organización\"{{orgName}} \"",
+  "User \"{{email}}\" created as owner of new organization \"{{orgName}}\"": "Usuario \"{{email}}\"creado como propietario de una nueva organización\"{{orgName}} \"",
   "User \"{{email}}\" removed from organization": "Usuario \"{{email}}\"expulsado de la organización",
   "User Count": "Recuento de usuarios",
   "User E-mail:": "Correo electrónico del usuario:",
