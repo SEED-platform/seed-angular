@@ -1,7 +1,15 @@
-import { DatePipe } from '@angular/common'
+import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common'
 import type { OnDestroy, OnInit } from '@angular/core'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { FormControl, FormGroup, type FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms'
+import {
+  type AbstractControl,
+  FormControl,
+  FormGroup,
+  type FormGroupDirective,
+  ReactiveFormsModule,
+  type ValidationErrors,
+  Validators,
+} from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 import { MatTableDataSource } from '@angular/material/table'
 import { TranslocoService } from '@jsverse/transloco'
@@ -12,12 +20,16 @@ import { DeleteModalComponent } from '@seed/components'
 import { SharedImports } from '@seed/directives'
 import { MaterialImports } from '@seed/materials'
 import { SnackBarService } from 'app/core/snack-bar/snack-bar.service'
+import type { AdminOrganizationRow, OrgTableRow } from './admin.utils'
+import { buildOrgTableRows, isCycleTableRow, orgNameExists, toAdminOrganizationRow } from './admin.utils'
+
+type CreateUserOrgMode = 'existing' | 'new'
 
 @Component({
   selector: 'seed-admin',
   templateUrl: './admin.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [DatePipe, MaterialImports, ReactiveFormsModule, SharedImports],
+  imports: [DatePipe, DecimalPipe, MaterialImports, NgTemplateOutlet, ReactiveFormsModule, SharedImports],
 })
 export class AdminComponent implements OnInit, OnDestroy {
   private _organizationService = inject(OrganizationService)
@@ -34,8 +46,15 @@ export class AdminComponent implements OnInit, OnDestroy {
   orgUsers: OrganizationUser[] = []
 
   // Organization table
-  orgDataSource = new MatTableDataSource<AdminOrganization>([])
-  orgColumns = ['id', 'name', 'created', 'number_of_users', 'property_count', 'taxlot_count', 'actions']
+  orgDataSource = new MatTableDataSource<OrgTableRow>([])
+  orgColumns = ['expand', 'parent_id', 'id', 'name', 'created', 'number_of_users', 'cycle_count', 'property_counts', 'taxlot_counts', 'actions']
+  // Expanded cycle rows: a spacer spanning the columns before Cycles, then values under Cycles / Properties / Tax Lots
+  cycleColumns = ['cycle_lead', 'cycle_name', 'cycle_properties', 'cycle_taxlots', 'cycle_trail']
+  cycleLeadColspan = this.orgColumns.indexOf('cycle_count')
+  private _orgRows: AdminOrganizationRow[] = []
+
+  // Orgs whose per-cycle counts are expanded
+  expandedOrgIds = new Set<number>()
 
   // Progress tracking for inventory deletion
   deletingInventory = new Map<number, number>()
@@ -56,11 +75,17 @@ export class AdminComponent implements OnInit, OnDestroy {
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
+    // Legacy parity: superusers can create the user in a brand-new org, which the user then owns
+    orgMode: new FormControl<CreateUserOrgMode>('existing', { nonNullable: true }),
+    newOrgName: new FormControl({ value: '', disabled: true }, [Validators.required, (control: AbstractControl<string>) => this._uniqueOrgName(control)]),
     organizationId: new FormControl<number>(null, Validators.required),
     role: new FormControl<UserRole>('member', Validators.required),
     accessLevel: new FormControl<string>(null, Validators.required),
     accessLevelInstanceId: new FormControl<number>(null, Validators.required),
   })
+
+  // Create User controls that only apply when adding the user to an existing org
+  private readonly _existingOrgControls = ['organizationId', 'role', 'accessLevel', 'accessLevelInstanceId'] as const
 
   // Access level state for create user form
   createUserAccessLevelNames: string[] = []
@@ -82,6 +107,10 @@ export class AdminComponent implements OnInit, OnDestroy {
     { value: 'member', label: 'Member' },
     { value: 'viewer', label: 'Viewer' },
   ]
+
+  // `when` predicates for the org table's two row templates
+  isOrgRow = (_index: number, row: OrgTableRow) => !isCycleTableRow(row)
+  isCycleRow = (_index: number, row: OrgTableRow) => isCycleTableRow(row)
 
   get sortedOrganizations() {
     const s = (this.orgSearch.value ?? '').toLowerCase()
@@ -120,7 +149,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   loadOrganizations(): void {
     this._organizationService.getAllOrganizations().subscribe((orgs) => {
       this.organizations = orgs
-      this.orgDataSource.data = orgs
+      this._orgRows = orgs.map(toAdminOrganizationRow)
+      this._refreshOrgTable()
     })
   }
 
@@ -195,6 +225,24 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   // --- Create User ---
 
+  onCreateUserOrgModeChange(): void {
+    const isNew = this.createUserForm.controls.orgMode.value === 'new'
+    const { newOrgName } = this.createUserForm.controls
+    if (isNew) {
+      newOrgName.enable()
+    } else {
+      newOrgName.disable()
+    }
+    for (const name of this._existingOrgControls) {
+      const control = this.createUserForm.get(name)
+      if (isNew) {
+        control.disable()
+      } else {
+        control.enable()
+      }
+    }
+  }
+
   onCreateUserOrgChange(): void {
     const orgId = this.createUserForm.get('organizationId').value
     if (!orgId) return
@@ -219,23 +267,34 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   onCreateUser(formDirective: FormGroupDirective): void {
     if (this.createUserForm.valid) {
-      const { firstName, lastName, email, organizationId, role, accessLevelInstanceId } = this.createUserForm.value
+      const { firstName, lastName, email, orgMode, newOrgName, organizationId, role, accessLevelInstanceId } = this.createUserForm.value
+      const isNewOrg = orgMode === 'new'
       this._userService
-        .createUser(organizationId, {
+        .createUser(isNewOrg ? null : organizationId, {
           first_name: firstName,
           last_name: lastName,
           email,
-          org_name: '',
-          role,
-          access_level_instance_id: accessLevelInstanceId,
+          org_name: isNewOrg ? newOrgName.trim() : '',
+          // The backend makes the user the owner of a newly created org
+          role: isNewOrg ? 'owner' : role,
+          access_level_instance_id: isNewOrg ? null : accessLevelInstanceId,
         })
         .subscribe({
-          complete: () => {
-            this._snackBar.success(this._transloco.translate('User "{{email}}" created', { email }))
-            formDirective.resetForm({ role: 'member' })
+          next: (response) => {
+            const message = response.org_created
+              ? this._transloco.translate('User "{{email}}" created as owner of new organization "{{orgName}}"', { email, orgName: response.org })
+              : this._transloco.translate('User "{{email}}" created', { email })
+            this._snackBar.success(message)
+            formDirective.resetForm({ role: 'member', orgMode: 'existing' })
+            this.onCreateUserOrgModeChange()
             this.createUserAccessLevelNames = []
             this.createUserAccessLevelInstances = []
             this.loadUsers()
+            if (response.org_created) {
+              this.loadOrganizations()
+              // Refresh the org dropdown in the top-right nav
+              this._organizationService.getBrief().subscribe()
+            }
           },
         })
     }
@@ -289,8 +348,23 @@ export class AdminComponent implements OnInit, OnDestroy {
     })
   }
 
-  trackByOrgId(_index: number, org: AdminOrganization): number {
-    return org.id
+  trackByOrgRow(_index: number, row: OrgTableRow): string {
+    return isCycleTableRow(row) ? `${row.cycleOf.id}:${row.cycle.cycle}` : `${row.id}`
+  }
+
+  toggleOrgExpanded(org: AdminOrganization): void {
+    if (!this.expandedOrgIds.delete(org.id)) {
+      this.expandedOrgIds.add(org.id)
+    }
+    this._refreshOrgTable()
+  }
+
+  private _refreshOrgTable(): void {
+    this.orgDataSource.data = buildOrgTableRows(this._orgRows, this.expandedOrgIds)
+  }
+
+  private _uniqueOrgName(control: AbstractControl<string>): ValidationErrors | null {
+    return control.value && orgNameExists(this.organizations, control.value) ? { orgExists: true } : null
   }
 
   private _calculateAccessLevelsByDepth(
