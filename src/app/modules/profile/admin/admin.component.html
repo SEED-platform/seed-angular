@@ -10,6 +10,7 @@
         <mat-panel-title>{{ t('Organizations') }}</mat-panel-title>
       </mat-expansion-panel-header>
 
+      <p class="text-secondary mb-2 text-sm">{{ t('Inventory counts are scoped to your access level.') }}</p>
       <div class="overflow-x-auto">
         <!-- 12px cell padding (vs 16px) so all ten columns fit the card; the caret and Parent ID columns are tighter still -->
         <table
@@ -114,7 +115,7 @@
           </ng-container>
 
           <ng-container matColumnDef="cycle_name">
-            <td class="whitespace-nowrap" *matCellDef="let row" mat-cell>{{ row.cycle.cycle }}</td>
+            <td class="whitespace-normal break-words" *matCellDef="let row" mat-cell>{{ row.cycle.cycle }}</td>
           </ng-container>
 
           <ng-container matColumnDef="cycle_properties">
@@ -145,7 +146,8 @@
 
       <ng-template #total let-value>
         @if (value === null) {
-          <span [attr.aria-label]="t('Not available')">-</span>
+          <span aria-hidden="true">-</span>
+          <span class="sr-only">{{ t('Not available') }}</span>
         } @else {
           <span class="tabular-nums">{{ value | number }}</span>
         }
@@ -297,7 +299,13 @@
           </div>
         }
         <div class="flex justify-end">
-          <button [disabled]="createUserForm.invalid" mat-raised-button color="primary">{{ t('Create User') }}</button>
+          <button
+            [disabled]="createUserForm.invalid || (createUserForm.controls.orgMode.value === 'new' && !organizationsLoaded)"
+            mat-raised-button
+            color="primary"
+          >
+            {{ t('Create User') }}
+          </button>
         </div>
       </form>
     </mat-expansion-panel>

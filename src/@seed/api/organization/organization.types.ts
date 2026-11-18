@@ -279,6 +279,7 @@ export type AdminOrganization = {
   number_of_users: number;
   parent_id: number | null;
   is_parent: boolean;
+  user_role: UserRole | null;
   // Only populated for orgs the requesting user belongs to (counts are scoped to their access level)
   cycles: AdminOrganizationCycle[];
 }

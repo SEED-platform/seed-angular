@@ -15,16 +15,18 @@ export type AdminOrganizationRow = AdminOrganization & {
 
 export const toAdminOrganizationRow = (org: AdminOrganization): AdminOrganizationRow => {
   const cycles = org.cycles ?? []
-  const hasCycles = cycles.length > 0
+  const hasMembership = org.user_role !== null
   return {
     ...org,
     parentId: org.parent_id && org.parent_id !== org.id ? org.parent_id : null,
-    cycleCounts: cycles
-      .filter((c) => c.num_properties || c.num_taxlots)
-      .map((c) => ({ cycle: c.name, properties: c.num_properties, taxlots: c.num_taxlots })),
-    cycleTotal: hasCycles ? cycles.length : null,
-    propertyTotal: hasCycles ? cycles.reduce((sum, c) => sum + c.num_properties, 0) : null,
-    taxlotTotal: hasCycles ? cycles.reduce((sum, c) => sum + c.num_taxlots, 0) : null,
+    cycleCounts: hasMembership
+      ? cycles
+          .filter((c) => c.num_properties || c.num_taxlots)
+          .map((c) => ({ cycle: c.name, properties: c.num_properties, taxlots: c.num_taxlots }))
+      : [],
+    cycleTotal: hasMembership ? cycles.length : null,
+    propertyTotal: hasMembership ? cycles.reduce((sum, c) => sum + c.num_properties, 0) : null,
+    taxlotTotal: hasMembership ? cycles.reduce((sum, c) => sum + c.num_taxlots, 0) : null,
   }
 }
 

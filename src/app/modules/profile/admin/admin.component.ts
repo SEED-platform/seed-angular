@@ -42,6 +42,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   currentUser: CurrentUser
   organizations: AdminOrganization[] = []
+  organizationsLoaded = false
   allUsers: UserBrief[] = []
   orgUsers: OrganizationUser[] = []
 
@@ -77,7 +78,13 @@ export class AdminComponent implements OnInit, OnDestroy {
     email: new FormControl('', [Validators.required, Validators.email]),
     // Legacy parity: superusers can create the user in a brand-new org, which the user then owns
     orgMode: new FormControl<CreateUserOrgMode>('existing', { nonNullable: true }),
-    newOrgName: new FormControl({ value: '', disabled: true }, [Validators.required, (control: AbstractControl<string>) => this._uniqueOrgName(control)]),
+    newOrgName: new FormControl(
+      { value: '', disabled: true },
+      [
+        (control: AbstractControl<string>) => (control.value?.trim() ? null : { required: true }),
+        (control: AbstractControl<string>) => this._uniqueOrgName(control),
+      ],
+    ),
     organizationId: new FormControl<number>(null, Validators.required),
     role: new FormControl<UserRole>('member', Validators.required),
     accessLevel: new FormControl<string>(null, Validators.required),
@@ -149,6 +156,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   loadOrganizations(): void {
     this._organizationService.getAllOrganizations().subscribe((orgs) => {
       this.organizations = orgs
+      this.organizationsLoaded = true
+      this.createUserForm.controls.newOrgName.updateValueAndValidity()
       this._orgRows = orgs.map(toAdminOrganizationRow)
       this._refreshOrgTable()
     })
@@ -266,9 +275,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   onCreateUser(formDirective: FormGroupDirective): void {
-    if (this.createUserForm.valid) {
-      const { firstName, lastName, email, orgMode, newOrgName, organizationId, role, accessLevelInstanceId } = this.createUserForm.value
-      const isNewOrg = orgMode === 'new'
+    const isNewOrg = this.createUserForm.controls.orgMode.value === 'new'
+    if (this.createUserForm.valid && (!isNewOrg || this.organizationsLoaded)) {
+      const { firstName, lastName, email, newOrgName, organizationId, role, accessLevelInstanceId } = this.createUserForm.value
       this._userService
         .createUser(isNewOrg ? null : organizationId, {
           first_name: firstName,

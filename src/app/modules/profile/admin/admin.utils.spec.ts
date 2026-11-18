@@ -8,6 +8,7 @@ const org = (overrides: Partial<AdminOrganization> = {}): AdminOrganization => (
   number_of_users: 1,
   parent_id: 2,
   is_parent: true,
+  user_role: 'owner',
   cycles: [],
   ...overrides,
 })
@@ -32,13 +33,19 @@ describe('toAdminOrganizationRow', () => {
     expect(row.taxlotTotal).toBe(7)
   })
 
-  it('reports zero totals for empty cycles and unknown totals without cycle data', () => {
+  it('reports zero totals for members with no cycles and unknown totals for nonmembers', () => {
     const empty = toAdminOrganizationRow(org({ cycles: [{ name: '2024', cycle_id: 2, num_properties: 0, num_taxlots: 0 }] }))
     expect(empty.cycleCounts).toEqual([])
     expect(empty.cycleTotal).toBe(1)
     expect(empty.propertyTotal).toBe(0)
 
-    const unknown = toAdminOrganizationRow(org({ cycles: undefined }))
+    const noCycles = toAdminOrganizationRow(org({ cycles: [] }))
+    expect(noCycles.cycleCounts).toEqual([])
+    expect(noCycles.cycleTotal).toBe(0)
+    expect(noCycles.propertyTotal).toBe(0)
+    expect(noCycles.taxlotTotal).toBe(0)
+
+    const unknown = toAdminOrganizationRow(org({ user_role: null, cycles: undefined }))
     expect(unknown.cycleCounts).toEqual([])
     expect(unknown.cycleTotal).toBeNull()
     expect(unknown.propertyTotal).toBeNull()
